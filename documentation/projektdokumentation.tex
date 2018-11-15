@@ -58,7 +58,7 @@
 	\pagestyle{fancy}
 	\fancyhead{}
 	\fancyfoot{}
-	\fancyhead[C]{Projektdokumentation $\bullet$ PROJEKTNAME $\bullet$ SS17$+$WS17/18}
+	\fancyhead[C]{Projektdokumentation $\bullet$ PUML $\bullet$ WS18/19$+$SS19}
 	\fancyfoot[RO,LE]{}
 
 
@@ -84,11 +84,16 @@
         % alle Autoren hier listen
         % 
 	\large
-	\textsc{Autor I -- E-Mail} \\[2mm]
+	\textsc{Softwarearchitekt: Philipp Rimmele -- philipp.rimmele@stud.htwk-leipzig.de} \\[2mm]
 	\textsc{Autor II -- E-Mail} \\[2mm]
 	\normalsize	HTWK Leipzig 
 	}
 \date{}
+
+
+
+\input{Macros/nestedSections}
+
 
 
 
@@ -110,19 +115,17 @@
 %%%% Die Struktur des Dokuments bitte nicht aendern!!!
 %%%%
 
-\section{Anforderungsspezifikation}
+\nsecbegin{Anforderungsspezifikation}
 
-\subsection{Initiale Kundenvorgaben}
-
+\nsecbegin{Initiale Kundenvorgaben}
 Maecenas sed ultricies felis. Sed imperdiet dictum arcu a egestas. 
 In sapien ante, ultricies quis pellentesque ut, fringilla id sem. Proin justo libero, dapibus consequat auctor at, euismod et erat. Sed ut ipsum erat, iaculis vehicula lorem. Cras non dolor id libero blandit ornare. Pellentesque luctus fermentum eros ut posuere. Suspendisse rutrum suscipit massa sit amet molestie. Donec suscipit lacinia diam, eu posuere libero rutrum sed. Nam blandit lorem sit amet dolor vestibulum in lacinia purus varius. Ut tortor massa, rhoncus ut auctor eget, vestibulum ut justo.
+\nsecend
 
 
-\subsection{Produktvision}
-
-
+\nsecbegin{Produktvision}
 Quisque vel arcu eget sapien euismod tristique rhoncus eu mauris. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras ligula lacus, dictum id scelerisque nec, venenatis vitae magna. Cras tristique porta elit, non tincidunt ligula placerat lobortis. Pellentesque quam enim, mattis in cursus eu, blandit et massa. Mauris aliquet turpis blandit elit vehicula sed posuere lectus facilisis. Donec blandit adipiscing tortor, quis lobortis purus eleifend vel. Nam a tellus at magna scelerisque blandit vel nec erat.
-
+\nsecend
 
 % Das hier ist ein Absatz, der die Grafik in Abbildung~\ref{fig:bild1} detailliert erläutert, erklärt und interpretiert.
 
@@ -134,9 +137,9 @@ Quisque vel arcu eget sapien euismod tristique rhoncus eu mauris. Cum sociis nat
 % \end{figure}
 
 
-\subsection{Liste der funktionalen Anforderungen}
-
+\nsecbegin{Liste der funktionalen Anforderungen}
 XXX
+\nsecend
 
 %
 % soll der Inhalt dieser Subsection in einer separaten Datei
@@ -145,114 +148,151 @@ XXX
 %
 % \input{listefunktional}
 
-\subsection{Liste der nicht-funktionalen Anforderungen}
-
+\nsecbegin{Liste der nicht-funktionalen Anforderungen}
 XXX
+\nsecend
 
-\subsection{Weitere Zuarbeiten zum Produktvisions-Workshop}
-
+\nsecbegin{Weitere Zuarbeiten zum Produktvisions-Workshop}
 XXX
+\nsecend
 
-\subsubsection{Zuarbeit von Autor X}
+\nsecbegin{Zuarbeit von Autor X}
 XXX
-\subsubsection{Zuarbeit von Autor Y}
+\nsecend
+
+\nsecbegin{Zuarbeit von Autor Y}
 XXX
+\nsecend
 
-\subsection{Liste der Kundengespräche mit Ergebnissen}
-
+\nsecbegin{Liste der Kundengespräche mit Ergebnissen}
 XXX
+\nsecend
 
+\nsecend %Anforderungsspezifikation
 
+\nsecbegin{Architektur und Entwurf}
 
-\section{Architektur und Entwurf}
-
-\subsection{Zuarbeiten der Teammitglieder}
-
+\nsecbegin{Zuarbeiten der Teammitglieder}
 XXX
+\nsecend
 
-\subsection{Entscheidungen des Technologieworkshops}
-
+\nsecbegin{Entscheidungen des Technologieworkshops}
 XXX
+\nsecend
 
-\subsection{Überblick über Architektur}
-
+\nsecbegin{Überblick über Architektur}
 XXX
+\nsecend
 
-\subsection{Definierte Schnittstellen}
-
+\nsecbegin{Definierte Schnittstellen}
 XXX
+\nsecend
 
-\subsection{Liste der Architekturentscheidungen}
-
+\nsecbegin{Liste der Architekturentscheidungen}
 XXX (bewusste und unbewusste Entscheidungen mit zeitlicher Einordnung)
+\nsecend
 
 
+\nsecend %Architektur und Entwurf
 
-\section{Prozess- und Implementationsvorgaben}
+\nsecbegin{Prozess- und Implementationsvorgaben}
 
-\subsection{Definition of Done}
-
+\nsecbegin{Definition of Done}
 XXX
+\nsecend
 
-\subsection{Coding Style}
+\nsecbegin{Coding Style}
+Bitte die Datei javaCodeStyle.xml im specification-Verzeichniss in Eclipse importieren und verwenden.
+Hierfür in Eclipse unter "`Window->Preferences->Java->Code Style->Formatter"' auf Import klicken und die XML-Datei auswählen.\\
+Ist der passende Coding Style eingestellt kann der Quellcode mit "`STRG+SHIFT+F"' automatisch formatiert werden.
+Wird dies vor jedem Commit gemacht, ensteht ein einheitlicher Code-Style und die Änderungen können gut mit GIT überprüft werden.\\
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=0.5]{Bilder/importCodeStyle}
+\caption{Code-Style in Eclipse importieren}
+\end{figure}
+Des weiteren empfielt es sich bei größeren oder stark geschachtelten Code-Abschnitten die Zugehörigkeit der Schließenden Klammer mit einem Kommentar zu Kennzeichnen.\\
+Sonstige Konventionen:
+\begin{itemize}
+\item{Variablen und Instanzen beginnen kleingeschrieben}
+\item{Klassen und Interfaces beginnen mit Großbuchstaben}
+\item{Besteht ein Namen aus mehreren zusammengesetzten Wörtern, beginnen alle weiteren Wörter mit Großbuchstaben (keine Unterstriche in Namen verwenden)}
+\item{Aussagekräftige Namen verwenden}
+\item{Alle Namen auf Englisch}
+\item{Die Kommentare auf Deutsch}
+\end{itemize}
 
-XXX
+\nsecend
 
-\subsection{Zu nutzende Werkzeuge}
+\nsecbegin{Zu nutzende Werkzeuge}
+\begin{itemize}
+\item{Eclipse - Entwicklungsumgebung}
+\item{GIT - Dateiversionierung}
+\item{Meld - Unterschiede zwischen Dateien anzeigen}
+\item{Texmaker - Latex-Editor}
+\item{GIMP - Bildbearbeitung für das Editieren von Screenshots}
+\end{itemize}
+\nsecend
 
-XXX
 
+
+\nsecend %Prozess- und Implementationsvorgaben
 
 %%%%%%%%%%%%
 %% Abschnitt mit den Sprints beginnt hier
 %%%%%%%%%%%%
 
-\section{Sprint 1}
-
+\nsecbegin{Sprint 1}
 \input{sprint1}
+\nsecend
 
-\section{Sprint 2}
-
+\nsecbegin{Sprint 2}
 %% \input{sprint2}
+\nsecend
 
 %%%%%% weitere Sprints analog
 
 
-\section{Dokumentation}
+\nsecbegin{Dokumentation}
 
-\subsection{Handbuch}
-
+\nsecbegin{Handbuch}
 XXX
+\nsecend
 
-\subsection{Installationsanleitung}
-
+\nsecbegin{Installationsanleitung}
 XXX
+\nsecend
 
-\subsection{Software-Lizenz}
-
+\nsecbegin{Software-Lizenz}
 XXX
+\nsecend
+
+\nsecend %Dokumentation
 
 
-\section{Projektabschluss}
+\nsecbegin{Projektabschluss}
 
-\subsection{Protokoll der Abnahme und Inbetriebnahme beim Kunden}
-
+\nsecbegin{Protokoll der Abnahme und Inbetriebnahme beim Kunden}
 XXX
+\nsecend
 
-\subsection{Präsentation auf der Messe}
-
+\nsecbegin{Präsentation auf der Messe}
 Poster, Bericht
+\nsecend
 
-\subsection{Abschließende Einschätzung durch Product-Owner}
-
+\nsecbegin{Abschließende Einschätzung durch Product-Owner}
 XXX
+\nsecend
 
-\subsection{Abschließende Einschätzung durch Software-Architekt}
-
+\nsecbegin{Abschließende Einschätzung durch Software-Architekt}
 XXX
+\nsecend
 
-\subsection{Abschließende Einschätzung durch Team-Manager}
-
+\nsecbegin{Abschließende Einschätzung durch Team-Manager}
 XXX
+\nsecend
+
+
+\nsecend %Projektabschluss
 
 \end{document}
