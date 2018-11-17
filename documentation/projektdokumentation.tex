@@ -52,6 +52,12 @@
 % Tabellen über Seitenumbrüche hinweg
 \usepackage{longtable}
 
+%
+% Erweiterte Tabellen
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{float}
+
 % ------
 % Header/footer
 \usepackage{fancyhdr}
@@ -85,7 +91,7 @@
         % 
 	\large
 	\textsc{Softwarearchitekt: Philipp Rimmele -- philipp.rimmele@stud.htwk-leipzig.de} \\[2mm]
-	\textsc{Autor II -- E-Mail} \\[2mm]
+	\textsc{Product Owner: Anna Heinrich -- anna.heinrich@stud.htwk-leipzig.de} \\[2mm]
 	\normalsize	HTWK Leipzig 
 	}
 \date{}
@@ -165,7 +171,7 @@ XXX
 \nsecend
 
 \nsecbegin{Liste der Kundengespräche mit Ergebnissen}
-XXX
+\input{listeKundengespraeche}
 \nsecend
 
 \nsecend %Anforderungsspezifikation
