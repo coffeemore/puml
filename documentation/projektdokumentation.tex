@@ -24,7 +24,20 @@
 % Paper auf Deutsch
 \usepackage[ngerman]{babel}
 
-
+% Code Beispiel Java
+\usepackage{listings}
+\lstset{
+	language=Java,
+	aboveskip=2mm,
+	belowskip=2mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\small\ttfamily},
+	numbers=none,
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=3
+}
 
 % ------
 % Page layout
@@ -177,8 +190,37 @@ XXX
 XXX
 \nsecend
 
+%Recherche Teil - Marian
 \nsecbegin{Commandline Funktionalität}
-Eine der Anforderungen an die Software ist die Bedienung über die Kommandozeile. 
+Eine der Anforderungen an die Software ist die Bedienung des Programms mittels Kommandozeile. Folgende zwei Möglichkeiten scheinen für die Verwendung im Projekt PUML als sinnvoll. Zum einen ist die Parameterabfrage über eine eigene Implementation auf Basis der Hauptklasse möglich mittels \texttt{public static void main(String [] args)}, zum Anderen ist die Nutzung der \glqq Commons CLI\grqq-Bibliothek von Apache eine Option. \\
+Während der Recherche zeigte sich, dass die Nutzung der Commons CLI - Bibliothek sehr gut dokumentiert ist und in der Praxis oft Anwendung findet, auch das Umsetzen eines Tests schien weniger problematisch zu gelingen, als ein Abfragen der Parameter über \texttt{String [] args} im Hauptprogramm. Aus diesem Grund wird an dieser Stelle die Apache Bibliothek kurz vorgestellt. \\
+Ein Download der Bibliothek erfolgt über die Seite des Enticklers Apache\footnote[1]{http://commons.apache.org/proper/commons-cli/} und muss anschließend in die Entwicklungsumgebung eingebunden, sowie in das Programm importiert werden. \\
+Die Arbeit mit Commons CLI lässt sich grundsätzlich in drei Schritte unterteilen, Parameterdefinition, das Einrichten des Parsers und die Verkettung mit der jeweiligen Funktion. \\
+Zuerst wird festgelegt, welche Parameter der Anwendung übergeben werden, hierzu wird ein neues Container Objekt vom Typ \texttt{Options} angelegt. Anschließend werden die gewünschten Befehle mit den entsprechenden Parametern dem Container hinzugefügt, so dass später ein Aufruf im Terminal möglich ist, wie bespielsweise \texttt{ls -al meinfile.txt} um die Zugriffsrechte einer Datei zu überprüfen.
+\begin{lstlisting}
+//Erzeugt neuen Container fuer Programmparameter
+Options options = new Options();
+//Hinzufuegen einer neuen Option 
+options.addOption("l",false, "Alle Leerzeichen entfernen.");
+\end{lstlisting}
+Zunächst wird ein Parser intitialisert, während anschließend über eine logische Verknüpfung der Flags die entsprechende Funktion aufgerufen wird. Wichtig ist in diesem Zusammenhang noch die Verwendung von Exceptions zu erwähnen, die entweder durch den Ausdruck \texttt{ParseException} aus der Bibliothek oder \texttt{try / catch} Schlüsselwörter abgefangen werden müssen.
+\begin{lstlisting}
+CommandLineParser parser = new DefaultParser();	
+CommandLine commandLine = parser.parse(options,args);
+
+ if(commandLine.hasOption("b"))
+{
+	System.out.println("String eingebe: ");
+	String myString = keyboard.nextLine();	//String einlesen
+	getWordBefore('.',myString); // liefere alle Woerter vor Punkt
+}
+if (commandLine.hasOption("l"))
+{
+	String myString = "g e s p e r r t g e s c h r i e b e n";
+	System.out.println(noSpace(myString));	//entfernt alle Leerzeichen
+}
+\end{lstlisting}
+Am Ende muss das Programm übersetzt werden und steht anschließend zur Nutzung mit den gesetzten Parametern zur Verfügung. So liefert in diesem Fall die Eingabe im Terminal: \texttt{java MeinProgrammName -l } die Ausgabe \glqq gesperrtgeschrieben\grqq zurück.
 \nsecend
 
 \nsecbegin{Entscheidungen des Technologieworkshops}
