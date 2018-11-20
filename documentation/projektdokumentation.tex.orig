@@ -91,7 +91,12 @@
         % 
 	\large
 	\textsc{Softwarearchitekt: Philipp Rimmele -- philipp.rimmele@stud.htwk-leipzig.de} \\[2mm]
+<<<<<<< HEAD
 	\textsc{Product Owner: Anna Heinrich -- anna.heinrich@stud.htwk-leipzig.de} \\[2mm]
+=======
+	\textsc{Autor II -- E-Mail} \\[2mm]
+	\textsc{Marian Geißler -- marian.geissler@stud.htwk-leipzig.de} \\[2mm]
+>>>>>>> c2ca95b5bb23374a9843bb51ad71691685bd2e10
 	\normalsize	HTWK Leipzig 
 	}
 \date{}
@@ -171,7 +176,7 @@ XXX
 \nsecend
 
 \nsecbegin{Liste der Kundengespräche mit Ergebnissen}
-XXX
+\input{listeKundengespraeche}
 \nsecend
 
 \nsecend %Anforderungsspezifikation
