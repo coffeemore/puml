@@ -65,6 +65,12 @@
 % Tabellen über Seitenumbrüche hinweg
 \usepackage{longtable}
 
+%
+% Erweiterte Tabellen
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{float}
+
 % ------
 % Header/footer
 \usepackage{fancyhdr}
@@ -98,13 +104,32 @@
         % 
 	\large
 	\textsc{Softwarearchitekt: Philipp Rimmele -- philipp.rimmele@stud.htwk-leipzig.de} \\[2mm]
-	\textsc{Autor II -- E-Mail} \\[2mm]
+	\textsc{Product Owner: Anna Heinrich -- anna.heinrich@stud.htwk-leipzig.de} \\[2mm]
 	\textsc{Marian Geißler -- marian.geissler@stud.htwk-leipzig.de} \\[2mm]
 	\normalsize	HTWK Leipzig 
 	}
 \date{}
 
 
+% Erweiterte Tabellen
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{float}
+
+% Code Beispiel Java
+\usepackage{listings}
+\lstset{
+	language=Java,
+	aboveskip=2mm,
+	belowskip=2mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\small\ttfamily},
+	numbers=none,
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=3
+}
 
 \input{Makros/nestedSections}
 
@@ -179,7 +204,7 @@ XXX
 \nsecend
 
 \nsecbegin{Liste der Kundengespräche mit Ergebnissen}
-XXX
+\input{listeKundengespraeche}
 \nsecend
 
 \nsecend %Anforderungsspezifikation
@@ -187,7 +212,8 @@ XXX
 \nsecbegin{Architektur und Entwurf}
 
 \nsecbegin{Zuarbeiten der Teammitglieder}
-XXX
+\input{TechRecherche/Kommandozeile}
+
 \nsecend
 
 %Recherche Teil - Marian
