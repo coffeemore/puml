@@ -24,8 +24,6 @@
 % Paper auf Deutsch
 \usepackage[ngerman]{babel}
 
-
-
 % ------
 % Page layout
 \usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry}
@@ -102,6 +100,21 @@
 \usepackage{tabularx}
 \usepackage{multirow}
 \usepackage{float}
+
+% Code Beispiel Java
+\usepackage{listings}
+\lstset{
+	language=Java,
+	aboveskip=2mm,
+	belowskip=2mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\small\ttfamily},
+	numbers=none,
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=3
+}
 
 \input{Makros/nestedSections}
 
@@ -184,7 +197,7 @@ XXX
 \nsecbegin{Architektur und Entwurf}
 
 \nsecbegin{Zuarbeiten der Teammitglieder}
-XXX
+\input{TechRecherche/Kommandozeile}
 \nsecend
 
 \nsecbegin{Entscheidungen des Technologieworkshops}
