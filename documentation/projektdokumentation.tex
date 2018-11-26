@@ -58,21 +58,33 @@
 \usepackage{multirow}
 \usepackage{float}
 
+%Unterschiedliche Zielgruppen des Dokuments
+\usepackage{multiaudience}
+\SetNewAudience{developer}
+\SetNewAudience{manual}
+
+
 % ------
 % Header/footer
 \usepackage{fancyhdr}
 	\pagestyle{fancy}
 	\fancyhead{}
 	\fancyfoot{}
+\begin{shownto}{-, developer}
 	\fancyhead[C]{Projektdokumentation $\bullet$ PUML $\bullet$ WS18/19$+$SS19}
 	\fancyfoot[RO,LE]{}
+\end{shownto}
+\begin{shownto}{developer}
+	\fancyhead[C]{Entwicklerdokumentation $\bullet$ PUML}
+	\fancyfoot[RO,LE]{}
+\end{shownto}
 
 
 % ------
 % Clickable URLs (optional)
 % \usepackage{hyperref}
 
-% ------
+% ------c
 % Literaturverweise mit Bibtex einbinden
 \usepackage[authoryear,sectionbib,round]{natbib}
 
@@ -80,6 +92,7 @@
 % Bilder laden
 \usepackage[pdftex]{graphicx}
 
+\begin{shownto}{-, developer}
 % ------
 % Maketitle metadata
 \title{\vspace{-5mm}%
@@ -96,12 +109,30 @@
 	\normalsize	HTWK Leipzig 
 	}
 \date{}
+\end{shownto}
+\begin{shownto}{developer}
+\title{\vspace{-5mm}%
+	\fontsize{24pt}{10pt}\selectfont
+	\textbf{Entwicklerdokumentation}
+	}	
+\author{%
+        % alle Autoren hier listen
+        % 
+	\large
+	\textsc{PUML} \\[2mm]
+	}
+\date{}
+\end{shownto}
 
 
 % Erweiterte Tabellen
 \usepackage{tabularx}
 \usepackage{multirow}
 \usepackage{float}
+
+%Tabellen mit Items
+\usepackage{booktabs}% http://ctan.org/pkg/booktabs
+\newcommand{\tabitem}{~~\llap{\textbullet}~~}
 
 \input{Makros/nestedSections}
 
@@ -110,6 +141,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
+
 
 
 % -------
@@ -125,6 +157,8 @@
 %%%%
 %%%% Die Struktur des Dokuments bitte nicht aendern!!!
 %%%%
+
+\begin{shownto}{-, developer}
 
 \nsecbegin{Anforderungsspezifikation}
 
@@ -150,6 +184,7 @@ Quisque vel arcu eget sapien euismod tristique rhoncus eu mauris. Cum sociis nat
 
 \nsecbegin{Liste der funktionalen Anforderungen}
 XXX
+\input{userstories}
 \nsecend
 
 %
@@ -200,11 +235,34 @@ XXX
 \nsecend
 
 \nsecbegin{Liste der Architekturentscheidungen}
-XXX (bewusste und unbewusste Entscheidungen mit zeitlicher Einordnung)
+%XXX (bewusste und unbewusste Entscheidungen mit zeitlicher Einordnung)
+
+%\iffalse
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\toprule
+Zeit & Entscheidung \\
+\midrule
+Bei Projektvergabe & Als Programmiersprache wird Java verwendet.\\
+& Begründung der Entscheidung:\\
+&      \tabitem Platformunabhängigkeit\\
+&      \tabitem Alle aus dem Team beherschen Java\\
+&      \tabitem Sauber und Einsteigerfreundlich\\
+&      \tabitem Weiterentwicklung zu Eclipse-Plugin möglich\\
+&      \tabitem Ausgereifte GUI-Frameworks verfügbar\\
+\midrule
+Technologieworkshop & \\
+\bottomrule
+\end{tabular}
+\end{table}
+%\fi
 \nsecend
 
 
 \nsecend %Architektur und Entwurf
+
+\end{shownto} %{-, developer}
 
 \nsecbegin{Prozess- und Implementationsvorgaben}
 
@@ -246,15 +304,20 @@ Sonstige Konventionen:
 \nsecend
 
 
-
 \nsecend %Prozess- und Implementationsvorgaben
+
+\begin{shownto}{developer}
+\input{howToDo}
+\end{shownto}
+
+\begin{shownto}{-, developer}
 
 %%%%%%%%%%%%
 %% Abschnitt mit den Sprints beginnt hier
 %%%%%%%%%%%%
 
 \nsecbegin{Sprint 1}
-\input{sprint1}
+\input{sprints/sprint1}
 \nsecend
 
 \nsecbegin{Sprint 2}
@@ -305,5 +368,7 @@ XXX
 
 
 \nsecend %Projektabschluss
+
+\end{shownto} %{-, developer}
 
 \end{document}
