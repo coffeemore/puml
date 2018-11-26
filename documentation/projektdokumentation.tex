@@ -109,6 +109,7 @@
 	\textsc{Softwarearchitekt: Philipp Rimmele -- philipp.rimmele@stud.htwk-leipzig.de} \\[2mm]
 	\textsc{Product Owner: Anna Heinrich -- anna.heinrich@stud.htwk-leipzig.de} \\[2mm]
 	\textsc{Marian Geißler -- marian.geissler@stud.htwk-leipzig.de} \\[2mm]
+	\textsc{Patrick Otte -- patrick.otte@stud.htwk-leipzig.de} \\[2mm]
 	\normalsize	HTWK Leipzig 
 	}
 \date{}
@@ -260,6 +261,7 @@ XXX
 
 \nsecbegin{Zuarbeiten der Teammitglieder}
 \input{TechRecherche/Kommandozeile}
+\input{TechRecherche/GUI}
 \nsecend
 
 \nsecbegin{Entscheidungen des Technologieworkshops}
@@ -277,7 +279,6 @@ XXX
 \nsecbegin{Liste der Architekturentscheidungen}
 %XXX (bewusste und unbewusste Entscheidungen mit zeitlicher Einordnung)
 
-%\iffalse
 \begin{table}[h]
 \centering
 \begin{tabular}{|l|l|}
@@ -296,14 +297,12 @@ Technologieworkshop & \\
 \bottomrule
 \end{tabular}
 \end{table}
-%\fi
 \nsecend
 
 
 \nsecend %Architektur und Entwurf
 
 \end{shownto} %{-, developer, manualDE}
-
 \begin{shownto}{-, manualDE}
 
 \nsecbegin{Prozess- und Implementationsvorgaben}
@@ -322,7 +321,7 @@ Wird dies vor jedem Commit gemacht, ensteht ein einheitlicher Code-Style und die
 \includegraphics[scale=0.5]{Bilder/importCodeStyle}
 \caption{Code-Style in Eclipse importieren}
 \end{figure}
-Des weiteren empfielt es sich bei größeren oder stark geschachtelten Code-Abschnitten die Zugehörigkeit der Schließenden Klammer mit einem Kommentar zu Kennzeichnen.\\
+Des weiteren empfiehlt es sich bei größeren oder stark geschachtelten Code-Abschnitten die Zugehörigkeit der Schließenden Klammer mit einem Kommentar zu Kennzeichnen.\\
 Sonstige Konventionen:
 \begin{itemize}
 \item{Variablen und Instanzen beginnen kleingeschrieben}
