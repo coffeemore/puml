@@ -24,8 +24,6 @@
 % Paper auf Deutsch
 \usepackage[ngerman]{babel}
 
-
-
 % ------
 % Page layout
 \usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry}
@@ -84,7 +82,7 @@
 % Clickable URLs (optional)
 % \usepackage{hyperref}
 
-% ------c
+% ------
 % Literaturverweise mit Bibtex einbinden
 \usepackage[authoryear,sectionbib,round]{natbib}
 
@@ -134,6 +132,21 @@
 \usepackage{booktabs}% http://ctan.org/pkg/booktabs
 \newcommand{\tabitem}{~~\llap{\textbullet}~~}
 
+% Code Beispiel Java
+\usepackage{listings}
+\lstset{
+	language=Java,
+	aboveskip=2mm,
+	belowskip=2mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\small\ttfamily},
+	numbers=none,
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=3
+}
+
 \input{Makros/nestedSections}
 
 
@@ -141,7 +154,6 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
-
 
 
 % -------
@@ -167,9 +179,19 @@ Maecenas sed ultricies felis. Sed imperdiet dictum arcu a egestas.
 In sapien ante, ultricies quis pellentesque ut, fringilla id sem. Proin justo libero, dapibus consequat auctor at, euismod et erat. Sed ut ipsum erat, iaculis vehicula lorem. Cras non dolor id libero blandit ornare. Pellentesque luctus fermentum eros ut posuere. Suspendisse rutrum suscipit massa sit amet molestie. Donec suscipit lacinia diam, eu posuere libero rutrum sed. Nam blandit lorem sit amet dolor vestibulum in lacinia purus varius. Ut tortor massa, rhoncus ut auctor eget, vestibulum ut justo.
 \nsecend
 
+% Hier eure Recherchen für den Produktvisions-Workshop ergänzen! Kopiert den Inhalt eures Dokuments einfach in die bereits dafür angelegte Datei. Ihr könnt auch gern selbst eine erstellen, denkt nur daran, die Aufgabenstellung aus Jira zu kopieren, damit am Ende alles schön einheitlich ist.
 
 \nsecbegin{Produktvision}
-Quisque vel arcu eget sapien euismod tristique rhoncus eu mauris. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras ligula lacus, dictum id scelerisque nec, venenatis vitae magna. Cras tristique porta elit, non tincidunt ligula placerat lobortis. Pellentesque quam enim, mattis in cursus eu, blandit et massa. Mauris aliquet turpis blandit elit vehicula sed posuere lectus facilisis. Donec blandit adipiscing tortor, quis lobortis purus eleifend vel. Nam a tellus at magna scelerisque blandit vel nec erat.
+\input{ProduktvisionRecherche/Kernfunktionalitaet}
+\input{ProduktvisionRecherche/Anwenderprofil}
+\input{ProduktvisionRecherche/PlantUML-Vorstellung}
+\input{ProduktvisionRecherche/Konkurrenzprodukte}
+\input{ProduktvisionRecherche/MoeglicheWeiterentwicklung}
+\input{ProduktvisionRecherche/GUI-Anforderungen}
+\input{ProduktvisionRecherche/Datenmodell}
+\input{ProduktvisionRecherche/ErsteUser-Story}
+\input{ProduktvisionRecherche/Workshop-Bedarfsermittlung}
+\input{ProduktvisionRecherche/Workshop-Recherche}
 \nsecend
 
 % Das hier ist ein Absatz, der die Grafik in Abbildung~\ref{fig:bild1} detailliert erläutert, erklärt und interpretiert.
@@ -219,7 +241,7 @@ XXX
 \nsecbegin{Architektur und Entwurf}
 
 \nsecbegin{Zuarbeiten der Teammitglieder}
-XXX
+\input{TechRecherche/Kommandozeile}
 \nsecend
 
 \nsecbegin{Entscheidungen des Technologieworkshops}
@@ -302,6 +324,7 @@ Sonstige Konventionen:
 \item{GIMP - Bildbearbeitung für das Editieren von Screenshots}
 \end{itemize}
 \nsecend
+
 
 
 \nsecend %Prozess- und Implementationsvorgaben
