@@ -1,4 +1,4 @@
-
+import org.apache.commons.cli.ParseException;
 
 public class PUMLgenerator
 {
@@ -11,23 +11,21 @@ public class PUMLgenerator
   
     /**
      * Launch the application.
+     * @throws ParseException 
      */
-    public static void main(String[] args)
+    public static void main(String[] args) throws ParseException
     {
 	//Nur temporäre Lösung. Sollte durch schöneres Konstrukt ersetzt werden
 	boolean useGUI = true;
-	for (int i = 0; i < args.length; i++)
-	{
-	    if (args[i].equals("-c"))
-	    {
+	if (args.length > 0)
+	   {
 		useGUI = false;
-	    }
-	}
+	   }
 
 	if (!useGUI)
 	{
 	    myConsole = new Console();
-	    myConsole.showConsole();
+	    myConsole.showConsole(args);
 	}
 	else
 	{
@@ -35,6 +33,7 @@ public class PUMLgenerator
 	    myGUI.showGUI();
 	}//endelse
     }
+
 
 
 
