@@ -59,7 +59,7 @@
 %Unterschiedliche Zielgruppen des Dokuments
 \usepackage{multiaudience}
 \SetNewAudience{developer}
-\SetNewAudience{manual}
+\SetNewAudience{manualDE}
 
 
 % ------
@@ -68,7 +68,7 @@
 	\pagestyle{fancy}
 	\fancyhead{}
 	\fancyfoot{}
-\begin{shownto}{-, developer}
+\begin{shownto}{-, developer, manualDE}
 	\fancyhead[C]{Projektdokumentation $\bullet$ PUML $\bullet$ WS18/19$+$SS19}
 	\fancyfoot[RO,LE]{}
 \end{shownto}
@@ -76,11 +76,16 @@
 	\fancyhead[C]{Entwicklerdokumentation $\bullet$ PUML}
 	\fancyfoot[RO,LE]{}
 \end{shownto}
+\begin{shownto}{manualDE}
+	\fancyhead[C]{Benutzerhandbuch $\bullet$ PUML}
+	\fancyfoot[RO,LE]{}
+\end{shownto}
 
 
 % ------
 % Clickable URLs (optional)
-% \usepackage{hyperref}
+%\usepackage{hyperref}
+\usepackage[colorlinks=true,linkcolor=black]{hyperref} %Verlinkung des Inhaltsverzeichnisses ohne roten Rahmen um den Text
 
 % ------
 % Literaturverweise mit Bibtex einbinden
@@ -90,7 +95,7 @@
 % Bilder laden
 \usepackage[pdftex]{graphicx}
 
-\begin{shownto}{-, developer}
+\begin{shownto}{-, developer, manualDE}
 % ------
 % Maketitle metadata
 \title{\vspace{-5mm}%
@@ -112,6 +117,19 @@
 \title{\vspace{-5mm}%
 	\fontsize{24pt}{10pt}\selectfont
 	\textbf{Entwicklerdokumentation}
+	}	
+\author{%
+        % alle Autoren hier listen
+        % 
+	\large
+	\textsc{PUML} \\[2mm]
+	}
+\date{}
+\end{shownto}
+\begin{shownto}{manualDE}
+\title{\vspace{-5mm}%
+	\fontsize{24pt}{10pt}\selectfont
+	\textbf{Benutzerhandbuch}
 	}	
 \author{%
         % alle Autoren hier listen
@@ -170,7 +188,7 @@
 %%%% Die Struktur des Dokuments bitte nicht aendern!!!
 %%%%
 
-\begin{shownto}{-, developer}
+\begin{shownto}{-, developer, manualDE}
 
 \nsecbegin{Anforderungsspezifikation}
 
@@ -284,7 +302,9 @@ Technologieworkshop & \\
 
 \nsecend %Architektur und Entwurf
 
-\end{shownto} %{-, developer}
+\end{shownto} %{-, developer, manualDE}
+
+\begin{shownto}{-, manualDE}
 
 \nsecbegin{Prozess- und Implementationsvorgaben}
 
@@ -329,11 +349,13 @@ Sonstige Konventionen:
 
 \nsecend %Prozess- und Implementationsvorgaben
 
+\end{shownto} %{-, manualDE}
 \begin{shownto}{developer}
-\input{howToDo}
+\input{EntwicklerInformationen/howToDo}
+\input{EntwicklerInformationen/bestPractice}
 \end{shownto}
 
-\begin{shownto}{-, developer}
+\begin{shownto}{-, developer, manualDE}
 
 %%%%%%%%%%%%
 %% Abschnitt mit den Sprints beginnt hier
@@ -353,7 +375,11 @@ Sonstige Konventionen:
 \nsecbegin{Dokumentation}
 
 \nsecbegin{Handbuch}
-XXX
+\end{shownto} %{-, developer, manualDE}
+\begin{shownto}{-, developer}
+Hier soll das Deutsche Benutzerhandbuch entstehen.
+\end{shownto} %{-, developer}
+\begin{shownto}{-, developer, manualDE}
 \nsecend
 
 \nsecbegin{Installationsanleitung}
@@ -392,6 +418,6 @@ XXX
 
 \nsecend %Projektabschluss
 
-\end{shownto} %{-, developer}
+\end{shownto} %{-, developer, manualDE}
 
 \end{document}
