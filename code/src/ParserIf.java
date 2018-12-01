@@ -11,5 +11,7 @@ public interface ParserIf
     public void parse(String sourceCode);
     
     public ParsingResult getParsingResult();
+    
+    
 
 }
