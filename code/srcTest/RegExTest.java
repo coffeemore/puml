@@ -43,6 +43,8 @@ class RegExTest
 		"	Matcher classMatcher = Pattern.compile(\"class*{\").matcher(sourceCode);\n" + 
 		"	while (classMatcher.find())\n" + 
 		"	{\n" + 
+		"public class test2 { \n" +
+		"public class bla2 {" +
 		"	    System.out.println(classMatcher.group());\n" + 
 		"	}\n" + 
 		"\n" + 
