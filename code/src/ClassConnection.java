@@ -1,8 +1,8 @@
 
 /**
  * 
- * @author Datenstruktur die eine Verbindung zwischen Klassen im UML-Diagram
- *         repräsentiert.
+ * @author
+ * Datenstruktur die eine Verbindung zwischen Klassen im UML-Diagram repräsentiert.
  */
 public class ClassConnection
 {
@@ -22,6 +22,8 @@ public class ClassConnection
     public ClassConnection()
     {
     };
+
+
 
     /**
      * Set the value of from
