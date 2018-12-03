@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 /**
  * 
  * @author 
@@ -44,7 +46,19 @@ public class CodeCollector
      */
     public String getSourceCode()
     {
+	
+	
+	if (useJavaFiles && !useJarFiles) {
+	    
+	}
+	if(useJarFiles && !useJavaFiles){
+	    
+	}
+	else {
+	    JOptionPane.showMessageDialog(null, "Bitte wählen Sie JAR- oder Java-Dateien aus.", "Error", JOptionPane.ERROR_MESSAGE); 
+	}
 	return new String("testcode");
+	
     }
     
     
