@@ -1,0 +1,95 @@
+\nsecbegin{Reguläre Ausdrücke}
+Reguläre Ausdrücke sind Beschreibungen eines Musters, sog. Patterns, die bei Zeichenkettenverarbeitung eingesetzt werden. Mittels dieser Muster lassen sich Zeichenketten suchen und ersetzen.\\
+\nsecbegin{Funktionen}
+\begin{itemize}
+\item[(1)] Komplette Übereinstimmung suchen \\
+\begin{tabular}{l c}
+\begin{lstlisting}
+Pattern.matches(regex, this);
+\end{lstlisting} & \begin{lstlisting}
+Pattern p = Pattern.compile(regex);
+Matcher m = p.matcher(input);
+return m.matches();
+\end{lstlisting} \\
+\end{tabular}
+\item[(2)] Teilstring finden
+\begin{itemize}
+\item[$\bullet$] alle Vorkommen des Teilstrings innerhalb eines Suchstrings suchen
+\end{itemize}
+\item[(3)] Teilfolgen ersetzen
+\item[(4)] Zerlegen einer Zeichenfolge
+\begin{itemize}
+\item[$\bullet$] Trennzeichen sind durch Muster definiert, resultiert in Sammlung von Zeichenfolgen
+\end{itemize}
+\end{itemize}
+\nsecend
+\nsecbegin{Verwendung}
+\begin{itemize}
+\item[]Um mit Regulären Ausdrücken arbeiten zu können, wird das Paket ‚java.util.regex‘ implementiert. Es enthält die Klassen Matcher (Zugriff auf Mustermaschine) und Pattern (Repräsentation RE in vorkompiliertem Format).
+Außerdem gibt es verschieden Klassifizierungen, um die Suche genauer zu definieren.
+\end{itemize}
+%Tabelle1
+\begin{table} [H]
+\centering
+\begin{tabular}{l|c}
+\multicolumn{1}{l}{\textbf{Quantifizierung}} & \textbf{Anzahl der Wiederholungen}\\
+\hline
+X? & X kommt einmal oder keinmal vor \\
+\hline
+X* & X kommt keinmal oder beliebig oft vor \\
+\hline
+X+ & X kommt einmal oder beliebig oft vor \\
+\hline
+X\{n\} & X muss genau n-mal vorkommen \\
+\hline
+X\{n,\} & X kommt mindestens n-mal vor \\
+\hline
+X\{n,m\} & X kommt mindestens n-, aber max. m-mal vor \\
+\hline
+\end{tabular}
+\end{table}
+%Tabelle2
+\begin{table} [H]
+\centering
+\begin{tabular}{l|c}
+\multicolumn{1}{l}{\textbf{zeichenklasse}} & \textbf{Enthält}\\
+\hline
+. & jedes Zeichen \\
+\hline
+[aei] & Zeichen a, e, i \\
+\hline
+[\^{}aei] & nicht die Zeichen a, e, i \\
+\hline
+[0-9a-f] & Zeichen 0-9 oder Kleinbuchstaben a-f \\
+\hline
+\textbackslash d & Ziffer: [0-9] \\
+\hline
+\textbackslash D & keine Ziffer: [\^{}0-9] bzw. [\^{}\textbackslash d] \\
+\hline
+\textbackslash p\{Blank\} & Leerzeichen oder Tab: [\textbackslash t] \\
+\hline
+\textbackslash p\{Lower\}, \textbackslash p \{Upper\} & Klein-/Großbuchstaben: [a-z] bzw. [A-Z] \\
+\hline
+\end{tabular}
+\end{table}
+weitere Klassifizierungen: \\
+\href{https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html}{https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html}
+\nsecend
+\nsecbegin{Beispiele}
+\begin{itemize}
+\item[(1)] Rückgabewert beider Abfragen ist true
+\begin{lstlisting}
+System.out.println(Pattern.matches("'.*'","'Hallo Welt'" ));
+System.out.println("'Hallo Welt'".matches("'.*'"));
+\end{lstlisting}
+\item[(2)] Abfrage nach Teilstring, Rückgabewert ist gefundener Teilstring
+\begin{lstlisting}
+String text = "Moderne Programmiersprachen haben durch die Vernetzung von Computern neue Anforderungen erfahren. So lautet auch ein Motto von Sun: 'The Network is the Computer.' ";
+Matcher matcher = Pattern.compile("'.*'").matcher(text);
+while(matcher.find()) {
+	System.out.println(matcher.group());
+}
+\end{lstlisting}
+\end{itemize}
+\nsecend
+\nsecend
