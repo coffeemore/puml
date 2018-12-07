@@ -44,7 +44,7 @@ class RegExTest
 		"	while (classMatcher.find())\n" + 
 		"	{\n" + 
 		"public class test2 { \n" +
-		"public class bla2 {" +
+		"public class bla2 extends test2{" +
 		"	    System.out.println(classMatcher.group());\n" + 
 		"	}\n" + 
 		"\n" + 
