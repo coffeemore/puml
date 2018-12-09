@@ -42,6 +42,24 @@
         <predecessor id="1" predecessor-id="4" type="FS"/>
       </predecessors>
     </task>
+    <task id="6" name="Vorarbeit Produktvisions-Workshop" note="" work="172800" start="20181102T000000Z" end="20181107T170000Z" work-start="20181102T080000Z" percent-complete="100" priority="0" type="normal" scheduling="fixed-work">
+      <constraint type="must-start-on" time="20181102T000000Z"/>
+    </task>
+    <task id="7" name="Produktvisions-Workshop" note="" work="28800" start="20181108T000000Z" end="20181108T170000Z" work-start="20181108T080000Z" percent-complete="100" priority="0" type="normal" scheduling="fixed-work">
+      <constraint type="must-start-on" time="20181108T000000Z"/>
+      <predecessors>
+        <predecessor id="1" predecessor-id="6" type="FS"/>
+      </predecessors>
+    </task>
+    <task id="8" name="Vorarbeit Technologierecherche-Workshop" note="" work="115200" start="20181115T000000Z" end="20181118T170000Z" work-start="20181115T080000Z" percent-complete="100" priority="0" type="normal" scheduling="fixed-work">
+      <constraint type="must-start-on" time="20181115T000000Z"/>
+    </task>
+    <task id="9" name="Technologierecherche-Workshop" note="" work="28800" start="20181119T000000Z" end="20181119T170000Z" work-start="20181119T080000Z" percent-complete="100" priority="0" type="normal" scheduling="fixed-work">
+      <constraint type="must-start-on" time="20181119T000000Z"/>
+      <predecessors>
+        <predecessor id="1" predecessor-id="8" type="FS"/>
+      </predecessors>
+    </task>
   </tasks>
   <resource-groups/>
   <resources/>
