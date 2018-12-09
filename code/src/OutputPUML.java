@@ -1,8 +1,13 @@
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import net.sourceforge.plantuml.SourceStringReader;
 
-import ClassConnection.connectionType;
+
+//import ClassConnection.connectionType;
+
 
 /**
  * 
@@ -24,7 +29,7 @@ public class OutputPUML
      * @param myParsingResult Ergebnisse des Parsens
      * @return String der den plantUML-Code enthält
      */
-    public String getPUML(ParsingResult myParsingResult)	//TODO eventuell % überflüssig???????? OKO hilfe!!!!!
+    public String getPUML(ParsingResult myParsingResult)	//TODO eventuell ueberfluessig? http://plantuml.com/api ->Hilfe
     {
     	String pumlCode = null;
     	int from;
@@ -47,11 +52,11 @@ public class OutputPUML
 			}
     		else if (myParsingResult.classConnections.get(i).getConnection()==ClassConnection.connectionType.aggregation) 
     		{
-    			pumlCode+="o--";	//TODO eventuell Richtung ändern
+    			pumlCode+="o--";	//TODO eventuell Richtung aendern
 			}
     		else 
     		{
-    			pumlCode+="*--";	//TODO eventuell Richtung ändern
+    			pumlCode+="*--";	//TODO eventuell Richtung aendern
 			}
     		pumlCode+=myParsingResult.classes.get(to);
     		pumlCode+="%";
@@ -68,7 +73,6 @@ public class OutputPUML
      */
     public void savePUMLtoFile(ParsingResult myParsingResult, String filePath)
     {
-    	String pumlCode = null;
     	int from;
     	int to;
     	try 
@@ -93,11 +97,11 @@ public class OutputPUML
 				}
 	    		else if (myParsingResult.classConnections.get(i).getConnection()==ClassConnection.connectionType.aggregation) 
 	    		{
-	    			bw.write("o--");	//TODO eventuell Richtung ändern
+	    			bw.write("o--");	//TODO eventuell Richtung aendern
 				}
 	    		else 
 	    		{
-	    			bw.write("*--");	//TODO eventuell Richtung ändern
+	    			bw.write("*--");	//TODO eventuell Richtung aendern
 				}
 	    		bw.write(myParsingResult.classes.get(to));
 	    		bw.newLine();
@@ -108,7 +112,7 @@ public class OutputPUML
 		} 
     	catch (Exception e) 
     	{
-			e.printStackTrace(); 	//is geil aber nur für DBUGGGGGGGN
+			e.printStackTrace(); 	//is geil aber nur fuer DEBUGEN
 		}
     }
     
@@ -116,8 +120,16 @@ public class OutputPUML
      * Erzeugt ein PlantUML-Diagramm aus der plantUML-Code-Datei am übergebenen Pfad
      * @param filePath Pfad an der die plantUML-Code-Datei liegt
      */
-    public void createPlantUML(String filePath)
+    public void createPlantUML(String filePath, String pumlCode)
     {	
+    	OutputStream png=filePath;
+    	SourceStringReader reader = new SourceStringReader(pumlCode);
+    	try {
+			String desc = reader.outputImage(png).getDescription();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
 }
