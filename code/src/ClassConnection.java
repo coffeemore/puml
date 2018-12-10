@@ -15,12 +15,18 @@ public class ClassConnection
     private int from;
     private int to;
     private connectionType connection;
+    
 
     /**
      * Konstruktor
+     * Schema: from erbt von to, from implementiert to, from benutzt towie war das mit interfacewi
      */
-    public ClassConnection()
+
+    public ClassConnection(int from, int to, connectionType connection)
     {
+	this.from = from;
+	this.to = to;
+	this.connection = connection;
     };
 
     /**
