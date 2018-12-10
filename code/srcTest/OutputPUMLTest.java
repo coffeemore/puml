@@ -58,6 +58,7 @@ class OutputPUMLTest {
 	}
 
 	@Test
+	// expectedFile.txt befindet sich fuer den Test im srcTest Ordner um in Git aufgenommen zu werden.
 	void testSavePUMLtoFile() throws IOException {
 		File expected = new File("/home/tore/Test/expectedFile.txt");
 		

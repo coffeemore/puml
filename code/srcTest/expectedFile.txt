@@ -1,0 +1,10 @@
+@startuml
+class BeispielKlasse1
+class BeispielKlasse2
+class BeispielKlasse3
+class BeispielKlasse4
+class BeispielKlasse5
+BeispielKlasse2 o-- BeispielKlasse5
+BeispielKlasse2 -- BeispielKlasse3
+BeispielKlasse3 *-- BeispielKlasse4
+@enduml
