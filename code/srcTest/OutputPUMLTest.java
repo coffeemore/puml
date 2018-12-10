@@ -1,20 +1,20 @@
 import static org.junit.jupiter.api.Assertions.*;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
-
 import net.sourceforge.plantuml.FileUtils;
 
-class OutputPUMLTest {
+class OutputPUMLTest { 
+
 	
 	
 
 	@Test
 	void testGetPUML() {
-		
 		//ClassConnection Elemente erstellen
 		ClassConnection elA = new ClassConnection();
 		elA.setConnection(ClassConnection.connectionType.aggregation);
@@ -54,8 +54,6 @@ class OutputPUMLTest {
 		String actual = new OutputPUML().getPUML(actualParsTest);
 		
 		String expected = "@startuml%class BeispielKlasse1%class BeispielKlasse2%class BeispielKlasse3%class BeispielKlasse4%class BeispielKlasse5%BeispielKlasse2 o-- BeispielKlasse5%BeispielKlasse2 -- BeispielKlasse3%BeispielKlasse3 *-- BeispielKlasse4%@enduml";
-		
-		
 		assertEquals(expected, actual, "Heyyy, hat Jefunzt");
 	}
 
@@ -98,6 +96,8 @@ class OutputPUMLTest {
 		actualParsTest.classConnections = classConnections;
 		actualParsTest.classes = classes;
 		
+		//savePumltoFile testen //TODO �ndern der Filepaths bevor Test (je nach System)
+		//TODO expectedFile platzieren
 		OutputPUML output = new OutputPUML();
 		output.savePUMLtoFile(actualParsTest, "/home/tore/Test/actualFile.txt");
 		
