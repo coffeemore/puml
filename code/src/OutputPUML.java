@@ -99,7 +99,7 @@ public class OutputPUML
 	    		{
 	    			bw.write("o--");	//TODO eventuell Richtung aendern
 				}
-	    		else 
+	    		else //composition
 	    		{
 	    			bw.write("*--");	//TODO eventuell Richtung aendern
 				}
