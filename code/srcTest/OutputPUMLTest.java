@@ -11,7 +11,6 @@ class OutputPUMLTest {
 
 	@Test
 	void testGetPUML() {
-		
 		//ClassConnection Elemente erstellen
 		ClassConnection elA = new ClassConnection();
 		elA.setConnection(ClassConnection.connectionType.aggregation);

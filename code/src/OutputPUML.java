@@ -99,7 +99,7 @@ public class OutputPUML
 	    		{
 	    			bw.write(" o-- ");	//TODO eventuell Richtung aendern
 				}
-	    		else 
+	    		else //composition
 	    		{
 	    			bw.write(" *-- ");	//TODO eventuell Richtung aendern
 				}
@@ -119,6 +119,7 @@ public class OutputPUML
     /**
      * Erzeugt ein PlantUML-Diagramm aus der plantUML-Code-Datei am übergebenen Pfad
      * @param filePath Pfad an der die plantUML-Code-Datei liegt
+     * @throws IOException 
      */
     public void createPlantUML(String filePath, String pumlCode) throws IOException
     {	
