@@ -7,6 +7,11 @@
 public class ClassConnection
 {
 
+  /*
+   * extension == implements und extends
+   * composition == class1{ .* new Class2() .*}
+   * aggregation == class1{ .* Array<Class2> .*}
+   */
     enum connectionType
     {
 	extension, composition, aggregation
@@ -22,12 +27,7 @@ public class ClassConnection
      * Schema: from erbt von to, from implementiert to, from benutzt towie war das mit interfacewi
      */
 
-    public ClassConnection(int from, int to, connectionType connection)
-    {
-	this.from = from;
-	this.to = to;
-	this.connection = connection;
-    };
+
     public ClassConnection(int from, int to, connectionType connection)
     {
     	this.from=from;
