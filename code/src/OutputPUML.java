@@ -31,7 +31,7 @@ public class OutputPUML
      */
     public String getPUML(ParsingResult myParsingResult)	//TODO eventuell ueberfluessig? http://plantuml.com/api ->Hilfe
     {
-    	String pumlCode = null;
+    	String pumlCode="";
     	int from;
     	int to;
     	pumlCode+="@startuml%";
@@ -48,15 +48,15 @@ public class OutputPUML
     		pumlCode+=myParsingResult.classes.get(from);
     		if (myParsingResult.classConnections.get(i).getConnection()==ClassConnection.connectionType.extension) 
     		{
-				pumlCode+="--";		//TODO eventuell Pfeile
+				pumlCode+=" -- ";		//TODO eventuell Pfeile
 			}
     		else if (myParsingResult.classConnections.get(i).getConnection()==ClassConnection.connectionType.aggregation) 
     		{
-    			pumlCode+="o--";	//TODO eventuell Richtung aendern
+    			pumlCode+=" o-- ";	//TODO eventuell Richtung aendern
 			}
     		else 
     		{
-    			pumlCode+="*--";	//TODO eventuell Richtung aendern
+    			pumlCode+=" *-- ";	//TODO eventuell Richtung aendern
 			}
     		pumlCode+=myParsingResult.classes.get(to);
     		pumlCode+="%";
@@ -93,15 +93,15 @@ public class OutputPUML
 	    		bw.write(myParsingResult.classes.get(from));
 	    		if (myParsingResult.classConnections.get(i).getConnection()==ClassConnection.connectionType.extension) 
 	    		{
-	    			bw.write("--");		//TODO eventuell Pfeile
+	    			bw.write(" -- ");		//TODO eventuell Pfeile
 				}
 	    		else if (myParsingResult.classConnections.get(i).getConnection()==ClassConnection.connectionType.aggregation) 
 	    		{
-	    			bw.write("o--");	//TODO eventuell Richtung aendern
+	    			bw.write(" o-- ");	//TODO eventuell Richtung aendern
 				}
 	    		else 
 	    		{
-	    			bw.write("*--");	//TODO eventuell Richtung aendern
+	    			bw.write(" *-- ");	//TODO eventuell Richtung aendern
 				}
 	    		bw.write(myParsingResult.classes.get(to));
 	    		bw.newLine();
