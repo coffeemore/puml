@@ -28,6 +28,12 @@ public class ClassConnection
 	this.to = to;
 	this.connection = connection;
     };
+    public ClassConnection(int from, int to, connectionType connection)
+    {
+    	this.from=from;
+    	this.to=to;
+    	this.connection=connection;
+    };
 
     /**
      * Set the value of from
