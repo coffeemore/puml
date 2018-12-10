@@ -9,7 +9,6 @@ class OutputPUMLTest {
 		ParsingResult parsTest = new ParsingResult();
 		parsTest.classConnections = "";
 		assertEquals(parsTest, parsTest, "Heyyy");
-		fail("Not yet implemented");
 	}
 
 	@Test

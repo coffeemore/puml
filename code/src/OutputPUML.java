@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import net.sourceforge.plantuml.SourceStringReader;
 
-
 //import ClassConnection.connectionType;
 
 
@@ -131,5 +130,4 @@ public class OutputPUML
     	SourceStringReader reader = new SourceStringReader(pumlCode);
     	String desc = reader.outputImage(png).getDescription(); //TODO String desc kann auch entfernt werden?
     }
-
 }
