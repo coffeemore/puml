@@ -1,7 +1,11 @@
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import javax.swing.JOptionPane;
 
@@ -98,42 +102,44 @@ public class CodeCollector
 	    } else
 	    {
 		if (useJarFiles && !useJavaFiles)
+
 		{
+
 		    try
 		    {
-
-//    		buffr = new BufferedReader(new FileReader(FILENAME));
-			filer = new FileReader(paths.get(0));
-			buffr = new BufferedReader(filer);
-
-			String currLine;
-
-			while ((currLine = buffr.readLine()) != null)
+			ZipFile zipFile = new ZipFile(paths.get(0));
+			Enumeration<? extends ZipEntry> e = zipFile.entries();
+			String fileContentsStr = "";
+			while (e.hasMoreElements())
 			{
-			    // ranhängen
-			    sc += currLine;
-			}
+			    ZipEntry entry = (ZipEntry) e.nextElement();
+			    // if the entry is not directory and matches relative file then extract it
+			    if (!entry.isDirectory() && entry.getName().endsWith(".java"))
+			    {
+				BufferedInputStream bis = new BufferedInputStream(zipFile.getInputStream(entry));
 
+				byte[] contents = new byte[1024];
+
+				int bytesRead = 0;
+				while ((bytesRead = bis.read(contents)) != -1)
+				{
+				    fileContentsStr += new String(contents, 0, bytesRead);
+				}
+
+				bis.close();
+
+			    } else
+			    {
+				continue;
+			    }
+			}
+			return fileContentsStr;
 		    } catch (IOException e)
 		    {
+
 			e.printStackTrace();
-		    } finally
-		    {
-			try
-			{
-			    if (buffr != null)
-			    {
-				buffr.close();
-			    }
-			    if (filer != null)
-			    {
-				filer.close();
-			    }
-			} catch (IOException ex)
-			{
-			    ex.printStackTrace();
-			}
 		    }
+
 		}
 
 		else

@@ -38,6 +38,28 @@ class CodeCollectorTest
 		    assertEquals(erwErg, aktErg);
 		    classUnderTest.paths.clear();
 		},
+		// 1 Pfad, !useJava, useJar (1 Datei in Jar)
+		() ->
+		{
+		    classUnderTest.setUseJavaFiles(false);
+		    classUnderTest.setUseJarFiles(true);
+		    classUnderTest.paths.add("//home//developer//workspace//puml//code//testfolder//jartest.jar");
+		    String aktErg = classUnderTest.getSourceCode();
+		    String erwErg = "erste Zeile \nzweite Zeile\ndritte Zeile ";
+		    assertEquals(erwErg, aktErg);
+		    classUnderTest.paths.clear();
+		},
+		// 1 Pfad, !useJava, useJar (2 Dateien in Jar)
+		() ->
+		{
+		    classUnderTest.setUseJavaFiles(false);
+		    classUnderTest.setUseJarFiles(true);
+		    classUnderTest.paths.add("//home//developer//workspace//puml//code//testfolder//jartest2.jar");
+		    String aktErg = classUnderTest.getSourceCode();
+		    String erwErg = "erste Zeile \nzweite Zeile\ndritte Zeile //Beginn der zweiten Datei\nerste Zeile \nzweite Zeile\ndritte Zeile ";
+		    assertEquals(erwErg, aktErg);
+		    classUnderTest.paths.clear();
+		},
 		// 1 Pfad, useJava, useJar
 		() ->
 		{
@@ -183,7 +205,7 @@ class CodeCollectorTest
 		}
 
 //	() -> {}, <-- in die geschweiften Klammern schreibst du deinen Testfall:
-		//Wert festlegen
+	// Wert festlegen
 //		classUnderTest.setUseJavaFiles(); 
 //	    	classUnderTest.setUseJarFiles(); 
 //	    	//mit Pfaden füllen
