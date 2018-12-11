@@ -1,8 +1,13 @@
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import net.sourceforge.plantuml.SourceStringReader;
 
-import ClassConnection.connectionType;
+//import ClassConnection.connectionType;
+
 
 /**
  * 
@@ -24,9 +29,9 @@ public class OutputPUML
      * @param myParsingResult Ergebnisse des Parsens
      * @return String der den plantUML-Code enthält
      */
-    public String getPUML(ParsingResult myParsingResult)	//TODO eventuell % überflüssig???????? OKO hilfe!!!!!
+    public String getPUML(ParsingResult myParsingResult)	//TODO eventuell ueberfluessig? http://plantuml.com/api ->Hilfe
     {
-    	String pumlCode = null;
+    	String pumlCode = "";
     	int from;
     	int to;
     	pumlCode+="@startuml%";
@@ -43,15 +48,15 @@ public class OutputPUML
     		pumlCode+=myParsingResult.classes.get(from);
     		if (myParsingResult.classConnections.get(i).getConnection()==ClassConnection.connectionType.extension) 
     		{
-				pumlCode+="--";		//TODO eventuell Pfeile
+				pumlCode+=" -- ";		//TODO eventuell Pfeile
 			}
     		else if (myParsingResult.classConnections.get(i).getConnection()==ClassConnection.connectionType.aggregation) 
     		{
-    			pumlCode+="o--";	//TODO eventuell Richtung ändern
+    			pumlCode+=" o-- ";	//TODO eventuell Richtung aendern
 			}
     		else 
     		{
-    			pumlCode+="*--";	//TODO eventuell Richtung ändern
+    			pumlCode+=" *-- ";	//TODO eventuell Richtung aendern
 			}
     		pumlCode+=myParsingResult.classes.get(to);
     		pumlCode+="%";
@@ -68,7 +73,6 @@ public class OutputPUML
      */
     public void savePUMLtoFile(ParsingResult myParsingResult, String filePath)
     {
-    	String pumlCode = null;
     	int from;
     	int to;
     	try 
@@ -89,15 +93,15 @@ public class OutputPUML
 	    		bw.write(myParsingResult.classes.get(from));
 	    		if (myParsingResult.classConnections.get(i).getConnection()==ClassConnection.connectionType.extension) 
 	    		{
-	    			bw.write("--");		//TODO eventuell Pfeile
+	    			bw.write(" -- ");		//TODO eventuell Pfeile
 				}
 	    		else if (myParsingResult.classConnections.get(i).getConnection()==ClassConnection.connectionType.aggregation) 
 	    		{
-	    			bw.write("o--");	//TODO eventuell Richtung ändern
+	    			bw.write(" o-- ");	//TODO eventuell Richtung aendern
 				}
-	    		else 
+	    		else //composition
 	    		{
-	    			bw.write("*--");	//TODO eventuell Richtung ändern
+	    			bw.write(" *-- ");	//TODO eventuell Richtung aendern
 				}
 	    		bw.write(myParsingResult.classes.get(to));
 	    		bw.newLine();
@@ -108,16 +112,22 @@ public class OutputPUML
 		} 
     	catch (Exception e) 
     	{
-			e.printStackTrace(); 	//is geil aber nur für DBUGGGGGGGN
+			e.printStackTrace(); 	//is geil aber nur fuer DEBUGEN
 		}
     }
     
     /**
      * Erzeugt ein PlantUML-Diagramm aus der plantUML-Code-Datei am übergebenen Pfad
      * @param filePath Pfad an der die plantUML-Code-Datei liegt
+     * @throws IOException 
      */
-    public void createPlantUML(String filePath)
+    public void createPlantUML(String filePath, String pumlCode) throws IOException
     {	
+    	File fileLocation = new File(filePath/* + File.separator + "puml.png"*/);
+    	fileLocation.createNewFile(); // if file already exists will do nothing 
+    	FileOutputStream OS = new FileOutputStream(fileLocation); 
+    	OutputStream png=OS;
+    	SourceStringReader reader = new SourceStringReader(pumlCode);
+    	String desc = reader.outputImage(png).getDescription(); //TODO String desc kann auch entfernt werden?
     }
-
 }
