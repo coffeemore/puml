@@ -109,8 +109,55 @@ class OutputPUMLTest {
 	}
 
 	@Test
-	void testCreatePlantUML() {
-		fail("Not yet implemented");
+	void testCreatePlantUML() throws IOException 
+	{
+		
+		File expected = new File("/home/tore/Test/expectedFile.png");
+		
+		//ClassConnection Elemente erstellen
+				ClassConnection elA = new ClassConnection(1,4,ClassConnection.connectionType.aggregation);
+//				elA.setConnection(ClassConnection.connectionType.aggregation);
+//				elA.setFrom(1);
+//				elA.setTo(4);
+				
+				ClassConnection elB = new ClassConnection(1,2,ClassConnection.connectionType.extension);
+//				elB.setConnection(ClassConnection.connectionType.extension);
+//				elB.setFrom(1);
+//				elB.setTo(2);
+				
+				ClassConnection elC = new ClassConnection(2,3,ClassConnection.connectionType.composition);
+//				elC.setConnection(ClassConnection.connectionType.composition);
+//				elC.setFrom(2);
+//				elC.setTo(3);
+				
+				//classes fuellen
+				ArrayList<String> classes = new ArrayList<String>();
+				classes.add("BeispielKlasse1");
+				classes.add("BeispielKlasse2");
+				classes.add("BeispielKlasse3");
+				classes.add("BeispielKlasse4");
+				classes.add("BeispielKlasse5");
+				
+				//classConnections fuellen
+				ArrayList<ClassConnection> classConnections = new ArrayList<ClassConnection>();
+				classConnections.add(elA);
+				classConnections.add(elB);
+				classConnections.add(elC);
+				
+				//ParsingResult erstellen
+				ParsingResult actualParsTest = new ParsingResult(classes,classConnections);
+//				actualParsTest.classConnections = classConnections;
+//				actualParsTest.classes = classes;
+				
+				//GetPuml testen
+				String actualString = new OutputPUML().getPUML(actualParsTest);
+		
+		OutputPUML output = new OutputPUML();
+		output.createPlantUML("/home/tore/Test/actualFile.png", actualString);
+		
+		File actual = new File("/home/tore/Test/expectedFile.png");
+		
+		assertEquals(FileUtils.readFile(actual) , FileUtils.readFile(expected));
 	}
 
 }
