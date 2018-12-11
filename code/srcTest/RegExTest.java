@@ -15,6 +15,7 @@ class RegExTest
 	parsertest.parse("import java.util.regex.*;\n" + 
 		"\n" + 
 		"/**\n" + 
+		"public interface ParserIf{" +
 		" * \n" + 
 		" * @author Klasse die den Parser für Java implementiert\n" + 
 		" */\n" + 
@@ -22,7 +23,7 @@ class RegExTest
 		"\n" + 
 		"    private ParsingResult result = null;\n" + 
 		"\n" + 
-		"    /**\n" + 
+		"    /*public interface test3000 extends ParserIf{*\n" + 
 		"     * Konstruktor\n" + 
 		"     */\n" + 
 		"    public ParserJava()\n" + 
@@ -43,6 +44,8 @@ class RegExTest
 		"	Matcher classMatcher = Pattern.compile(\"class*{\").matcher(sourceCode);\n" + 
 		"	while (classMatcher.find())\n" + 
 		"	{\n" + 
+		"public class test2 implements test3000, ParserIf { \n" +
+		"public class bla2 extends test2{" +
 		"	    System.out.println(classMatcher.group());\n" + 
 		"	}\n" + 
 		"\n" + 
