@@ -10,7 +10,7 @@ import org.apache.commons.cli.ParseException;
  * @author
  * Klasse für die Konsolenanwendung
  */
-public class Console
+public class Console extends PUMLgenerator
 {
    
     /**
@@ -25,15 +25,18 @@ public class Console
     /**
      * Startet die Abarbeitung der Konsolenanwendung und ggf. Dialoge
      */
-    void showConsole(String[] args) throws ParseException
+    void showConsole(String[] args) throws ParseException //Konsolenanwendung implementiert
     {
-	// hier die Konsolenanwendung implementieren
     	
     	//hier wird ein neuer Container für Optionen angelegt
     	Options options = new Options();
     	options.addOption("c",false,"Versuch ein -c abzufangen");
     	
     	options.addOption("i",true,"Durch Strichpunkt getrennte Liste der Pfade zu den Dateien und Ordnern eingeben");
+    	
+    	options.addOption("ijar",false,"Dateien mit der Endung .jar werden ignoriert.");
+    	
+    	options.addOption("ijava", false, "Datein mit der Endung .java werden ignoriert.");
     	
     	//Output Path an dieser Stelle
     	
@@ -44,7 +47,17 @@ public class Console
     	//hat Option Phase
     	if(cmd.hasOption("c"))	//hat "c"
     	{ 
-             System.out.println("Versuch Aufruf c hat geklappt");
+    		String pfad;
+            System.out.println("Pfad der zu pumelnden Datei eingeben:");
+            		 
+    	}
+    	else if(cmd.hasOption("ijar")) //ignore jar files
+    	{
+    		codeCollector.setUseJarFiles(false);
+    	}
+    	else if(cmd.hasOption("ijava")) //ignore java files
+    	{
+    		codeCollector.setUseJavaFiles(false);
     	}
     	else if(cmd.hasOption("i")) //hat "i"
     	{
