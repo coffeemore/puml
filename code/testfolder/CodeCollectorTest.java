@@ -24,10 +24,11 @@ class CodeCollectorTest
     @Test
     void testGetSourceCode()
     {
-
+	
 	assertAll(
 		// Test: use Java, !useJar, 1 Pfad in paths
-		() ->
+		
+		() -> 
 		{
 		    classUnderTest.setUseJavaFiles(true);
 		    classUnderTest.setUseJarFiles(false);
@@ -45,18 +46,18 @@ class CodeCollectorTest
 		    classUnderTest.setUseJarFiles(true);
 		    classUnderTest.paths.add("//home//developer//workspace//puml//code//testfolder//jartest.jar");
 		    String aktErg = classUnderTest.getSourceCode();
-		    String erwErg = "erste Zeile \nzweite Zeile\ndritte Zeile ";
+		    String erwErg = "erste Zeile zweite Zeiledritte Zeile ";
 		    assertEquals(erwErg, aktErg);
 		    classUnderTest.paths.clear();
 		},
-		// 1 Pfad, !useJava, useJar (2 Dateien in Jar)
+		// 1 Pfad, !useJava, useJar (2 Dateien in Jar)		
 		() ->
-		{
+		{	
 		    classUnderTest.setUseJavaFiles(false);
 		    classUnderTest.setUseJarFiles(true);
 		    classUnderTest.paths.add("//home//developer//workspace//puml//code//testfolder//jartest2.jar");
 		    String aktErg = classUnderTest.getSourceCode();
-		    String erwErg = "erste Zeile \nzweite Zeile\ndritte Zeile //Beginn der zweiten Datei\nerste Zeile \nzweite Zeile\ndritte Zeile ";
+		    String erwErg = "erste Zeile zweite Zeiledritte Zeile //Beginn der zweiten Dateierste Zeile zweite Zeiledritte Zeile ";
 		    assertEquals(erwErg, aktErg);
 		    classUnderTest.paths.clear();
 		},
