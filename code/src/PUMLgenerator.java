@@ -16,7 +16,7 @@ public class PUMLgenerator
      * Launch the application.
      * @throws ParseException 
      */
-    public static void main(String[] args) //throws ParseException
+    public static void main(String[] args) throws ParseException
     {
 	//Nur temporäre Lösung. Sollte durch schöneres Konstrukt ersetzt werden
 	boolean useGUI = true;
