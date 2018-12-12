@@ -1,10 +1,11 @@
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import net.sourceforge.plantuml.SourceStringReader;
+import java.util.List;
+
+import net.sourceforge.plantuml.GeneratedImage;
+import net.sourceforge.plantuml.SourceFileReader;
 
 //import ClassConnection.connectionType;
 
@@ -123,11 +124,10 @@ public class OutputPUML
      */
     public void createPlantUML(String filePath, String pumlCode) throws IOException
     {	
-    	File fileLocation = new File(filePath/* + File.separator + "puml.png"*/);
-    	fileLocation.createNewFile(); // if file already exists will do nothing 
-    	FileOutputStream OS = new FileOutputStream(fileLocation); 
-    	OutputStream png=OS;
-    	SourceStringReader reader = new SourceStringReader(pumlCode);
-    	String desc = reader.outputImage(png).getDescription(); //TODO String desc kann auch entfernt werden?
+    	File source = new File(filePath);
+    	SourceFileReader reader = new SourceFileReader(source);
+    	List<GeneratedImage> list = reader.getGeneratedImages();
+    	// Generated files
+    	File png = list.get(0).getPngFile();
     }
 }
