@@ -17,19 +17,10 @@ class OutputPUMLTest {
 	void testGetPUML() {
 		//ClassConnection Elemente erstellen
 		ClassConnection elA = new ClassConnection(1,4,ClassConnection.connectionType.aggregation);
-//		elA.setConnection(ClassConnection.connectionType.aggregation);
-//		elA.setFrom(1);
-//		elA.setTo(4);
 		
 		ClassConnection elB = new ClassConnection(1,2,ClassConnection.connectionType.extension);
-//		elB.setConnection(ClassConnection.connectionType.extension);
-//		elB.setFrom(1);
-//		elB.setTo(2);
 		
 		ClassConnection elC = new ClassConnection(2,3,ClassConnection.connectionType.composition);
-//		elC.setConnection(ClassConnection.connectionType.composition);
-//		elC.setFrom(2);
-//		elC.setTo(3);
 		
 		//classes fuellen
 		ArrayList<String> classes = new ArrayList<String>();
@@ -47,14 +38,12 @@ class OutputPUMLTest {
 		
 		//ParsingResult erstellen
 		ParsingResult actualParsTest = new ParsingResult(classes,classConnections);
-//		actualParsTest.classConnections = classConnections;
-//		actualParsTest.classes = classes;
 		
 		//GetPuml testen
 		String actual = new OutputPUML().getPUML(actualParsTest);
 		
 		String expected = "@startuml%class BeispielKlasse1%class BeispielKlasse2%class BeispielKlasse3%class BeispielKlasse4%class BeispielKlasse5%BeispielKlasse2 o-- BeispielKlasse5%BeispielKlasse2 -- BeispielKlasse3%BeispielKlasse3 *-- BeispielKlasse4%@enduml";
-		assertEquals(expected, actual, "Heyyy, hat Jefunzt");
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -64,19 +53,10 @@ class OutputPUMLTest {
 		
 		//ClassConnection Elemente erstellen
 		ClassConnection elA = new ClassConnection(1,4,ClassConnection.connectionType.aggregation);
-//		elA.setConnection(ClassConnection.connectionType.aggregation);
-//		elA.setFrom(1);
-//		elA.setTo(4);
 		
 		ClassConnection elB = new ClassConnection(1,2,ClassConnection.connectionType.extension);
-//		elB.setConnection(ClassConnection.connectionType.extension);
-//		elB.setFrom(1);
-//		elB.setTo(2);
 		
 		ClassConnection elC = new ClassConnection(2,3,ClassConnection.connectionType.composition);
-//		elC.setConnection(ClassConnection.connectionType.composition);
-//		elC.setFrom(2);
-//		elC.setTo(3);
 		
 		//classes fuellen
 		ArrayList<String> classes = new ArrayList<String>();
@@ -94,17 +74,13 @@ class OutputPUMLTest {
 		
 		//ParsingResult erstellen
 		ParsingResult actualParsTest = new ParsingResult(classes,classConnections);
-//		actualParsTest.classConnections = classConnections;
-//		actualParsTest.classes = classes;
 		
-		//savePumltoFile testen //TODO �ndern der Filepaths bevor Test (je nach System)
+		//savePumltoFile testen //TODO Aendern der Filepaths bevor Test (je nach System)
 		//TODO expectedFile platzieren
 		OutputPUML output = new OutputPUML();
 		output.savePUMLtoFile(actualParsTest, "/home/tore/Test/actualFile.txt");
 		
-		File actual = new File("/home/tore/Test/actualFile.txt");
-//		System.out.println(FileUtils.readFile(actual));
-		
+		File actual = new File("/home/tore/Test/actualFile.txt");		
 		assertEquals(FileUtils.readFile(actual) , FileUtils.readFile(expected));
 	}
 
@@ -112,23 +88,12 @@ class OutputPUMLTest {
 	void testCreatePlantUML() throws IOException 
 	{
 		
-		File expected = new File("/home/tore/Test/expectedFile.png");
+		File expected = new File("/home/tore/Test/expectedFile.png"); //TODO Aendern der Filepaths bevor Test (je nach System)
 		
 		//ClassConnection Elemente erstellen
 				ClassConnection elA = new ClassConnection(1,4,ClassConnection.connectionType.aggregation);
-//				elA.setConnection(ClassConnection.connectionType.aggregation);
-//				elA.setFrom(1);
-//				elA.setTo(4);
-				
 				ClassConnection elB = new ClassConnection(1,2,ClassConnection.connectionType.extension);
-//				elB.setConnection(ClassConnection.connectionType.extension);
-//				elB.setFrom(1);
-//				elB.setTo(2);
-				
 				ClassConnection elC = new ClassConnection(2,3,ClassConnection.connectionType.composition);
-//				elC.setConnection(ClassConnection.connectionType.composition);
-//				elC.setFrom(2);
-//				elC.setTo(3);
 				
 				//classes fuellen
 				ArrayList<String> classes = new ArrayList<String>();
@@ -146,14 +111,13 @@ class OutputPUMLTest {
 				
 				//ParsingResult erstellen
 				ParsingResult actualParsTest = new ParsingResult(classes,classConnections);
-//				actualParsTest.classConnections = classConnections;
-//				actualParsTest.classes = classes;
 				
 				//GetPuml testen
 				String actualString = new OutputPUML().getPUML(actualParsTest);
-		
+				
+				//TODO Aendern der Filepaths bevor Test (je nach System)
 		OutputPUML output = new OutputPUML();
-		output.createPlantUML("/home/tore/Test/actualFile.png", actualString);
+		output.createPlantUML("/home/tore/Test/planttest.txt", actualString);
 		
 		File actual = new File("/home/tore/Test/expectedFile.png");
 		
