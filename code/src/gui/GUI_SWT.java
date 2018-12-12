@@ -40,7 +40,8 @@ public class GUI_SWT {
 	private Tree tree;
 	private ToolBar toolBar;
 	private PathEditor pathEditor;
-	private ArrayList paths;
+	private ArrayList<String> paths;
+	private FileDialog dialog;
 
 	/**
 	 * Launch the application.
@@ -82,6 +83,8 @@ public class GUI_SWT {
 		shell.setLayout(new GridLayout(1, false));
 		
 		pathEditor = new PathEditor(paths);
+		
+		dialog = new FileDialog(shell, SWT.MULTI);
 
 		Menu menu = new Menu(shell, SWT.BAR);
 		shell.setMenuBar(menu);
@@ -96,6 +99,12 @@ public class GUI_SWT {
 		mntmPfadffnen.setText("Pfad hinzuf\u00FCgen");
 
 		MenuItem mntmDateienHinzufgen = new MenuItem(menu_1, SWT.NONE);
+		mntmDateienHinzufgen.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				openFile();
+			}
+		});
 		mntmDateienHinzufgen.setText("Datei hinzuf\u00FCgen");
 
 		new MenuItem(menu_1, SWT.SEPARATOR);
@@ -125,18 +134,20 @@ public class GUI_SWT {
 		toolItem.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-
-				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-				dialog.setFilterExtensions(new String[] { "*.java", "*.jar" });
-				//dialog.setFilterPath("c:\\temp");
-				String result = dialog.open();
-				System.out.println(result);
+				//openFile();
+				
 			}
 		});
 		toolItem.setToolTipText("Pfad \u00F6ffnen");
 		toolItem.setImage(SWTResourceManager.getImage(GUI_SWT.class, "/img/icons8-add-list-24.png"));
 
 		ToolItem tltmNewItem = new ToolItem(toolBar, SWT.NONE);
+		tltmNewItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				openFile();
+			}
+		});
 		tltmNewItem.setToolTipText("Datei \u00F6ffnen");
 		tltmNewItem.setImage(SWTResourceManager.getImage(GUI_SWT.class, "/img/icons8-add-file-24.png"));
 
@@ -191,4 +202,23 @@ public class GUI_SWT {
 		sashForm.setWeights(new int[] { 1, 3 });
 
 	}
+	
+	private void openFile() {
+		
+		dialog.setFilterExtensions(new String[] { "*.java", "*.jar" });
+		dialog.open();
+		String[] files = dialog.getFileNames();
+		String path = dialog.getFilterPath();
+		//System.out.println(files.length);
+		for (int i=0; i<files.length; i++) {
+			//System.out.println(path+files[i]);
+			paths.add(path+files[i]);
+		}
+		
+//		System.out.println(paths.size());
+//		for (int i = 0; i<paths.size();i++) {
+//			System.out.println(paths.get(i));
+//		}
+	}
+	
 }
