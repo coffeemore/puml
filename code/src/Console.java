@@ -1,3 +1,6 @@
+
+import java.io.IOException;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -25,16 +28,18 @@ public class Console extends PUMLgenerator
     
     /**
      * Startet die Abarbeitung der Konsolenanwendung und ggf. Dialoge
+     * @param Eingabeparameter der Kommandozeile: String[] args
+     * @throws ParseException
      */
     void showConsole(String[] args) throws ParseException //Konsolenanwendung implementiert
     {
     	
     	//hier wird ein neuer Container für Optionen angelegt
     	Options options = new Options();
-    	options.addOption("c",false,"Versuch ein -c abzufangen");
+    	options.addOption("c",false,"Konsole mit Anleitung wird aufgerufen");
     	
-    	Option input = Option.builder() //Input files
-    			.longOpt("input")
+    	Option input = Option.builder() //Angabe der zu verarbeitenden Dateien
+    			.longOpt("i")
     			.argName("filepath")
     			.hasArg()
     			.valueSeparator('-')
@@ -43,12 +48,13 @@ public class Console extends PUMLgenerator
     			.build();
     	options.addOption(input);
   
+    	//ignorieren verschiedener Dateitypen
     	options.addOption("ijar",false,"Dateien mit der Endung .jar werden ignoriert.");
     	
     	options.addOption("ijava", false, "Datein mit der Endung .java werden ignoriert.");
     	
     	Option output = Option.builder()	//Angabe fuer den Ausgabepfad
-    			.longOpt("output")
+    			.longOpt("o")
     			.argName("filepath")
     			.hasArg()
     			.desc("Angabe des Pfades fuer den Zielordner.")
@@ -59,22 +65,11 @@ public class Console extends PUMLgenerator
     	CommandLineParser commandParser = new DefaultParser();
     	CommandLine cmd = commandParser.parse( options, args);
     	
-    	//hat Option Phase
-    	if(cmd.hasOption("c"))	//hat "c"
+    	//Argumentauswertungen und Ausfuehrungen
+    	if(cmd.hasOption("c"))	//Anleitung ausgeben
     	{ 
-    		String pfad;
-            System.out.println("Pfad der zu pumelnden Datei eingeben:");
-            		 
-    	}
-    	if(cmd.hasOption("input")) //Verarbeitung vieler Pfade
-    	{
-    		String parseResult="";
-    		//evtl. nutzen von CodeCollector Class
-    		String[] pathArray = cmd.getOptionValues("input");
-    		for(int i=1; i < pathArray.length;i++)
-    		{
-    			System.out.println(i + pathArray[i]);// Code to parse data into in
-    		}
+    		HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("PUML",options);
     	}
     	if(cmd.hasOption("ijar")) //ignore jar files
     	{
@@ -84,16 +79,39 @@ public class Console extends PUMLgenerator
     	{
     		codeCollector.setUseJavaFiles(false);
     	}
-    	if(cmd.hasOption("output")) //Zielordner festlegen
+    	if(cmd.hasOption("i")) //Verarbeitung vieler zu verarbeitenden Pfade
     	{
-    		outputPUML.savePUMLtoFile(parser.getParsingResult(),cmd.getOptionValue("output"));
-    		System.out.println(cmd.getOptionValue("output"));
+    		for(int i=0; i < cmd.getOptionValues("i").length;i++) //Pfade in Collector Liste schreiben
+    		{
+    			codeCollector.paths.add(cmd.getOptionValues("i")[i]);
+    			System.out.println(codeCollector.paths.get(i));
+    		}
+    		PUMLgenerator.parser.parse(codeCollector.getSourceCode());	//Parser berbeitet Daten welche ihm übergeben werden
+    		
+    		if(cmd.hasOption("o")) //Zielordner abfragen, sonst in Arbeitsverzeichnis sichern
+    		{
+    			outputPUML.savePUMLtoFile(parser.getParsingResult(),cmd.getOptionValue("o"));	//UML Code generieren und im uebergebenen Pfad ablegen
+    			try {
+					outputPUML.createPlantUML(cmd.getOptionValue("o"), outputPUML.getPUML(parser.getParsingResult())); //Diagramm erstellen und im uebergebenen Pfad ablegen
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+    			System.out.println("Zielordner:" + cmd.getOptionValue("o") + "\nQuelle: " + codeCollector.getSourceCode());
+    		}
+    		else
+    		{
+    			outputPUML.savePUMLtoFile(parser.getParsingResult(),"./");
+    			try {
+					outputPUML.createPlantUML("./", outputPUML.getPUML(parser.getParsingResult())); //Diagramm erstellen und im Arbeitsverzeichnis ablegen
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+    		}
     	}
-    	else {	//sonst Hilfe anzeigen
-    	HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("CLITester", options);
+    	else if (!cmd.hasOption("c"))
+    	{	
+    		System.out.println("Es fehlt ein zu bearbeitender Pfad.");
     	}
-    	//System.out.println(PUMLgenerator.outputPUML.getPUML());
     }
 }
 

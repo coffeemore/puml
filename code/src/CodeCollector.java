@@ -15,12 +15,11 @@ public class CodeCollector
      * Die Liste mit den Pfaden ist vor dem Aufrufen der getSourceCode-Methode zu füllen.
      */
     public ArrayList<String> paths;
-    
     /**
      * True = .java-Dateien werden verwendet; False = .java-Dateien werden ignoriert
      */
     private boolean useJavaFiles;
-    
+   
     /**
      * True = .jar-Dateien werden verwendet; False = .jar-Dateien werden ignoriert
      */
