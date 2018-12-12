@@ -1,5 +1,8 @@
+package gui;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -21,6 +24,8 @@ import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+
+import java.util.ArrayList;
 import java.util.function.Consumer;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.layout.FormLayout;
@@ -34,6 +39,8 @@ public class GUI_SWT {
 	private Label lblImage;
 	private Tree tree;
 	private ToolBar toolBar;
+	private PathEditor pathEditor;
+	private ArrayList paths;
 
 	/**
 	 * Launch the application.
@@ -42,6 +49,8 @@ public class GUI_SWT {
 	 */
 
 	public GUI_SWT() {
+		
+		paths = new ArrayList<String>();
 
 	}
 
@@ -71,6 +80,8 @@ public class GUI_SWT {
 		shell.setSize(450, 300);
 		shell.setText("SWT Application");
 		shell.setLayout(new GridLayout(1, false));
+		
+		pathEditor = new PathEditor(paths);
 
 		Menu menu = new Menu(shell, SWT.BAR);
 		shell.setMenuBar(menu);
@@ -90,6 +101,12 @@ public class GUI_SWT {
 		new MenuItem(menu_1, SWT.SEPARATOR);
 
 		MenuItem mntmSuchlisteBearbeiten = new MenuItem(menu_1, SWT.NONE);
+		mntmSuchlisteBearbeiten.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				pathEditor.open();
+			}
+		});
 		mntmSuchlisteBearbeiten.setText("Suchliste bearbeiten");
 
 		MenuItem mntmAnsicht = new MenuItem(menu, SWT.CASCADE);
@@ -105,6 +122,17 @@ public class GUI_SWT {
 		toolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		ToolItem toolItem = new ToolItem(toolBar, SWT.NONE);
+		toolItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+
+				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+				dialog.setFilterExtensions(new String[] { "*.java", "*.jar" });
+				//dialog.setFilterPath("c:\\temp");
+				String result = dialog.open();
+				System.out.println(result);
+			}
+		});
 		toolItem.setToolTipText("Pfad \u00F6ffnen");
 		toolItem.setImage(SWTResourceManager.getImage(GUI_SWT.class, "/img/icons8-add-list-24.png"));
 
@@ -142,25 +170,25 @@ public class GUI_SWT {
 			}
 		});
 		tltmNewItem_1.setImage(SWTResourceManager.getImage(GUI_SWT.class, "/img/icons8-sun-24.png"));
-		
+
 		Composite composite = new Composite(shell, SWT.NONE);
 		composite.setLayout(new FillLayout(SWT.HORIZONTAL));
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		
+
 		SashForm sashForm = new SashForm(composite, SWT.NONE);
 		sashForm.setSashWidth(5);
-		
+
 		tree = new Tree(sashForm, SWT.BORDER | SWT.CHECK);
-		
+
 		Composite composite_1 = new Composite(sashForm, SWT.BORDER);
 		composite_1.setLayout(new GridLayout(1, false));
-		
+
 		Label lblVorschau = new Label(composite_1, SWT.NONE);
 		lblVorschau.setText("Vorschau");
-		
+
 		lblImage = new Label(composite_1, SWT.NONE);
 		lblImage.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1));
-		sashForm.setWeights(new int[] {1, 3});
+		sashForm.setWeights(new int[] { 1, 3 });
 
 	}
 }

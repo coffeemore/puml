@@ -1,5 +1,7 @@
 import org.apache.commons.cli.ParseException;
 
+import gui.GUI_SWT;
+
 public class PUMLgenerator
 {
 
