@@ -150,7 +150,7 @@ public class ParserJava implements ParserIf
 	//Auslesen aller Interfacenamen 
 	//1. Suche nach Interface-Deklaration
     sourceCode = getCommentlessSourceCode(sourceCode);
-	Matcher interfaceMatcher = Pattern.compile("interface +([a-zA-Z0-9]*).*\\{").matcher(sourceCode);	
+	Matcher interfaceMatcher = Pattern.compile("interface +([a-zA-Z0-9]+).*\\R* *\\{").matcher(sourceCode);	
 	System.out.println("Interfaces: ");
 	//Solange im Quelltext Interfacedeklarationen gefunden werden, such weiter und speichere sie ab
 	while (interfaceMatcher.find())
@@ -172,7 +172,7 @@ public class ParserJava implements ParserIf
 	}
 
 	//Auslesen aller Klassennamen
-	Matcher classMatcher = Pattern.compile("class +([a-zA-Z0-9]*).*\\{").matcher(sourceCode);
+	Matcher classMatcher = Pattern.compile("class +([a-zA-Z0-9]+).*\\R* *\\{").matcher(sourceCode);
 	System.out.println("Klassen: ");
 	
 	//Speichern der Klassennamen und der ganzen Zeile bis "{" um Interfaces und Vererbungen herauszubekommen
