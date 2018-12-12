@@ -38,16 +38,17 @@ public class ParserJava implements ParserIf
      * 
      * @param sourceCode Vollständiger Java-Quellcode
      */
-    public String getCommentlessSourceCode(String sourcec) //Entfernt Kommentare eines Strings
+    private String getCommentlessSourceCode(String sourcec) //Entfernt Kommentare eines Strings
     {	
     	sourcec=sourcec.replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)","");
     	System.out.println("!!! Commentless Sourcecode:\n"+sourcec+"\n!!!");
     	return sourcec;
     }
     
-	public String getClassBody(String substring) //nimmt String und gibt Inhalt innerhalb { } wieder
+    
+    private String getClassBody(String substring) //nimmt String und gibt Inhalt innerhalb { } wieder
 	{ 
-		//System.out.println("$$$ substring:\n"+substring+"\n$$$");
+		System.out.println("$$$ substring:\n"+substring+"\n$$$");
 
 		ArrayList<Integer> lCurlyPos= new ArrayList<Integer>();
 		ArrayList<Integer> rCurlyPos= new ArrayList<Integer>();
@@ -87,12 +88,69 @@ public class ParserJava implements ParserIf
 		
 		return classBody;
 	}
+	private void analyzeClassBodies() {
+	
+		int classno; 			//Klassennummer des Körpers
+		String parentClass;		//Klassenname des Körpers
+		for (String classbody : classBodies) {
+		classno= classBodies.indexOf(classbody);
+		parentClass=className.elementAt(classno);
+		System.out.println("Klassenname:"+className.elementAt(classno));
+			for (String classname : className) {
+				ArrayList<Integer> newClassPos= new ArrayList<>();
+				ArrayList<Integer> constructorPos= new ArrayList<>();
+				ArrayList<Integer> constructorWithNewClassPos= new ArrayList<>();
+				ArrayList<Integer> methodsWithNewClassPos= new ArrayList<>();
+				
+				if(classbody.contains(classname) && classname!=parentClass) {
+					System.out.println("enthält Klasse "+classname);
+					Matcher match = Pattern.compile("new +"+classname+" *\\(.*\\)").matcher(classbody);
+					while (match.find())
+					{
+						newClassPos.add(match.start());
+						System.out.println("enthält Klasse "+classname+" als neuen Aufruf an Stelle "+match.start());
+					}
+					Matcher match2 = Pattern.compile(parentClass+" *\\(.*\\) *\\{.*new +"+classname+" *\\(.*\\).*\\} *;").matcher(classbody);
+					while (match2.find())
+					{
+						constructorWithNewClassPos.add(match2.start());
+					}
+					Matcher match3 = Pattern.compile(parentClass+" *\\(.*\\) *\\{.*\\} *;").matcher(classbody);
+					while (match3.find())
+					{
+						constructorPos.add(match3.start());
+					}
+					Matcher match4 = Pattern.compile("\\{.*new +"+classname+" *\\(.*\\).*\\}").matcher(classbody);
+					while (match4.find())
+					{
+						methodsWithNewClassPos.add(match4.start());
+					}
+					if(!newClassPos.isEmpty()) {
+						if(constructorPos.size()==constructorWithNewClassPos.size() || newClassPos.size()>methodsWithNewClassPos.size()) 
+						{
+							System.out.println("enthält Klasse "+classname+" als Komposition");
+							ClassConnection cc = new ClassConnection(classno, classno, compositionType);
+						    classConnectionArray.add(cc);
+						}
+						else
+						{
+							System.out.println("enthält Klasse "+classname+" als Agregation");
+							ClassConnection cc = new ClassConnection(classno, classno, aggregationType);
+						    classConnectionArray.add(cc);
+						}								
+	
+					}
+				}
+			}	
+	}
+		
+	} 	
     public void parse(String sourceCode)
     {
 	//Auslesen aller Interfacenamen 
 	//1. Suche nach Interface-Deklaration
-    String s = getCommentlessSourceCode(sourceCode);
-	Matcher interfaceMatcher = Pattern.compile("interface +([a-zA-Z0-9]*).*\\{").matcher(sourceCode);	
+    sourceCode = getCommentlessSourceCode(sourceCode);
+	Matcher interfaceMatcher = Pattern.compile("interface +([a-zA-Z0-9]+).*\\R* *\\{").matcher(sourceCode);	
 	System.out.println("Interfaces: ");
 	//Solange im Quelltext Interfacedeklarationen gefunden werden, such weiter und speichere sie ab
 	while (interfaceMatcher.find())
@@ -114,7 +172,7 @@ public class ParserJava implements ParserIf
 	}
 
 	//Auslesen aller Klassennamen
-	Matcher classMatcher = Pattern.compile("class +([a-zA-Z0-9]*).*\\{").matcher(sourceCode);
+	Matcher classMatcher = Pattern.compile("class +([a-zA-Z0-9]+).*\\R* *\\{").matcher(sourceCode);
 	System.out.println("Klassen: ");
 	
 	//Speichern der Klassennamen und der ganzen Zeile bis "{" um Interfaces und Vererbungen herauszubekommen
@@ -127,10 +185,11 @@ public class ParserJava implements ParserIf
 	    
 	    classSubstrings.add(sourceCode.substring(classMatcher.start()));
 	    classBodies.add(getClassBody(sourceCode.substring(classMatcher.start())));
-	    System.out.println("###"+sourceCode.substring(classMatcher.start()));
 	}
 	System.out.println("Anzahl " + className.size());
-
+	System.out.println("analyzeClassBodies(): ");
+	analyzeClassBodies();
+	
 	//Auslesen der Verbindungen zwischen Klassen und Interfaces
 	for (int i = 0; i < classConnection.size(); i++)
 	{
