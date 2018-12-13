@@ -49,68 +49,69 @@ public class CodeCollector
      */
     public String getSourceCode()
     {
-	String sc = new String();
-	BufferedReader buffr = null;
-	FileReader filer = null;
-	ZipFile zFile = null;
-	File file = null;
-
-	if (!paths.isEmpty())
-	{
-	    /**
-	     * durchsucht ggf. übergebene Ordner und fügt den Inhalt in die paths-Liste ein
-	     */
-	    while (contDir(paths))
-	    {
-		for (int j = 0; j < paths.size(); j++)
-		{
-		    file = new File(paths.get(j));
-		    if (file.isDirectory())
-		    {
-			File[] fArray = file.listFiles();
-			for (int i = 0; i < fArray.length; i++)
-			{
-			    paths.add(fArray[i].getAbsolutePath());
-			}
-		    }
-		}
-	    }
-	    if (useJavaFiles && !useJarFiles)
-	    {
-		return (collectJava(sc, buffr, filer));
-	    }
-	    else
-	    {
-		if (!useJavaFiles && useJarFiles)
-		{
-		    return (collectJar(sc, buffr, zFile));
-		}
-		/**
-		 * wenn useJavaFiles und useJarFiles beide auf true oder false gesetzt sind bzw.
-		 * ihre Belegung anderweitig ungültig ist, wird eine Fehlermeldung ausgegeben
-		 */
-		else
-		{
-		    JOptionPane.showMessageDialog(null, "Bitte wählen Sie JAR- oder Java-Dateien aus.", "Error",
-			    JOptionPane.ERROR_MESSAGE);
-		    return null;
-		}
-	    }
-	}
-	/**
-	 * Bei ungültiger Pfadauswahl wird eine Fehlermeldung ausgegeben
-	 */
-	else
-	{
-	    JOptionPane.showMessageDialog(null, "Bitte wählen Sie einen Pfad aus.", "Error", JOptionPane.ERROR_MESSAGE);
-	    return null;
-	}
+    String sc = new String();
+    BufferedReader buffr = null;
+    FileReader filer = null;
+    ZipFile zFile = null;
+    File file = null;
+    
+    if (!paths.isEmpty())
+    {
+        /**
+         * durchsucht ggf. übergebene Ordner und fügt den Inhalt in die paths-Liste ein
+         */
+       
+        while (contDir(paths))
+        {
+        for (int j = 0; j < paths.size(); j++)
+        {
+            file = new File(paths.get(j));
+            if (file.isDirectory())
+            {
+            File[] fArray = file.listFiles();
+            for (int i = 0; i < fArray.length; i++)
+            {
+                paths.add(fArray[i].getAbsolutePath());
+            }
+            paths.remove(paths.get(j));
+            }
+        }
+        
+        }
+        if (useJavaFiles && !useJarFiles)
+        {
+        return (collectJava(sc, buffr, filer));
+        } else
+        {
+        if (!useJavaFiles && useJarFiles)
+        {
+            return (collectJar(sc, buffr, zFile));
+        }
+        /**
+         * wenn useJavaFiles und useJarFiles beide auf true oder false gesetzt sind
+         * bzw. ihre Belegung anderweitig ungültig ist, wird eine Fehlermeldung ausgegeben
+         */
+        else
+        {
+            JOptionPane.showMessageDialog(null, "Bitte wählen Sie JAR- oder Java-Dateien aus.", "Error",
+                JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+        }
     }
-
+    /**
+     * Bei ungültiger Pfadauswahl wird eine Fehlermeldung ausgegeben
+     */
+    else
+    {
+        JOptionPane.showMessageDialog(null, "Bitte wählen Sie einen Pfad aus.", "Error", JOptionPane.ERROR_MESSAGE);
+        return null;
+    }
+    }
     /**
      * Java-Dateien werden in einen String eingelesen
      * 
-     * @param sc
+     * @param sc 
      * @param buffr
      * @param filer
      * @return sc (eingelesener String)
