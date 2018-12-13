@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="commons-cli-1.4/commons-cli-1.4-test-sources.jar"/>
 	<classpathentry kind="lib" path="commons-cli-1.4/commons-cli-1.4-tests.jar"/>
 	<classpathentry kind="lib" path="commons-cli-1.4/commons-cli-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/swt-linux-x86_64-4.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

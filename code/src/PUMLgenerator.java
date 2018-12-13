@@ -1,9 +1,12 @@
 import org.apache.commons.cli.ParseException;
 
+import gui.GUI_SWT;
+
 public class PUMLgenerator
 {
 
     static GUI myGUI = null;
+    static GUI_SWT myGUI_SWT = null;
     static Console myConsole = null;
     static CodeCollector codeCollector = new CodeCollector();
     static ParserIf parser = new ParserJava();
@@ -29,8 +32,10 @@ public class PUMLgenerator
 	}
 	else
 	{
-	    myGUI = new GUI();
-	    myGUI.showGUI();
+	    //myGUI = new GUI();
+	    //myGUI.showGUI();
+		myGUI_SWT = new GUI_SWT();
+		myGUI_SWT.open();
 	}//endelse
     }
 
