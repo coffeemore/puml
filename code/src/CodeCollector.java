@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.swing.JOptionPane;
+
 /**
  *
  * @author Die Klasse dient zum Einsammeln des Quellcodes. Sie kann .java-,
@@ -25,14 +26,12 @@ public class CodeCollector
     /**
      * True = .java-Dateien werden verwendet; False = .java-Dateien werden ignoriert
      */
-    private boolean useJavaFiles;
-   
+    private boolean useJavaFiles = true;
+
     /**
      * True = .jar-Dateien werden verwendet; False = .jar-Dateien werden ignoriert
      */
-    private boolean useJarFiles;
-
-
+    private boolean useJarFiles = true;
 
     /**
      * Konstruktor
@@ -41,6 +40,7 @@ public class CodeCollector
     {
 	paths = new ArrayList<String>();
     }
+
     /**
      * Sammelt den Quellcode aus allen ausgewählten Dateien und gibt diesen als
      * String zurück
@@ -54,7 +54,7 @@ public class CodeCollector
 	FileReader filer = null;
 	ZipFile zFile = null;
 	File file = null;
-	
+
 	if (!paths.isEmpty())
 	{
 	    /**
@@ -78,15 +78,16 @@ public class CodeCollector
 	    if (useJavaFiles && !useJarFiles)
 	    {
 		return (collectJava(sc, buffr, filer));
-	    } else
+	    }
+	    else
 	    {
 		if (!useJavaFiles && useJarFiles)
 		{
 		    return (collectJar(sc, buffr, zFile));
-		} 
+		}
 		/**
-		 * wenn useJavaFiles und useJarFiles beide auf true oder false gesetzt sind 
-		 * bzw. ihre Belegung anderweitig ungültig ist, wird eine Fehlermeldung ausgegeben
+		 * wenn useJavaFiles und useJarFiles beide auf true oder false gesetzt sind bzw.
+		 * ihre Belegung anderweitig ungültig ist, wird eine Fehlermeldung ausgegeben
 		 */
 		else
 		{
@@ -95,7 +96,7 @@ public class CodeCollector
 		    return null;
 		}
 	    }
-	} 
+	}
 	/**
 	 * Bei ungültiger Pfadauswahl wird eine Fehlermeldung ausgegeben
 	 */
@@ -108,6 +109,7 @@ public class CodeCollector
 
     /**
      * Java-Dateien werden in einen String eingelesen
+     * 
      * @param sc
      * @param buffr
      * @param filer
@@ -122,7 +124,7 @@ public class CodeCollector
 		filer = new FileReader(paths.get(i));
 		buffr = new BufferedReader(filer);
 		String currLine;
-		
+
 		if (paths.get(i).endsWith(".java"))
 		{
 		    while ((currLine = buffr.readLine()) != null)
@@ -130,10 +132,12 @@ public class CodeCollector
 			sc += currLine;
 		    }
 		}
-	    } catch (IOException e)
+	    }
+	    catch (IOException e)
 	    {
 		e.printStackTrace();
-	    } finally
+	    }
+	    finally
 	    {
 		try
 		{
@@ -145,7 +149,8 @@ public class CodeCollector
 		    {
 			filer.close();
 		    }
-		} catch (IOException ex)
+		}
+		catch (IOException ex)
 		{
 		    ex.printStackTrace();
 		}
@@ -156,6 +161,7 @@ public class CodeCollector
 
     /**
      * Jar-Dateien werden in einen String eingelesen
+     * 
      * @param sc
      * @param buffr
      * @param zFile
@@ -185,7 +191,8 @@ public class CodeCollector
 				{
 				    sc += currLine;
 				}
-			    } else
+			    }
+			    else
 			    {
 				continue;
 			    }
@@ -194,10 +201,12 @@ public class CodeCollector
 		}
 	    }
 
-	} catch (IOException e)
+	}
+	catch (IOException e)
 	{
 	    e.printStackTrace();
-	} finally
+	}
+	finally
 	{
 	    try
 	    {
@@ -209,7 +218,8 @@ public class CodeCollector
 		{
 		    zFile.close();
 		}
-	    } catch (IOException ex)
+	    }
+	    catch (IOException ex)
 	    {
 		ex.printStackTrace();
 	    }
@@ -219,6 +229,7 @@ public class CodeCollector
 
     /**
      * Prüft, ob in der übergebenen ArrayList Directories enthalten sind
+     * 
      * @param paths
      * @return boolean
      */
@@ -237,23 +248,22 @@ public class CodeCollector
 
     public boolean isUseJavaFiles()
     {
-        return useJavaFiles;
+	return useJavaFiles;
     }
 
     public void setUseJavaFiles(boolean useJavaFiles)
     {
-        this.useJavaFiles = useJavaFiles;
-    }
-    
-    public boolean isUseJarFiles()
-    {
-        return useJarFiles;
+	this.useJavaFiles = useJavaFiles;
     }
 
+    public boolean isUseJarFiles()
+    {
+	return useJarFiles;
+    }
 
     public void setUseJarFiles(boolean useJarFiles)
     {
-        this.useJarFiles = useJarFiles;
+	this.useJarFiles = useJarFiles;
     }
 
 }
