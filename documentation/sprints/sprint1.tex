@@ -83,7 +83,31 @@ XXX
 \nsecend
 
 \nsecbegin{Ergebnisse des Reviews}
-XXX
+\begin{table}[H]
+
+\begin{tabularx}{\textwidth}{ |l|l|X| }
+\hline
+\textbf{Klasse} & \textbf{Methode} & \textbf{Anmerkungen}\\
+ \hline
+Console & showConsole & Pfad anpassen \\
+CodeCollector & - & Unit-Tests für Ordner \\
+CodeCollector & getSourceCode & gleichzeitig .jar- und .java-Dateien \\
+ParserJava & parse & Bug: Entfernt zu viel Source Code! Mehr Tests\\
+OutputPuml & - & generell mehr Kommentare \\
+OutputPuml & getPuml & Redundanter Code mit savePumlToFile, generell mehr Kommentare\\
+OutputPuml & createPlantUML & vervollständigen \\
+GUI\_SWT & - & Entwicklerdokumentation (Installationsanleitung) für verwendetes Tool\\
+GUI\_SWT & - &  \\ \hline
+\end{tabularx}
+\end{table}
+
+Sonstiges:
+\begin{itemize}
+\item mehr Kommentare
+\item (Graphis muss installiert sein, um PlantUML anzuzeigen)
+\item Javadocs schreiben!
+\item in gitconfig Name und Mail-Adresse anpassen! Wichtig für Benotung!
+\end{itemize}
 \nsecend
 
 \nsecbegin{Ergebnisse der Retrospektive}
