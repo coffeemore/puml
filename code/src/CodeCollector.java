@@ -75,8 +75,10 @@ public class CodeCollector
 			{
 			    paths.add(fArray[i].getAbsolutePath());
 			}
+			paths.remove(paths.get(j));
 		    }
 		}
+		
 	    }
 	    if (useJavaFiles && !useJarFiles)
 	    {
@@ -230,7 +232,7 @@ public class CodeCollector
 	for (int i = 0; i < paths.size(); i++)
 	{
 	    File file = new File(paths.get(i));
-	    if (file.isDirectory())
+	    if (file.isDirectory() && !paths.get(i).endsWith(".zip"))
 	    {
 		return true;
 	    }
