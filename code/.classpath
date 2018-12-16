@@ -11,11 +11,11 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/PUMLlib"/>
 	<classpathentry kind="lib" path="lib/plantuml.jar"/>
-	<classpathentry kind="lib" path="commons-cli-1.4/commons-cli-1.4-javadoc.jar"/>
-	<classpathentry kind="lib" path="commons-cli-1.4/commons-cli-1.4-sources.jar"/>
-	<classpathentry kind="lib" path="commons-cli-1.4/commons-cli-1.4-test-sources.jar"/>
-	<classpathentry kind="lib" path="commons-cli-1.4/commons-cli-1.4-tests.jar"/>
-	<classpathentry kind="lib" path="commons-cli-1.4/commons-cli-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/swt-linux-x86_64-4.9.jar"/>
+	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-sources.jar"/>
+	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-test-sources.jar"/>
+	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-tests.jar"/>
+	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
