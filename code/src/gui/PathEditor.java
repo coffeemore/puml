@@ -12,42 +12,40 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 
-public class PathEditor 
-{
+public class PathEditor {
 
 	protected Shell shlPfadeBearbeiten;
 	private ArrayList<String> paths;
-	Table table;
-	private TableColumn tableColumn;
-	//Text text = new Text(shlPfadeBearbeiten, SWT.SINGLE | SWT.BORDER);
-	public PathEditor (ArrayList<String> al) 
-	{
+	private Table table;
+	private Button btnHizufgen;
+	private Button btnLschen;
+//	private TableColumn tableColumn;
+
+	public PathEditor(ArrayList<String> al) {
 		paths = al;
-		fillTable(al);
 	}
-	
 
 	/**
 	 * Open the window.
+	 * 
 	 * @wbp.parser.entryPoint
 	 */
-	public void open() 
-	{
+	public void open() {
 		Display display = Display.getDefault();
 		createContents();
-      //shlPfadeBearbeiten.pack();
 		shlPfadeBearbeiten.open();
 		shlPfadeBearbeiten.layout();
-		while (!shlPfadeBearbeiten.isDisposed()) 
-		{
-			if (!display.readAndDispatch()) 
-			{
+		fillTable();
+		while (!shlPfadeBearbeiten.isDisposed()) {
+			if (!display.readAndDispatch()) {
 				display.sleep();
 			}
 		}
@@ -56,43 +54,60 @@ public class PathEditor
 	/**
 	 * Create contents of the window.
 	 */
-	protected void createContents() 
-	{
+	protected void createContents() {
 		shlPfadeBearbeiten = new Shell();
-		shlPfadeBearbeiten.setSize(576, 601);
+		shlPfadeBearbeiten.setMinimumSize(new Point(450, 300));
+		shlPfadeBearbeiten.setSize(450, 300);
 		shlPfadeBearbeiten.setText("Pfade bearbeiten");
-		shlPfadeBearbeiten.setLayout(null);
+		shlPfadeBearbeiten.setLayout(new FillLayout(SWT.HORIZONTAL));
+
+		table = new Table(shlPfadeBearbeiten, SWT.CHECK);
+//		table.setHeaderVisible(true);
+//		table.setLinesVisible(true);
+//		
+//		tableColumn = new TableColumn(table, SWT.NULL);
+//		tableColumn.setText("Pfade");
+
+	}
+
+	private void fillTable() {
+		// table.setSize(200, 200);
+		for (int i = 0; i < paths.size(); i++) {
+			TableItem item = new TableItem(table, SWT.NONE);
+			item.setText(paths.get(i));
+		}
+		// TableItem item = new TableItem(table, SWT.NONE, 1);
+		// item.setText("*** New Item " + table.indexOf(item) + " ***");
 		
-		table = new Table(shlPfadeBearbeiten, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-		table.addMouseListener(new MouseAdapter() 
-		{
-			@Override
-			public void mouseDown(MouseEvent e) 
-			{
-				
-			}
-		});
-		table.setBounds(0, 0, 554, 481);
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
-		
-		tableColumn = new TableColumn(table, SWT.NULL);
-		tableColumn.setText("Pfade");
 		
 		Composite composite = new Composite(shlPfadeBearbeiten, SWT.NONE);
-		composite.setBounds(0, 481, 554, 64);
+		composite.setLayout(new GridLayout(2, false));
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
 		
-		Button btnLschen = new Button(composite, SWT.NONE);
-		btnLschen.setBounds(20, 10, 105, 35);
+		/*btnHizufgen = new Button(composite, SWT.NONE);
+		btnHizufgen.setText("Hizuf\u00FCgen");
+		new Label(composite, SWT.NONE);*/
+		
+		btnLschen = new Button(composite, SWT.NONE);
+		btnLschen.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent e) {deleteElements();}
+		});
 		btnLschen.setText("L\u00F6schen");
+		shlPfadeBearbeiten.pack();
 	}
-	
-	private void fillTable (ArrayList<String> al) 
+
+	//Löscht ausgewählte Zeilen
+	protected void deleteElements() 
 	{
-		for(int i=1;i<3;i++)
+		int a[]=table.getSelectionIndices();
+		for(int i=0;i<a.length;i++) 
 		{
-			//final TableItem item = new TableItem(table, SWT.NONE);
-			//item.setText("lululu");
+			System.out.println(paths.get(a[i]));
+			paths.remove(a[i]);
 		}
 	}
+	
 }
