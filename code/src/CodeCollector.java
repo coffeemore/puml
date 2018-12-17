@@ -8,8 +8,6 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import javax.swing.JOptionPane;
-
 /**
  * 
  * @author Die Klasse dient zum Einsammeln des Quellcodes. Sie kann .java-,
@@ -50,6 +48,7 @@ public class CodeCollector
      * 
      * @return String, der den vollständigen Quellcode enthält
      */
+
     public String getSourceCode()
     {
 	String sc = new String();
@@ -57,7 +56,7 @@ public class CodeCollector
 	FileReader filer = null;
 	ZipFile zFile = null;
 	File file = null;
-	
+
 	if (!paths.isEmpty())
 	{
 	    /**
@@ -78,58 +77,70 @@ public class CodeCollector
 			paths.remove(paths.get(j));
 		    }
 		}
-		
 	    }
 	    if (useJavaFiles && !useJarFiles)
 	    {
+		// sammelt den Quellcode aus den Java-Dateien ein
 		return (collectJava(sc, buffr, filer));
 	    } else
 	    {
 		if (!useJavaFiles && useJarFiles)
 		{
+		    // sammelt den Quellcode aus den Jar-Dateien ein
 		    return (collectJar(sc, buffr, zFile));
-		} 
+		}
 		/**
-		 * wenn useJavaFiles und useJarFiles beide auf true oder false gesetzt sind 
-		 * bzw. ihre Belegung anderweitig ungültig ist, wird eine Fehlermeldung ausgegeben
+		 * wenn useJavaFiles und useJarFiles beide auf true oder false gesetzt sind bzw.
+		 * ihre Belegung anderweitig ungültig ist, wird eine Fehlermeldung ausgegeben
 		 */
 		else
 		{
-		    JOptionPane.showMessageDialog(null, "Bitte wählen Sie JAR- oder Java-Dateien aus.", "Error",
-			    JOptionPane.ERROR_MESSAGE);
-		    return null;
+		    // sammelt den Quellcode aus den Jar- und Java-Dateien ein
+		    if (useJavaFiles && useJarFiles)
+		    {
+			sc = collectJava(sc, buffr, filer);
+			sc += collectJar(sc, buffr, zFile);
+			return sc;
+		    } else
+		    {
+			// wirft Exception, falls useJavaFiles und useJarFiles auf false stehen
+			throw new IllegalArgumentException();
+		    }
 		}
 	    }
-	} 
+	}
 	/**
 	 * Bei ungültiger Pfadauswahl wird eine Fehlermeldung ausgegeben
 	 */
 	else
 	{
-	    JOptionPane.showMessageDialog(null, "Bitte wählen Sie einen Pfad aus.", "Error", JOptionPane.ERROR_MESSAGE);
-	    return null;
+	    throw new NullPointerException();
 	}
     }
 
     /**
      * Java-Dateien werden in einen String eingelesen
-     * @param sc
-     * @param buffr
-     * @param filer
+     * 
+     * @param sc    - String zum Einsammeln
+     * @param filer - FileReader zum Einlesen der Dateien
+     * @param buffr - BufferedReader zum Buffern der eingelesenen Dateien
      * @return sc (eingelesener String)
      */
     private String collectJava(String sc, BufferedReader buffr, FileReader filer)
     {
+	// Schleife, die paths-Einträge durchgeht
 	for (int i = 0; i < paths.size(); i++)
 	{
+	    // Dateien werden über Pfade eingelesen und gebuffert
 	    try
 	    {
-		filer = new FileReader(paths.get(i));
-		buffr = new BufferedReader(filer);
-		String currLine;
-		
+		// alle Java-Dateien werden eingelesen
 		if (paths.get(i).endsWith(".java"))
 		{
+		    filer = new FileReader(paths.get(i));
+		    buffr = new BufferedReader(filer);
+		    String currLine;
+		    
 		    while ((currLine = buffr.readLine()) != null)
 		    {
 			sc += currLine;
@@ -140,15 +151,17 @@ public class CodeCollector
 		e.printStackTrace();
 	    } finally
 	    {
+		// BufferedReader und FileReader werden geschlossen
 		try
 		{
-		    if (buffr != null)
-		    {
-			buffr.close();
-		    }
+
 		    if (filer != null)
 		    {
 			filer.close();
+		    }
+		    if (buffr != null)
+		    {
+			buffr.close();
 		    }
 		} catch (IOException ex)
 		{
@@ -161,26 +174,31 @@ public class CodeCollector
 
     /**
      * Jar-Dateien werden in einen String eingelesen
-     * @param sc
-     * @param buffr
-     * @param zFile
+     * 
+     * @param sc - String zum Einsammeln
+     * @param buffr - BufferedReader zum Buffern der eingelesenen Dateien
+     * @param zFile - ZipFile zum Einlesen der Jar-Dateien
      * @return sc (eingelesener String)
      */
     private String collectJar(String sc, BufferedReader buffr, ZipFile zFile)
     {
 	try
 	{
+	    //Schleife, die alle Einträge  in paths durchgeht
 	    for (int i = 0; i < paths.size(); i++)
 	    {
 		if (paths.get(i).endsWith(".jar"))
 		{
+		    //Jar-Datei wird eingelesen
 		    zFile = new ZipFile(paths.get(i));
 		    if (zFile != null)
 		    {
+			//die Dateien in der Jar-Datei werden hier aufgelistet und gespeichert
 			Enumeration<? extends ZipEntry> entries = zFile.entries();
 			while (entries.hasMoreElements())
 			{
 			    ZipEntry entry = entries.nextElement();
+			    //wenn es sich um eine Java-Datei handelt, wird diese eingelesen
 			    if (!entry.isDirectory() && entry.getName().endsWith(".java"))
 			    {
 				buffr = new BufferedReader(new InputStreamReader(zFile.getInputStream(entry)));
@@ -224,15 +242,17 @@ public class CodeCollector
 
     /**
      * Prüft, ob in der übergebenen ArrayList Directories enthalten sind
-     * @param paths
+     * 
+     * @param paths - die Liste mit den übergebenen Pfaden
      * @return boolean
      */
     private boolean contDir(ArrayList<String> paths)
     {
+	//die Schleife geht alle Einträge von paths durch und schaut, ob sich darunter ein Ordner befindet
 	for (int i = 0; i < paths.size(); i++)
 	{
 	    File file = new File(paths.get(i));
-	    if (file.isDirectory() && !paths.get(i).endsWith(".zip"))
+	    if (file.isDirectory())
 	    {
 		return true;
 	    }
