@@ -49,6 +49,8 @@ public class CodeCollector
      * @return String, der den vollständigen Quellcode enthält
      */
 
+    // JUnit Test für Ordner-Schleife/-Input
+//symbolischer Link bei Ordner?
     public String getSourceCode()
     {
 	String sc = new String();
@@ -145,6 +147,7 @@ public class CodeCollector
 		    {
 			sc += currLine;
 		    }
+		    sc += "\n";
 		}
 	    } catch (IOException e)
 	    {
@@ -208,6 +211,7 @@ public class CodeCollector
 				{
 				    sc += currLine;
 				}
+				sc += "\n";
 			    } else
 			    {
 				continue;
