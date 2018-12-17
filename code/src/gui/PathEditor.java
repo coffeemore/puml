@@ -1,29 +1,23 @@
 package gui;
 
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
+
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.layout.FillLayout;
-
-
 import java.util.ArrayList;
-
-import javax.swing.event.TableColumnModelListener;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 //@author Jan Sollmann
-public class PathEditor {
+public class PathEditor 
+{
 
 	protected Shell shlPfadeBearbeiten;
 	private ArrayList<String> paths;
@@ -32,8 +26,6 @@ public class PathEditor {
 	private Button btnLschen;
 //	private TableColumn tableColumn;
 	
-	
-
 	public PathEditor(ArrayList<String> al) {
 		paths = al;
 	}
@@ -59,7 +51,8 @@ public class PathEditor {
 	/**
 	 * Create contents of the window.
 	 */
-	protected void createContents() {
+	protected void createContents() 
+	{
 		shlPfadeBearbeiten = new Shell();
 		shlPfadeBearbeiten.setMinimumSize(new Point(450, 300));
 		shlPfadeBearbeiten.setSize(450, 300);
@@ -72,21 +65,19 @@ public class PathEditor {
 //		
 //		tableColumn = new TableColumn(table, SWT.NULL);
 //		tableColumn.setText("Pfade");
-
 	}
 
-	private void fillTable() {
+	private void fillTable() 
+	{
 		// table.setSize(200, 200);
-		for (int i = 0; i < paths.size(); i++) {
+		for (int i = 0; i < paths.size(); i++) 
+		{
 			TableItem item = new TableItem(table, SWT.NONE);
 			item.setText(paths.get(i));
 		}
 		
-		
-		
 		// TableItem item = new TableItem(table, SWT.NONE, 1);
 		// item.setText("*** New Item " + table.indexOf(item) + " ***");
-		
 		
 		Composite composite = new Composite(shlPfadeBearbeiten, SWT.NONE);
 		composite.setLayout(new GridLayout(2, false));
@@ -99,7 +90,8 @@ public class PathEditor {
 		new Label(composite, SWT.NONE);*/
 		
 		btnLschen = new Button(composite, SWT.NONE);
-		btnLschen.addMouseListener(new MouseAdapter() {
+		btnLschen.addMouseListener(new MouseAdapter() 
+		{
 			@Override
 			public void mouseDown(MouseEvent e) {deleteElements();}
 		});
@@ -113,21 +105,21 @@ public class PathEditor {
 		int a[]=table.getSelectionIndices();
 		for(int i=0;i<a.length;i++) 
 		{
-			System.out.println(paths.get(a[i]));
+			//System.out.println(paths.get(a[i]));
 			paths.remove(a[i]);
 		}
 	}*/
 	//Löscht  angehackte Elemente
+	//Zu Implementieren wäre updaten der Tabelle um das Löschen gelöschter Elemente zu verhindern und der Übersicht halber
 	protected void deleteElements() 
 	{
 			for(int i=0;i<=table.getItemCount()-1;i++) 
 			{
 				if(table.getItem(i).getChecked()) 
 				{
-					System.out.println("drin");
+					//System.out.println("drin");
 					paths.remove(table.getItem(i).getText());
 				}
 			}
-	}
-	
+	}	
 }
