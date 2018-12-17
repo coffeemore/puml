@@ -110,15 +110,15 @@ public class PathEditor
 		}
 	}*/
 	//Löscht  angehackte Elemente
-	//Zu Implementieren wäre updaten der Tabelle um das Löschen gelöschter Elemente zu verhindern und der Übersicht halber
 	protected void deleteElements() 
 	{
-			for(int i=0;i<=table.getItemCount()-1;i++) 
+			for(int i=table.getItemCount()-1;i>=0;i--) 
 			{
 				if(table.getItem(i).getChecked()) 
 				{
 					//System.out.println("drin");
 					paths.remove(table.getItem(i).getText());
+					table.remove(i);
 				}
 			}
 	}	
