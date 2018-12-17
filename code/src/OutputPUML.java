@@ -49,7 +49,7 @@ public class OutputPUML
 	    pumlCode += myParsingResult.classes.get(from);
 	    if (myParsingResult.classConnections.get(i).getConnection() == ClassConnection.connectionType.extension)
 	    {
-		pumlCode += " -- "; // TODO eventuell Pfeile
+		pumlCode += " --|> "; // TODO eventuell Pfeile
 	    }
 	    else if (myParsingResult.classConnections.get(i)
 		    .getConnection() == ClassConnection.connectionType.aggregation)
@@ -83,7 +83,7 @@ public class OutputPUML
     }
 
     /**
-     * Erzeugt ein PlantUML-Diagramm aus der plantUML-Code-Datei am übergebenen Pfad
+     * Erzeugt ein PlantUML-Diagramm aus dem getPUML String am übergebenen Pfad
      * 
      * @param filePath Pfad an der die plantUML-Code-Datei liegt
      * @throws IOException
@@ -95,7 +95,8 @@ public class OutputPUML
 	List<GeneratedImage> list = reader.getGeneratedImages();
 	// Generated files
 	File png = list.get(0).getPngFile();
+	//TODO eventuell, damit kommt der Fehler dann auch Weg und das File kann nicht verändert werden?
 	png.setReadable(true);
-	png.setExecutable(false); //TODO eventuell, damit kommt der Fehler dann auch Weg und das File kann nicht verändert werden?
+	png.setExecutable(false);
     }
 }
