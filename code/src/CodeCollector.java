@@ -42,6 +42,8 @@ public class CodeCollector
     public CodeCollector()
     {
 	paths = new ArrayList<String>();
+	useJavaFiles = true;
+	useJarFiles = true;
     }
 
     /**

@@ -85,6 +85,7 @@ public class Console extends PUMLgenerator
 		outputPUML.savePUMLtoFile(parser.getParsingResult(), cmd.getOptionValue("o")); // UML Code generieren
 											       // und im uebergebenen
 											       // Pfad ablegen
+		System.out.println("test");
 		try
 		{
 		    outputPUML.createPlantUML(cmd.getOptionValue("o"), outputPUML.getPUML(parser.getParsingResult())); // Diagramm
@@ -104,10 +105,10 @@ public class Console extends PUMLgenerator
 	    }
 	    else
 	    {
-		outputPUML.savePUMLtoFile(parser.getParsingResult(), "./");
+		outputPUML.savePUMLtoFile(parser.getParsingResult(), "./outputPUML");
 		try
 		{
-		    outputPUML.createPlantUML("./", outputPUML.getPUML(parser.getParsingResult())); // Diagramm
+		    outputPUML.createPlantUML("./outputPUML", outputPUML.getPUML(parser.getParsingResult())); // Diagramm
 												    // erstellen und im
 												    // Arbeitsverzeichnis
 												    // ablegen
