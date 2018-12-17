@@ -1,8 +1,10 @@
 package gui;
 
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.layout.FillLayout;
+
 
 import java.util.ArrayList;
 
@@ -17,9 +19,10 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-
+//@author Jan Sollmann
 public class PathEditor {
 
 	protected Shell shlPfadeBearbeiten;
@@ -28,6 +31,8 @@ public class PathEditor {
 	private Button btnHizufgen;
 	private Button btnLschen;
 //	private TableColumn tableColumn;
+	
+	
 
 	public PathEditor(ArrayList<String> al) {
 		paths = al;
@@ -76,6 +81,9 @@ public class PathEditor {
 			TableItem item = new TableItem(table, SWT.NONE);
 			item.setText(paths.get(i));
 		}
+		
+		
+		
 		// TableItem item = new TableItem(table, SWT.NONE, 1);
 		// item.setText("*** New Item " + table.indexOf(item) + " ***");
 		
@@ -100,7 +108,7 @@ public class PathEditor {
 	}
 
 	//Löscht ausgewählte Zeilen
-	protected void deleteElements() 
+	/*protected void deleteElements() 
 	{
 		int a[]=table.getSelectionIndices();
 		for(int i=0;i<a.length;i++) 
@@ -108,6 +116,18 @@ public class PathEditor {
 			System.out.println(paths.get(a[i]));
 			paths.remove(a[i]);
 		}
+	}*/
+	//Löscht  angehackte Elemente
+	protected void deleteElements() 
+	{
+			for(int i=0;i<=table.getItemCount()-1;i++) 
+			{
+				if(table.getItem(i).getChecked()) 
+				{
+					System.out.println("drin");
+					paths.remove(table.getItem(i).getText());
+				}
+			}
 	}
 	
 }
