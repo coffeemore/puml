@@ -144,13 +144,13 @@ public class ParserJava implements ParserIf
 				|| newClassPos.size() > methodsWithNewClassPos.size())
 			{
 			    System.out.println("enthält Klasse " + classname + " als Komposition");
-			    ClassConnection cc = new ClassConnection(classno, classno, compositionType);
+			    ClassConnection cc = new ClassConnection(bothNumber(classname), classno, compositionType);
 			    classConnectionArray.add(cc);
 			}
 			else
 			{
 			    System.out.println("enthält Klasse " + classname + " als Agregation");
-			    ClassConnection cc = new ClassConnection(classno, classno, aggregationType);
+			    ClassConnection cc = new ClassConnection(bothNumber(classname), classno, aggregationType);
 			    classConnectionArray.add(cc);
 			}
 
