@@ -15,6 +15,10 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormAttachment;
 //@author Jan Sollmann
 public class PathEditor 
 {
@@ -24,6 +28,8 @@ public class PathEditor
 	private Table table;
 	private Button btnHizufgen;
 	private Button btnLschen;
+	private Button btnjava;
+	private Button btnjar;
 //	private TableColumn tableColumn;
 	
 	public PathEditor(ArrayList<String> al) {
@@ -54,12 +60,13 @@ public class PathEditor
 	protected void createContents() 
 	{
 		shlPfadeBearbeiten = new Shell();
-		shlPfadeBearbeiten.setMinimumSize(new Point(450, 300));
+		shlPfadeBearbeiten.setMinimumSize(new Point(1000, 300));
 		shlPfadeBearbeiten.setSize(450, 300);
 		shlPfadeBearbeiten.setText("Pfade bearbeiten");
 		shlPfadeBearbeiten.setLayout(new FillLayout(SWT.HORIZONTAL));
 
 		table = new Table(shlPfadeBearbeiten, SWT.CHECK);
+		table.setOrientation(SWT.RIGHT_TO_LEFT);
 //		table.setHeaderVisible(true);
 //		table.setLinesVisible(true);
 //		
@@ -80,22 +87,28 @@ public class PathEditor
 		// item.setText("*** New Item " + table.indexOf(item) + " ***");
 		
 		Composite composite = new Composite(shlPfadeBearbeiten, SWT.NONE);
-		composite.setLayout(new GridLayout(2, false));
-		new Label(composite, SWT.NONE);
-		new Label(composite, SWT.NONE);
-		new Label(composite, SWT.NONE);
 		
 		/*btnHizufgen = new Button(composite, SWT.NONE);
 		btnHizufgen.setText("Hizuf\u00FCgen");
 		new Label(composite, SWT.NONE);*/
+		composite.setLayout(null);
 		
 		btnLschen = new Button(composite, SWT.NONE);
+		btnLschen.setBounds(10, 21, 76, 35);
 		btnLschen.addMouseListener(new MouseAdapter() 
 		{
 			@Override
 			public void mouseDown(MouseEvent e) {deleteElements();}
 		});
 		btnLschen.setText("L\u00F6schen");
+		
+		btnjava = new Button(composite, SWT.RADIO);
+		btnjava.setBounds(10, 90, 133, 25);
+		btnjava.setText(".java ");
+		
+		btnjar = new Button(composite, SWT.RADIO);
+		btnjar.setBounds(10, 121, 133, 25);
+		btnjar.setText(".jar");
 		shlPfadeBearbeiten.pack();
 	}
 
@@ -122,4 +135,28 @@ public class PathEditor
 				}
 			}
 	}	
+	public boolean getJava() 
+	{
+		if(btnjava.getSelection())
+		{
+			//System.out.println("Java");
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	public boolean getJar() 
+	{
+		if(btnjar.getSelection())
+		{
+			//System.out.println("Jar");
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 }
