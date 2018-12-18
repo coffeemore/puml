@@ -35,12 +35,12 @@ public class OutputPUML
 	String pumlCode = "";
 	int from;
 	int to;
-	pumlCode += "@startuml%";
+	pumlCode += "@startuml\n";
 	for (int i = 0; i < myParsingResult.classes.size(); i++)
 	{
 	    pumlCode += "class ";
 	    pumlCode += myParsingResult.classes.get(i);
-	    pumlCode += "%";
+	    pumlCode += "\n";
 	}
 	for (int i = 0; i < myParsingResult.classConnections.size(); i++)
 	{
@@ -61,10 +61,9 @@ public class OutputPUML
 		pumlCode += " *-- "; // TODO eventuell Richtung aendern
 	    }
 	    pumlCode += myParsingResult.classes.get(to);
-	    pumlCode += "%";
+	    pumlCode += "\n";
 	}
 	pumlCode += "@enduml";
-
 	return pumlCode;
     }
 
@@ -73,51 +72,14 @@ public class OutputPUML
      * 
      * @param myParsingResult Ergebnisse des Parsens
      * @param filePath        Pfad an den die Datei gespeichert werden soll
+     * @throws IOException 
      */
-    public void savePUMLtoFile(ParsingResult myParsingResult, String filePath)
+    public void savePUMLtoFile(String pumlCode, String filePath) throws IOException
     {
-	int from;
-	int to;
-	try
-	{
 	    BufferedWriter bw = new BufferedWriter(new FileWriter(new File(filePath)));
-	    bw.write("@startuml");
-	    bw.newLine();
-	    for (int i = 0; i < myParsingResult.classes.size(); i++)
-	    {
-		bw.write("class ");
-		bw.write(myParsingResult.classes.get(i));
-		bw.newLine();
-	    }
-	    for (int i = 0; i < myParsingResult.classConnections.size(); i++)
-	    {
-		from = myParsingResult.classConnections.get(i).getFrom();
-		to = myParsingResult.classConnections.get(i).getTo();
-		bw.write(myParsingResult.classes.get(from));
-		if (myParsingResult.classConnections.get(i).getConnection() == ClassConnection.connectionType.extension)
-		{
-		    bw.write(" -- "); // TODO eventuell Pfeile
-		}
-		else if (myParsingResult.classConnections.get(i)
-			.getConnection() == ClassConnection.connectionType.aggregation)
-		{
-		    bw.write(" o-- "); // TODO eventuell Richtung aendern
-		}
-		else // composition
-		{
-		    bw.write(" *-- "); // TODO eventuell Richtung aendern
-		}
-		bw.write(myParsingResult.classes.get(to));
-		bw.newLine();
-	    }
-	    bw.write("@enduml");
+	    bw.write(pumlCode);
 	    bw.flush();
 	    bw.close();
-	}
-	catch (Exception e)
-	{
-	    e.printStackTrace(); // is geil aber nur fuer DEBUGEN
-	}
     }
 
     /**
@@ -133,5 +95,7 @@ public class OutputPUML
 	List<GeneratedImage> list = reader.getGeneratedImages();
 	// Generated files
 	File png = list.get(0).getPngFile();
+	png.setReadable(true);
+	png.setExecutable(false); //TODO eventuell, damit kommt der Fehler dann auch Weg und das File kann nicht verändert werden?
     }
 }

@@ -78,7 +78,7 @@ class OutputPUMLTest {
 		//savePumltoFile testen //TODO Aendern der Filepaths bevor Test (je nach System)
 		//TODO expectedFile platzieren
 		OutputPUML output = new OutputPUML();
-		output.savePUMLtoFile(actualParsTest, "/home/tore/Test/actualFile.txt");
+		output.savePUMLtoFile(output.getPUML(actualParsTest), "/home/tore/Test/actualFile.txt");
 		
 		File actual = new File("/home/tore/Test/actualFile.txt");		
 		assertEquals(FileUtils.readFile(actual) , FileUtils.readFile(expected));
@@ -117,7 +117,7 @@ class OutputPUMLTest {
 				
 				//TODO Aendern der Filepaths bevor Test (je nach System)
 		OutputPUML output = new OutputPUML();
-		output.createPlantUML("/home/tore/Test/planttest.txt", actualString);
+		output.createPlantUML("/home/tore/Test/actualFile.txt", actualString);
 		
 		File actual = new File("/home/tore/Test/expectedFile.png");
 		
