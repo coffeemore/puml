@@ -1,13 +1,14 @@
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
-
 import net.sourceforge.plantuml.GeneratedImage;
 import net.sourceforge.plantuml.SourceFileReader;
+import net.sourceforge.plantuml.SourceStringReader;
 
-//import ClassConnection.connectionType;
 
 /**
  * 
@@ -24,13 +25,12 @@ public class OutputPUML
     };
 
     /**
-     * Liefert den plantUML-Code zurück
+     * Liefert den plantUML-Code zurueck
      * 
      * @param myParsingResult Ergebnisse des Parsens
-     * @return String der den plantUML-Code enthält
+     * @return String der den plantUML-Code enthaelt
      */
-    public String getPUML(ParsingResult myParsingResult) // TODO eventuell ueberfluessig? http://plantuml.com/api
-							 // ->Hilfe
+    public String getPUML(ParsingResult myParsingResult)
     {
 	String pumlCode = "";
 	int from;
@@ -49,7 +49,7 @@ public class OutputPUML
 	    pumlCode += myParsingResult.classes.get(from);
 	    if (myParsingResult.classConnections.get(i).getConnection() == ClassConnection.connectionType.extension)
 	    {
-		pumlCode += " -- "; // TODO eventuell Pfeile
+		pumlCode += " <|-- "; // TODO eventuell Pfeile aendern
 	    }
 	    else if (myParsingResult.classConnections.get(i)
 		    .getConnection() == ClassConnection.connectionType.aggregation)
@@ -67,11 +67,12 @@ public class OutputPUML
 	return pumlCode;
     }
 
+    
     /**
-     * Speichert den plantUML-Code in eine Datei
+     * Speichert den plantUML-Code aus dem String der getPUML Methode in eine Datei
      * 
-     * @param myParsingResult Ergebnisse des Parsens
-     * @param filePath        Pfad an den die Datei gespeichert werden soll
+     * @param pumlCode		String der durch die getPUML Methode erzeugt wird
+     * @param filePath		Pfad an den die Datei gespeichert werden soll
      * @throws IOException 
      */
     public void savePUMLtoFile(String pumlCode, String filePath) throws IOException
@@ -83,19 +84,34 @@ public class OutputPUML
     }
 
     /**
-     * Erzeugt ein PlantUML-Diagramm aus der plantUML-Code-Datei am übergebenen Pfad
+     * Erzeugt ein PlantUML-Diagramm aus der plantUML-Code-Datei am uebergebenen Pfad
      * 
-     * @param filePath Pfad an der die plantUML-Code-Datei liegt
+     * @param sourcePath	Pfad an der die plantUML-Code-Datei liegt
+     * @param destPath		Ordnerpfad, !!nicht Dateiname!!, an dem die png-Datei gespeichert wird, Name der PNG=Name der Textdatei
      * @throws IOException
      */
-    public void createPlantUML(String filePath, String pumlCode) throws IOException
+    public void createPUMLfromFile(String sourcePath, String destPath) throws IOException //
     {
-	File source = new File(filePath);
-	SourceFileReader reader = new SourceFileReader(source);
+	File source = new File(sourcePath);
+	File dest = new File (destPath);
+	SourceFileReader reader = new SourceFileReader(source, dest);
 	List<GeneratedImage> list = reader.getGeneratedImages();
-	// Generated files
-	File png = list.get(0).getPngFile();
-	png.setReadable(true);
-	png.setExecutable(false); //TODO eventuell, damit kommt der Fehler dann auch Weg und das File kann nicht verändert werden?
+	list.get(0).getPngFile();
     }
+    
+    
+    /**
+     * Erzeugt ein PlantUML-Diagramm aus dem durch die Methode getPUML erzeugten String
+     * 
+     * @param filePath	Pfad an der die plantUML-PNG gespeichert werden soll
+     * @param pumlCode	String der durch die getPUML Methode erzeugt wurde
+     * @throws IOException
+     */
+    public void createPUMLfromString(String filePath, String pumlCode) throws IOException
+    {
+    	OutputStream png = new FileOutputStream(filePath);
+    	SourceStringReader reader = new SourceStringReader(pumlCode);
+    	reader.outputImage(png).getDescription();
+    }
+    
 }
