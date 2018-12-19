@@ -42,7 +42,7 @@ class OutputPUMLTest {
 		//GetPuml testen
 		String actual = new OutputPUML().getPUML(actualParsTest);
 		
-		String expected = "@startuml%class BeispielKlasse1%class BeispielKlasse2%class BeispielKlasse3%class BeispielKlasse4%class BeispielKlasse5%BeispielKlasse2 o-- BeispielKlasse5%BeispielKlasse2 -- BeispielKlasse3%BeispielKlasse3 *-- BeispielKlasse4%@enduml";
+		String expected = "@startuml\nclass BeispielKlasse1\nclass BeispielKlasse2\nclass BeispielKlasse3\nclass BeispielKlasse4\nclass BeispielKlasse5\nBeispielKlasse2 o-- BeispielKlasse5\nBeispielKlasse2 <|-- BeispielKlasse3\nBeispielKlasse3 *-- BeispielKlasse4\n@enduml";
 		assertEquals(expected, actual);
 	}
 
@@ -117,11 +117,47 @@ class OutputPUMLTest {
 				
 				//TODO Aendern der Filepaths bevor Test (je nach System)
 		OutputPUML output = new OutputPUML();
-		output.createPlantUML("/home/tore/Test/actualFile.txt", actualString);
+		output.createPlantUML("/home/tore/Test/actualFile.txt", "/home/tore/Test/Test");
 		
 		File actual = new File("/home/tore/Test/expectedFile.png");
 		
 		assertEquals(FileUtils.readFile(actual) , FileUtils.readFile(expected));
 	}
+	
+//	@Test
+//	void testCreatePUMLfromString() throws IOException 
+//	{
+//
+//		//ClassConnection Elemente erstellen
+//		ClassConnection elA = new ClassConnection(1,4,ClassConnection.connectionType.aggregation);
+//		
+//		ClassConnection elB = new ClassConnection(1,2,ClassConnection.connectionType.extension);
+//		
+//		ClassConnection elC = new ClassConnection(2,3,ClassConnection.connectionType.composition);
+//		
+//		//classes fuellen
+//		ArrayList<String> classes = new ArrayList<String>();
+//		classes.add("BeispielKlasse1");
+//		classes.add("BeispielKlasse2");
+//		classes.add("BeispielKlasse3");
+//		classes.add("BeispielKlasse4");
+//		classes.add("BeispielKlasse5");
+//		
+//		//classConnections fuellen
+//		ArrayList<ClassConnection> classConnections = new ArrayList<ClassConnection>();
+//		classConnections.add(elA);
+//		classConnections.add(elB);
+//		classConnections.add(elC);
+//		
+//		//ParsingResult erstellen
+//		ParsingResult actualParsTest = new ParsingResult(classes,classConnections);
+//		
+//		//TODO Aendern der Filepaths bevor Test (je nach System)
+//		File expected = new File("/home/tore/Test/expectedFile.png"); 
+//		OutputPUML output = new OutputPUML();
+//		File actual = new File("/home/tore/Test/actualFile.png");
+//		output.createPUMLfromString("/home/tore/Test/actualFile.png", output.getPUML(actualParsTest));
+//		assertEquals(FileUtils.readFile(actual) , FileUtils.readFile(expected));
+//	}
 
 }

@@ -1,11 +1,14 @@
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import net.sourceforge.plantuml.GeneratedImage;
 import net.sourceforge.plantuml.SourceFileReader;
+import net.sourceforge.plantuml.SourceStringReader;
 
 //import ClassConnection.connectionType;
 
@@ -49,7 +52,7 @@ public class OutputPUML
 	    pumlCode += myParsingResult.classes.get(from);
 	    if (myParsingResult.classConnections.get(i).getConnection() == ClassConnection.connectionType.extension)
 	    {
-		pumlCode += " --|> "; // TODO eventuell Pfeile
+		pumlCode += " <|-- "; // TODO eventuell Pfeile
 	    }
 	    else if (myParsingResult.classConnections.get(i)
 		    .getConnection() == ClassConnection.connectionType.aggregation)
@@ -85,18 +88,27 @@ public class OutputPUML
     /**
      * Erzeugt ein PlantUML-Diagramm aus dem getPUML String am übergebenen Pfad
      * 
-     * @param filePath Pfad an der die plantUML-Code-Datei liegt
+     * @param sourcePath 
      * @throws IOException
      */
-    public void createPlantUML(String filePath, String pumlCode) throws IOException
+    public void createPlantUML(String sourcePath, String destPath) throws IOException
     {
-	File source = new File(filePath);
-	SourceFileReader reader = new SourceFileReader(source);
+	File source = new File(sourcePath);
+	File dest = new File(destPath);
+	SourceFileReader reader = new SourceFileReader(source, dest);
 	List<GeneratedImage> list = reader.getGeneratedImages();
 	// Generated files
-	File png = list.get(0).getPngFile();
-	//TODO eventuell, damit kommt der Fehler dann auch Weg und das File kann nicht verändert werden?
-	png.setReadable(true);
-	png.setExecutable(false);
+	list.get(0).getPngFile();
+    }
+    
+    public void createPUMLfromString(String filePath, String pumlCode) throws IOException
+    {
+    	OutputStream png = new FileOutputStream(filePath);
+    	SourceStringReader reader = new SourceStringReader(pumlCode);
+    	// Schreibt den String in ein "png" File
+    	reader.outputImage(png).getDescription();
+//    	desc.length(); //nur zur Vermeidung der Warnung
+    	// Returned einen null string wenn fehlgeschlagen
+
     }
 }
