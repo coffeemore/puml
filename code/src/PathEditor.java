@@ -19,6 +19,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormAttachment;
+import swing2swt.layout.BorderLayout;
 //@author Jan Sollmann
 public class PathEditor 
 {
@@ -58,13 +59,13 @@ public class PathEditor
 	protected void createContents() 
 	{
 		shlPfadeBearbeiten = new Shell();
-		shlPfadeBearbeiten.setMinimumSize(new Point(1000, 300));
-		shlPfadeBearbeiten.setSize(450, 300);
+		shlPfadeBearbeiten.setMinimumSize(new Point(600, 300));
+		shlPfadeBearbeiten.setSize(803, 304);
 		shlPfadeBearbeiten.setText("Pfade bearbeiten");
-		shlPfadeBearbeiten.setLayout(new FillLayout(SWT.HORIZONTAL));
+		shlPfadeBearbeiten.setLayout(new BorderLayout(0, 0));
 
 		table = new Table(shlPfadeBearbeiten, SWT.CHECK);
-		table.setOrientation(SWT.RIGHT_TO_LEFT);
+		table.setOrientation(SWT.LEFT_TO_RIGHT);
 //		table.setHeaderVisible(true);
 //		table.setLinesVisible(true);
 //		
@@ -86,6 +87,7 @@ public class PathEditor
 		// item.setText("*** New Item " + table.indexOf(item) + " ***");
 		
 		Composite composite = new Composite(shlPfadeBearbeiten, SWT.NONE);
+		composite.setLayoutData(BorderLayout.SOUTH);
 		
 		/*btnHizufgen = new Button(composite, SWT.NONE);
 		btnHizufgen.setText("Hizuf\u00FCgen");
@@ -93,7 +95,7 @@ public class PathEditor
 		composite.setLayout(null);
 		
 		btnLschen = new Button(composite, SWT.NONE);
-		btnLschen.setBounds(10, 21, 76, 35);
+		btnLschen.setBounds(0, 0, 76, 35);
 		btnLschen.addMouseListener(new MouseAdapter() 
 		{
 			@Override
