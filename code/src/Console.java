@@ -8,6 +8,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.UnrecognizedOptionException;
 
 /**
  * 
@@ -36,7 +37,7 @@ public class Console extends PUMLgenerator
 
 	// hier wird ein neuer Container für Optionen angelegt
 	Options options = new Options();
-	options.addOption("c", false, "Konsole mit Anleitung wird aufgerufen");
+	options.addOption("c", false, "Konsole wird aufgerufen");
 
 	Option input = Option.builder() // Angabe der zu verarbeitenden Dateien
 		.longOpt("i").argName("filepath").hasArg().valueSeparator(';').numberOfArgs(Option.UNLIMITED_VALUES)
@@ -54,74 +55,75 @@ public class Console extends PUMLgenerator
 
 	// Parser
 	CommandLineParser commandParser = new DefaultParser();
-	CommandLine cmd = commandParser.parse(options, args);
 
-	// Argumentauswertungen und Ausfuehrungen
-	if (cmd.hasOption("c")) // Anleitung ausgeben
+	try {
+		CommandLine cmd = commandParser.parse(options, args);
+		
+				// Argumentauswertungen und Ausfuehrungen
+				if (cmd.hasOption("c")) // Anleitung ausgeben
+				{
+					System.out.println("Consolemode");
+				}
+				if (cmd.hasOption("ijar")) // ignore jar files
+				{
+				    codeCollector.setUseJarFiles(false);
+				}
+				if (cmd.hasOption("ijava")) // ignore java files
+				{
+				    codeCollector.setUseJavaFiles(false);
+				}
+				if (cmd.hasOption("i")) // Verarbeitung vieler zu verarbeitenden Pfade
+				{
+				    for (int i = 0; i < cmd.getOptionValues("i").length; i++) // Pfade in Collector Liste schreiben
+				    {
+					codeCollector.paths.add(cmd.getOptionValues("i")[i]);
+					System.out.println(codeCollector.paths.get(i));
+				    }
+				    PUMLgenerator.parser.parse(codeCollector.getSourceCode()); // Parser berbeitet Daten welche ihm übergeben
+											       // werden
+
+				    if (cmd.hasOption("o")) // Zielordner abfragen, sonst in Arbeitsverzeichnis sichern
+				    {
+							try
+							{
+						    	outputPUML.savePUMLtoFile(outputPUML.getPUML(parser.getParsingResult()), cmd.getOptionValue("o")+"outPUML_Code"); //Einbinden der neuen Code Funktion
+						    	
+								outputPUML.createPUMLfromString(cmd.getOptionValue("o")+"outPUML_Graph", outputPUML.getPUML(parser.getParsingResult())); //Einbinden der Diagrammfunktion
+							}
+						catch (IOException e)
+						{
+							System.out.println("Kommandozeile: Verarbeitung mit output-Pfad fehlgeschlagen");
+						    e.printStackTrace();
+						}
+						System.out.println(
+							"Zielordner:" + cmd.getOptionValue("o") + "\nQuelle: " + codeCollector.getSourceCode());
+					    }
+				    else //Falls kein Output-Path definiert 
+				    {
+				    	try
+				    	{
+				    		outputPUML.savePUMLtoFile(outputPUML.getPUML(parser.getParsingResult()),"./outPUML_Code_defaultlocation"); //Code erzeugen Funktion 
+				    	
+				    		outputPUML.createPUMLfromString("./outPUML_Graph_defaultlocation", outputPUML.getPUML(parser.getParsingResult())); //Einbinden der Diagrammfunktion
+				    	}
+					catch (IOException e)
+					{
+						System.out.println("Kommandozeile: Verarbeitung ohne output-Pfad fehlgeschlagen");
+					    e.printStackTrace();
+					}
+				    }
+				}
+				else if (!cmd.hasOption("i"))
+				{
+				    System.out.println("Es fehlt ein zu bearbeitender Pfad.");
+				}
+	}
+	catch(UnrecognizedOptionException uoe) //Falls Parameter unbekannt, Hilfe ausgeben
 	{
-	    HelpFormatter formatter = new HelpFormatter();
+		System.out.println("Paramter: "+uoe.getOption()+" unknown.");
+		HelpFormatter formatter = new HelpFormatter();
 	    formatter.printHelp("PUML", options);
 	}
-	if (cmd.hasOption("ijar")) // ignore jar files
-	{
-	    codeCollector.setUseJarFiles(false);
-	}
-	if (cmd.hasOption("ijava")) // ignore java files
-	{
-	    codeCollector.setUseJavaFiles(false);
-	}
-	if (cmd.hasOption("i")) // Verarbeitung vieler zu verarbeitenden Pfade
-	{
-	    for (int i = 0; i < cmd.getOptionValues("i").length; i++) // Pfade in Collector Liste schreiben
-	    {
-		codeCollector.paths.add(cmd.getOptionValues("i")[i]);
-		System.out.println(codeCollector.paths.get(i));
-	    }
-	    PUMLgenerator.parser.parse(codeCollector.getSourceCode()); // Parser berbeitet Daten welche ihm übergeben
-								       // werden
-
-	    if (cmd.hasOption("o")) // Zielordner abfragen, sonst in Arbeitsverzeichnis sichern
-	    {
-		outputPUML.savePUMLtoFile(parser.getParsingResult(), cmd.getOptionValue("o")); // UML Code generieren
-											       // und im uebergebenen
-											       // Pfad ablegen
-		System.out.println("test");
-		try
-		{
-		    outputPUML.createPlantUML(cmd.getOptionValue("o"), outputPUML.getPUML(parser.getParsingResult())); // Diagramm
-														       // erstellen
-														       // und
-														       // im
-														       // uebergebenen
-														       // Pfad
-														       // ablegen
-		}
-		catch (IOException e)
-		{
-		    e.printStackTrace();
-		}
-		System.out.println(
-			"Zielordner:" + cmd.getOptionValue("o") + "\nQuelle: " + codeCollector.getSourceCode());
-	    }
-	    else
-	    {
-		outputPUML.savePUMLtoFile(parser.getParsingResult(), "./outputPUML");
-		try
-		{
-		    outputPUML.createPlantUML("./outputPUML", outputPUML.getPUML(parser.getParsingResult())); // Diagramm
-												    // erstellen und im
-												    // Arbeitsverzeichnis
-												    // ablegen
-		}
-		catch (IOException e)
-		{
-		    e.printStackTrace();
-		}
-	    }
-	}
-	else if (!cmd.hasOption("c"))
-	{
-	    System.out.println("Es fehlt ein zu bearbeitender Pfad.");
-	}
+	
     }
 }

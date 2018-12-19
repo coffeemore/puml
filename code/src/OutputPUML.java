@@ -1,13 +1,14 @@
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
-
 import net.sourceforge.plantuml.GeneratedImage;
 import net.sourceforge.plantuml.SourceFileReader;
+import net.sourceforge.plantuml.SourceStringReader;
 
-//import ClassConnection.connectionType;
 
 /**
  * 
@@ -24,23 +25,22 @@ public class OutputPUML
     };
 
     /**
-     * Liefert den plantUML-Code zurück
+     * Liefert den plantUML-Code zurueck
      * 
      * @param myParsingResult Ergebnisse des Parsens
-     * @return String der den plantUML-Code enthält
+     * @return String der den plantUML-Code enthaelt
      */
-    public String getPUML(ParsingResult myParsingResult) // TODO eventuell ueberfluessig? http://plantuml.com/api
-							 // ->Hilfe
+    public String getPUML(ParsingResult myParsingResult)
     {
 	String pumlCode = "";
 	int from;
 	int to;
-	pumlCode += "@startuml%";
+	pumlCode += "@startuml\n";
 	for (int i = 0; i < myParsingResult.classes.size(); i++)
 	{
 	    pumlCode += "class ";
 	    pumlCode += myParsingResult.classes.get(i);
-	    pumlCode += "%";
+	    pumlCode += "\n";
 	}
 	for (int i = 0; i < myParsingResult.classConnections.size(); i++)
 	{
@@ -49,7 +49,7 @@ public class OutputPUML
 	    pumlCode += myParsingResult.classes.get(from);
 	    if (myParsingResult.classConnections.get(i).getConnection() == ClassConnection.connectionType.extension)
 	    {
-		pumlCode += " -- "; // TODO eventuell Pfeile
+		pumlCode += " <|-- "; // TODO eventuell Pfeile aendern
 	    }
 	    else if (myParsingResult.classConnections.get(i)
 		    .getConnection() == ClassConnection.connectionType.aggregation)
@@ -61,77 +61,57 @@ public class OutputPUML
 		pumlCode += " *-- "; // TODO eventuell Richtung aendern
 	    }
 	    pumlCode += myParsingResult.classes.get(to);
-	    pumlCode += "%";
+	    pumlCode += "\n";
 	}
 	pumlCode += "@enduml";
-
 	return pumlCode;
     }
 
+    
     /**
-     * Speichert den plantUML-Code in eine Datei
+     * Speichert den plantUML-Code aus dem String der getPUML Methode in eine Datei
      * 
-     * @param myParsingResult Ergebnisse des Parsens
-     * @param filePath        Pfad an den die Datei gespeichert werden soll
+     * @param pumlCode		String der durch die getPUML Methode erzeugt wird
+     * @param filePath		Pfad an den die Datei gespeichert werden soll
+     * @throws IOException 
      */
-    public void savePUMLtoFile(ParsingResult myParsingResult, String filePath)
+    public void savePUMLtoFile(String pumlCode, String filePath) throws IOException
     {
-	int from;
-	int to;
-	try
-	{
 	    BufferedWriter bw = new BufferedWriter(new FileWriter(new File(filePath)));
-	    bw.write("@startuml");
-	    bw.newLine();
-	    for (int i = 0; i < myParsingResult.classes.size(); i++)
-	    {
-		bw.write("class ");
-		bw.write(myParsingResult.classes.get(i));
-		bw.newLine();
-	    }
-	    for (int i = 0; i < myParsingResult.classConnections.size(); i++)
-	    {
-		from = myParsingResult.classConnections.get(i).getFrom();
-		to = myParsingResult.classConnections.get(i).getTo();
-		bw.write(myParsingResult.classes.get(from));
-		if (myParsingResult.classConnections.get(i).getConnection() == ClassConnection.connectionType.extension)
-		{
-		    bw.write(" -- "); // TODO eventuell Pfeile
-		}
-		else if (myParsingResult.classConnections.get(i)
-			.getConnection() == ClassConnection.connectionType.aggregation)
-		{
-		    bw.write(" o-- "); // TODO eventuell Richtung aendern
-		}
-		else // composition
-		{
-		    bw.write(" *-- "); // TODO eventuell Richtung aendern
-		}
-		bw.write(myParsingResult.classes.get(to));
-		bw.newLine();
-	    }
-	    bw.write("@enduml");
+	    bw.write(pumlCode);
 	    bw.flush();
 	    bw.close();
-	}
-	catch (Exception e)
-	{
-	    e.printStackTrace(); // is geil aber nur fuer DEBUGEN
-	}
     }
 
     /**
-     * Erzeugt ein PlantUML-Diagramm aus der plantUML-Code-Datei am übergebenen Pfad
+     * Erzeugt ein PlantUML-Diagramm aus der plantUML-Code-Datei am uebergebenen Pfad
      * 
-     * @param filePath Pfad an der die plantUML-Code-Datei liegt
+     * @param sourcePath	Pfad an der die plantUML-Code-Datei liegt
+     * @param destPath		Ordnerpfad, !!nicht Dateiname!!, an dem die png-Datei gespeichert wird, Name der PNG=Name der Textdatei
      * @throws IOException
      */
-    public void createPlantUML(String filePath, String pumlCode) throws IOException
+    public void createPUMLfromFile(String sourcePath, String destPath) throws IOException //
     {
-	File source = new File(filePath);
-	SourceFileReader reader = new SourceFileReader(source);
+	File source = new File(sourcePath);
+	File dest = new File (destPath);
+	SourceFileReader reader = new SourceFileReader(source, dest);
 	List<GeneratedImage> list = reader.getGeneratedImages();
-	// Generated files
-	File png = list.get(0).getPngFile();
+	list.get(0).getPngFile();
     }
+    
+    
+    /**
+     * Erzeugt ein PlantUML-Diagramm aus dem durch die Methode getPUML erzeugten String
+     * 
+     * @param filePath	Pfad an der die plantUML-PNG gespeichert werden soll
+     * @param pumlCode	String der durch die getPUML Methode erzeugt wurde
+     * @throws IOException
+     */
+    public void createPUMLfromString(String filePath, String pumlCode) throws IOException
+    {
+    	OutputStream png = new FileOutputStream(filePath);
+    	SourceStringReader reader = new SourceStringReader(pumlCode);
+    	reader.outputImage(png).getDescription();
+    }
+    
 }
