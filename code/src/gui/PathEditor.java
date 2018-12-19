@@ -28,8 +28,6 @@ public class PathEditor
 	private Table table;
 	private Button btnHizufgen;
 	private Button btnLschen;
-	private Button btnjava;
-	private Button btnjar;
 //	private TableColumn tableColumn;
 	
 	public PathEditor(ArrayList<String> al) {
@@ -46,7 +44,7 @@ public class PathEditor
 		createContents();
 		shlPfadeBearbeiten.open();
 		shlPfadeBearbeiten.layout();
-		fillTable();
+		
 		while (!shlPfadeBearbeiten.isDisposed()) {
 			if (!display.readAndDispatch()) {
 				display.sleep();
@@ -72,6 +70,7 @@ public class PathEditor
 //		
 //		tableColumn = new TableColumn(table, SWT.NULL);
 //		tableColumn.setText("Pfade");
+		fillTable();
 	}
 
 	private void fillTable() 
@@ -101,14 +100,6 @@ public class PathEditor
 			public void mouseDown(MouseEvent e) {deleteElements();}
 		});
 		btnLschen.setText("L\u00F6schen");
-		
-		btnjava = new Button(composite, SWT.RADIO);
-		btnjava.setBounds(10, 90, 133, 25);
-		btnjava.setText(".java ");
-		
-		btnjar = new Button(composite, SWT.RADIO);
-		btnjar.setBounds(10, 121, 133, 25);
-		btnjar.setText(".jar");
 		shlPfadeBearbeiten.pack();
 	}
 
@@ -135,28 +126,5 @@ public class PathEditor
 				}
 			}
 	}	
-	public boolean getJava() 
-	{
-		if(btnjava.getSelection())
-		{
-			//System.out.println("Java");
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	public boolean getJar() 
-	{
-		if(btnjar.getSelection())
-		{
-			//System.out.println("Jar");
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
+	
 }
