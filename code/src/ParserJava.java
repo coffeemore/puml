@@ -39,7 +39,8 @@ public class ParserJava implements ParserIf
     private String getCommentlessSourceCode(String sourcec) // Entfernt Kommentare eines Strings
     {
 	sourcec = sourcec.replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)", "");
-	System.out.println("!!! Commentless Sourcecode:\n" + sourcec + "\n!!!");
+	System.out.println("============================== Commentless Sourcecode: ==============================\n" 
+	+ sourcec + "\n====================================================================================");
 	return sourcec;
     }
 
@@ -51,9 +52,9 @@ public class ParserJava implements ParserIf
      */
     private void analyzeClassBody(String substring, String parentClassName)
     {
-	System.out.println("============================== Inhalt von Sourcecode ab Klasse " + parentClassName
-		+ " ==============================\n" + substring
-		+ "\n===================================================================================================");
+//	System.out.println("============================== Inhalt von Sourcecode ab Klasse " + parentClassName
+//		+ " ==============================\n" + substring
+//		+ "\n===================================================================================================");
 
 	ArrayList<Integer> CurlyPos = new ArrayList<>();
 	int counter = 0;
@@ -90,6 +91,7 @@ public class ParserJava implements ParserIf
 	for (String classname : className)
 	{
 	    ArrayList<Integer> newClassPos = new ArrayList<>();
+	    ArrayList<Integer> dataTypeClassPos = new ArrayList<>();
 	    ArrayList<Integer> constructorPos = new ArrayList<>();
 	    ArrayList<Integer> constructorWithNewClassPos = new ArrayList<>();
 	    ArrayList<Integer> methodsWithNewClassPos = new ArrayList<>();
@@ -102,6 +104,12 @@ public class ParserJava implements ParserIf
 		{
 		    newClassPos.add(match.start());
 		    System.out.println("enthält new " + classname + "() an Position " + match.start());
+		}
+		Matcher dataTypeClass = Pattern.compile("< *" + classname + " *>").matcher(classBody);
+		while (dataTypeClass.find())
+		{
+		    dataTypeClassPos.add(dataTypeClass.start());
+		    System.out.println("enthält <" + classname + "> an Position " + dataTypeClass.start());
 		}
 		Matcher match2 = Pattern
 			.compile(parentClassName + " *\\(.*\\) *\\{.*new +" + classname + " *\\(.*\\).*\\} *;")
@@ -153,7 +161,8 @@ public class ParserJava implements ParserIf
     {
 	// Auslesen aller Interfacenamen
 	// 1. Suche nach Interface-Deklaration
-	// TODO: BUG! entfernt zu viel!
+	// TODO: BUG! entfernt zu viel! -> löscht alle Stellen mit // oder /* ...  */ 
+	// deswegen darauf achten, dass keine "//" oder /* ... */ in RegEx oder Strings benutzt werden 
 	sourceCode = getCommentlessSourceCode(sourceCode);
 	Matcher interfaceMatcher = Pattern.compile("interface +([a-zA-Z0-9]+).*\\R* *\\{").matcher(sourceCode);
 	System.out.println("Interfaces: ");
