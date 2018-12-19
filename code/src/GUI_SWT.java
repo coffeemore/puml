@@ -24,7 +24,7 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Die Klasse benˆtigt im Build Path den Verweis zur jeweiligen SWT-Bibliothek
+ * Die Klasse ben√∂tigt im Build Path den Verweis zur jeweiligen SWT-Bibliothek
  * zum jeweiligen OS. Bitte aber nur ein Paket verlinken.
  * 
  * @author Julian Uebe
@@ -116,11 +116,11 @@ public class GUI_SWT
 		pathEditor = new PathEditor(paths);
 
 		fDialog = new FileDialog(shell, SWT.MULTI);
-		fDialog.setText("Dateien ausw‰hlen");
+		fDialog.setText("Dateien ausw√§hlen");
 		fDialog.setFilterPath(System.getProperty("user.dir"));
 
 		dDialog = new DirectoryDialog(shell);
-		dDialog.setText("Ordner ausw‰hlen");
+		dDialog.setText("Ordner ausw√§hlen");
 		dDialog.setFilterPath(System.getProperty("user.dir"));
 
 		menu = new Menu(shell, SWT.BAR);
@@ -353,7 +353,7 @@ public class GUI_SWT
 			String path = fDialog.getFilterPath();
 			for (int i = 0; i < items.length; i++)
 			{
-				paths.add(path + "\\" + items[i]);
+				paths.add(path + "/" + items[i]);
 			}
 		}
 		else
@@ -408,7 +408,7 @@ public class GUI_SWT
 			// von CodeCollector
 			// System.err.println(".jar und .java wird ignoriert");
 			messageBox = new MessageBox(shell, SWT.ICON_ERROR);
-			messageBox.setMessage("Bitte mindestens einen Suchtyp ausw‰hlen (jar/java)");
+			messageBox.setMessage("Bitte mindestens einen Suchtyp ausw√§hlen (jar/java)");
 			messageBox.setText("Fehler");
 			messageBox.open();
 		}
