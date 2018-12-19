@@ -3,11 +3,9 @@ import java.util.ArrayList;
 import java.util.Vector;
 import java.util.regex.*;
 
-//import jdk.nashorn.internal.parser.Token;
-
 /**
  * 
- * @author Klasse die den Parser für Java implementiert
+ * @author Klasse, die den Parser für Java implementiert
  */
 public class ParserJava implements ParserIf
 {
@@ -22,7 +20,7 @@ public class ParserJava implements ParserIf
     private ClassConnection.connectionType extensionType = ClassConnection.connectionType.extension;
     private ClassConnection.connectionType aggregationType = ClassConnection.connectionType.aggregation;
     private ClassConnection.connectionType compositionType = ClassConnection.connectionType.composition;
-    private ArrayList<Integer> classPos= new ArrayList<Integer>();
+    private ArrayList<Integer> classPos = new ArrayList<Integer>();
 
     /**
      * Konstruktor
@@ -33,9 +31,10 @@ public class ParserJava implements ParserIf
     }
 
     /**
-     * Liest den übergebenen Quellcode ein und parsed die Informationen daraus
+     * Entfernt Kommentare aus übergebenem String
      * 
-     * @param sourceCode Vollständiger Java-Quellcode
+     * @param sourcece übergebener String aus dem Kommentare entfernt werden
+     * @return String ohne Kommentare
      */
     private String getCommentlessSourceCode(String sourcec) // Entfernt Kommentare eines Strings
     {
@@ -44,119 +43,118 @@ public class ParserJava implements ParserIf
 	return sourcec;
     }
 
-    private void analyzeClassBody(String substring,String parentClassName) // nimmt String und gibt Inhalt innerhalb { } wieder
+    /**
+     * Ermittelt Klassenbeziehungen Agregation und Komposition
+     * 
+     * @param substring Inhalt der Klasse, welcher untersucht wird
+     * @param parentClassName Klassenname der Klasse, dessen Inhalt untersucht wird
+     */
+    private void analyzeClassBody(String substring, String parentClassName)
     {
-	System.out.println("$$$ substring:\n" + substring + "\n$$$");
+	System.out.println("============================== Inhalt von Sourcecode ab Klasse " + parentClassName
+		+ " ==============================\n" + substring
+		+ "\n===================================================================================================");
 
-	ArrayList<Integer> lCurlyPos = new ArrayList<Integer>();
-	ArrayList<Integer> rCurlyPos = new ArrayList<Integer>();
+	ArrayList<Integer> CurlyPos = new ArrayList<>();
+	int counter = 0;
+	Matcher Curly = Pattern.compile("(\\{)|(\\})").matcher(substring);
+	while (Curly.find())
+	{
+	    CurlyPos.add(Curly.start());
 
-	Matcher lCurly = Pattern.compile("(?=(\\{))").matcher(substring);
-	while (lCurly.find())
-	{
-	    lCurlyPos.add(lCurly.start());
-	}
+	    if (Curly.start(1) == Curly.start())
+	    {
+		// System.out.println("{");
+		counter++;
 
-	Matcher rCurly = Pattern.compile("(?=(\\}))").matcher(substring);
-	while (rCurly.find())
-	{
-	    rCurlyPos.add(rCurly.start());
+	    }
+	    else
+	    {
+		// System.out.println("}");
+		counter--;
+	    }
+	    if (counter == 0)
+	    {
+		break;
+	    }
 	}
+	String classBody = substring.substring(CurlyPos.get(0), CurlyPos.get(CurlyPos.size() - 1) + 1);
 
-	for (Integer integer : lCurlyPos)
-	{
-	    System.out.println("{ Position: " + integer);
-	}
-	for (Integer integer : rCurlyPos)
-	{
-	    System.out.println("} Position: " + integer);
-	}
-	String classBody = "";
-	if (lCurlyPos.size() < rCurlyPos.size())
-	{
-	    System.out.println("Betrachtete Klasse liegt innerhalb einer anderen Klasse");
-	    classBody = substring.substring(lCurlyPos.get(0) + 1, rCurlyPos.get(lCurlyPos.size() - 1));
-	}
-	if (lCurlyPos.size() == rCurlyPos.size())
-	{
-	    classBody = substring.substring(lCurlyPos.get(0) + 1, rCurlyPos.get(lCurlyPos.size() - 1));
-	}
-	if (lCurlyPos.size() > rCurlyPos.size())
-	{
-	    System.out.println("Betrachtete Klasse hat offenes Ende (fehlende })");
-	    classBody = substring.substring(lCurlyPos.get(0) + 1);
-	}
-
-	System.out.println("@@@ Classbody:\n" + classBody + "\n@@@");
-
-	
-
+	System.out.println("============================== Inhalt von Klasse " + parentClassName
+		+ " ==============================\n" + classBody
+		+ "\n===================================================================================================");
 	int parentClassNo = bothName.indexOf(parentClassName); // Klassennummer des Körpers
 	String parentClass; // Klassenname des Körpers
 
-    System.out.println("Klassenname:" + parentClassName);
-    for (String classname : className)
-    {
-	ArrayList<Integer> newClassPos = new ArrayList<>();
-	ArrayList<Integer> constructorPos = new ArrayList<>();
-	ArrayList<Integer> constructorWithNewClassPos = new ArrayList<>();
-	ArrayList<Integer> methodsWithNewClassPos = new ArrayList<>();
-
-	if (classBody.contains(classname) && classname != parentClassName)
+	System.out.println("Klassenname:" + parentClassName);
+	for (String classname : className)
 	{
-	    System.out.println("enthält Klasse " + classname);
-	    Matcher match = Pattern.compile("new +" + classname + " *\\(.*\\)").matcher(classBody);
-	    while (match.find())
-	    {
-		newClassPos.add(match.start());
-		System.out.println(
-			"enthält Klasse " + classname + " als neuen Aufruf an Stelle " + match.start());
-	    }
-	    Matcher match2 = Pattern
-		    .compile(parentClassName + " *\\(.*\\) *\\{.*new +" + classname + " *\\(.*\\).*\\} *;")
-		    .matcher(classBody);
-	    while (match2.find())
-	    {
-		constructorWithNewClassPos.add(match2.start());
-	    }
-	    Matcher match3 = Pattern.compile(parentClassName + " *\\(.*\\) *\\{.*\\} *;").matcher(classBody);
-	    while (match3.find())
-	    {
-		constructorPos.add(match3.start());
-	    }
-	    Matcher match4 = Pattern.compile("\\{.*new +" + classname + " *\\(.*\\).*\\}").matcher(classBody);
-	    while (match4.find())
-	    {
-		methodsWithNewClassPos.add(match4.start());
-	    }
-	    if (!newClassPos.isEmpty())
-	    {
-		if (constructorPos.size() == constructorWithNewClassPos.size()
-			|| newClassPos.size() > methodsWithNewClassPos.size())
-		{
-		    System.out.println("enthält Klasse " + classname + " als Komposition");
-		    ClassConnection cc = new ClassConnection(className.indexOf(classname), parentClassNo, compositionType);
-		    classConnectionArray.add(cc);
-		}
-		else
-		{
-		    System.out.println("enthält Klasse " + classname + " als Agregation");
-		    ClassConnection cc = new ClassConnection(className.indexOf(classname), parentClassNo, aggregationType);
-		    classConnectionArray.add(cc);
-		}
+	    ArrayList<Integer> newClassPos = new ArrayList<>();
+	    ArrayList<Integer> constructorPos = new ArrayList<>();
+	    ArrayList<Integer> constructorWithNewClassPos = new ArrayList<>();
+	    ArrayList<Integer> methodsWithNewClassPos = new ArrayList<>();
 
+	    if (classBody.contains(classname) && classname != parentClassName)
+	    {
+		System.out.println("enthält '" + classname + "'");
+		Matcher match = Pattern.compile("new +" + classname + " *\\(.*\\)").matcher(classBody);
+		while (match.find())
+		{
+		    newClassPos.add(match.start());
+		    System.out.println("enthält new " + classname + "() an Position " + match.start());
+		}
+		Matcher match2 = Pattern
+			.compile(parentClassName + " *\\(.*\\) *\\{.*new +" + classname + " *\\(.*\\).*\\} *;")
+			.matcher(classBody);
+		while (match2.find())
+		{
+		    constructorWithNewClassPos.add(match2.start());
+		}
+		Matcher match3 = Pattern.compile(parentClassName + " *\\(.*\\) *\\{.*\\} *;").matcher(classBody);
+		while (match3.find())
+		{
+		    constructorPos.add(match3.start());
+		}
+		Matcher match4 = Pattern.compile("\\{.*new +" + classname + " *\\(.*\\).*\\}").matcher(classBody);
+		while (match4.find())
+		{
+		    methodsWithNewClassPos.add(match4.start());
+		}
+		if (!newClassPos.isEmpty())
+		{
+		    if (constructorPos.size() == constructorWithNewClassPos.size()
+			    || newClassPos.size() > methodsWithNewClassPos.size())
+		    {
+			System.out.println("enthält Klasse " + classname + " als Komposition");
+			ClassConnection cc = new ClassConnection(className.indexOf(classname), parentClassNo,
+				compositionType);
+			classConnectionArray.add(cc);
+		    }
+		    else
+		    {
+			System.out.println("enthält Klasse " + classname + " als Agregation");
+			ClassConnection cc = new ClassConnection(className.indexOf(classname), parentClassNo,
+				aggregationType);
+			classConnectionArray.add(cc);
+		    }
+
+		}
 	    }
 	}
-    }
-	
 
     }
 
+    /**
+     * Liest den übergebenen Quellcode ein und parsed die Informationen daraus
+     * 
+     * @param sourceCode Vollständiger Java-Quellcode
+     */
     public void parse(String sourceCode)
     {
 	// Auslesen aller Interfacenamen
 	// 1. Suche nach Interface-Deklaration
-	//TODO: BUG! entfernt zu viel! sourceCode = getCommentlessSourceCode(sourceCode);
+	// TODO: BUG! entfernt zu viel!
+	sourceCode = getCommentlessSourceCode(sourceCode);
 	Matcher interfaceMatcher = Pattern.compile("interface +([a-zA-Z0-9]+).*\\R* *\\{").matcher(sourceCode);
 	System.out.println("Interfaces: ");
 	// Solange im Quelltext Interfacedeklarationen gefunden werden, such weiter und
@@ -197,18 +195,14 @@ public class ParserJava implements ParserIf
 	    classPos.add(classMatcher.start());
 	    System.out.println(classMatcher.group(1));
 
-	    //classSubstrings.add(sourceCode.substring(classMatcher.start()));
-	    //classBodies.add(getClassBody(sourceCode.substring(classMatcher.start())));
-	    
 	}
 	System.out.println("Anzahl " + className.size());
 
-	for (String classname : bothName) {
-		System.out.println("analyzeClassBody() von Klasse "+classname+ ": ");
-	    analyzeClassBody(sourceCode.substring(classPos.get(bothName.indexOf(classname))),classname);
+	for (String classname : bothName)
+	{
+	    System.out.println("analyzeClassBody() von Klasse " + classname + ": ");
+	    analyzeClassBody(sourceCode.substring(classPos.get(bothName.indexOf(classname))), classname);
 	}
-	
-	
 
 	// Auslesen der Verbindungen zwischen Klassen und Interfaces
 	for (int i = 0; i < classConnection.size(); i++)
@@ -254,7 +248,12 @@ public class ParserJava implements ParserIf
 
     }
 
-    // Knotennummer der Klasse rausbekommen
+    /**
+     * Ermittelt Knotennummer der Klasse
+     * 
+     * @param parent Name der Klasse
+     * @return Nummer der Klasse
+     */
     private int bothNumber(String parent)
     {
 	int classNu = -1; // Bei nicht vorhandenem Knoten kommt -1 zurück
@@ -281,7 +280,12 @@ public class ParserJava implements ParserIf
 //	return interNu;
 //  }
 
-    // Vererbung der angegebenen Klasse auslesen
+    /**
+     * Liest Vererbung der angegebenen Klasse aus
+     * 
+     * @param i
+     * @param countIN
+     */
     private void exClassConnection(int i, int countIN)
     {
 	String parent = "keinem";
@@ -302,8 +306,11 @@ public class ParserJava implements ParserIf
 	// System.out.println("G " + classConnectionArray.size());
     }
 
-    /*
-     * Herauslesen von mittels implements eingebundenen Interfaces aus einer Klasse
+    /**
+     * Liest benutzte Interfaces der angegebenen Klasse aus
+     * 
+     * @param i
+     * @param countIN
      */
     private void impClassConnection(int i, int countIN)
     {
@@ -344,8 +351,10 @@ public class ParserJava implements ParserIf
 	}
     }
 
-    /*
-     * Herauslesen von eingebundenen Interfaces in andere Interfaces mittels extends
+    /**
+     * Liest eingebundene Interfaces in anderen Interfaces aus
+     * 
+     * @param i
      */
     private void exInterfaceConnection(int i)
     {
@@ -387,9 +396,9 @@ public class ParserJava implements ParserIf
     }
 
     /**
-     * Liefert die Ergebnisse des Parsens zurueck
+     * Liefert die Ergebnisse des Parsens zurück
      * 
-     * @return Struktur mit den ergebnisse des Parsens
+     * @return Struktur mit den Ergebnissen des Parsens
      */
     public ParsingResult getParsingResult()
     {
