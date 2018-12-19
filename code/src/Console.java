@@ -82,12 +82,18 @@ public class Console extends PUMLgenerator
 
 	    if (cmd.hasOption("o")) // Zielordner abfragen, sonst in Arbeitsverzeichnis sichern
 	    {
-		outputPUML.savePUMLtoFile(parser.getParsingResult(), cmd.getOptionValue("o")); // UML Code generieren
-											       // und im uebergebenen
-											       // Pfad ablegen
-		System.out.println("test");
+	    	/*TEST
+	    	outputPUML.savePUMLtoFile(parser.getParsingResult(),cmd.getOptionValue("o")); //ALTE VERSION
+	    											//UML Code generieren
+											       	// und im uebergebenen
+											       	// Pfad ablegen
+											       	 * */
 		try
 		{
+	    	outputPUML.savePUMLtoFile(outputPUML.getPUML(parser.getParsingResult()), cmd.getOptionValue("o")+"ausgabeFile1"); //Einbinden der neuen Code Funktion
+	    	
+			outputPUML.createPUMLfromString(cmd.getOptionValue("o"), outputPUML.getPUML(parser.getParsingResult())); //Einbinden der Diagrammfunktion
+			/*TEST alte funktion darunter
 		    outputPUML.createPlantUML(cmd.getOptionValue("o"), outputPUML.getPUML(parser.getParsingResult())); // Diagramm
 														       // erstellen
 														       // und
@@ -95,6 +101,7 @@ public class Console extends PUMLgenerator
 														       // uebergebenen
 														       // Pfad
 														       // ablegen
+														        * */
 		}
 		catch (IOException e)
 		{
@@ -105,13 +112,20 @@ public class Console extends PUMLgenerator
 	    }
 	    else
 	    {
+	    	/*TEST alte Funktion 
 		outputPUML.savePUMLtoFile(parser.getParsingResult(), "./outputPUML");
+		*/
 		try
 		{
-		    outputPUML.createPlantUML("./outputPUML", outputPUML.getPUML(parser.getParsingResult())); // Diagramm
+	    	outputPUML.savePUMLtoFile(outputPUML.getPUML(parser.getParsingResult()),"./ausgabeFileOhneSpezPfad"); //Code erzeugen Funktion 
+	    	
+			outputPUML.createPUMLfromString("./ausgabeFileOhneSpezPfad", outputPUML.getPUML(parser.getParsingResult())); //Einbinden der Diagrammfunktion
+		    /*TEST alter funktion
+			outputPUML.createPlantUML("./outputPUML", outputPUML.getPUML(parser.getParsingResult())); // Diagramm
 												    // erstellen und im
 												    // Arbeitsverzeichnis
 												    // ablegen
+												     */
 		}
 		catch (IOException e)
 		{
