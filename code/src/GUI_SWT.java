@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
@@ -385,7 +386,7 @@ public class GUI_SWT
 				// System.out.println(classes.get(i));
 			}
 			// System.out.println(pumlCode);
-			PUMLgenerator.outputPUML.savePUMLtoFile(tempPR, System.getProperty("user.dir") + "output.txt");
+			PUMLgenerator.outputPUML.savePUMLtoFile(PUMLgenerator.outputPUML.getPUML(tempPR), System.getProperty("user.dir") + "output.txt");
 
 			text.setText(pumlCode);
 
@@ -411,6 +412,11 @@ public class GUI_SWT
 			messageBox.setMessage("Bitte mindestens einen Suchtyp auswählen (jar/java)");
 			messageBox.setText("Fehler");
 			messageBox.open();
+		}
+		catch (IOException e)
+		{
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
 		}
 
 	}
