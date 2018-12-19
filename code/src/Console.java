@@ -82,51 +82,27 @@ public class Console extends PUMLgenerator
 
 	    if (cmd.hasOption("o")) // Zielordner abfragen, sonst in Arbeitsverzeichnis sichern
 	    {
-	    	/*TEST
-	    	outputPUML.savePUMLtoFile(parser.getParsingResult(),cmd.getOptionValue("o")); //ALTE VERSION
-	    											//UML Code generieren
-											       	// und im uebergebenen
-											       	// Pfad ablegen
-											       	 * */
-		try
-		{
-	    	outputPUML.savePUMLtoFile(outputPUML.getPUML(parser.getParsingResult()), cmd.getOptionValue("o")+"ausgabeFile1"); //Einbinden der neuen Code Funktion
-	    	
-			outputPUML.createPUMLfromString(cmd.getOptionValue("o"), outputPUML.getPUML(parser.getParsingResult())); //Einbinden der Diagrammfunktion
-			/*TEST alte funktion darunter
-		    outputPUML.createPlantUML(cmd.getOptionValue("o"), outputPUML.getPUML(parser.getParsingResult())); // Diagramm
-														       // erstellen
-														       // und
-														       // im
-														       // uebergebenen
-														       // Pfad
-														       // ablegen
-														        * */
-		}
-		catch (IOException e)
-		{
-		    e.printStackTrace();
-		}
-		System.out.println(
-			"Zielordner:" + cmd.getOptionValue("o") + "\nQuelle: " + codeCollector.getSourceCode());
-	    }
-	    else
+				try
+				{
+			    	outputPUML.savePUMLtoFile(outputPUML.getPUML(parser.getParsingResult()), cmd.getOptionValue("o")+"outPUML_Code"); //Einbinden der neuen Code Funktion
+			    	
+					outputPUML.createPUMLfromString(cmd.getOptionValue("o")+"outPUML_Graph", outputPUML.getPUML(parser.getParsingResult())); //Einbinden der Diagrammfunktion
+				}
+			catch (IOException e)
+			{
+			    e.printStackTrace();
+			}
+			System.out.println(
+				"Zielordner:" + cmd.getOptionValue("o") + "\nQuelle: " + codeCollector.getSourceCode());
+		    }
+	    else //Falls kein Output-Path definiert 
 	    {
-	    	/*TEST alte Funktion 
-		outputPUML.savePUMLtoFile(parser.getParsingResult(), "./outputPUML");
-		*/
-		try
-		{
-	    	outputPUML.savePUMLtoFile(outputPUML.getPUML(parser.getParsingResult()),"./ausgabeFileOhneSpezPfad"); //Code erzeugen Funktion 
+	    	try
+	    	{
+	    		outputPUML.savePUMLtoFile(outputPUML.getPUML(parser.getParsingResult()),"./outPUML_Code_defaultlocation"); //Code erzeugen Funktion 
 	    	
-			outputPUML.createPUMLfromString("./ausgabeFileOhneSpezPfad", outputPUML.getPUML(parser.getParsingResult())); //Einbinden der Diagrammfunktion
-		    /*TEST alter funktion
-			outputPUML.createPlantUML("./outputPUML", outputPUML.getPUML(parser.getParsingResult())); // Diagramm
-												    // erstellen und im
-												    // Arbeitsverzeichnis
-												    // ablegen
-												     */
-		}
+	    		outputPUML.createPUMLfromString("./outPUML_Graph_defaultlocation", outputPUML.getPUML(parser.getParsingResult())); //Einbinden der Diagrammfunktion
+	    	}
 		catch (IOException e)
 		{
 		    e.printStackTrace();
