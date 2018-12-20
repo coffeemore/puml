@@ -84,8 +84,7 @@ public class CodeCollector
 	    {
 		// sammelt den Quellcode aus den Java-Dateien ein
 		return (collectJava(sc, buffr, filer));
-	    } else
-	    {
+	    } else	    {
 		if (!useJavaFiles && useJarFiles)
 		{
 		    // sammelt den Quellcode aus den Jar-Dateien ein
@@ -147,7 +146,7 @@ public class CodeCollector
 		    {
 			sc += currLine;
 		    }
-		    sc += "\n";
+		    sc += "\n"; 
 		}
 	    } catch (IOException e)
 	    {
@@ -185,6 +184,7 @@ public class CodeCollector
      */
     private String collectJar(String sc, BufferedReader buffr, ZipFile zFile)
     {
+	String sc2=new String();
 	try
 	{
 	    //Schleife, die alle Einträge  in paths durchgeht
@@ -209,9 +209,9 @@ public class CodeCollector
 
 				while ((currLine = buffr.readLine()) != null)
 				{
-				    sc += currLine;
+				    sc2 += currLine;
 				}
-				sc += "\n";
+				sc2 += "\n";
 			    } else
 			    {
 				continue;
@@ -241,6 +241,7 @@ public class CodeCollector
 		ex.printStackTrace();
 	    }
 	}
+	sc = sc+sc2;
 	return sc;
     }
 
@@ -283,4 +284,5 @@ public class CodeCollector
     {
 	this.useJarFiles = useJarFiles;
     }
+
 }
