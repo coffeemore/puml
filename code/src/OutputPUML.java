@@ -110,7 +110,7 @@ public class OutputPUML
     public void createPUMLfromString(String filePath, String pumlCode) throws IOException
     {
     	OutputStream png = new FileOutputStream(filePath);
-    	SourceStringReader reader = new SourceStringReader(pumlCode);
-    	reader.outputImage(png).getDescription();
+	SourceStringReader reader = new SourceStringReader(pumlCode);
+	reader.outputImage(png).getDescription();
     }
 }
