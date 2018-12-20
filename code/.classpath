@@ -2,27 +2,12 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="srcTest"/>
-<<<<<<< HEAD
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-10">
-=======
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
->>>>>>> 62a8242ee2a7b486c92d9c9345f112b3f70f881f
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry excluding="CodeJavaTest.java|CodeJavaTest1.java" kind="src" path="testfolder"/>
-<<<<<<< HEAD
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/PUMLlib"/>
-	<classpathentry exported="true" kind="lib" path="lib/plantuml.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/swt-linux-x86_64-4.9.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-javadoc.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-test-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-tests.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4.jar"/>
-=======
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/PUMLlib"/>
 	<classpathentry kind="lib" path="lib/plantuml.jar"/>
@@ -32,6 +17,5 @@
 	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-tests.jar"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/swt-linux-x86_64-4.9.jar"/>
->>>>>>> 62a8242ee2a7b486c92d9c9345f112b3f70f881f
 	<classpathentry kind="output" path="bin"/>
 </classpath>
