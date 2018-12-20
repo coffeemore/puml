@@ -319,7 +319,7 @@ public class GUI_SWT
 		composite_3 = new Composite(sashForm, SWT.NONE);
 		composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		text = new Text(composite_3, SWT.BORDER);
+		text = new Text(composite_3,SWT.MULTI | SWT.BORDER);
 		text.setEditable(false);
 		text.setToolTipText("PlantUML Code");
 
@@ -386,7 +386,8 @@ public class GUI_SWT
 				// System.out.println(classes.get(i));
 			}
 			// System.out.println(pumlCode);
-			PUMLgenerator.outputPUML.savePUMLtoFile(PUMLgenerator.outputPUML.getPUML(tempPR), System.getProperty("user.dir") + "output.txt");
+			PUMLgenerator.outputPUML.createPUMLfromString(System.getProperty("user.dir")+"/output.png", pumlCode);
+			System.out.println(System.getProperty("user.dir")+"/output.png");
 
 			text.setText(pumlCode);
 
