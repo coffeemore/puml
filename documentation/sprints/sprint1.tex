@@ -57,6 +57,7 @@ Als Project Owner wünsche ich mir, dass das Programm plattformunabhängig ist, 
 \begin{itemize}
 \item Planning-Meeting (29.11.2018)
 \item Zwischen-Meeting (03.12.2018)
+\item Review-Meeting (13.12.2018)
 \end{itemize}
 \nsecend
 
@@ -83,7 +84,33 @@ XXX
 \nsecend
 
 \nsecbegin{Ergebnisse des Reviews}
-XXX
+\begin{table}[H]
+
+\begin{tabularx}{\textwidth}{ |l|l|X| }
+\hline
+\textbf{Klasse} & \textbf{Methode} & \textbf{Anmerkungen}\\
+ \hline
+Console & showConsole & Pfad anpassen \\
+CodeCollector & - & Unit-Tests für Ordner \\
+CodeCollector & getSourceCode & gleichzeitig .jar- und .java-Dateien \\
+ParserJava & parse & Bug: Entfernt zu viel Source Code! Mehr Tests\\
+OutputPuml & - & generell mehr Kommentare \\
+OutputPuml & getPuml & Redundanter Code mit savePumlToFile, generell mehr Kommentare\\
+OutputPuml & createPlantUML & Performance verbessern \\
+GUI\_SWT & - & Entwicklerdokumentation (Installationsanleitung) für verwendetes Tool\\
+\hline
+\end{tabularx}
+\end{table}
+
+Sonstiges:
+\begin{itemize}
+\item mehr Kommentare
+\item (Graphviz muss installiert sein, um PlantUML anzuzeigen)
+\item Javadocs schreiben!
+\item in gitconfig Name und Mail-Adresse anpassen! Wichtig für Benotung!
+\item Ordner für Unit-Tests ist srcTest
+\item im Ordner srcTest ein Unterordner "'testfiles"' ertellen, in dem zusätzliche Testdateien landen
+\end{itemize}
 \nsecend
 
 \nsecbegin{Ergebnisse der Retrospektive}
