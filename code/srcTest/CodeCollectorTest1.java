@@ -1,12 +1,11 @@
 import static org.junit.jupiter.api.Assertions.*;
 
-//import java.io.File;
-//import java.util.ArrayList;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class CodeCollectorTest
+import org.junit.jupiter.api.BeforeEach;
+
+
+class CodeCollectorTest1
 {
     private CodeCollector classUnderTest;
 
@@ -15,29 +14,23 @@ class CodeCollectorTest
     {
 	classUnderTest = new CodeCollector();
     }
-//    @SuppressWarnings("deprecation")
-//    void resetTest() {
-//	classUnderTest.paths.clear();
-//	classUnderTest.setUseJavaFiles(new Boolean(null));
-//	classUnderTest.setUseJarFiles(new Boolean(null));    }
 
     @Test
     void testGetSourceCode()
     {
-	
+
 	assertAll(
 		// Test: use Java, !useJar, 1 Pfad in paths
-		
-		() -> 
+
+		() ->
 		{
 		    classUnderTest.setUseJavaFiles(true);
 		    classUnderTest.setUseJarFiles(false);
-//	    classUnderTest.paths.add(System.getProperty("user.dir") + File.separator + "code" + File.separator +"testfolder"   + File.separator +"CodeJavaTest.java");
 		    classUnderTest.paths.add("//home//developer//workspace//puml//code//testfolder//CodeJavaTest.java");
 		    String aktErg = classUnderTest.getSourceCode();
 		    String erwErg = "erste Zeile zweite Zeiledritte Zeile ";
 		    assertEquals(erwErg, aktErg);
-		    classUnderTest.paths.clear();
+		    resetTest();
 		},
 		// 1 Pfad, !useJava, useJar (1 Datei in Jar)
 		() ->
@@ -48,18 +41,18 @@ class CodeCollectorTest
 		    String aktErg = classUnderTest.getSourceCode();
 		    String erwErg = "erste Zeile zweite Zeiledritte Zeile ";
 		    assertEquals(erwErg, aktErg);
-		    classUnderTest.paths.clear();
+		    resetTest();
 		},
-		// 1 Pfad, !useJava, useJar (2 Dateien in Jar)		
+		// 1 Pfad, !useJava, useJar (2 Dateien in Jar)
 		() ->
-		{	
+		{
 		    classUnderTest.setUseJavaFiles(false);
 		    classUnderTest.setUseJarFiles(true);
 		    classUnderTest.paths.add("//home//developer//workspace//puml//code//testfolder//jartest2.jar");
 		    String aktErg = classUnderTest.getSourceCode();
 		    String erwErg = "erste Zeile zweite Zeiledritte Zeile //Beginn der zweiten Dateierste Zeile zweite Zeiledritte Zeile ";
 		    assertEquals(erwErg, aktErg);
-		    classUnderTest.paths.clear();
+		    resetTest();
 		},
 		// 1 Pfad, useJava, useJar
 		() ->
@@ -68,19 +61,30 @@ class CodeCollectorTest
 		    classUnderTest.setUseJarFiles(true);
 		    classUnderTest.paths.add("//home//developer//workspace//puml//code//testfolder//CodeJavaTest.java");
 		    String aktErg = classUnderTest.getSourceCode();
-		    String erwErg = null;
+		    String erwErg = "Test useJar, Java";
 		    assertEquals(erwErg, aktErg);
-		    classUnderTest.paths.clear();
+		    resetTest();
 		},
-		// 1 Pfad, (useJava, useJar) nicht initialisiert
-		() ->
-		{
-		    classUnderTest.paths.add("//home//developer//workspace//puml//code//testfolder//CodeJavaTest.java");
-		    String aktErg = classUnderTest.getSourceCode();
-		    String erwErg = null;
-		    assertEquals(erwErg, aktErg);
-		    classUnderTest.paths.clear();
-		},
+//		// 1 Pfad, useJava, useJar nicht initialisiert
+//		() ->
+//		{
+//		    classUnderTest.setUseJavaFiles(true);
+//		    classUnderTest.paths.add("//home//developer//workspace//puml//code//testfolder//CodeJavaTest.java");
+//		    String aktErg = classUnderTest.getSourceCode();
+//		    String erwErg = null;
+//		    assertEquals(erwErg, aktErg);
+//		    resetTest();
+//		},
+//		// 1 Pfad, useJar, useJava nicht initialisiert
+//		() ->
+//		{
+//		    classUnderTest.setUseJarFiles(true);
+//		    classUnderTest.paths.add("//home//developer//workspace//puml//code//testfolder//CodeJavaTest.java");
+//		    String aktErg = classUnderTest.getSourceCode();
+//		    String erwErg = null;
+//		    assertEquals(erwErg, aktErg);
+//		    resetTest();
+//		}, 
 		// 1 Pfad, useJava, useJar nicht initialisiert
 		() ->
 		{
@@ -89,7 +93,7 @@ class CodeCollectorTest
 		    String aktErg = classUnderTest.getSourceCode();
 		    String erwErg = null;
 		    assertEquals(erwErg, aktErg);
-		    classUnderTest.paths.clear();
+		    resetTest();
 		},
 		// 1 Pfad, useJar, useJava nicht initialisiert
 		() ->
@@ -99,26 +103,7 @@ class CodeCollectorTest
 		    String aktErg = classUnderTest.getSourceCode();
 		    String erwErg = null;
 		    assertEquals(erwErg, aktErg);
-		    classUnderTest.paths.clear();
-		}, // 1 Pfad, useJava, useJar nicht initialisiert
-		() ->
-		{
-		    classUnderTest.setUseJavaFiles(true);
-		    classUnderTest.paths.add("//home//developer//workspace//puml//code//testfolder//CodeJavaTest.java");
-		    String aktErg = classUnderTest.getSourceCode();
-		    String erwErg = null;
-		    assertEquals(erwErg, aktErg);
-		    classUnderTest.paths.clear();
-		},
-		// 1 Pfad, useJar, useJava nicht initialisiert
-		() ->
-		{
-		    classUnderTest.setUseJarFiles(true);
-		    classUnderTest.paths.add("//home//developer//workspace//puml//code//testfolder//CodeJavaTest.java");
-		    String aktErg = classUnderTest.getSourceCode();
-		    String erwErg = null;
-		    assertEquals(erwErg, aktErg);
-		    classUnderTest.paths.clear();
+		    resetTest();
 		},
 
 //		// 1 Pfad, !useJava, useJar nicht initialisiert
@@ -155,7 +140,7 @@ class CodeCollectorTest
 		    String aktErg = classUnderTest.getSourceCode();
 		    String erwErg = "erste Zeile zweite Zeiledritte Zeile //Beginn der zweiten Dateierste Zeile zweite Zeiledritte Zeile ";
 		    assertEquals(erwErg, aktErg);
-		    classUnderTest.paths.clear();
+		    resetTest();
 		},
 
 		// keine Pfadangabe
@@ -165,9 +150,9 @@ class CodeCollectorTest
 		    classUnderTest.setUseJavaFiles(true);
 		    classUnderTest.setUseJarFiles(false);
 		    String aktErg = classUnderTest.getSourceCode();
-		    String erwErg = null;
+		    String erwErg = "kein Pfad";
 		    assertEquals(erwErg, aktErg);
-		    classUnderTest.paths.clear();
+		    resetTest();
 
 		},
 		// keine Pfadangabe, useJava, useJar
@@ -178,7 +163,7 @@ class CodeCollectorTest
 		    String aktErg = classUnderTest.getSourceCode();
 		    String erwErg = null;
 		    assertEquals(erwErg, aktErg);
-		    classUnderTest.paths.clear();
+		    resetTest();
 
 		},
 
@@ -190,7 +175,7 @@ class CodeCollectorTest
 		    String aktErg = classUnderTest.getSourceCode();
 		    String erwErg = null;
 		    assertEquals(erwErg, aktErg);
-		    classUnderTest.paths.clear();
+		    resetTest();
 
 		},
 		// keine Pfadangabe, !useJava, !useJar
@@ -201,7 +186,7 @@ class CodeCollectorTest
 		    String aktErg = classUnderTest.getSourceCode();
 		    String erwErg = null;
 		    assertEquals(erwErg, aktErg);
-		    classUnderTest.paths.clear();
+		    resetTest();
 
 		}
 
@@ -209,7 +194,7 @@ class CodeCollectorTest
 	// Wert festlegen
 //		classUnderTest.setUseJavaFiles(); 
 //	    	classUnderTest.setUseJarFiles(); 
-//	    	//mit Pfaden füllen
+//	    	//mit Pfaden füllen 
 //	    	classUnderTest.paths.add("...");
 //
 //	    	//wie wird das Ergebnis berechnet(immer gleich)?
@@ -224,4 +209,11 @@ class CodeCollectorTest
 	);
     }
 
+    void resetTest()
+    {
+	classUnderTest.paths.clear();
+	classUnderTest.setUseJavaFiles(false);
+	classUnderTest.setUseJarFiles(false);
+    }
 }
+
