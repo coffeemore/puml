@@ -39,8 +39,8 @@ public class ParserJava implements ParserIf
     private String getCommentlessSourceCode(String sourcec) // Entfernt Kommentare eines Strings
     {
 	sourcec = sourcec.replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)", "");
-	System.out.println("============================== Commentless Sourcecode: ==============================\n" 
-	+ sourcec + "\n====================================================================================");
+	System.out.println("============================== Commentless Sourcecode: ==============================\n"
+		+ sourcec + "\n====================================================================================");
 	return sourcec;
     }
 
@@ -94,59 +94,78 @@ public class ParserJava implements ParserIf
 	    ArrayList<Integer> dataTypeClassPos = new ArrayList<>();
 	    ArrayList<Integer> constructorPos = new ArrayList<>();
 	    ArrayList<Integer> constructorWithNewClassPos = new ArrayList<>();
+	    ArrayList<Integer> constructorWithDataTypeClassPos = new ArrayList<>();
 	    ArrayList<Integer> methodsWithNewClassPos = new ArrayList<>();
+	    ArrayList<Integer> methodsWithDataTypeClassPos = new ArrayList<>();
 
 	    if (classBody.contains(classname) && classname != parentClassName)
 	    {
 		System.out.println("enthält '" + classname + "'");
-		Matcher match = Pattern.compile("new +" + classname + " *\\(.*\\)").matcher(classBody);
-		while (match.find())
+		Matcher newClass = Pattern.compile("new +" + classname + " *\\(.*\\)").matcher(classBody);
+		while (newClass.find())
 		{
-		    newClassPos.add(match.start());
-		    System.out.println("enthält new " + classname + "() an Position " + match.start());
+		    newClassPos.add(newClass.start());
 		}
 		Matcher dataTypeClass = Pattern.compile("< *" + classname + " *>").matcher(classBody);
 		while (dataTypeClass.find())
 		{
 		    dataTypeClassPos.add(dataTypeClass.start());
-		    System.out.println("enthält <" + classname + "> an Position " + dataTypeClass.start());
 		}
-		Matcher match2 = Pattern
-			.compile(parentClassName + " *\\(.*\\) *\\{.*new +" + classname + " *\\(.*\\).*\\} *;")
+		Matcher constructor = Pattern.compile(parentClassName + " *\\(.*\\) *\\{.*\\}").matcher(classBody);
+		while (constructor.find())
+		{
+		    constructorPos.add(constructor.start());
+		}
+		Matcher constructorWithNewClass = Pattern
+			.compile(parentClassName + " *\\(.*\\) *\\{.*new +" + classname + " *\\(.*\\).*\\}")
 			.matcher(classBody);
-		while (match2.find())
+		while (constructorWithNewClass.find())
 		{
-		    constructorWithNewClassPos.add(match2.start());
+		    constructorWithNewClassPos.add(constructorWithNewClass.start());
 		}
-		Matcher match3 = Pattern.compile(parentClassName + " *\\(.*\\) *\\{.*\\} *;").matcher(classBody);
-		while (match3.find())
+		Matcher constructorWithDataTypeClass = Pattern
+			.compile(parentClassName + " *\\(.*< *" + classname + " *>.*\\) *\\{.*\\}").matcher(classBody);
+		while (constructorWithDataTypeClass.find())
 		{
-		    constructorPos.add(match3.start());
+		    constructorWithDataTypeClassPos.add(constructorWithDataTypeClass.start());
 		}
-		Matcher match4 = Pattern.compile("\\{.*new +" + classname + " *\\(.*\\).*\\}").matcher(classBody);
-		while (match4.find())
+		Matcher methodsWithNewClass = Pattern.compile("\\{.*new +" + classname + " *\\(.*\\).*\\}")
+			.matcher(classBody);
+		while (methodsWithNewClass.find())
 		{
-		    methodsWithNewClassPos.add(match4.start());
+		    methodsWithNewClassPos.add(methodsWithNewClass.start());
 		}
+		Matcher methodsWithDataTypeClass = Pattern.compile("\\(.*< *" + classname + " *>.*\\) *\\{.*\\}")
+			.matcher(classBody);
+		while (methodsWithDataTypeClass.find())
+		{
+		    methodsWithDataTypeClassPos.add(methodsWithDataTypeClass.start());
+		}
+		System.out.println("Vorkommen: \nals new class(): " + newClassPos.size() + "\nals Datentyp: "
+			+ dataTypeClassPos.size() + "\nin Konstruktoren: " + constructorPos.size()
+			+ "\nin Konstruktoren als new class() : " + constructorWithNewClassPos.size()
+			+ "\nin Konstruktoren als Datentyp: " + constructorWithDataTypeClassPos.size()
+			+ "\nin Methoden als new class(): " + methodsWithNewClassPos.size()
+			+ "\nin Methoden als Datentyp: " + methodsWithDataTypeClassPos.size());
 		if (!newClassPos.isEmpty())
 		{
 		    if (constructorPos.size() == constructorWithNewClassPos.size()
 			    || newClassPos.size() > methodsWithNewClassPos.size())
 		    {
-			System.out.println("enthält Klasse " + classname + " als Komposition");
+			System.out.println("Ergebnis: enthält " + classname + " als Komposition");
 			ClassConnection cc = new ClassConnection(className.indexOf(classname), parentClassNo,
 				compositionType);
 			classConnectionArray.add(cc);
 		    }
 		    else
 		    {
-			System.out.println("enthält Klasse " + classname + " als Agregation");
+			System.out.println("Ergebnis: enthält " + classname + " als Agregation");
 			ClassConnection cc = new ClassConnection(className.indexOf(classname), parentClassNo,
 				aggregationType);
 			classConnectionArray.add(cc);
 		    }
-
 		}
+		System.out.println("-------------------------------------------------------------------------");
 	    }
 	}
 
@@ -161,8 +180,9 @@ public class ParserJava implements ParserIf
     {
 	// Auslesen aller Interfacenamen
 	// 1. Suche nach Interface-Deklaration
-	// TODO: BUG! entfernt zu viel! -> löscht alle Stellen mit // oder /* ...  */ 
-	// deswegen darauf achten, dass keine "//" oder /* ... */ in RegEx oder Strings benutzt werden 
+	// TODO: BUG! entfernt zu viel! -> löscht alle Stellen mit // oder /* ... */
+	// deswegen darauf achten, dass keine "//" oder /* ... */ in RegEx oder Strings
+	// benutzt werden
 	sourceCode = getCommentlessSourceCode(sourceCode);
 	Matcher interfaceMatcher = Pattern.compile("interface +([a-zA-Z0-9]+).*\\R* *\\{").matcher(sourceCode);
 	System.out.println("Interfaces: ");
