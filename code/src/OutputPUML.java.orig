@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
-
 import net.sourceforge.plantuml.GeneratedImage;
 import net.sourceforge.plantuml.SourceFileReader;
 import net.sourceforge.plantuml.SourceStringReader;
@@ -50,7 +49,11 @@ public class OutputPUML
 	    pumlCode += myParsingResult.classes.get(from);
 	    if (myParsingResult.classConnections.get(i).getConnection() == ClassConnection.connectionType.extension)
 	    {
-		pumlCode += " --|> "; // TODO eventuell Pfeile aendern
+<<<<<<< HEAD
+		pumlCode += " <|-- "; // TODO eventuell Pfeile
+=======
+		pumlCode += " <|-- "; // TODO eventuell Pfeile aendern
+>>>>>>> 94dd1547ded92877e214fb110a5061654f12a9ff
 	    }
 	    else if (myParsingResult.classConnections.get(i)
 		    .getConnection() == ClassConnection.connectionType.aggregation)
@@ -68,6 +71,7 @@ public class OutputPUML
 	return pumlCode;
     }
 
+    
     /**
      * Speichert den plantUML-Code aus dem String der getPUML Methode in eine Datei
      * 
@@ -84,6 +88,23 @@ public class OutputPUML
     }
 
     /**
+<<<<<<< HEAD
+     * Erzeugt ein PlantUML-Diagramm aus dem getPUML String am übergebenen Pfad
+     * 
+     * @param sourcePath 
+     * @throws IOException
+     */
+    public void createPlantUML(String sourcePath, String destPath) throws IOException
+    {
+	File source = new File(sourcePath);
+	File dest = new File(destPath);
+	SourceFileReader reader = new SourceFileReader(source, dest);
+	List<GeneratedImage> list = reader.getGeneratedImages();
+	// Generated files
+	list.get(0).getPngFile();
+    }
+    
+=======
      * Erzeugt ein PlantUML-Diagramm aus der plantUML-Code-Datei am uebergebenen Pfad
      * 
      * @param sourcePath	Pfad an der die plantUML-Code-Datei liegt
@@ -107,10 +128,20 @@ public class OutputPUML
      * @param pumlCode	String der durch die getPUML Methode erzeugt wurde
      * @throws IOException
      */
+>>>>>>> 94dd1547ded92877e214fb110a5061654f12a9ff
     public void createPUMLfromString(String filePath, String pumlCode) throws IOException
     {
     	OutputStream png = new FileOutputStream(filePath);
     	SourceStringReader reader = new SourceStringReader(pumlCode);
+<<<<<<< HEAD
+    	// Schreibt den String in ein "png" File
     	reader.outputImage(png).getDescription();
+//    	desc.length(); //nur zur Vermeidung der Warnung
+    	// Returned einen null string wenn fehlgeschlagen
+
+=======
+    	reader.outputImage(png).getDescription();
+>>>>>>> 94dd1547ded92877e214fb110a5061654f12a9ff
     }
+    
 }
