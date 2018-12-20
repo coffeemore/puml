@@ -72,9 +72,10 @@ public class CodeCollector
 		    if (file.isDirectory())
 		    {
 			File[] fArray = file.listFiles();
+			
 			for (int i = 0; i < fArray.length; i++)
 			{
-			    paths.add(fArray[i].getAbsolutePath());
+			    paths.add(fArray[i].getAbsolutePath());			    
 			}
 			paths.remove(paths.get(j));
 		    }
@@ -241,9 +242,9 @@ public class CodeCollector
 		ex.printStackTrace();
 	    }
 	}
-	sc = sc+sc2;
-	return sc;
-    }
+	
+	return sc2;
+    } 
 
     /**
      * Prüft, ob in der übergebenen ArrayList Directories enthalten sind
