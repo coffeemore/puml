@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.eclipse.swt.SWT;
@@ -67,6 +68,8 @@ public class GUI_SWT
 	private ArrayList<String> paths;
 	private String srcCode;
 	private String pumlCode;
+	private String outputFile;
+	private String outputPath;
 	private boolean useJava;
 	private boolean useJar;
 
@@ -79,8 +82,10 @@ public class GUI_SWT
 	public GUI_SWT()
 	{
 		paths = new ArrayList<String>();
+		outputFile = "output.png";
+		outputPath = System.getProperty("user.dir") + "/";
 		useJava = true;
-		useJar = true;
+		useJar = false;
 	}
 
 	/**
@@ -319,7 +324,7 @@ public class GUI_SWT
 		composite_3 = new Composite(sashForm, SWT.NONE);
 		composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		text = new Text(composite_3,SWT.MULTI | SWT.BORDER);
+		text = new Text(composite_3, SWT.MULTI | SWT.BORDER);
 		text.setEditable(false);
 		text.setToolTipText("PlantUML Code");
 
@@ -384,10 +389,20 @@ public class GUI_SWT
 			{
 				// TODO Klassennamen in den Tree aufnehmen
 				// System.out.println(classes.get(i));
+				TreeItem treeItem0 = new TreeItem(tree, 0);
+			    treeItem0.setText(classes.get(i));
+			    treeItem0.setChecked(true);
 			}
 			// System.out.println(pumlCode);
-			PUMLgenerator.outputPUML.createPUMLfromString(System.getProperty("user.dir")+"/output.png", pumlCode);
-			System.out.println(System.getProperty("user.dir")+"/output.png");
+//			File f = new File(outputPath + outputFile);
+//			if (f.exists()) {
+//				
+//				messageBox = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.YES | SWT.CANCEL);
+//				messageBox.setMessage(outputFile+" ist bereits vorhanden in "+outputPath+". Datei ersetzen?");
+//				PUMLgenerator.outputPUML.createPUMLfromString(outputPath + outputFile, pumlCode);
+//				System.out.println(outputPath + outputFile);
+//			}
+			
 
 			text.setText(pumlCode);
 
@@ -413,11 +428,6 @@ public class GUI_SWT
 			messageBox.setMessage("Bitte mindestens einen Suchtyp auswählen (jar/java)");
 			messageBox.setText("Fehler");
 			messageBox.open();
-		}
-		catch (IOException e)
-		{
-		    // TODO Auto-generated catch block
-		    e.printStackTrace();
 		}
 
 	}
