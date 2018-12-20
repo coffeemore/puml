@@ -27,12 +27,12 @@ public class CodeCollector
     /**
      * True = .java-Dateien werden verwendet; False = .java-Dateien werden ignoriert
      */
-    private boolean useJavaFiles;
+    private boolean useJavaFiles = true;
 
     /**
      * True = .jar-Dateien werden verwendet; False = .jar-Dateien werden ignoriert
      */
-    private boolean useJarFiles;
+    private boolean useJarFiles = true;
 
     /**
      * Konstruktor
