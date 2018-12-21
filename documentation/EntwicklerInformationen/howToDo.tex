@@ -67,26 +67,31 @@ die "'.gitconfig-Datei"' editiert werden. In dieser werden unter anderem auch Be
 \nsecend
 
 \nsecbegin{Eigenen Branch mit dem Master Synchronisieren}
-Wenn sich der Master wärend der Entwicklung am eigenen Branch weiter entwickelt hat, können die Änderungen des Master auf folgende weise in den eigenen Branch übernommen werden.\\
-git status //Prüfen ob auf meinem Branch;\\
-//wenn nicht\\
-git checkout myBranch\\
-//Lokalen Master aktuallisieren\\
-git pull origin master //sollte auch gleich in myBranch mergen\\
-//wenn nicht\\
-git merge master\\
-//Wenn merge-konflikt\\
-git mergetool\\
-//Jetzt noch den Merge commiten\\
+Wenn sich der Master wärend der Entwicklung am eigenen Branch weiter entwickelt hat, können die Änderungen des Master auf folgende weise in den eigenen Branch übernommen werden.
+\begin{lstlisting}[language=bash]
+git status #Pruefen ob auf meinem Branch
+#wenn nicht
+git checkout myBranch
+#Lokalen Master aktuallisieren
+git pull origin master #sollte auch gleich in myBranch mergen
+#wenn nicht
+git merge master
+#Wenn merge-konflikt
+git mergetool
+#Jetzt noch den Merge commiten
 git commit
+\end{lstlisting}
 \nsecend
 
 \nsecbegin{Lokale Branches aufräumen}
-ACHTUNG: Sollte nur gemacht werden, wenn alle Änderungen in den Master übernommen wurden und somit sicher sind!!\\
-//Alle branches löschen die es nicht mehr auf dem Server gibt\\
-git remote prune origin\\
-//Lokale branches die mit dem master gemerged wurden löschen\\
-git branch --merged master | grep -v '\textasciicircum[ *]*master\$' | xargs git branch -d
+ACHTUNG: Sollte nur gemacht werden, wenn alle Änderungen in den Master übernommen wurden und somit sicher sind!!
+\begin{lstlisting}[language=bash]
+#Alle branches loeschen die es nicht mehr auf dem Server gibt
+git remote prune origin
+#Lokale branches die mit dem master gemerged wurden loeschen
+git branch --merged master | grep -v '^[ *]*master$' | xargs git branch -d
+\end{lstlisting}
+
 \nsecend
 
 \nsecend %{GIT}
