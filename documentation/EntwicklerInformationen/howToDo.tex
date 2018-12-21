@@ -57,11 +57,37 @@ Wenn etwas an der Entwicklerdokumentation oder am Handbuch geändert wurde, müs
 Weitere Informationen zum "'multiaudience-Paket"' unter \url{https://www.uweziegenhagen.de/?p=3252}.
 \nsecend
 \nsecend %{Latex}
+
+
 \nsecbegin{GIT}
 \nsecbegin{Benutzername und eMail ins GIT eintragen}
 In Linux kann durch den Aufruf:\\
 gedit ~/.gitconfig\\
 die "'.gitconfig-Datei"' editiert werden. In dieser werden unter anderem auch Benutzername und eMail-Addressse des Benutzers gespeichert.
 \nsecend
-\nsecend %{GIT}
+
+\nsecbegin{Eigenen Branch mit dem Master Synchronisieren}
+Wenn sich der Master wärend der Entwicklung am eigenen Branch weiter entwickelt hat, können die Änderungen des Master auf folgende weise in den eigenen Branch übernommen werden.\\
+git status //Prüfen ob auf meinem Branch;\\
+//wenn nicht\\
+git checkout myBranch\\
+//Lokalen Master aktuallisieren\\
+git pull origin master //sollte auch gleich in myBranch mergen\\
+//wenn nicht\\
+git merge master\\
+//Wenn merge-konflikt\\
+git mergetool\\
+//Jetzt noch den Merge commiten\\
+git commit
 \nsecend
+
+\nsecbegin{Lokale Branches aufräumen}
+ACHTUNG: Sollte nur gemacht werden, wenn alle Änderungen in den Master übernommen wurden und somit sicher sind!!\\
+//Alle branches löschen die es nicht mehr auf dem Server gibt\\
+git remote prune origin\\
+//Lokale branches die mit dem master gemerged wurden löschen\\
+git branch --merged master | grep -v '\textasciicircum[ *]*master\$' | xargs git branch -d
+\nsecend
+
+\nsecend %{GIT}
+\nsecend %{Was wird wie gemacht?}
