@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+
 import net.sourceforge.plantuml.GeneratedImage;
 import net.sourceforge.plantuml.SourceFileReader;
 import net.sourceforge.plantuml.SourceStringReader;
@@ -49,7 +50,7 @@ public class OutputPUML
 	    pumlCode += myParsingResult.classes.get(from);
 	    if (myParsingResult.classConnections.get(i).getConnection() == ClassConnection.connectionType.extension)
 	    {
-		pumlCode += " <|-- "; // TODO eventuell Pfeile aendern
+		pumlCode += " --|> "; // TODO eventuell Pfeile aendern
 	    }
 	    else if (myParsingResult.classConnections.get(i)
 		    .getConnection() == ClassConnection.connectionType.aggregation)
@@ -67,7 +68,6 @@ public class OutputPUML
 	return pumlCode;
     }
 
-    
     /**
      * Speichert den plantUML-Code aus dem String der getPUML Methode in eine Datei
      * 
@@ -110,8 +110,7 @@ public class OutputPUML
     public void createPUMLfromString(String filePath, String pumlCode) throws IOException
     {
     	OutputStream png = new FileOutputStream(filePath);
-    	SourceStringReader reader = new SourceStringReader(pumlCode);
-    	reader.outputImage(png).getDescription();
+	SourceStringReader reader = new SourceStringReader(pumlCode);
+	reader.outputImage(png).getDescription();
     }
-    
 }
