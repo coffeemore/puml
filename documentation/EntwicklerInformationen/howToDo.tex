@@ -60,10 +60,84 @@ Weitere Informationen zum "'multiaudience-Paket"' unter \url{https://www.uwezieg
 
 
 \nsecbegin{GIT}
+
 \nsecbegin{Benutzername und eMail ins GIT eintragen}
 In Linux kann durch den Aufruf:\\
 gedit ~/.gitconfig\\
 die "'.gitconfig-Datei"' editiert werden. In dieser werden unter anderem auch Benutzername und eMail-Addressse des Benutzers gespeichert.
+\nsecend
+
+\nsecbegin{Basics}
+\begin{lstlisting}[language=bash]
+#Aktueller Zustand ausgeben
+#Auf Welchem Branch bin ich?
+#Gibt es Dateien die geändert sind? 
+#Wurden Dateien gelöscht? 
+#Wurden neue Dateien hinzugefügt?
+#Sind Aenderungen bereits für den Commit vorgemerkt?
+#Bin ich vor oder hinter dem Remote-branch?
+git status
+
+#Alle Aenderungen für den Commit vormerken.
+#Für den Punkt kann auch ein Pfad angegeben werden um bestimmte Änderungen vorzumerken.
+#Wenn die .gitignore-Datei richtig gepflegt wird, sollte immer die Variante mit dem Punkt verwendet werden können.
+git add .
+
+#Vorgemerkte Änderungen Commiten
+#Anschließend muss die Commit-Nachricht im Editor eingetragen werden
+git commit
+
+#Alle commits auflisten
+git log
+
+#Unterschiede zwischen der aktuellen Version und einem älteren Commit anzeigen
+git difftool hashDesCommits
+
+#Unterschiede zwischen zwei aelteren commits anzeigen
+git difftool hashDesErstenCommits hashDesZweitenCommits
+
+#Zu einem älteren Commit wechseln
+git checkout hashDesCommits
+
+#Neuen Branch vom aktuellen Stand aus erstellen
+git branch nameDesNeuenBranches
+
+#Zu einem Branch wechseln
+git checkout nameDesBraches
+
+\end{lstlisting}
+\nsecend
+
+\nsecbegin{Mergen}
+\begin{lstlisting}[language=bash]
+#Einen anderen Branch in meinen aktuellen mergen
+git merge nameDesBranches
+
+#Bei Merge-Konflikt
+git mergetool
+
+#Fuer eine Datei direkt meine Version verwenden 
+git checkout --ours -- nameDerKonfliktdatei
+
+#Fuer eine Datei die Remote-version verwenden
+git checkout --theirs -- nameDerKonfliktdatei
+
+#Nach dem mergen
+git commit
+\end{lstlisting}
+\nsecend
+
+\nsecbegin{Arbeiten mit dem Server}
+\begin{lstlisting}[language=bash]
+#Remote anzeigen
+git remote -v
+
+#Aktuelle Version eines Branches holen
+git pull origin branchName
+
+#Meine Änderungen auf einen Branch hochladen
+git push origin branchName
+\end{lstlisting}
 \nsecend
 
 \nsecbegin{Eigenen Branch mit dem Master Synchronisieren}
