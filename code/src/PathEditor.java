@@ -1,4 +1,4 @@
-package gui;
+
 
 import org.eclipse.swt.widgets.Display;
 
@@ -15,6 +15,11 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormAttachment;
+import swing2swt.layout.BorderLayout;
 //@author Jan Sollmann
 public class PathEditor 
 {
@@ -40,7 +45,7 @@ public class PathEditor
 		createContents();
 		shlPfadeBearbeiten.open();
 		shlPfadeBearbeiten.layout();
-		fillTable();
+		
 		while (!shlPfadeBearbeiten.isDisposed()) {
 			if (!display.readAndDispatch()) {
 				display.sleep();
@@ -54,17 +59,19 @@ public class PathEditor
 	protected void createContents() 
 	{
 		shlPfadeBearbeiten = new Shell();
-		shlPfadeBearbeiten.setMinimumSize(new Point(450, 300));
-		shlPfadeBearbeiten.setSize(450, 300);
+		shlPfadeBearbeiten.setMinimumSize(new Point(600, 300));
+		shlPfadeBearbeiten.setSize(803, 304);
 		shlPfadeBearbeiten.setText("Pfade bearbeiten");
-		shlPfadeBearbeiten.setLayout(new FillLayout(SWT.HORIZONTAL));
+		shlPfadeBearbeiten.setLayout(new BorderLayout(0, 0));
 
 		table = new Table(shlPfadeBearbeiten, SWT.CHECK);
+		table.setOrientation(SWT.LEFT_TO_RIGHT);
 //		table.setHeaderVisible(true);
 //		table.setLinesVisible(true);
 //		
 //		tableColumn = new TableColumn(table, SWT.NULL);
 //		tableColumn.setText("Pfade");
+		fillTable();
 	}
 
 	private void fillTable() 
@@ -80,16 +87,15 @@ public class PathEditor
 		// item.setText("*** New Item " + table.indexOf(item) + " ***");
 		
 		Composite composite = new Composite(shlPfadeBearbeiten, SWT.NONE);
-		composite.setLayout(new GridLayout(2, false));
-		new Label(composite, SWT.NONE);
-		new Label(composite, SWT.NONE);
-		new Label(composite, SWT.NONE);
+		composite.setLayoutData(BorderLayout.SOUTH);
 		
 		/*btnHizufgen = new Button(composite, SWT.NONE);
 		btnHizufgen.setText("Hizuf\u00FCgen");
 		new Label(composite, SWT.NONE);*/
+		composite.setLayout(null);
 		
 		btnLschen = new Button(composite, SWT.NONE);
+		btnLschen.setBounds(0, 0, 76, 35);
 		btnLschen.addMouseListener(new MouseAdapter() 
 		{
 			@Override

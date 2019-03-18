@@ -57,11 +57,116 @@ Wenn etwas an der Entwicklerdokumentation oder am Handbuch geändert wurde, müs
 Weitere Informationen zum "'multiaudience-Paket"' unter \url{https://www.uweziegenhagen.de/?p=3252}.
 \nsecend
 \nsecend %{Latex}
+
+
 \nsecbegin{GIT}
+
 \nsecbegin{Benutzername und eMail ins GIT eintragen}
 In Linux kann durch den Aufruf:\\
 gedit ~/.gitconfig\\
 die "'.gitconfig-Datei"' editiert werden. In dieser werden unter anderem auch Benutzername und eMail-Addressse des Benutzers gespeichert.
 \nsecend
-\nsecend %{GIT}
+
+\nsecbegin{Basics}
+\begin{lstlisting}[language=bash]
+#Aktueller Zustand ausgeben
+#Auf Welchem Branch bin ich?
+#Gibt es Dateien die geändert sind? 
+#Wurden Dateien gelöscht? 
+#Wurden neue Dateien hinzugefügt?
+#Sind Aenderungen bereits für den Commit vorgemerkt?
+#Bin ich vor oder hinter dem Remote-branch?
+git status
+
+#Alle Aenderungen für den Commit vormerken.
+#Für den Punkt kann auch ein Pfad angegeben werden um bestimmte Änderungen vorzumerken.
+#Wenn die .gitignore-Datei richtig gepflegt wird, sollte immer die Variante mit dem Punkt verwendet werden können.
+git add .
+
+#Vorgemerkte Änderungen Commiten
+#Anschließend muss die Commit-Nachricht im Editor eingetragen werden
+git commit
+
+#Alle commits auflisten
+git log
+
+#Unterschiede zwischen der aktuellen Version und einem älteren Commit anzeigen
+git difftool hashDesCommits
+
+#Unterschiede zwischen zwei aelteren commits anzeigen
+git difftool hashDesErstenCommits hashDesZweitenCommits
+
+#Zu einem älteren Commit wechseln
+git checkout hashDesCommits
+
+#Neuen Branch vom aktuellen Stand aus erstellen
+git branch nameDesNeuenBranches
+
+#Zu einem Branch wechseln
+git checkout nameDesBraches
+
+\end{lstlisting}
 \nsecend
+
+\nsecbegin{Mergen}
+\begin{lstlisting}[language=bash]
+#Einen anderen Branch in meinen aktuellen mergen
+git merge nameDesBranches
+
+#Bei Merge-Konflikt
+git mergetool
+
+#Fuer eine Datei direkt meine Version verwenden 
+git checkout --ours -- nameDerKonfliktdatei
+
+#Fuer eine Datei die Remote-version verwenden
+git checkout --theirs -- nameDerKonfliktdatei
+
+#Nach dem mergen
+git commit
+\end{lstlisting}
+\nsecend
+
+\nsecbegin{Arbeiten mit dem Server}
+\begin{lstlisting}[language=bash]
+#Remote anzeigen
+git remote -v
+
+#Aktuelle Version eines Branches holen
+git pull origin branchName
+
+#Meine Änderungen auf einen Branch hochladen
+git push origin branchName
+\end{lstlisting}
+\nsecend
+
+\nsecbegin{Eigenen Branch mit dem Master Synchronisieren}
+Wenn sich der Master wärend der Entwicklung am eigenen Branch weiter entwickelt hat, können die Änderungen des Master auf folgende weise in den eigenen Branch übernommen werden.
+\begin{lstlisting}[language=bash]
+git status #Pruefen ob auf meinem Branch
+#wenn nicht
+git checkout myBranch
+#Lokalen Master aktuallisieren
+git pull origin master #sollte auch gleich in myBranch mergen
+#wenn nicht
+git merge master
+#Wenn merge-konflikt
+git mergetool
+#Jetzt noch den Merge commiten
+git commit
+\end{lstlisting}
+\nsecend
+
+\nsecbegin{Lokale Branches aufräumen}
+ACHTUNG: Sollte nur gemacht werden, wenn alle Änderungen in den Master übernommen wurden und somit sicher sind!!
+\begin{lstlisting}[language=bash]
+#Alle branches loeschen die es nicht mehr auf dem Server gibt
+git remote prune origin
+#Lokale branches die mit dem master gemerged wurden loeschen
+git branch --merged master | grep -v '^[ *]*master$' | xargs git branch -d
+\end{lstlisting}
+
+\nsecend
+
+\nsecend %{GIT}
+\nsecend %{Was wird wie gemacht?}

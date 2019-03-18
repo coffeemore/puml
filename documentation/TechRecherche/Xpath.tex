@@ -1,0 +1,42 @@
+\nsecbegin{XPath}
+Abfragesprache zur Addressierung/Auswertung von XML und Grundlage für Standards: XLST, XPointer, XQuery.
+\nsecbegin{Aufbau und Verwendung}
+\begin{itemize} 
+	
+	\item XML-Dokument wird als Baum betrachtet
+	\begin{itemize}
+		\item Knoten (nodes): Dokumenten-Knoten, XML-Elemente, -Attribute, -Textknoten, -Kommentare, -Namensräume und -Verarbeitungsanweisungen
+		\item Achsen: preceding, following, preceding-sibling und following-sibling	
+	\end{itemize}
+
+\end{itemize}
+
+\begin{itemize} 
+	
+	\item XPath-Ausdruck besteht aus mehreren Lokalisierungsschritten:
+	\begin{itemize}
+		\item achse::knotentest[prädikat 1][prädikat 2]...
+		\item Beispiel: /descendant-or-self::Foo
+		\item Prädikate: Funktionen/Operatoren zur weiteren Einschränkung
+		\item Beispiel: text(), comment() für bestimmten Datentyp	
+	\end{itemize}
+
+\end{itemize}
+\nsecend
+\nsecbegin{Beispiel an dargestellter XML-Datei}
+\begin{itemize}
+	\item /descendant-or-self::Softwareprojekt bzw. Softwareprojekt
+	
+	Wählt alle untergeordnete Knoten inklusive des Kontextknotens Softwareprojekt aus.
+	
+	\item /descendant-or-self::Softwareprojekt/descendant::Gruppe bzw. Softwareprojekt//Gruppe
+	
+	Wählt alle untergeordnete Knoten von Gruppe aus.
+	
+	\item /descendant-or-self::Softwareprojekt/descendant::Gruppe/descendant::Master/descendant::Projektowner/attribute::* oder /Softwareprojekt/Gruppe/Master/Projektowner/attribute::*
+	
+	liefert Attribute='mID=1' zurück.
+	
+\end{itemize}
+\nsecend
+\nsecend

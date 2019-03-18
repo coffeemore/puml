@@ -27,12 +27,12 @@ public class CodeCollector
     /**
      * True = .java-Dateien werden verwendet; False = .java-Dateien werden ignoriert
      */
-    private boolean useJavaFiles;
+    private boolean useJavaFiles = true;
 
     /**
      * True = .jar-Dateien werden verwendet; False = .jar-Dateien werden ignoriert
      */
-    private boolean useJarFiles;
+    private boolean useJarFiles = true;
 
     /**
      * Konstruktor
@@ -72,9 +72,10 @@ public class CodeCollector
 		    if (file.isDirectory())
 		    {
 			File[] fArray = file.listFiles();
+			
 			for (int i = 0; i < fArray.length; i++)
 			{
-			    paths.add(fArray[i].getAbsolutePath());
+			    paths.add(fArray[i].getAbsolutePath());			    
 			}
 			paths.remove(paths.get(j));
 		    }
@@ -84,8 +85,7 @@ public class CodeCollector
 	    {
 		// sammelt den Quellcode aus den Java-Dateien ein
 		return (collectJava(sc, buffr, filer));
-	    } else
-	    {
+	    } else	    {
 		if (!useJavaFiles && useJarFiles)
 		{
 		    // sammelt den Quellcode aus den Jar-Dateien ein
@@ -147,7 +147,7 @@ public class CodeCollector
 		    {
 			sc += currLine;
 		    }
-		    sc += "\n";
+		    sc += "\n"; 
 		}
 	    } catch (IOException e)
 	    {
@@ -185,6 +185,7 @@ public class CodeCollector
      */
     private String collectJar(String sc, BufferedReader buffr, ZipFile zFile)
     {
+	String sc2=new String();
 	try
 	{
 	    //Schleife, die alle Einträge  in paths durchgeht
@@ -209,9 +210,9 @@ public class CodeCollector
 
 				while ((currLine = buffr.readLine()) != null)
 				{
-				    sc += currLine;
+				    sc2 += currLine;
 				}
-				sc += "\n";
+				sc2 += "\n";
 			    } else
 			    {
 				continue;
@@ -241,8 +242,9 @@ public class CodeCollector
 		ex.printStackTrace();
 	    }
 	}
-	return sc;
-    }
+	
+	return sc2;
+    } 
 
     /**
      * Prüft, ob in der übergebenen ArrayList Directories enthalten sind
@@ -283,4 +285,5 @@ public class CodeCollector
     {
 	this.useJarFiles = useJarFiles;
     }
+
 }
