@@ -10,3 +10,7 @@
 /ParserIf.class
 /ParserJava.class
 /ParsingResult.class
+/GUI_SWT.class
+/PathEditor.class
+/org/eclipse/wb/swt/.gitignore
+

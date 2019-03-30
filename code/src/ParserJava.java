@@ -7,294 +7,261 @@ import java.util.regex.*;
  * 
  * @author Klasse, die den Parser für Java implementiert
  */
-public class ParserJava implements ParserIf
-{
+public class ParserJava implements ParserIf {
 
-    private ParsingResult result = null;
-    private Vector<String> className = new Vector<String>();
-    private Vector<String> classConnection = new Vector<String>();
-    private Vector<String> interfaceName = new Vector<String>();
-    private Vector<String> interfaceConnection = new Vector<String>();
-    private ArrayList<String> bothName = new ArrayList<String>();
-    private ArrayList<ClassConnection> classConnectionArray = new ArrayList<ClassConnection>();
-    private ClassConnection.connectionType extensionType = ClassConnection.connectionType.extension;
-    private ClassConnection.connectionType aggregationType = ClassConnection.connectionType.aggregation;
-    private ClassConnection.connectionType compositionType = ClassConnection.connectionType.composition;
-    private ArrayList<Integer> classPos = new ArrayList<Integer>();
+	private ParsingResult result = null;
+	private Vector<String> className = new Vector<String>();
+	private Vector<String> classConnection = new Vector<String>();
+	private Vector<String> interfaceName = new Vector<String>();
+	private Vector<String> interfaceConnection = new Vector<String>();
+	private ArrayList<String> bothName = new ArrayList<String>();
+	private ArrayList<ClassConnection> classConnectionArray = new ArrayList<ClassConnection>();
+	private ClassConnection.connectionType extensionType = ClassConnection.connectionType.extension;
+	private ClassConnection.connectionType aggregationType = ClassConnection.connectionType.aggregation;
+	private ClassConnection.connectionType compositionType = ClassConnection.connectionType.composition;
+	private ArrayList<Integer> classPos = new ArrayList<Integer>();
 
-    /**
-     * Konstruktor
-     */
-    public ParserJava()
-    {
+	/**
+	 * Konstruktor
+	 */
+	public ParserJava() {
 
-    }
+	}
 
-    /**
-     * Entfernt Kommentare aus übergebenem String
-     * 
-     * @param sourcece übergebener String aus dem Kommentare entfernt werden
-     * @return String ohne Kommentare
-     */
-    private String getCommentlessSourceCode(String sourcec) // Entfernt Kommentare eines Strings
-    {
-	sourcec = sourcec.replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)", "");
-	System.out.println("============================== Commentless Sourcecode: ==============================\n"
-		+ sourcec + "\n====================================================================================");
-	return sourcec;
-    }
+	/**
+	 * Entfernt Kommentare aus übergebenem String
+	 * 
+	 * @param sourcece übergebener String aus dem Kommentare entfernt werden
+	 * @return String ohne Kommentare
+	 */
+	public String getCommentlessSourceCode(String sourcec) // Entfernt Kommentare eines Strings
+	{
+		
+		sourcec = sourcec.replaceAll("\".[^\"]*\"", "");
+		sourcec = sourcec.replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)", "");
+		System.out.println("============================== Commentless Sourcecode: ==============================\n"
+				+ sourcec + "\n====================================================================================");
+		return sourcec;
+	}
 
-    /**
-     * Ermittelt Klassenbeziehungen Agregation und Komposition
-     * 
-     * @param substring Inhalt der Klasse, welcher untersucht wird
-     * @param parentClassName Klassenname der Klasse, dessen Inhalt untersucht wird
-     */
-    private void analyzeClassBody(String substring, String parentClassName)
-    {
+
+
+	/**
+	 * Ermittelt Klassenbeziehungen Agregation und Komposition
+	 * 
+	 * @param substring       Inhalt der Klasse, welcher untersucht wird
+	 * @param parentClassName Klassenname der Klasse, dessen Inhalt untersucht wird
+	 */
+	private void analyzeClassBody(String substring, String parentClassName) {
 //	System.out.println("============================== Inhalt von Sourcecode ab Klasse " + parentClassName
 //		+ " ==============================\n" + substring
 //		+ "\n===================================================================================================");
 
-	ArrayList<Integer> CurlyPos = new ArrayList<>();
-	int counter = 0;
-	Matcher Curly = Pattern.compile("(\\{)|(\\})").matcher(substring);
-	while (Curly.find())
-	{
-	    CurlyPos.add(Curly.start());
+		ArrayList<Integer> CurlyPos = new ArrayList<>();
+		int counter = 0;
+		Matcher Curly = Pattern.compile("(\\{)|(\\})").matcher(substring);
+		while (Curly.find()) {
+			CurlyPos.add(Curly.start());
 
-	    if (Curly.start(1) == Curly.start())
-	    {
-		// System.out.println("{");
-		counter++;
+			if (Curly.start(1) == Curly.start()) {
+				// System.out.println("{");
+				counter++;
 
-	    }
-	    else
-	    {
-		// System.out.println("}");
-		counter--;
-	    }
-	    if (counter == 0)
-	    {
-		break;
-	    }
-	}
-	String classBody = substring.substring(CurlyPos.get(0), CurlyPos.get(CurlyPos.size() - 1) + 1);
+			} else {
+				// System.out.println("}");
+				counter--;
+			}
+			if (counter == 0) {
+				break;
+			}
+		}
+		String classBody = substring.substring(CurlyPos.get(0), CurlyPos.get(CurlyPos.size() - 1) + 1);
 
-	System.out.println("============================== Inhalt von Klasse " + parentClassName
-		+ " ==============================\n" + classBody
-		+ "\n===================================================================================================");
-	int parentClassNo = bothName.indexOf(parentClassName); // Klassennummer des Körpers
-	String parentClass; // Klassenname des Körpers
+		System.out.println("============================== Inhalt von Klasse " + parentClassName
+				+ " ==============================\n" + classBody
+				+ "\n===================================================================================================");
+		int parentClassNo = bothName.indexOf(parentClassName); // Klassennummer des Körpers
+		String parentClass; // Klassenname des Körpers
 
-	System.out.println("Klassenname:" + parentClassName);
-	for (String classname : className)
-	{
-	    ArrayList<Integer> newClassPos = new ArrayList<>();
-	    ArrayList<Integer> dataTypeClassPos = new ArrayList<>();
-	    ArrayList<Integer> constructorPos = new ArrayList<>();
-	    ArrayList<Integer> constructorWithNewClassPos = new ArrayList<>();
-	    ArrayList<Integer> constructorWithDataTypeClassPos = new ArrayList<>();
-	    ArrayList<Integer> methodsWithNewClassPos = new ArrayList<>();
-	    ArrayList<Integer> methodsWithDataTypeClassPos = new ArrayList<>();
+		System.out.println("Klassenname:" + parentClassName);
+		for (String classname : className) {
+			ArrayList<Integer> newClassPos = new ArrayList<>();
+			ArrayList<Integer> dataTypeClassPos = new ArrayList<>();
+			ArrayList<Integer> constructorPos = new ArrayList<>();
+			ArrayList<Integer> constructorWithNewClassPos = new ArrayList<>();
+			ArrayList<Integer> constructorWithDataTypeClassPos = new ArrayList<>();
+			ArrayList<Integer> methodsWithNewClassPos = new ArrayList<>();
+			ArrayList<Integer> methodsWithDataTypeClassPos = new ArrayList<>();
 
-	    if (classBody.contains(classname) && classname != parentClassName)
-	    {
-		System.out.println("enthält '" + classname + "'");
-		Matcher newClass = Pattern.compile("new +" + classname + " *\\(.*\\)").matcher(classBody);
-		while (newClass.find())
-		{
-		    newClassPos.add(newClass.start());
+			if (classBody.contains(classname) && classname != parentClassName) {
+				System.out.println("enthält '" + classname + "'");
+				Matcher newClass = Pattern.compile("new +" + classname + " *\\(.*\\)").matcher(classBody);
+				while (newClass.find()) {
+					newClassPos.add(newClass.start());
+				}
+				Matcher dataTypeClass = Pattern.compile("< *" + classname + " *>").matcher(classBody);
+				while (dataTypeClass.find()) {
+					dataTypeClassPos.add(dataTypeClass.start());
+				}
+				Matcher constructor = Pattern.compile(parentClassName + " *\\(.*\\) *\\{.*\\}").matcher(classBody);
+				while (constructor.find()) {
+					constructorPos.add(constructor.start());
+				}
+				Matcher constructorWithNewClass = Pattern
+						.compile(parentClassName + " *\\(.*\\) *\\{.*new +" + classname + " *\\(.*\\).*\\}")
+						.matcher(classBody);
+				while (constructorWithNewClass.find()) {
+					constructorWithNewClassPos.add(constructorWithNewClass.start());
+				}
+				Matcher constructorWithDataTypeClass = Pattern
+						.compile(parentClassName + " *\\(.*< *" + classname + " *>.*\\) *\\{.*\\}").matcher(classBody);
+				while (constructorWithDataTypeClass.find()) {
+					constructorWithDataTypeClassPos.add(constructorWithDataTypeClass.start());
+				}
+				Matcher methodsWithNewClass = Pattern.compile("\\{.*new +" + classname + " *\\(.*\\).*\\}")
+						.matcher(classBody);
+				while (methodsWithNewClass.find()) {
+					methodsWithNewClassPos.add(methodsWithNewClass.start());
+				}
+				Matcher methodsWithDataTypeClass = Pattern.compile("\\(.*< *" + classname + " *>.*\\) *\\{.*\\}")
+						.matcher(classBody);
+				while (methodsWithDataTypeClass.find()) {
+					methodsWithDataTypeClassPos.add(methodsWithDataTypeClass.start());
+				}
+				System.out.println("Vorkommen: \nals new class(): " + newClassPos.size() + "\nals Datentyp: "
+						+ dataTypeClassPos.size() + "\nin Konstruktoren: " + constructorPos.size()
+						+ "\nin Konstruktoren als new class() : " + constructorWithNewClassPos.size()
+						+ "\nin Konstruktoren als Datentyp: " + constructorWithDataTypeClassPos.size()
+						+ "\nin Methoden als new class(): " + methodsWithNewClassPos.size()
+						+ "\nin Methoden als Datentyp: " + methodsWithDataTypeClassPos.size());
+				if (!newClassPos.isEmpty()) {
+					if (constructorPos.size() == constructorWithNewClassPos.size()
+							|| newClassPos.size() > methodsWithNewClassPos.size()) {
+						System.out.println("Ergebnis: enthält " + classname + " als Komposition");
+						ClassConnection cc = new ClassConnection(className.indexOf(classname), parentClassNo,
+								compositionType);
+						classConnectionArray.add(cc);
+					} else {
+						System.out.println("Ergebnis: enthält " + classname + " als Agregation");
+						ClassConnection cc = new ClassConnection(className.indexOf(classname), parentClassNo,
+								aggregationType);
+						classConnectionArray.add(cc);
+					}
+				}
+				System.out.println("-------------------------------------------------------------------------");
+			}
 		}
-		Matcher dataTypeClass = Pattern.compile("< *" + classname + " *>").matcher(classBody);
-		while (dataTypeClass.find())
-		{
-		    dataTypeClassPos.add(dataTypeClass.start());
-		}
-		Matcher constructor = Pattern.compile(parentClassName + " *\\(.*\\) *\\{.*\\}").matcher(classBody);
-		while (constructor.find())
-		{
-		    constructorPos.add(constructor.start());
-		}
-		Matcher constructorWithNewClass = Pattern
-			.compile(parentClassName + " *\\(.*\\) *\\{.*new +" + classname + " *\\(.*\\).*\\}")
-			.matcher(classBody);
-		while (constructorWithNewClass.find())
-		{
-		    constructorWithNewClassPos.add(constructorWithNewClass.start());
-		}
-		Matcher constructorWithDataTypeClass = Pattern
-			.compile(parentClassName + " *\\(.*< *" + classname + " *>.*\\) *\\{.*\\}").matcher(classBody);
-		while (constructorWithDataTypeClass.find())
-		{
-		    constructorWithDataTypeClassPos.add(constructorWithDataTypeClass.start());
-		}
-		Matcher methodsWithNewClass = Pattern.compile("\\{.*new +" + classname + " *\\(.*\\).*\\}")
-			.matcher(classBody);
-		while (methodsWithNewClass.find())
-		{
-		    methodsWithNewClassPos.add(methodsWithNewClass.start());
-		}
-		Matcher methodsWithDataTypeClass = Pattern.compile("\\(.*< *" + classname + " *>.*\\) *\\{.*\\}")
-			.matcher(classBody);
-		while (methodsWithDataTypeClass.find())
-		{
-		    methodsWithDataTypeClassPos.add(methodsWithDataTypeClass.start());
-		}
-		System.out.println("Vorkommen: \nals new class(): " + newClassPos.size() + "\nals Datentyp: "
-			+ dataTypeClassPos.size() + "\nin Konstruktoren: " + constructorPos.size()
-			+ "\nin Konstruktoren als new class() : " + constructorWithNewClassPos.size()
-			+ "\nin Konstruktoren als Datentyp: " + constructorWithDataTypeClassPos.size()
-			+ "\nin Methoden als new class(): " + methodsWithNewClassPos.size()
-			+ "\nin Methoden als Datentyp: " + methodsWithDataTypeClassPos.size());
-		if (!newClassPos.isEmpty())
-		{
-		    if (constructorPos.size() == constructorWithNewClassPos.size()
-			    || newClassPos.size() > methodsWithNewClassPos.size())
-		    {
-			System.out.println("Ergebnis: enthält " + classname + " als Komposition");
-			ClassConnection cc = new ClassConnection(className.indexOf(classname), parentClassNo,
-				compositionType);
-			classConnectionArray.add(cc);
-		    }
-		    else
-		    {
-			System.out.println("Ergebnis: enthält " + classname + " als Agregation");
-			ClassConnection cc = new ClassConnection(className.indexOf(classname), parentClassNo,
-				aggregationType);
-			classConnectionArray.add(cc);
-		    }
-		}
-		System.out.println("-------------------------------------------------------------------------");
-	    }
+
 	}
 
-    }
-
-    /**
-     * Liest den übergebenen Quellcode ein und parsed die Informationen daraus
-     * 
-     * @param sourceCode Vollständiger Java-Quellcode
-     */
-    public void parse(String sourceCode)
-    {
-	// Auslesen aller Interfacenamen
-	// 1. Suche nach Interface-Deklaration
-	// TODO: BUG! entfernt zu viel! -> löscht alle Stellen mit // oder /* ... */
-	// deswegen darauf achten, dass keine "//" oder /* ... */ in RegEx oder Strings
-	// benutzt werden
-	sourceCode = getCommentlessSourceCode(sourceCode);
-	Matcher interfaceMatcher = Pattern.compile("interface +([a-zA-Z0-9]+).*\\R* *\\{").matcher(sourceCode);
-	System.out.println("Interfaces: ");
-	// Solange im Quelltext Interfacedeklarationen gefunden werden, such weiter und
-	// speichere sie ab
-	while (interfaceMatcher.find())
-	{
-	    interfaceName.add(interfaceMatcher.group(1));
-	    bothName.add(interfaceMatcher.group(1)); // speichere den Namen
-	    interfaceConnection.add(interfaceMatcher.group()); // speichere die Zeile um später die Interfaces
-							       // auszulesen, die in Verbindung zu dem Interface stehen
-	    classPos.add(interfaceMatcher.start());
-	    System.out.println(interfaceMatcher.group(1));
-	}
-	System.out.println("Anzahl " + interfaceName.size());
-	int countIN = interfaceName.size(); // Speichern der Größe des Interfaces für die Übersichtlichkeit
-
-	for (int i = 0; i < interfaceConnection.size(); i++) // suche nach extends, da Interfaces von einem oder
-							     // mehreren anderen Interfaces erben können
-	{
-	    if (interfaceConnection.get(i).indexOf("extends") > 1)
-	    {
-		exInterfaceConnection(i); // Funktion, die alle Verbindungen des Interfaces i zu den anderen Interfaces
-					  // herausliest und speichert
-	    }
-	}
-
-	// Auslesen aller Klassennamen
-	Matcher classMatcher = Pattern.compile("class +([a-zA-Z0-9]+).*\\R* *\\{").matcher(sourceCode);
-	System.out.println("Klassen: ");
-
-	// Speichern der Klassennamen und der ganzen Zeile bis "{" um Interfaces und
-	// Vererbungen herauszubekommen
-	while (classMatcher.find())
-	{
-	    className.add(classMatcher.group(1));
-	    bothName.add(classMatcher.group(1));
-	    classConnection.add(classMatcher.group());
-	    classPos.add(classMatcher.start());
-	    System.out.println(classMatcher.group(1));
-
-	}
-	System.out.println("Anzahl " + className.size());
-
-	for (String classname : bothName)
-	{
-	    System.out.println("analyzeClassBody() von Klasse " + classname + ": ");
-	    analyzeClassBody(sourceCode.substring(classPos.get(bothName.indexOf(classname))), classname);
-	}
-
-	// Auslesen der Verbindungen zwischen Klassen und Interfaces
-	for (int i = 0; i < classConnection.size(); i++)
-	{
-	    // Auslesen und Zuweisen von Verbindungen die Interfaces implementieren und/oder
-	    // zusätzlich auch von einer Klasse erben
-	    if (classConnection.get(i).indexOf("implements") > 1)
-	    {
-
-		if (classConnection.get(i).indexOf("extends") > 1)
-		{
-		    impClassConnection(i, countIN);
-		    exClassConnection(i, countIN);
-		    System.out.println("Klasse " + (i + countIN) + " implementiert und erbt");
+	/**
+	 * Liest den übergebenen Quellcode ein und parsed die Informationen daraus
+	 * 
+	 * @param sourceCode Vollständiger Java-Quellcode
+	 */
+	public void parse(String sourceCode) {
+		// Auslesen aller Interfacenamen
+		// 1. Suche nach Interface-Deklaration
+		// TODO: BUG! entfernt zu viel! -> löscht alle Stellen mit // oder /* ... */
+		// deswegen darauf achten, dass keine "//" oder /* ... */ in RegEx oder Strings
+		// benutzt werden
+		sourceCode = getCommentlessSourceCode(sourceCode);
+		Matcher interfaceMatcher = Pattern.compile("interface +([a-zA-Z0-9]+).*\\R* *\\{").matcher(sourceCode);
+		System.out.println("Interfaces: ");
+		// Solange im Quelltext Interfacedeklarationen gefunden werden, such weiter und
+		// speichere sie ab
+		while (interfaceMatcher.find()) {
+			interfaceName.add(interfaceMatcher.group(1));
+			bothName.add(interfaceMatcher.group(1)); // speichere den Namen
+			interfaceConnection.add(interfaceMatcher.group()); // speichere die Zeile um später die Interfaces
+			// auszulesen, die in Verbindung zu dem Interface stehen
+			classPos.add(interfaceMatcher.start());
+			System.out.println(interfaceMatcher.group(1));
 		}
-		else
+		System.out.println("Anzahl " + interfaceName.size());
+		int countIN = interfaceName.size(); // Speichern der Größe des Interfaces für die Übersichtlichkeit
+
+		for (int i = 0; i < interfaceConnection.size(); i++) // suche nach extends, da Interfaces von einem oder
+		// mehreren anderen Interfaces erben können
 		{
-		    impClassConnection(i, countIN);
-		    System.out.println("Bin hier");
+			if (interfaceConnection.get(i).indexOf("extends") > 1) {
+				exInterfaceConnection(i); // Funktion, die alle Verbindungen des Interfaces i zu den anderen Interfaces
+				// herausliest und speichert
+			}
 		}
 
-	    }
-	    // Klassen, die nur erben
-	    else if (classConnection.get(i).indexOf("extends") > 1)
-	    {
-		exClassConnection(i, countIN);
-	    }
-	    // KLassen, die weder erben noch Interfaces implementieren
-	    else
-	    {
-		System.out.println("Klasse " + (i + countIN) + " implementiert nicht und erbt nicht ");
-	    }
-	}
-	// Ausgabe aller Verbindungen
-	for (int i = 0; i < classConnectionArray.size(); i++)
-	{
-	    System.out.println("Verbindung " + i + " : von " + classConnectionArray.get(i).getFrom() + " nach "
-		    + classConnectionArray.get(i).getTo() + " .");
+		// Auslesen aller Klassennamen
+		Matcher classMatcher = Pattern.compile("class +([a-zA-Z0-9]+).*\\R* *\\{").matcher(sourceCode);
+		System.out.println("Klassen: ");
+
+		// Speichern der Klassennamen und der ganzen Zeile bis "{" um Interfaces und
+		// Vererbungen herauszubekommen
+		while (classMatcher.find()) {
+			className.add(classMatcher.group(1));
+			bothName.add(classMatcher.group(1));
+			classConnection.add(classMatcher.group());
+			classPos.add(classMatcher.start());
+			System.out.println(classMatcher.group(1));
+
+		}
+		System.out.println("Anzahl " + className.size());
+
+		for (String classname : bothName) {
+			System.out.println("analyzeClassBody() von Klasse " + classname + ": ");
+			analyzeClassBody(sourceCode.substring(classPos.get(bothName.indexOf(classname))), classname);
+		}
+
+		// Auslesen der Verbindungen zwischen Klassen und Interfaces
+		for (int i = 0; i < classConnection.size(); i++) {
+			// Auslesen und Zuweisen von Verbindungen die Interfaces implementieren und/oder
+			// zusätzlich auch von einer Klasse erben
+			if (classConnection.get(i).indexOf("implements") > 1) {
+
+				if (classConnection.get(i).indexOf("extends") > 1) {
+					impClassConnection(i, countIN);
+					exClassConnection(i, countIN);
+					System.out.println("Klasse " + (i + countIN) + " implementiert und erbt");
+				} else {
+					impClassConnection(i, countIN);
+					System.out.println("Bin hier");
+				}
+
+			}
+			// Klassen, die nur erben
+			else if (classConnection.get(i).indexOf("extends") > 1) {
+				exClassConnection(i, countIN);
+			}
+			// KLassen, die weder erben noch Interfaces implementieren
+			else {
+				System.out.println("Klasse " + (i + countIN) + " implementiert nicht und erbt nicht ");
+			}
+		}
+		// Ausgabe aller Verbindungen
+		for (int i = 0; i < classConnectionArray.size(); i++) {
+			System.out.println("Verbindung " + i + " : von " + classConnectionArray.get(i).getFrom() + " nach "
+					+ classConnectionArray.get(i).getTo() + " .");
+		}
+
+		// Speichern der Klassennamen und Verbindungen im result
+		result = new ParsingResult(bothName, classConnectionArray);
+
 	}
 
-	// Speichern der Klassennamen und Verbindungen im result
-	result = new ParsingResult(bothName, classConnectionArray);
-
-    }
-
-    /**
-     * Ermittelt Knotennummer der Klasse
-     * 
-     * @param parent Name der Klasse
-     * @return Nummer der Klasse
-     */
-    private int bothNumber(String parent)
-    {
-	int classNu = -1; // Bei nicht vorhandenem Knoten kommt -1 zurück
-	for (int i = 0; i < bothName.size(); i++)
-	{
-	    if (bothName.get(i).equals(parent))
-	    {
-		classNu = i;
-	    }
+	/**
+	 * Ermittelt Knotennummer der Klasse
+	 * 
+	 * @param parent Name der Klasse
+	 * @return Nummer der Klasse
+	 */
+	private int bothNumber(String parent) {
+		int classNu = -1; // Bei nicht vorhandenem Knoten kommt -1 zurück
+		for (int i = 0; i < bothName.size(); i++) {
+			if (bothName.get(i).equals(parent)) {
+				classNu = i;
+			}
+		}
+		return classNu;
 	}
-	return classNu;
-    }
 
 //  private int interfaceNumber(String interName)
 //  {
@@ -309,129 +276,118 @@ public class ParserJava implements ParserIf
 //	return interNu;
 //  }
 
-    /**
-     * Liest Vererbung der angegebenen Klasse aus
-     * 
-     * @param i
-     * @param countIN
-     */
-    private void exClassConnection(int i, int countIN)
-    {
-	String parent = "keinem";
-	ClassConnection cc;
+	/**
+	 * Liest Vererbung der angegebenen Klasse aus
+	 * 
+	 * @param i
+	 * @param countIN
+	 */
+	private void exClassConnection(int i, int countIN) {
+		String parent = "keinem";
+		ClassConnection cc;
 
-	// Pattern um den Namen auszulesen erstellen
-	Matcher mEx = Pattern.compile("extends +([a-zA-Z0-9]*).*\\{").matcher(classConnection.get(i));
-	while (mEx.find())
-	{
-	    parent = mEx.group(1);
-	    System.out.println(bothNumber(parent));
-	}
-	System.out.println("Klasse " + bothName.get(i + countIN) + " erbt von " + bothName.get(bothNumber(parent)));
+		// Pattern um den Namen auszulesen erstellen
+		Matcher mEx = Pattern.compile("extends +([a-zA-Z0-9]*).*\\{").matcher(classConnection.get(i));
+		while (mEx.find()) {
+			parent = mEx.group(1);
+			System.out.println(bothNumber(parent));
+		}
+		System.out.println("Klasse " + bothName.get(i + countIN) + " erbt von " + bothName.get(bothNumber(parent)));
 
-	// Hinzufuegen der Verbindung ins Array
-	cc = new ClassConnection((i + countIN), bothNumber(parent), extensionType);
-	classConnectionArray.add(cc);
-	// System.out.println("G " + classConnectionArray.size());
-    }
-
-    /**
-     * Liest benutzte Interfaces der angegebenen Klasse aus
-     * 
-     * @param i
-     * @param countIN
-     */
-    private void impClassConnection(int i, int countIN)
-    {
-
-	String interface1 = "keinem";
-	String followingInterfaces = "keinem";
-	ClassConnection cc;
-	// Erstellung des Patterns um Namen nach dem Keyword "implements" auszulesen
-	Matcher mImp1 = Pattern.compile("implements +([a-zA-Z0-9]*) *( *, *[a-zA-Z0-9]*)* *.*\\{")
-		.matcher(classConnection.get(i));
-	if (mImp1.find())
-	{
-	    interface1 = mImp1.group(1); // das erste Interface
-	    // Hinzufuegen einer neuen Verbindung
-	    cc = new ClassConnection((i + countIN), bothNumber(interface1), extensionType);
-	    classConnectionArray.add(cc);
-
-	    // wenn nach dem Namen ein Komma steht kommen weitere Interfaces die eingebunden
-	    // werden
-	    if (mImp1.group(2) != null)
-	    {
-		followingInterfaces = mImp1.group(2);
-	    }
-
-	    System.out.println(interface1 + " ist Interface von " + className.get(i));
-
-	    Matcher mImp2 = Pattern.compile(" *, *([a-zA-Z0-9]*)").matcher(followingInterfaces);
-	    while (mImp2.find())
-	    {
-		interface1 = mImp2.group(1);
-		System.out.println(interface1 + " ist Interface von " + className.get(i));
-		// hinzufuegen der Verbindung zum Array
-		cc = new ClassConnection((i + countIN), bothNumber(interface1), extensionType);
+		// Hinzufuegen der Verbindung ins Array
+		cc = new ClassConnection((i + countIN), bothNumber(parent), extensionType);
 		classConnectionArray.add(cc);
-		System.out.println("G " + classConnectionArray.size());
-	    }
-	    System.out.println("test");
+		// System.out.println("G " + classConnectionArray.size());
 	}
-    }
 
-    /**
-     * Liest eingebundene Interfaces in anderen Interfaces aus
-     * 
-     * @param i
-     */
-    private void exInterfaceConnection(int i)
-    {
-	String interface1 = "keinem";
-	String followingInterfaces = "keins";
-	ClassConnection cc;
-	// Erstellen des Patterns um bei Interfaces auszulesen, ob es von einem oder
-	// mehreren Interfaces "erbt"
-	Matcher mEx1 = Pattern.compile("extends +([a-zA-Z0-9]*) *( *, *[a-zA-Z0-9]*)* *.*\\{")
-		.matcher(interfaceConnection.get(i));
-	if (mEx1.find())
-	{
-	    interface1 = mEx1.group(1); // das erste Interface
-	    System.out.println("jap");
-	    // Hinzufuegen einer Verbindung
-	    cc = new ClassConnection((i), bothNumber(interface1), extensionType);
-	    classConnectionArray.add(cc);
+	/**
+	 * Liest benutzte Interfaces der angegebenen Klasse aus
+	 * 
+	 * @param i
+	 * @param countIN
+	 */
+	private void impClassConnection(int i, int countIN) {
 
-	    // bei folgendem "," ist von folgenden Interfacenamen auszugehen, die man noch
-	    // auslesen und hinzufuegen muss
-	    if (mEx1.group(2) != null)
-	    {
-		followingInterfaces = mEx1.group(2);
-	    }
+		String interface1 = "keinem";
+		String followingInterfaces = "keinem";
+		ClassConnection cc;
+		// Erstellung des Patterns um Namen nach dem Keyword "implements" auszulesen
+		Matcher mImp1 = Pattern.compile("implements +([a-zA-Z0-9]*) *( *, *[a-zA-Z0-9]*)* *.*\\{")
+				.matcher(classConnection.get(i));
+		if (mImp1.find()) {
+			interface1 = mImp1.group(1); // das erste Interface
+			// Hinzufuegen einer neuen Verbindung
+			cc = new ClassConnection((i + countIN), bothNumber(interface1), extensionType);
+			classConnectionArray.add(cc);
 
-	    System.out.println(interface1 + " ist Interface von " + bothName.get(i));
+			// wenn nach dem Namen ein Komma steht kommen weitere Interfaces die eingebunden
+			// werden
+			if (mImp1.group(2) != null) {
+				followingInterfaces = mImp1.group(2);
+			}
 
-	    Matcher mEx2 = Pattern.compile(" *, *([a-zA-Z0-9]*)").matcher(followingInterfaces);
-	    while (mEx2.find())
-	    {
-		interface1 = mEx2.group(1);
-		System.out.println(interface1 + " ist Interface von " + bothName.get(i));
-		// Neue Verbindung wird hinzugefuegt
-		cc = new ClassConnection((i), bothNumber(interface1), extensionType);
-		classConnectionArray.add(cc);
-	    }
-	    System.out.println("test");
+			System.out.println(interface1 + " ist Interface von " + className.get(i));
+
+			Matcher mImp2 = Pattern.compile(" *, *([a-zA-Z0-9]*)").matcher(followingInterfaces);
+			while (mImp2.find()) {
+				interface1 = mImp2.group(1);
+				System.out.println(interface1 + " ist Interface von " + className.get(i));
+				// hinzufuegen der Verbindung zum Array
+				cc = new ClassConnection((i + countIN), bothNumber(interface1), extensionType);
+				classConnectionArray.add(cc);
+				System.out.println("G " + classConnectionArray.size());
+			}
+			System.out.println("test");
+		}
 	}
-    }
 
-    /**
-     * Liefert die Ergebnisse des Parsens zurück
-     * 
-     * @return Struktur mit den Ergebnissen des Parsens
-     */
-    public ParsingResult getParsingResult()
-    {
-	return result;
-    }
+	/**
+	 * Liest eingebundene Interfaces in anderen Interfaces aus
+	 * 
+	 * @param i
+	 */
+	private void exInterfaceConnection(int i) {
+		String interface1 = "keinem";
+		String followingInterfaces = "keins";
+		ClassConnection cc;
+		// Erstellen des Patterns um bei Interfaces auszulesen, ob es von einem oder
+		// mehreren Interfaces "erbt"
+		Matcher mEx1 = Pattern.compile("extends +([a-zA-Z0-9]*) *( *, *[a-zA-Z0-9]*)* *.*\\{")
+				.matcher(interfaceConnection.get(i));
+		if (mEx1.find()) {
+			interface1 = mEx1.group(1); // das erste Interface
+			System.out.println("jap");
+			// Hinzufuegen einer Verbindung
+			cc = new ClassConnection((i), bothNumber(interface1), extensionType);
+			classConnectionArray.add(cc);
+
+			// bei folgendem "," ist von folgenden Interfacenamen auszugehen, die man noch
+			// auslesen und hinzufuegen muss
+			if (mEx1.group(2) != null) {
+				followingInterfaces = mEx1.group(2);
+			}
+
+			System.out.println(interface1 + " ist Interface von " + bothName.get(i));
+
+			Matcher mEx2 = Pattern.compile(" *, *([a-zA-Z0-9]*)").matcher(followingInterfaces);
+			while (mEx2.find()) {
+				interface1 = mEx2.group(1);
+				System.out.println(interface1 + " ist Interface von " + bothName.get(i));
+				// Neue Verbindung wird hinzugefuegt
+				cc = new ClassConnection((i), bothNumber(interface1), extensionType);
+				classConnectionArray.add(cc);
+			}
+			System.out.println("test");
+		}
+	}
+
+	/**
+	 * Liefert die Ergebnisse des Parsens zurück
+	 * 
+	 * @return Struktur mit den Ergebnissen des Parsens
+	 */
+	public ParsingResult getParsingResult() {
+		return result;
+	}
 
 }
