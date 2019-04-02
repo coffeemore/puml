@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Text;
  * Die Klasse benötigt im Build Path den Verweis zur jeweiligen SWT-Bibliothek
  * zum jeweiligen OS. Bitte aber nur ein Paket verlinken.
  * 
- * @author Julian Uebe
+ * @author Julian Uebe, Jan Sollmann
  *
  */
 public class GUI_SWT
@@ -277,7 +277,10 @@ public class GUI_SWT
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-				lblImage.setImage(SWTResourceManager.getImage(GUI_SWT.class, "/img/test.png"));
+				/*TODO: Bild-Pfad zusammen bekommen was ein Dreck alter*/
+				String tempPath;
+				tempPath.join("", Pfad,Name);
+				lblImage.setImage(SWTResourceManager.getImage(GUI_SWT.class, ""));
 				lblImage.pack();
 
 			}
@@ -406,7 +409,7 @@ public class GUI_SWT
 
 			text.setText(pumlCode);
 
-			// TODO Image durch erzeugtes Image ersetzen
+			// TODO Image durch erzeugtes Image ersetzen und dieses erstmal erzeugen
 			lblImage.setImage(SWTResourceManager.getImage(GUI_SWT.class, "/img/test.png"));
 			lblImage.pack();
 
