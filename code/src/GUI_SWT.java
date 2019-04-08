@@ -370,7 +370,7 @@ public class GUI_SWT
 		composite_3 = new Composite(sashForm, SWT.NONE);
 		composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		text = new Text(composite_3, SWT.MULTI | SWT.BORDER);
+		text = new Text(composite_3, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		text.setEditable(false);
 		text.setToolTipText("PlantUML Code");
 
