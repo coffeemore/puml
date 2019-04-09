@@ -5,9 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
-//import java.util.logging.Formatter;
+import java.util.logging.Formatter;
 import java.util.logging.Level;
-//import java.util.logging.LogRecord;
+import java.util.logging.LogRecord;
 
 
 public class LogMain {
@@ -21,7 +21,6 @@ public class LogMain {
 		FileHandler xml=null;
 		home=System.getProperty("user.home");
 		File pumlDir = new File(home+"/PUMLlog");
-		// if the directory does not exist, create it
 		if (!pumlDir.exists()) {
 
 		    try{
@@ -46,7 +45,7 @@ public class LogMain {
 		log.setUseParentHandlers(false); //deaktiviert default Handler
 	
 		
-		/*xml.setFormatter(new Formatter(){
+		xml.setFormatter(new Formatter(){
 			@Override
 			public String format(LogRecord record) {
 				String ret = "";
@@ -65,15 +64,14 @@ public class LogMain {
 				ret += "\r\n";
 				return ret;
 			}
-		}); */
+		}); 
 		con.setLevel(Level.ALL);
 		log.addHandler(xml);
 		log.addHandler(con);
 	}
-
 	private static final Logger log = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	public Logger getLog() {
 		return log;
 	}
-	public String home;
+	public String home; //Zur Speicherung des jeweiligen home directories des Systems
 }
