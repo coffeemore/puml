@@ -155,8 +155,8 @@ public class CodeCollector
 		    while ((currLine = buffr.readLine()) != null)
 		    {
 			sc += currLine;
+			sc += "\n";
 		    }
-		    sc += "\n";
 		} else
 		{
 		    paths.remove(paths.get(i));
@@ -228,8 +228,8 @@ public class CodeCollector
 				while ((currLine = buffr.readLine()) != null)
 				{
 				    sc += currLine;
+				    sc += "\n";
 				}
-				sc += "\n";
 			    } else
 			    {
 				continue;
