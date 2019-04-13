@@ -19,6 +19,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -29,12 +30,12 @@ import org.eclipse.swt.widgets.Text;
  * Die Klasse benötigt im Build Path den Verweis zur jeweiligen SWT-Bibliothek
  * zum jeweiligen OS. Bitte aber nur ein Paket verlinken.
  * 
- * @author Julian Uebe
+ * @author Julian Uebe, Jan Sollmann
  *
  */
 public class GUI_SWT
 {
-
+	protected Display display;
 	protected Shell shell;
 	private Label lblImage;
 	private Tree tree;
@@ -83,7 +84,7 @@ public class GUI_SWT
 	{
 		paths = new ArrayList<String>();
 		outputFile = "output.png";
-		outputPath = System.getProperty("user.dir") + "/";
+		outputPath = System.getProperty("user.dir") + "\\" ;
 		useJava = true;
 		useJar = false;
 	}
@@ -275,13 +276,58 @@ public class GUI_SWT
 		toolItem_1.addSelectionListener(new SelectionAdapter()
 		{
 			@Override
+			//Ruft eine Version von RunPUML auf welche auf der Datei tmp operiert
+			//outputPath, outputFile wie im CodeCollector
 			public void widgetSelected(SelectionEvent e)
 			{
-				lblImage.setImage(SWTResourceManager.getImage(GUI_SWT.class, "/img/test.png"));
-				lblImage.pack();
+				try
+				{
+					PUMLgenerator.codeCollector.paths = paths;
+					PUMLgenerator.codeCollector.setUseJarFiles(useJar);
+					PUMLgenerator.codeCollector.setUseJavaFiles(useJava);
+					srcCode = PUMLgenerator.codeCollector.getSourceCode();
+					System.out.println(srcCode);
+
+					PUMLgenerator.parser.parse(srcCode);
+					ParsingResult tempPR = PUMLgenerator.parser.getParsingResult();
+					pumlCode = PUMLgenerator.outputPUML.getPUML(tempPR);
+					ArrayList<String> classes = tempPR.getClasses();
+					for (int i = 0; i < classes.size(); i++)
+					{
+						TreeItem treeItem0 = new TreeItem(tree, 0);
+					    treeItem0.setText(classes.get(i));
+					    treeItem0.setChecked(true);
+					}
+					
+					PUMLgenerator.outputPUML.createPUMLfromString( outputPath+"tmp.png", pumlCode);
+					text.setText(pumlCode);
+				
+					lblImage.setImage(new Image(display, outputPath+"tmp.png"));
+					lblImage.pack();
+				}
+				catch (NullPointerException npe)
+				{
+					messageBox = new MessageBox(shell, SWT.ICON_ERROR);
+					messageBox.setMessage("Pfadliste leer");
+					messageBox.setText("Fehler");
+					messageBox.open();
+				}
+				catch (IllegalArgumentException iae)
+				{
+					messageBox = new MessageBox(shell, SWT.ICON_ERROR);
+					messageBox.setMessage("Bitte mindestens einen Suchtyp auswählen (jar/java)");
+					messageBox.setText("Fehler");
+					messageBox.open();
+				}
+				catch (IOException e1) 
+				{
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 
 			}
 		});
+		
 		toolItem_1.setImage(
 				SWTResourceManager.getImage(GUI_SWT.class, "/com/sun/java/swing/plaf/windows/icons/HardDrive.gif"));
 		toolItem_1.setToolTipText("Test Vorschau");
@@ -324,7 +370,7 @@ public class GUI_SWT
 		composite_3 = new Composite(sashForm, SWT.NONE);
 		composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		text = new Text(composite_3, SWT.MULTI | SWT.BORDER);
+		text = new Text(composite_3, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		text.setEditable(false);
 		text.setToolTipText("PlantUML Code");
 
@@ -406,7 +452,7 @@ public class GUI_SWT
 
 			text.setText(pumlCode);
 
-			// TODO Image durch erzeugtes Image ersetzen
+			//TODO: Image durch erzeugtes Image ersetzen und dieses erstmal erzeugen (Julians kommentar? wenn nicht dann weg)
 			lblImage.setImage(SWTResourceManager.getImage(GUI_SWT.class, "/img/test.png"));
 			lblImage.pack();
 
