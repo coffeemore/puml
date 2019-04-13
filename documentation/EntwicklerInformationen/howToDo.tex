@@ -63,7 +63,7 @@ Weitere Informationen zum "'multiaudience-Paket"' unter \url{https://www.uwezieg
 
 \nsecbegin{Benutzername und eMail ins GIT eintragen}
 In Linux kann durch den Aufruf:\\
-gedit ~/.gitconfig\\
+gedit \textasciitilde /.gitconfig\\
 die "'.gitconfig-Datei"' editiert werden. In dieser werden unter anderem auch Benutzername und eMail-Addressse des Benutzers gespeichert.
 \nsecend
 
@@ -169,4 +169,42 @@ git branch --merged master | grep -v '^[ *]*master$' | xargs git branch -d
 \nsecend
 
 \nsecend %{GIT}
+
+\nsecbegin{Code}
+\nsecbegin{Logger}
+Ein Logger hat verschiedene Level in denen geloggt werden kann:
+\begin{itemize}
+\item severe	- Schwerwiegende Fehler
+\item warning	- Warnungen
+\item info	- Informationen
+\item config	- Konfigurationshinsweise
+\item fine	- Fein
+\item finer	- Feiner
+\item finest	- Am Feinsten
+\end{itemize}
+Um nun an einer bestimmten Stelle etwas zu loggen, macht man folgenden Aufruf: \\ \\
+logger.getLog().[Level]("[Ausgabe]")\\
+
+Hierbei wird die in der Hauptklasse definierte Instanz "logger" in Verbindung mit dem Getter getLog() aufgerufen, danach der Level des Logs definiert und am Ende der Ausgabestring eingegeben.\\
+Beispiel:\\
+logger.getLog().info("Dies ist eine Information")\\
+\\
+Zum Start des PUML Programmes wird eine Logdatei mit exakter Uhrzeit/Datum als Präfix erstellt.
+Jeder Logeintrag wird im home directory im Ordner PUMLlog des jeweiligen Systems gespeichert. Zu jedem Logeintrag gibt es das genaue Datum inkl. Uhrzeit sowie die Informationen in welcher Klasse und in welcher Methode es geloggt wurde.
+Des Weiteren werden auch Logausgaben mit den gleichen Eigenschaften (Uhrzeit, Klassenname, ...) über die Console realisiert.
+\nsecend %{Logger}
+\nsecend %{Code}
+
+\nsecbegin{Generell}
+\nsecbegin{Graphviz}
+Um PlantUML richtig und im vollem Umfang anzeigen zu können muss Graphviz installiert werden:
+\begin{itemize}
+\item[1.] Download unter graphviz.org/download/ für jeweiliges System
+\item[2.] Folgt den Installationsanweisungen
+\item[3.] Graphviz sollte nun erfollgreich installiert sein.
+\end{itemize}\\
+Graphviz soll für den Endkunden in den Installer implementiert werden.
+\nsecend %{Graphviz}
+\nsecend %{Generell}
+
 \nsecend %{Was wird wie gemacht?}

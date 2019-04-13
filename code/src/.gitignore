@@ -13,4 +13,6 @@
 /GUI_SWT.class
 /PathEditor.class
 /org/eclipse/wb/swt/.gitignore
+/LogMain$1.class
+/LogMain.class
 
