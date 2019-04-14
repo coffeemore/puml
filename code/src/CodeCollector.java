@@ -20,15 +20,15 @@ public class CodeCollector
 {
 
     /**
-     * Enthält die Pfade zu den Dateien und Ordnern Die Liste mit den Pfaden ist vor
-     * dem Aufrufen der getSourceCode-Methode zu füllen.
+     * EnthÃ¤lt die Pfade zu den Dateien und Ordnern Die Liste mit den Pfaden ist vor
+     * dem Aufrufen der getSourceCode-Methode zu fÃ¼llen.
      */
     public ArrayList<String> paths;
     /**
-     * zweite Pathsliste, in die die übergebenen Pfade kopiert werden Gewährleistung
-     * des unabhängigen Einlesens von Java- und Jar-Dateien
+     * zweite Pathsliste, in die die Ã¼bergebenen Pfade kopiert werden GewÃ¤hrleistung
+     * des unabhÃ¤ngigen Einlesens von Java- und Jar-Dateien
      */
-    private ArrayList<String> paths2;
+    public ArrayList<String> paths2;
 
     /**
      * True = .java-Dateien werden verwendet; False = .java-Dateien werden ignoriert
@@ -50,10 +50,10 @@ public class CodeCollector
     }
 
     /**
-     * Sammelt den Quellcode aus allen ausgewählten Dateien und gibt diesen als
-     * String zurück
+     * Sammelt den Quellcode aus allen ausgewÃ¤hlten Dateien und gibt diesen als
+     * String zurÃ¼ck
      * 
-     * @return String, der den vollständigen Quellcode enthält
+     * @return String, der den vollstÃ¤ndigen Quellcode enthÃ¤lt
      */
     public String getSourceCode()
     {
@@ -65,11 +65,14 @@ public class CodeCollector
 
 	if (!paths.isEmpty())
 	{
+	    printList(paths);
 	    /**
-	     * durchsucht ggf. übergebene Ordner und fügt den Inhalt in die paths-Liste ein
+	     * durchsucht ggf. Ã¼bergebene Ordner und fÃ¼gt den Inhalt in die paths-Liste ein
 	     */
 	    while (contDir(paths))
 	    {
+		System.out.println("true");
+		printList(paths);
 		for (int j = 0; j < paths.size(); j++)
 		{
 		    file = new File(paths.get(j));
@@ -82,6 +85,8 @@ public class CodeCollector
 			    paths.add(fArray[i].getAbsolutePath());
 			}
 			paths.remove(paths.get(j));
+			System.out.println("Ordner aufgelöst: \n");
+			printList(paths);
 		    }
 		}
 	    }
@@ -91,25 +96,27 @@ public class CodeCollector
 	    if (useJavaFiles && !useJarFiles)
 	    {
 		// sammelt den Quellcode aus den Java-Dateien ein
-		return (collectJava(sc, buffr, filer));
+		return (collectJava( buffr, filer));
 	    } else
 	    {
 		if (!useJavaFiles && useJarFiles)
 		{
+		    
 		    // sammelt den Quellcode aus den Jar-Dateien ein
-		    return (collectJar(sc, buffr, zFile));
+		    return (collectJar( buffr, zFile));
 		}
 		/**
 		 * wenn useJavaFiles und useJarFiles beide auf true oder false gesetzt sind bzw.
-		 * ihre Belegung anderweitig ungültig ist, wird eine Fehlermeldung ausgegeben
+		 * ihre Belegung anderweitig ungÃ¼ltig ist, wird eine Fehlermeldung ausgegeben
 		 */
 		else
 		{
 		    // sammelt den Quellcode aus den Jar- und Java-Dateien ein
 		    if (useJavaFiles && useJarFiles)
 		    {
-			sc = collectJava(sc, buffr, filer);
-			sc += collectJar(sc, buffr, zFile);
+			
+			sc = collectJava( buffr, filer);
+			sc += collectJar( buffr, zFile);
 
 			return sc;
 		    } else
@@ -121,7 +128,7 @@ public class CodeCollector
 	    }
 	}
 	/**
-	 * Bei ungültiger Pfadauswahl wird eine Fehlermeldung ausgegeben
+	 * Bei ungÃ¼ltiger Pfadauswahl wird eine Fehlermeldung ausgegeben
 	 */
 	else
 	{
@@ -137,17 +144,25 @@ public class CodeCollector
      * @param buffr - BufferedReader zum Buffern der eingelesenen Dateien
      * @return sc (eingelesener String)
      */
-    private String collectJava(String sc, BufferedReader buffr, FileReader filer)
+    private String collectJava( BufferedReader buffr, FileReader filer)
     {
-	// Schleife, die paths-Einträge durchgeht
+	
+	String sc="";
+	System.out.println("Beginn collectJava");
+	printList(paths);
+	System.out.println("Größe paths: " + paths.size());
+	// Schleife, die paths-EintrÃ¤ge durchgeht
 	for (int i = 0; i < paths.size(); i++)
 	{
-	    // Dateien werden über Pfade eingelesen und gebuffert
+	    // Dateien werden Ã¼ber Pfade eingelesen und gebuffert
 	    try
 	    {
+		System.out.println("geht in try-Block rein");
+		System.out.println("AktuellerEintrag: \n" + paths.get(i));
 		// alle Java-Dateien werden eingelesen
 		if (paths.get(i).endsWith(".java"))
 		{
+		    System.out.println("Java-Datei gefunden");
 		    filer = new FileReader(paths.get(i));
 		    buffr = new BufferedReader(filer);
 		    String currLine;
@@ -155,8 +170,8 @@ public class CodeCollector
 		    while ((currLine = buffr.readLine()) != null)
 		    {
 			sc += currLine;
+			sc += "\n";
 		    }
-		    sc += "\n";
 		} else
 		{
 		    paths.remove(paths.get(i));
@@ -184,6 +199,7 @@ public class CodeCollector
 		}
 	    }
 	}
+	System.out.println("sc = " + sc);
 	return sc;
     }
 
@@ -195,24 +211,27 @@ public class CodeCollector
      * @param zFile - ZipFile zum Einlesen der Jar-Dateien
      * @return sc (eingelesener String)
      */
-    private String collectJar(String sc, BufferedReader buffr, ZipFile zFile)
+    private String collectJar( BufferedReader buffr, ZipFile zFile)
     {
+	System.out.println("Beginn collectJar");
+	String sc2="";
 	//String sc2 = new String();
 	// Exception werfen, wenn in Jardatei nur .class Dateien sind
 	try
 	{
-	    // Schleife, die alle Einträge in paths durchgeht
+	    // Schleife, die alle EintrÃ¤ge in paths durchgeht
 	    for (int i = 0; i < paths2.size(); i++)
 	    {
 		if (paths2.get(i).endsWith(".jar"))
 		{
+		    System.out.println("geht in .jar-Bedingung rein");
 		    // Jar-Datei wird eingelesen
 		    zFile = new ZipFile(paths2.get(i));
 		    if (zFile != null)
 		    {
 			// die Dateien in der Jar-Datei werden hier aufgelistet und gespeichert
 			Enumeration<? extends ZipEntry> entries = zFile.entries();
-			// Hilfsvariable zum Prüfen, ob Java-Dateien in Jar vorhanden sind
+			// Hilfsvariable zum PrÃ¼fen, ob Java-Dateien in Jar vorhanden sind
 			int m = 0;
 		
 			while (entries.hasMoreElements())
@@ -227,9 +246,9 @@ public class CodeCollector
 
 				while ((currLine = buffr.readLine()) != null)
 				{
-				    sc += currLine;
+				    sc2 += currLine;
+				    sc2 += "\n";
 				}
-				sc += "\n";
 			    } else
 			    {
 				continue;
@@ -264,18 +283,19 @@ public class CodeCollector
 		ex.printStackTrace();
 	    }
 	}
-	return sc;
+	System.out.println("sc2 = " + sc2);
+	return sc2;
     }
 
     /**
-     * Prüft, ob in der übergebenen ArrayList Directories enthalten sind
+     * PrÃ¼ft, ob in der Ã¼bergebenen ArrayList Directories enthalten sind
      * 
-     * @param paths - die Liste mit den übergebenen Pfaden
+     * @param paths - die Liste mit den Ã¼bergebenen Pfaden
      * @return boolean
      */
     private boolean contDir(ArrayList<String> paths)
     {
-	// die Schleife geht alle Einträge von paths durch und schaut, ob sich darunter
+	// die Schleife geht alle EintrÃ¤ge von paths durch und schaut, ob sich darunter
 	// ein Ordner befindet
 	for (int i = 0; i < paths.size(); i++)
 	{
@@ -306,6 +326,13 @@ public class CodeCollector
     public void setUseJarFiles(boolean useJarFiles)
     {
 	this.useJarFiles = useJarFiles;
+    }
+    
+    void printList(ArrayList <String> list) {
+	
+	for (int i = 0; i< list.size(); i++) {
+	    System.out.println(list.get(i));
+	}
     }
 
 }
