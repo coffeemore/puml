@@ -1,0 +1,31 @@
+\nsecbegin{Exceptions}
+Mit Exceptions reagiert man auf Fehler und unerwartete Situationen während der Ausführung eines Programms. Diese werden mit einem try-Block erstellt und mit einem catch-Block abgefangen. Es existieren viele Möglichkeiten wodurch Exception auftreten können. Möglich sind beispielsweise überschrittene Arraygrenzen, Zugriff auf nicht erzeugte Objekte oder fehlerhafte Typkonvertierungen. Mit dem Code throw new Exception(); lässt sich bewusst eine Exception erstellen.\\
+In den Java-Bibliotheken gibt es bereits viele Exceptiontypen. Allerdings ist es auch möglich eigene als Unterklasse der Exceptionklasse zu erstellen, wenn die vorhandenen nicht ausreichen.\\\\
+Benötigte Exceptions für unser Projekt: \\
+Für die Konsolenanwendung wären Exceptions sinnvoll. Mit diesen könnte man beispielsweise fehlerhafte Pfadangaben abfangen. Da in der GUI die Dateien über den Explorer eingelesen werden, sollten dort keine falschen Pfade zustande kommen.\\
+Beispiel für Exceptions:
+\begin{lstlisting}
+public class Main
+{
+	public static void main(String[] args)
+	{		
+		int[] numberArray = { 1, 2, 0 };
+		try
+		{
+			//System.out.println(1 / numberArray[2]);
+			System.out.println(numberArray[3]);
+		}
+		catch (ArithmeticException exception)
+		{
+			System.out.println("Nicht durch Null teilen!");
+		}
+		catch (Exception e)
+		{
+			System.out.println("Fehler: " + e);
+		}
+		System.out.println("Programm wird trotz Fehler weiterhin ausgeführt");
+	}
+}
+\end{lstlisting}
+Da das Programm auf eine Stelle im numberArry zugreifen möchte, welche nicht existiert, kommt es zu der Fehlermeldung. Kommentiert man die zweite anstelle der ersten Systemausgabe aus, so kommt es zu einer anderen Fehlermeldung: „Nicht durch Null teilen!“ Das Beispiel zeigt, dass durch das Catchen verschiedener Fehlertypen verschiedene Befehle ausgeführt werden können.
+\nsecend
