@@ -154,7 +154,7 @@ public class CodeCollector
 
 		    while ((currLine = buffr.readLine()) != null)
 		    {
-			sc += currLine;
+			sc += currLine + "\n";
 		    }
 		    sc += "\n";
 		} else
@@ -227,7 +227,7 @@ public class CodeCollector
 
 				while ((currLine = buffr.readLine()) != null)
 				{
-				    sc += currLine;
+				    sc += currLine + "\n";
 				}
 				sc += "\n";
 			    } else
