@@ -65,14 +65,13 @@ public class CodeCollector
 
 	if (!paths.isEmpty())
 	{
-	    printList(paths);
+	   
 	    /**
 	     * durchsucht ggf. Ã¼bergebene Ordner und fÃ¼gt den Inhalt in die paths-Liste ein
 	     */
 	    while (contDir(paths))
 	    {
-		System.out.println("true");
-		printList(paths);
+	
 		for (int j = 0; j < paths.size(); j++)
 		{
 		    file = new File(paths.get(j));
@@ -85,8 +84,7 @@ public class CodeCollector
 			    paths.add(fArray[i].getAbsolutePath());
 			}
 			paths.remove(paths.get(j));
-			System.out.println("Ordner aufgelöst: \n");
-			printList(paths);
+			
 		    }
 		}
 	    }
@@ -147,22 +145,18 @@ public class CodeCollector
     private String collectJava( BufferedReader buffr, FileReader filer)
     {
 	
-	String sc="";
-	System.out.println("Beginn collectJava");
-	printList(paths);
-	System.out.println("Größe paths: " + paths.size());
+	String sc= new String();
 	// Schleife, die paths-EintrÃ¤ge durchgeht
 	for (int i = 0; i < paths.size(); i++)
 	{
 	    // Dateien werden Ã¼ber Pfade eingelesen und gebuffert
 	    try
 	    {
-		System.out.println("geht in try-Block rein");
-		System.out.println("AktuellerEintrag: \n" + paths.get(i));
+		
 		// alle Java-Dateien werden eingelesen
 		if (paths.get(i).endsWith(".java"))
 		{
-		    System.out.println("Java-Datei gefunden");
+		    
 		    filer = new FileReader(paths.get(i));
 		    buffr = new BufferedReader(filer);
 		    String currLine;
@@ -172,12 +166,15 @@ public class CodeCollector
 			sc += currLine;
 			sc += "\n";
 		    }
-		} else
-		{
-		    paths.remove(paths.get(i));
-		}
+		} 
+//		else
+//		{
+//		    System.out.println("Eintrag raus...");
+//		    paths.remove(paths.get(i));
+//		}
 	    } catch (IOException e)
 	    {
+		
 		e.printStackTrace();
 	    } finally
 	    {
@@ -199,7 +196,7 @@ public class CodeCollector
 		}
 	    }
 	}
-	System.out.println("sc = " + sc);
+	
 	return sc;
     }
 
@@ -213,8 +210,8 @@ public class CodeCollector
      */
     private String collectJar( BufferedReader buffr, ZipFile zFile)
     {
-	System.out.println("Beginn collectJar");
-	String sc2="";
+	
+	String sc2=new String();
 	//String sc2 = new String();
 	// Exception werfen, wenn in Jardatei nur .class Dateien sind
 	try
@@ -224,7 +221,7 @@ public class CodeCollector
 	    {
 		if (paths2.get(i).endsWith(".jar"))
 		{
-		    System.out.println("geht in .jar-Bedingung rein");
+		    
 		    // Jar-Datei wird eingelesen
 		    zFile = new ZipFile(paths2.get(i));
 		    if (zFile != null)
@@ -283,7 +280,7 @@ public class CodeCollector
 		ex.printStackTrace();
 	    }
 	}
-	System.out.println("sc2 = " + sc2);
+	
 	return sc2;
     }
 
