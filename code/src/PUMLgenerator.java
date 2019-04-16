@@ -8,6 +8,7 @@ public class PUMLgenerator
     public static CodeCollector codeCollector = new CodeCollector();
     static ParserIf parser = new ParserJava();
     static OutputPUML outputPUML = new OutputPUML();
+    static LogMain logger = new LogMain();
   
     /**
      * Launch the application.

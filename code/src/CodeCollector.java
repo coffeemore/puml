@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,6 +24,11 @@ public class CodeCollector
      * dem Aufrufen der getSourceCode-Methode zu füllen.
      */
     public ArrayList<String> paths;
+    /**
+     * zweite Pathsliste, in die die übergebenen Pfade kopiert werden Gewährleistung
+     * des unabhängigen Einlesens von Java- und Jar-Dateien
+     */
+    public ArrayList<String> paths2;
 
     /**
      * True = .java-Dateien werden verwendet; False = .java-Dateien werden ignoriert
@@ -40,6 +46,7 @@ public class CodeCollector
     public CodeCollector()
     {
 	paths = new ArrayList<String>();
+	paths2 = new ArrayList<String>();
     }
 
     /**
@@ -48,9 +55,6 @@ public class CodeCollector
      * 
      * @return String, der den vollständigen Quellcode enthält
      */
-
-    // JUnit Test für Ordner-Schleife/-Input
-//symbolischer Link bei Ordner?
     public String getSourceCode()
     {
 	String sc = new String();
@@ -72,6 +76,7 @@ public class CodeCollector
 		    if (file.isDirectory())
 		    {
 			File[] fArray = file.listFiles();
+
 			for (int i = 0; i < fArray.length; i++)
 			{
 			    paths.add(fArray[i].getAbsolutePath());
@@ -80,16 +85,19 @@ public class CodeCollector
 		    }
 		}
 	    }
+	    // Kopieren der Pfade in die zweite Liste
+	    paths2 = (ArrayList<String>) paths.clone();
+
 	    if (useJavaFiles && !useJarFiles)
 	    {
 		// sammelt den Quellcode aus den Java-Dateien ein
-		return (collectJava(sc, buffr, filer));
+		return (collectJava( buffr, filer));
 	    } else
 	    {
 		if (!useJavaFiles && useJarFiles)
 		{
 		    // sammelt den Quellcode aus den Jar-Dateien ein
-		    return (collectJar(sc, buffr, zFile));
+		    return (collectJar( buffr, zFile));
 		}
 		/**
 		 * wenn useJavaFiles und useJarFiles beide auf true oder false gesetzt sind bzw.
@@ -100,8 +108,10 @@ public class CodeCollector
 		    // sammelt den Quellcode aus den Jar- und Java-Dateien ein
 		    if (useJavaFiles && useJarFiles)
 		    {
-			sc = collectJava(sc, buffr, filer);
-			sc += collectJar(sc, buffr, zFile);
+			
+			sc = collectJava( buffr, filer);
+			sc += collectJar( buffr, zFile);
+
 			return sc;
 		    } else
 		    {
@@ -128,8 +138,10 @@ public class CodeCollector
      * @param buffr - BufferedReader zum Buffern der eingelesenen Dateien
      * @return sc (eingelesener String)
      */
-    private String collectJava(String sc, BufferedReader buffr, FileReader filer)
+    private String collectJava( BufferedReader buffr, FileReader filer)
     {
+	
+	String sc= new String();
 	// Schleife, die paths-Einträge durchgeht
 	for (int i = 0; i < paths.size(); i++)
 	{
@@ -142,13 +154,18 @@ public class CodeCollector
 		    filer = new FileReader(paths.get(i));
 		    buffr = new BufferedReader(filer);
 		    String currLine;
-		    
+
 		    while ((currLine = buffr.readLine()) != null)
 		    {
 			sc += currLine;
+			sc += "\n";
 		    }
-		    sc += "\n";
-		}
+		} 
+//		else
+//		{
+//		    System.out.println("Eintrag raus...");
+//		    paths.remove(paths.get(i));
+//		}
 	    } catch (IOException e)
 	    {
 		e.printStackTrace();
@@ -178,45 +195,57 @@ public class CodeCollector
     /**
      * Jar-Dateien werden in einen String eingelesen
      * 
-     * @param sc - String zum Einsammeln
+     * @param sc    - String zum Einsammeln
      * @param buffr - BufferedReader zum Buffern der eingelesenen Dateien
      * @param zFile - ZipFile zum Einlesen der Jar-Dateien
      * @return sc (eingelesener String)
      */
-    private String collectJar(String sc, BufferedReader buffr, ZipFile zFile)
+    private String collectJar( BufferedReader buffr, ZipFile zFile)
     {
+	
 	String sc2=new String();
+	//String sc2 = new String();
+	// Exception werfen, wenn in Jardatei nur .class Dateien sind
 	try
 	{
-	    //Schleife, die alle Einträge  in paths durchgeht
-	    for (int i = 0; i < paths.size(); i++)
+	    // Schleife, die alle Einträge in paths durchgeht
+	    for (int i = 0; i < paths2.size(); i++)
 	    {
-		if (paths.get(i).endsWith(".jar"))
+		if (paths2.get(i).endsWith(".jar"))
 		{
-		    //Jar-Datei wird eingelesen
-		    zFile = new ZipFile(paths.get(i));
+		    // Jar-Datei wird eingelesen
+		    zFile = new ZipFile(paths2.get(i));
 		    if (zFile != null)
 		    {
-			//die Dateien in der Jar-Datei werden hier aufgelistet und gespeichert
+			// die Dateien in der Jar-Datei werden hier aufgelistet und gespeichert
 			Enumeration<? extends ZipEntry> entries = zFile.entries();
+			// Hilfsvariable zum Prüfen, ob Java-Dateien in Jar vorhanden sind
+			int m = 0;
+		
 			while (entries.hasMoreElements())
 			{
 			    ZipEntry entry = entries.nextElement();
-			    //wenn es sich um eine Java-Datei handelt, wird diese eingelesen
+			    // wenn es sich um eine Java-Datei handelt, wird diese eingelesen
 			    if (!entry.isDirectory() && entry.getName().endsWith(".java"))
 			    {
+				m++;
 				buffr = new BufferedReader(new InputStreamReader(zFile.getInputStream(entry)));
 				String currLine;
 
 				while ((currLine = buffr.readLine()) != null)
 				{
 				    sc2 += currLine;
+				    sc2 += "\n";
 				}
-				sc2 += "\n";
 			    } else
 			    {
 				continue;
 			    }
+			}
+			//Exception wird geworfen, wenn in der Jar-Datei keine Java-Dateien vorhanden sind
+			if (m == 0)
+			{
+			    throw new FileNotFoundException();
 			}
 		    }
 		}
@@ -242,9 +271,8 @@ public class CodeCollector
 		ex.printStackTrace();
 	    }
 	}
-	
 	return sc2;
-    } 
+    }
 
     /**
      * Prüft, ob in der übergebenen ArrayList Directories enthalten sind
@@ -254,7 +282,8 @@ public class CodeCollector
      */
     private boolean contDir(ArrayList<String> paths)
     {
-	//die Schleife geht alle Einträge von paths durch und schaut, ob sich darunter ein Ordner befindet
+	// die Schleife geht alle Einträge von paths durch und schaut, ob sich darunter
+	// ein Ordner befindet
 	for (int i = 0; i < paths.size(); i++)
 	{
 	    File file = new File(paths.get(i));
@@ -285,4 +314,12 @@ public class CodeCollector
     {
 	this.useJarFiles = useJarFiles;
     }
+    
+    void printList(ArrayList <String> list) {
+	
+	for (int i = 0; i< list.size(); i++) {
+	    System.out.println(list.get(i));
+	}
+    }
+
 }
