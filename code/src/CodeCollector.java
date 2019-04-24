@@ -28,7 +28,7 @@ public class CodeCollector
      * zweite Pathsliste, in die die übergebenen Pfade kopiert werden Gewährleistung
      * des unabhängigen Einlesens von Java- und Jar-Dateien
      */
-    private ArrayList<String> paths2;
+    public ArrayList<String> paths2;
 
     /**
      * True = .java-Dateien werden verwendet; False = .java-Dateien werden ignoriert
@@ -91,13 +91,13 @@ public class CodeCollector
 	    if (useJavaFiles && !useJarFiles)
 	    {
 		// sammelt den Quellcode aus den Java-Dateien ein
-		return (collectJava(sc, buffr, filer));
+		return (collectJava( buffr, filer));
 	    } else
 	    {
 		if (!useJavaFiles && useJarFiles)
 		{
 		    // sammelt den Quellcode aus den Jar-Dateien ein
-		    return (collectJar(sc, buffr, zFile));
+		    return (collectJar( buffr, zFile));
 		}
 		/**
 		 * wenn useJavaFiles und useJarFiles beide auf true oder false gesetzt sind bzw.
@@ -108,8 +108,9 @@ public class CodeCollector
 		    // sammelt den Quellcode aus den Jar- und Java-Dateien ein
 		    if (useJavaFiles && useJarFiles)
 		    {
-			sc = collectJava(sc, buffr, filer);
-			sc += collectJar(sc, buffr, zFile);
+			
+			sc = collectJava( buffr, filer);
+			sc += collectJar( buffr, zFile);
 
 			return sc;
 		    } else
@@ -137,8 +138,10 @@ public class CodeCollector
      * @param buffr - BufferedReader zum Buffern der eingelesenen Dateien
      * @return sc (eingelesener String)
      */
-    private String collectJava(String sc, BufferedReader buffr, FileReader filer)
+    private String collectJava( BufferedReader buffr, FileReader filer)
     {
+	
+	String sc= new String();
 	// Schleife, die paths-Einträge durchgeht
 	for (int i = 0; i < paths.size(); i++)
 	{
@@ -155,12 +158,14 @@ public class CodeCollector
 		    while ((currLine = buffr.readLine()) != null)
 		    {
 			sc += currLine;
+			sc += "\n";
 		    }
-		    sc += "\n";
-		} else
-		{
-		    paths.remove(paths.get(i));
-		}
+		} 
+//		else
+//		{
+//		    System.out.println("Eintrag raus...");
+//		    paths.remove(paths.get(i));
+//		}
 	    } catch (IOException e)
 	    {
 		e.printStackTrace();
@@ -195,8 +200,10 @@ public class CodeCollector
      * @param zFile - ZipFile zum Einlesen der Jar-Dateien
      * @return sc (eingelesener String)
      */
-    private String collectJar(String sc, BufferedReader buffr, ZipFile zFile)
+    private String collectJar( BufferedReader buffr, ZipFile zFile)
     {
+	
+	String sc2=new String();
 	//String sc2 = new String();
 	// Exception werfen, wenn in Jardatei nur .class Dateien sind
 	try
@@ -227,9 +234,9 @@ public class CodeCollector
 
 				while ((currLine = buffr.readLine()) != null)
 				{
-				    sc += currLine;
+				    sc2 += currLine;
+				    sc2 += "\n";
 				}
-				sc += "\n";
 			    } else
 			    {
 				continue;
@@ -264,7 +271,7 @@ public class CodeCollector
 		ex.printStackTrace();
 	    }
 	}
-	return sc;
+	return sc2;
     }
 
     /**
@@ -306,6 +313,13 @@ public class CodeCollector
     public void setUseJarFiles(boolean useJarFiles)
     {
 	this.useJarFiles = useJarFiles;
+    }
+    
+    void printList(ArrayList <String> list) {
+	
+	for (int i = 0; i< list.size(); i++) {
+	    System.out.println(list.get(i));
+	}
     }
 
 }

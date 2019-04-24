@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<parsed>
+	<objects>
+		<entry></entry>
+		<entry></entry>
+		<entry></entry>
+	</objects>
+	<methods>
+		<entry>
+			<name></name>
+			<parameters>
+				<entry></entry>
+				<entry></entry>
+			</parameters>
+			<from></from>
+			<to></to>
+			<return></return>
+		</entry>
+	</methods>
+	<loops>
+		<entry>
+			<name></name> <!--kann generisch erstellt werden, z.B. loop1-->
+			<parent></parent> <!--in welcher Funktion ist der loop?-->
+			<begin></begin> <!--für zb i = 0-->
+			<end></end>
+			<actions><!--Liste von Funktionen, Loops, Alts die im Loop ausgeführt werden-->
+				<entry></entry>
+			</actions>
+		</entry>			
+	</loops>
+	<alternatives>
+		<entry>
+			<name></name> <!--kann generisch erstellt werden, z.B. alt1-->
+			<parent></parent>
+			<cases>
+				<entry>
+					<condition></condition>
+					<actions><!--Liste von Funktionen, Loops, Alts die im case ausgeführt werden-->
+						<entry></entry>
+					</actions>
+				</entry>
+			</cases>
+						
+			
+		</entry>
+	</alternatives>
+</parsed>
