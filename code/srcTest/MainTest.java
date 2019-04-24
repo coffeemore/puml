@@ -82,7 +82,9 @@ class MainTest {
 			{
 				while (entryLength > 0)
 				{
-					
+					//
+					//Kommentar
+					//für Testzwecke
 				}
 			}
 		
