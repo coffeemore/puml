@@ -1,11 +1,10 @@
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.apache.commons.cli.ParseException;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,68 +26,47 @@ class MainTest {
 	{   
 		String[] testArgs = {"-c","-ijar","--i","./testfolder/datensatz/Main.java"};
 		//classUnderTest.main(testArgs);
-		String[] reference = {"@startuml\n","class Main\n","@enduml"};
+		String[] reference = {"@startuml","class Main","@enduml"};
 		String filePath = "./outPUML_Code_defaultlocation";
-		System.out.println("Test q");
 		equals(compareTextFile(reference,filePath));
 	 }
-	
-	/*
-	void createOutputFile(String cont) throws IOException
-	{
-		String data = cont;
-		 
-		FileOutputStream out = new FileOutputStream("./testfolder/outMainJunitTest.txt");
-		out.write(data.getBytes());
-		out.close();
-    }*/
-	/*
+
 	@SuppressWarnings("resource")
 	boolean compareTextFile (String[] reference,String pumlFile) throws IOException
 	{
-		FileReader fr = new FileReader(pumlFile);
-		BufferedReader br = new BufferedReader(fr);
-		
-		String line = "";
-		int i = 0;
-		boolean onGoingFile = true;
-		while(onGoingFile)
-		{
-			line = br.readLine();
-			if (line == null) //Textdokument ende
+		try {
+			FileReader fr = new FileReader(pumlFile);
+			BufferedReader br = new BufferedReader(fr);
+			
+			String line = "";
+			Path path = Paths.get(pumlFile);		
+			int entryLength = (int)Files.lines(path).count();
+			System.out.println("Länge der Files: " + entryLength + " " + reference.length);
+			if (entryLength == reference.length)
+				{
+					for(int i = 0; i < entryLength; i++)
+					{
+						line = br.readLine();
+						System.out.println("Programmausgabe: " + line + "	Korrekt: " + reference[i]);
+						if(!line.equals(reference[i]))
+						{						
+							br.close();
+							return false;
+						}
+					}
+				}
+			else 
 			{
-				onGoingFile = false;
-			}
-			System.out.println(line);
-			if (!(line.equals(reference[i])) && onGoingFile)
-			{
-				System.out.println(reference[i] + line);
+				br.close();
 				return false;
 			}
-			i++;
+			br.close();
+			System.out.println("Richtig! :)");
+			return true;
 		}
-		br.close();
-		return true;
-	}*/
-	@SuppressWarnings("resource")
-	boolean compareTextFile (String[] reference,String pumlFile) throws IOException
-	{
-		FileReader fr = new FileReader(pumlFile);
-		BufferedReader br = new BufferedReader(fr);
-		
-		String line = "";
-		int entryLength = pumlFile.length();
-		if (entryLength == reference.length)
-			{
-				while (entryLength > 0)
-				{
-					//
-					//Kommentar
-					//für Testzwecke
-				}
-			}
-		
-		return true;
+		catch (IOException e) {
+			System.out.println(e);
+			return false;
+		}
 	}
-		
-}
+}	
