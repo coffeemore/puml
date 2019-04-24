@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamReader;
+
 import net.sourceforge.plantuml.GeneratedImage;
 import net.sourceforge.plantuml.SourceFileReader;
 import net.sourceforge.plantuml.SourceStringReader;
@@ -31,40 +33,21 @@ public class OutputPUML
      * @param myParsingResult Ergebnisse des Parsens
      * @return String der den plantUML-Code enthaelt
      */
-    public String getPUML(ParsingResult myParsingResult)
+    public String getPUML(XMLStreamReader myParsingResult)
     {
+	int counter = 0;
 	String pumlCode = "";
 	int from;
 	int to;
 	pumlCode += "@startuml\n";
-	for (int i = 0; i < myParsingResult.classes.size(); i++)
+	while (myParsingResult.hasNext())
 	{
-	    pumlCode += "class ";
-	    pumlCode += myParsingResult.classes.get(i);
-	    pumlCode += "\n";
+	    if (myParsingResult.getAttributeLocalName(counter) == "Class")
+	    {
+		
+	    }
+	    
 	}
-	for (int i = 0; i < myParsingResult.classConnections.size(); i++)
-	{
-	    from = myParsingResult.classConnections.get(i).getFrom();
-	    to = myParsingResult.classConnections.get(i).getTo();
-	    pumlCode += myParsingResult.classes.get(from);
-	    if (myParsingResult.classConnections.get(i).getConnection() == ClassConnection.connectionType.extension)
-	    {
-		pumlCode += " --|> "; // TODO eventuell Pfeile aendern
-	    }
-	    else if (myParsingResult.classConnections.get(i)
-		    .getConnection() == ClassConnection.connectionType.aggregation)
-	    {
-		pumlCode += " o-- "; // TODO eventuell Richtung aendern
-	    }
-	    else
-	    {
-		pumlCode += " *-- "; // TODO eventuell Richtung aendern
-	    }
-	    pumlCode += myParsingResult.classes.get(to);
-	    pumlCode += "\n";
-	}
-	pumlCode += "@enduml";
 	return pumlCode;
     }
 

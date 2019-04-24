@@ -1,6 +1,7 @@
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -13,6 +14,8 @@ class OutputPUMLTest
     @Test
     void testGetPUML()
     {
+	FileReader fr = new FileReader("/home/tore/Documents/Softwareprojekt/puml/code/testfolder/ClassDiagramExample.xml");
+	
 	// ClassConnection Elemente erstellen
 	ClassConnection elA = new ClassConnection(1, 4, ClassConnection.connectionType.aggregation);
 
@@ -38,7 +41,7 @@ class OutputPUMLTest
 	ParsingResult actualParsTest = new ParsingResult(classes, classConnections);
 
 	// GetPuml testen
-	String actual = new OutputPUML().getPUML(actualParsTest);
+	String actual = new OutputPUML().getPUML(createXMLStreamReader(fr));
 
 	String expected = "@startuml\nclass BeispielKlasse1\nclass BeispielKlasse2\nclass BeispielKlasse3\nclass BeispielKlasse4\nclass BeispielKlasse5\nBeispielKlasse2 o-- BeispielKlasse5\nBeispielKlasse2 --|> BeispielKlasse3\nBeispielKlasse3 *-- BeispielKlasse4\n@enduml";
 	assertEquals(expected, actual);
