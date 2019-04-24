@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
 import net.sourceforge.plantuml.GeneratedImage;
 import net.sourceforge.plantuml.SourceFileReader;
 import net.sourceforge.plantuml.SourceStringReader;
@@ -30,40 +33,55 @@ public class OutputPUML
      * 
      * @param myParsingResult Ergebnisse des Parsens
      * @return String der den plantUML-Code enthaelt
+     * @throws XMLStreamException 
      */
-    public String getPUML(ParsingResult myParsingResult)
+    public String getPUML(XMLStreamReader myParsingResult) throws XMLStreamException
     {
 	String pumlCode = "";
-	int from;
-	int to;
+	int counter=0;
 	pumlCode += "@startuml\n";
-	for (int i = 0; i < myParsingResult.classes.size(); i++)
+	while (myParsingResult.getAttributeLocalName(counter)!="parsed" && myParsingResult.isEndElement()) 
 	{
-	    pumlCode += "class ";
-	    pumlCode += myParsingResult.classes.get(i);
-	    pumlCode += "\n";
+		if(myParsingResult.getAttributeLocalName(counter)=="classes" && myParsingResult.isStartElement()) {
+			while(myParsingResult.getAttributeLocalName(counter++)=="entry") {
+					pumlCode+= "class " + myParsingResult.getElementText() + "\n";
+			}
+		}
+		if(myParsingResult.getAttributeLocalName(counter)=="classrelations" && myParsingResult.isStartElement()) {
+			if(myParsingResult.getAttributeLocalName(counter++)=="aggregations" && myParsingResult.isStartElement()) {
+				if(myParsingResult.getAttributeLocalName(counter++)=="entry" && myParsingResult.isStartElement()) {
+					if(myParsingResult.getAttributeLocalName(counter++)=="from") {
+						pumlCode+= myParsingResult.getElementText()+ " o-- ";
+						if(myParsingResult.getAttributeLocalName(counter++)=="to") {
+							pumlCode+= myParsingResult.getElementText()+"\n";
+						}
+					}
+				}
+			}
+			else if(myParsingResult.getAttributeLocalName(counter++)=="compositions" && myParsingResult.isStartElement()) {
+				if(myParsingResult.getAttributeLocalName(counter++)=="entry" && myParsingResult.isStartElement()) {
+					if(myParsingResult.getAttributeLocalName(counter++)=="from") {
+						pumlCode+= myParsingResult.getElementText()+ " *-- ";
+						if(myParsingResult.getAttributeLocalName(counter++)=="to") {
+							pumlCode+= myParsingResult.getElementText()+"\n";
+						}
+					}
+				}
+			}
+			else if(myParsingResult.getAttributeLocalName(counter++)=="extension" && myParsingResult.isStartElement()) {
+				if(myParsingResult.getAttributeLocalName(counter++)=="entry" && myParsingResult.isStartElement()) {
+					if(myParsingResult.getAttributeLocalName(counter++)=="from") {
+						pumlCode+= myParsingResult.getElementText()+ " -- ";
+						if(myParsingResult.getAttributeLocalName(counter++)=="to") {
+							pumlCode+= myParsingResult.getElementText()+"\n";
+						}
+					}
+				}
+			}
+		}
+	counter++;
 	}
-	for (int i = 0; i < myParsingResult.classConnections.size(); i++)
-	{
-	    from = myParsingResult.classConnections.get(i).getFrom();
-	    to = myParsingResult.classConnections.get(i).getTo();
-	    pumlCode += myParsingResult.classes.get(from);
-	    if (myParsingResult.classConnections.get(i).getConnection() == ClassConnection.connectionType.extension)
-	    {
-		pumlCode += " --|> "; // TODO eventuell Pfeile aendern
-	    }
-	    else if (myParsingResult.classConnections.get(i)
-		    .getConnection() == ClassConnection.connectionType.aggregation)
-	    {
-		pumlCode += " o-- "; // TODO eventuell Richtung aendern
-	    }
-	    else
-	    {
-		pumlCode += " *-- "; // TODO eventuell Richtung aendern
-	    }
-	    pumlCode += myParsingResult.classes.get(to);
-	    pumlCode += "\n";
-	}
+	myParsingResult.close();
 	pumlCode += "@enduml";
 	return pumlCode;
     }
