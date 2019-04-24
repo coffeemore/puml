@@ -6,7 +6,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+<<<<<<< HEAD
+=======
 import javax.xml.stream.XMLStreamException;
+>>>>>>> 9ca345ed3759eccf3bb3e0ebd8309beefd78aaa1
 import javax.xml.stream.XMLStreamReader;
 
 import net.sourceforge.plantuml.GeneratedImage;
@@ -35,11 +38,26 @@ public class OutputPUML
      * @return String der den plantUML-Code enthaelt
      * @throws XMLStreamException 
      */
+<<<<<<< HEAD
+    public String getPUML(XMLStreamReader myParsingResult)
+=======
     public String getPUML(XMLStreamReader myParsingResult) throws XMLStreamException
+>>>>>>> 9ca345ed3759eccf3bb3e0ebd8309beefd78aaa1
     {
+	int counter = 0;
 	String pumlCode = "";
 	int counter=0;
 	pumlCode += "@startuml\n";
+<<<<<<< HEAD
+	while (myParsingResult.hasNext())
+	{
+	    if (myParsingResult.getAttributeLocalName(counter) == "Class")
+	    {
+		
+	    }
+	    
+	}
+=======
 	while (myParsingResult.getAttributeLocalName(counter)!="parsed" && myParsingResult.isEndElement()) 
 	{
 		if(myParsingResult.getAttributeLocalName(counter)=="classes" && myParsingResult.isStartElement()) {
@@ -83,6 +101,7 @@ public class OutputPUML
 	}
 	myParsingResult.close();
 	pumlCode += "@enduml";
+>>>>>>> 9ca345ed3759eccf3bb3e0ebd8309beefd78aaa1
 	return pumlCode;
     }
 
