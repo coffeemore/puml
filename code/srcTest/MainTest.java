@@ -28,10 +28,34 @@ class MainTest {
 		String[] testArgs = {"-c","-ijar","--i","./testfolder/datensatz/Main.java"};
 		//classUnderTest.main(testArgs);
 		String[] reference = {"@startuml\n","class Main\n","@enduml"};
-		String filePath = "./outPUML_Code_defaultlocation";
+		String filePath = "./code/outPUML_Code_defaultlocation";
 		System.out.println("Test q");
 		equals(compareTextFile(reference,filePath));
 	 }
+	
+	@SuppressWarnings({ "static-access", "unlikely-arg-type" })
+	@Test
+	void testMainDatensatz() throws ParseException, IOException
+	{
+		String[] testArgs = {"-c","-ijar","--i",
+				"./testfolder/datensatz/Lebewesen.java",
+				"./testfolder/datensatz/Main.java",
+				"./testfolder/datensatz/Mensch.java",
+				"./testfolder/datensatz/Tier.java",
+				"./testfolder/datensatz/Vogel.java",
+				"./testfolder/datensatz/kannFliegen.java"};
+		classUnderTest.main(testArgs);
+		String[] reference = {"@startuml\n",
+				"abstract class Lebewesen",
+				"abstract class Mensch",
+				"abstract class Tier",
+				/*TODO*/
+				"class Main\n",
+				"@enduml"};
+		String filePath = "./code/outPUML_Code_defaultlocation";
+		System.out.println("Test q");
+		equals(compareTextFile(reference,filePath));
+	}
 	
 	/*
 	void createOutputFile(String cont) throws IOException
