@@ -1,11 +1,18 @@
 
 import java.util.ArrayList;
+import java.io.FileOutputStream;
+import java.io.StringWriter;
 import java.util.*;
 import java.util.Vector;
 import java.util.regex.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -134,105 +141,143 @@ public class ParserJava implements ParserIf
 	// root element
 	Element root = document.createElement("source");
 	document.appendChild(root);
-	System.out.println(sourcec);
+	// System.out.println(sourcec);
 	String tempString, compString;
 	int charPos;
 	String[] sourceArray = new String[1];
 	sourceArray[0] = sourcec;
 
-	while (!sourceArray[0].isEmpty())
+	try
 	{
-	    sourceArray[0] = sourceArray[0].trim();
-	    boolean done = false;
-	    compString = "\"";
-	    if (sourceArray[0].substring(0, compString.length()).equals(compString))
+	    while (!sourceArray[0].isEmpty())
 	    {
-		sourceArray[0] = sourceArray[0].substring(compString.length());
 		sourceArray[0] = sourceArray[0].trim();
-		String[] nameArray = new String[2];
-		nameArray[0] = "\\\"";
-		nameArray[1] = "\"";
-		TokenResult res;
-		do
-		{
-		    res = goToTokenWithName(sourceArray, nameArray);
-		    System.out.println("@res: " + res.getData());
-		}
-		while (res.getFoundToken() != 1);
-		sourceArray[0] = sourceArray[0].substring(1);
-		done = true;
-	    }
-	    ;
-
-	    compString = "import ";
-	    if (sourceArray[0].substring(0, compString.length()).equals(compString))
-	    {
-		sourceArray[0] = sourceArray[0].substring(compString.length());
-		sourceArray[0] = sourceArray[0].trim();
-		String[] nameArray = new String[1];
-		nameArray[0] = ";";
-		goToTokenWithName(sourceArray, nameArray);
-		done = true;
-	    }
-	    ;
-
-	    compString = "class ";
-	    if (sourceArray[0].substring(0, compString.length()).equals(compString))
-	    {
-		sourceArray[0] = sourceArray[0].substring(compString.length());
-		sourceArray[0] = sourceArray[0].trim();
-		String[] nameArray = new String[3];
-		nameArray[0] = "{";
-		nameArray[1] = "extends";
-		nameArray[2] = "implements";
-		TokenResult res = goToTokenWithName(sourceArray, nameArray);
-		String className = res.getData();
-		System.out.println("@className: " + className);
-		compString = "extends ";
+		boolean done = false;
+		compString = "\"";
 		if (sourceArray[0].substring(0, compString.length()).equals(compString))
 		{
 		    sourceArray[0] = sourceArray[0].substring(compString.length());
 		    sourceArray[0] = sourceArray[0].trim();
-		    nameArray = new String[2];
-		    nameArray[0] = "{";
-		    nameArray[1] = "implements";
-		    res = goToTokenWithName(sourceArray, nameArray);
-		    String extendsName = res.getData();
-		    System.out.println("@extendsName: " + extendsName);
+		    String[] nameArray = new String[2];
+		    nameArray[0] = "\\\"";
+		    nameArray[1] = "\"";
+
+		    TokenResult res;
+		    do
+		    {
+			res = goToTokenWithName(sourceArray, nameArray);
+			// System.out.println("@res: " + res.getData());
+			if (res.getFoundToken() == 0)
+			{
+			    sourceArray[0] = sourceArray[0].substring(1);
+			}
+		    }
+		    while (res.getFoundToken() != 1);
+		    sourceArray[0] = sourceArray[0].substring(1);
+		    done = true;
 		}
-		compString = "implements ";
+		;
+
+		compString = "import ";
 		if (sourceArray[0].substring(0, compString.length()).equals(compString))
 		{
 		    sourceArray[0] = sourceArray[0].substring(compString.length());
-		    compString = "{";
-		    do
+		    sourceArray[0] = sourceArray[0].trim();
+		    String[] nameArray = new String[1];
+		    nameArray[0] = ";";
+		    goToTokenWithName(sourceArray, nameArray);
+		    done = true;
+		}
+		;
+
+		compString = "class ";
+		if (sourceArray[0].substring(0, compString.length()).equals(compString))
+		{
+		    sourceArray[0] = sourceArray[0].substring(compString.length());
+		    sourceArray[0] = sourceArray[0].trim();
+		    String[] nameArray = new String[3];
+		    nameArray[0] = "{";
+		    nameArray[1] = "extends";
+		    nameArray[2] = "implements";
+		    TokenResult res = goToTokenWithName(sourceArray, nameArray);
+		    String className = res.getData();
+		    System.out.println("@className: " + className);
+		    Element classElement = document.createElement("class");
+		    classElement.appendChild(document.createTextNode(className));
+		    root.appendChild(classElement);
+		    compString = "extends ";
+		    if (sourceArray[0].substring(0, compString.length()).equals(compString))
 		    {
+			sourceArray[0] = sourceArray[0].substring(compString.length());
 			sourceArray[0] = sourceArray[0].trim();
 			nameArray = new String[2];
 			nameArray[0] = "{";
-			nameArray[1] = ",";
+			nameArray[1] = "implements";
 			res = goToTokenWithName(sourceArray, nameArray);
-			String interfaceName = res.getData();
-			System.out.println("@interfaceName: " + interfaceName);
+			String extendsName = res.getData();
+			System.out.println("@extendsName: " + extendsName);
 		    }
-		    while (!(sourceArray[0].substring(0, compString.length()).equals(compString)));
+		    compString = "implements ";
+		    if (sourceArray[0].substring(0, compString.length()).equals(compString))
+		    {
+			sourceArray[0] = sourceArray[0].substring(compString.length());
+			compString = "{";
+			do
+			{
+			    sourceArray[0] = sourceArray[0].trim();
+			    nameArray = new String[2];
+			    nameArray[0] = "{";
+			    nameArray[1] = ",";
+			    res = goToTokenWithName(sourceArray, nameArray);
+			    String interfaceName = res.getData();
+			    System.out.println("@interfaceName: " + interfaceName);
+			}
+			while (!(sourceArray[0].substring(0, compString.length()).equals(compString)));
 
+		    }
+		    done = true;
 		}
-		done = true;
-	    }
-	    ;
-	    if (!done)
-	    {
-		sourceArray[0] = sourceArray[0].substring(1);
+		;
+		if (!done)
+		{
+		    sourceArray[0] = sourceArray[0].substring(1);
+		}
 	    }
 	}
+	catch (Exception e)
+	{
+	    // TODO: handle exception
+	}
+	TransformerFactory tf = TransformerFactory.newInstance();
+	    Transformer transformer;
+	    try {
+	        transformer = tf.newTransformer();
+	        StringWriter writer = new StringWriter();
+	 
+
+	        transformer.transform(new DOMSource(document), new StreamResult(writer));
+	 
+	        String xmlString = writer.getBuffer().toString();  
+	        System.out.println(xmlString);                      //Print to console or logs
+	    }
+	    catch (TransformerException e)
+	    {
+	        e.printStackTrace();
+	    }
+	    catch (Exception e)
+	    {
+	        e.printStackTrace();
+	    }
+	//System.out.println(document.getTextContent());
+
     }
 
     public String getCommentlessSourceCode(String sourcec) // Entfernt Kommentare eines Strings
     {
 
 //		sourcec = sourcec.replaceAll("\".[^\"]*\"", "");
-	sourcec = sourcec.replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)", "");
+	// sourcec = sourcec.replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)",
+	// "");
 	// "(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)"
 //	System.out.println("============================== Commentless Sourcecode: ==============================\n"
 //		+ sourcec + "\n====================================================================================");
@@ -647,6 +692,7 @@ public class ParserJava implements ParserIf
      */
     public ParsingResult getParsingResult()
     {
+
 	return result;
     }
 
