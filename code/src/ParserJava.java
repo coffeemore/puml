@@ -44,17 +44,6 @@ public class ParserJava implements ParserIf
 
     }
 
-//    public String goToNextToken(String source) {
-//	
-//	while((source.charAt(0)==' ') || 
-//		(source.charAt(0)=='\n') ||
-//		(source.charAt(0)=='\t')) {
-//	    source = source.substring(1, source.length()-1);
-//	}
-//	
-//	
-//	return source;
-//    }
     class TokenResult
     {
 
@@ -94,13 +83,13 @@ public class ParserJava implements ParserIf
     {
 	String part = "";
 	boolean found = false;
-	int abortIndex = 0;
+	int foundNameIndex = 0;
 	for (int i = 0; i < name.length; i++)
 	{
 	    if (source[0].substring(0, name[i].length()).equals(name[i]))
 	    {
 		found = true;
-		abortIndex = i;
+		foundNameIndex = i;
 	    }
 	}
 	while (!found)
@@ -113,13 +102,13 @@ public class ParserJava implements ParserIf
 		if (source[0].substring(0, name[i].length()).equals(name[i]))
 		{
 		    found = true;
-		    abortIndex = i;
+		    foundNameIndex = i;
 		}
 	    }
 
 	}
-	TokenResult res = new TokenResult(abortIndex, part);
-	return res;
+
+	return new TokenResult(foundNameIndex, part);
 
     }
 
@@ -142,8 +131,7 @@ public class ParserJava implements ParserIf
 	Element root = document.createElement("source");
 	document.appendChild(root);
 	// System.out.println(sourcec);
-	String tempString, compString;
-	int charPos;
+	String compString;
 	String[] sourceArray = new String[1];
 	sourceArray[0] = sourcec;
 
@@ -177,7 +165,28 @@ public class ParserJava implements ParserIf
 		    done = true;
 		}
 		;
-
+		compString = "//";
+		if (sourceArray[0].substring(0, compString.length()).equals(compString))
+		{
+		    sourceArray[0] = sourceArray[0].substring(compString.length());
+		    sourceArray[0] = sourceArray[0].trim();
+		    String[] nameArray = new String[1];
+		    nameArray[0] = "\n";
+		    goToTokenWithName(sourceArray, nameArray);
+		    done = true;
+		}
+		;
+		compString = "/*";
+		if (sourceArray[0].substring(0, compString.length()).equals(compString))
+		{
+		    sourceArray[0] = sourceArray[0].substring(compString.length());
+		    sourceArray[0] = sourceArray[0].trim();
+		    String[] nameArray = new String[1];
+		    nameArray[0] = "*/";
+		    goToTokenWithName(sourceArray, nameArray);
+		    done = true;
+		}
+		;
 		compString = "import ";
 		if (sourceArray[0].substring(0, compString.length()).equals(compString))
 		{
@@ -201,6 +210,7 @@ public class ParserJava implements ParserIf
 		    nameArray[2] = "implements";
 		    TokenResult res = goToTokenWithName(sourceArray, nameArray);
 		    String className = res.getData();
+		    className = className.strip();
 		    System.out.println("@className: " + className);
 		    Element classElement = document.createElement("class");
 		    classElement.appendChild(document.createTextNode(className));
@@ -215,6 +225,7 @@ public class ParserJava implements ParserIf
 			nameArray[1] = "implements";
 			res = goToTokenWithName(sourceArray, nameArray);
 			String extendsName = res.getData();
+			extendsName = extendsName.strip();
 			System.out.println("@extendsName: " + extendsName);
 		    }
 		    compString = "implements ";
@@ -230,10 +241,40 @@ public class ParserJava implements ParserIf
 			    nameArray[1] = ",";
 			    res = goToTokenWithName(sourceArray, nameArray);
 			    String interfaceName = res.getData();
-			    System.out.println("@interfaceName: " + interfaceName);
+			    interfaceName = interfaceName.strip();
+			    System.out.println("@implements: " + interfaceName);
 			}
 			while (!(sourceArray[0].substring(0, compString.length()).equals(compString)));
 
+		    }
+		    done = true;
+		}
+		compString = "interface ";
+		if (sourceArray[0].substring(0, compString.length()).equals(compString))
+		{
+		    sourceArray[0] = sourceArray[0].substring(compString.length());
+		    sourceArray[0] = sourceArray[0].trim();
+		    String[] nameArray = new String[2];
+		    nameArray[0] = "{";
+		    nameArray[1] = "extends";
+		    TokenResult res = goToTokenWithName(sourceArray, nameArray);
+		    String interfaceName = res.getData();
+		    interfaceName = interfaceName.strip();
+		    System.out.println("@interfaceName: " + interfaceName);
+		    Element classElement = document.createElement("class");
+		    classElement.appendChild(document.createTextNode(interfaceName));
+		    root.appendChild(classElement);
+		    compString = "extends ";
+		    if (sourceArray[0].substring(0, compString.length()).equals(compString))
+		    {
+			sourceArray[0] = sourceArray[0].substring(compString.length());
+			sourceArray[0] = sourceArray[0].trim();
+			nameArray = new String[1];
+			nameArray[0] = "{";
+			res = goToTokenWithName(sourceArray, nameArray);
+			String extendsName = res.getData();
+			extendsName = extendsName.strip();
+			System.out.println("@extendsName: " + extendsName);
 		    }
 		    done = true;
 		}
@@ -249,26 +290,26 @@ public class ParserJava implements ParserIf
 	    // TODO: handle exception
 	}
 	TransformerFactory tf = TransformerFactory.newInstance();
-	    Transformer transformer;
-	    try {
-	        transformer = tf.newTransformer();
-	        StringWriter writer = new StringWriter();
-	 
+	Transformer transformer;
+	try
+	{
+	    transformer = tf.newTransformer();
+	    StringWriter writer = new StringWriter();
 
-	        transformer.transform(new DOMSource(document), new StreamResult(writer));
-	 
-	        String xmlString = writer.getBuffer().toString();  
-	        System.out.println(xmlString);                      //Print to console or logs
-	    }
-	    catch (TransformerException e)
-	    {
-	        e.printStackTrace();
-	    }
-	    catch (Exception e)
-	    {
-	        e.printStackTrace();
-	    }
-	//System.out.println(document.getTextContent());
+	    transformer.transform(new DOMSource(document), new StreamResult(writer));
+
+	    String xmlString = writer.getBuffer().toString();
+	    System.out.println(xmlString); // Print to console or logs
+	}
+	catch (TransformerException e)
+	{
+	    e.printStackTrace();
+	}
+	catch (Exception e)
+	{
+	    e.printStackTrace();
+	}
+	// System.out.println(document.getTextContent());
 
     }
 
@@ -287,7 +328,7 @@ public class ParserJava implements ParserIf
     /**
      * Ermittelt Klassenbeziehungen Agregation und Komposition
      * 
-     * @param substring Inhalt der Klasse, welcher untersucht wird
+     * @param substring       Inhalt der Klasse, welcher untersucht wird
      * @param parentClassName Klassenname der Klasse, dessen Inhalt untersucht wird
      */
     private void analyzeClassBody(String substring, String parentClassName)
