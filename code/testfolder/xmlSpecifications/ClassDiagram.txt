@@ -1,0 +1,11 @@
+@startuml
+interface If1
+interface If2
+If1 <|-- Class1
+If2 <|-- Class1
+Class3 <|-- Class1
+Class1 *-- Class2
+Class1 *-- Class3
+Class1 o-- Class4
+Class1 o-- Class5
+@enduml
