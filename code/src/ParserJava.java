@@ -1,7 +1,21 @@
 
 import java.util.ArrayList;
+import java.io.FileOutputStream;
+import java.io.StringWriter;
+import java.util.*;
 import java.util.Vector;
 import java.util.regex.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * 
@@ -30,20 +44,284 @@ public class ParserJava implements ParserIf
 
     }
 
+    class TokenResult
+    {
+
+	public TokenResult(int foundToken, String data)
+	{
+	    super();
+	    this.foundToken = foundToken;
+	    this.data = data;
+	}
+
+	private int foundToken;
+	private String data = "";
+
+	public int getFoundToken()
+	{
+	    return foundToken;
+	}
+
+	public void setFoundToken(int foundToken)
+	{
+	    this.foundToken = foundToken;
+	}
+
+	public String getData()
+	{
+	    return data;
+	}
+
+	public void setData(String data)
+	{
+	    this.data = data;
+	}
+
+    }
+
+    public TokenResult goToTokenWithName(String[] source, String[] name)
+    {
+	String part = "";
+	boolean found = false;
+	int foundNameIndex = 0;
+	for (int i = 0; i < name.length; i++)
+	{
+	    if (source[0].substring(0, name[i].length()).equals(name[i]))
+	    {
+		found = true;
+		foundNameIndex = i;
+	    }
+	}
+	while (!found)
+	{
+
+	    part = part + source[0].substring(0, 1);
+	    source[0] = source[0].substring(1);
+	    for (int i = 0; i < name.length; i++)
+	    {
+		if (source[0].substring(0, name[i].length()).equals(name[i]))
+		{
+		    found = true;
+		    foundNameIndex = i;
+		}
+	    }
+
+	}
+
+	return new TokenResult(foundNameIndex, part);
+
+    }
+
     /**
      * Entfernt Kommentare aus �bergebenem String
      * 
      * @param sourcece �bergebener String aus dem Kommentare entfernt werden
      * @return String ohne Kommentare
+     * @throws ParserConfigurationException
      */
+    public void buildTree(String sourcec) throws ParserConfigurationException // Entfernt Kommentare eines Strings
+    {
+	DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+
+	DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
+
+	Document document = documentBuilder.newDocument();
+
+	// root element
+	Element root = document.createElement("source");
+	document.appendChild(root);
+	// System.out.println(sourcec);
+	String compString;
+	String[] sourceArray = new String[1];
+	sourceArray[0] = sourcec;
+
+	try
+	{
+	    while (!sourceArray[0].isEmpty())
+	    {
+		sourceArray[0] = sourceArray[0].trim();
+		boolean done = false;
+		compString = "\"";
+		if (sourceArray[0].substring(0, compString.length()).equals(compString))
+		{
+		    sourceArray[0] = sourceArray[0].substring(compString.length());
+		    sourceArray[0] = sourceArray[0].trim();
+		    String[] nameArray = new String[2];
+		    nameArray[0] = "\\\"";
+		    nameArray[1] = "\"";
+
+		    TokenResult res;
+		    do
+		    {
+			res = goToTokenWithName(sourceArray, nameArray);
+			// System.out.println("@res: " + res.getData());
+			if (res.getFoundToken() == 0)
+			{
+			    sourceArray[0] = sourceArray[0].substring(1);
+			}
+		    }
+		    while (res.getFoundToken() != 1);
+		    sourceArray[0] = sourceArray[0].substring(1);
+		    done = true;
+		}
+		;
+		compString = "//";
+		if (sourceArray[0].substring(0, compString.length()).equals(compString))
+		{
+		    sourceArray[0] = sourceArray[0].substring(compString.length());
+		    sourceArray[0] = sourceArray[0].trim();
+		    String[] nameArray = new String[1];
+		    nameArray[0] = "\n";
+		    goToTokenWithName(sourceArray, nameArray);
+		    done = true;
+		}
+		;
+		compString = "/*";
+		if (sourceArray[0].substring(0, compString.length()).equals(compString))
+		{
+		    sourceArray[0] = sourceArray[0].substring(compString.length());
+		    sourceArray[0] = sourceArray[0].trim();
+		    String[] nameArray = new String[1];
+		    nameArray[0] = "*/";
+		    goToTokenWithName(sourceArray, nameArray);
+		    done = true;
+		}
+		;
+		compString = "import ";
+		if (sourceArray[0].substring(0, compString.length()).equals(compString))
+		{
+		    sourceArray[0] = sourceArray[0].substring(compString.length());
+		    sourceArray[0] = sourceArray[0].trim();
+		    String[] nameArray = new String[1];
+		    nameArray[0] = ";";
+		    goToTokenWithName(sourceArray, nameArray);
+		    done = true;
+		}
+		;
+
+		compString = "class ";
+		if (sourceArray[0].substring(0, compString.length()).equals(compString))
+		{
+		    sourceArray[0] = sourceArray[0].substring(compString.length());
+		    sourceArray[0] = sourceArray[0].trim();
+		    String[] nameArray = new String[3];
+		    nameArray[0] = "{";
+		    nameArray[1] = "extends";
+		    nameArray[2] = "implements";
+		    TokenResult res = goToTokenWithName(sourceArray, nameArray);
+		    String className = res.getData();
+		    className = className.strip();
+		    System.out.println("@className: " + className);
+		    Element classElement = document.createElement("class");
+		    classElement.appendChild(document.createTextNode(className));
+		    root.appendChild(classElement);
+		    compString = "extends ";
+		    if (sourceArray[0].substring(0, compString.length()).equals(compString))
+		    {
+			sourceArray[0] = sourceArray[0].substring(compString.length());
+			sourceArray[0] = sourceArray[0].trim();
+			nameArray = new String[2];
+			nameArray[0] = "{";
+			nameArray[1] = "implements";
+			res = goToTokenWithName(sourceArray, nameArray);
+			String extendsName = res.getData();
+			extendsName = extendsName.strip();
+			System.out.println("@extendsName: " + extendsName);
+		    }
+		    compString = "implements ";
+		    if (sourceArray[0].substring(0, compString.length()).equals(compString))
+		    {
+			sourceArray[0] = sourceArray[0].substring(compString.length());
+			compString = "{";
+			do
+			{
+			    sourceArray[0] = sourceArray[0].trim();
+			    nameArray = new String[2];
+			    nameArray[0] = "{";
+			    nameArray[1] = ",";
+			    res = goToTokenWithName(sourceArray, nameArray);
+			    String interfaceName = res.getData();
+			    interfaceName = interfaceName.strip();
+			    System.out.println("@implements: " + interfaceName);
+			}
+			while (!(sourceArray[0].substring(0, compString.length()).equals(compString)));
+
+		    }
+		    done = true;
+		}
+		compString = "interface ";
+		if (sourceArray[0].substring(0, compString.length()).equals(compString))
+		{
+		    sourceArray[0] = sourceArray[0].substring(compString.length());
+		    sourceArray[0] = sourceArray[0].trim();
+		    String[] nameArray = new String[2];
+		    nameArray[0] = "{";
+		    nameArray[1] = "extends";
+		    TokenResult res = goToTokenWithName(sourceArray, nameArray);
+		    String interfaceName = res.getData();
+		    interfaceName = interfaceName.strip();
+		    System.out.println("@interfaceName: " + interfaceName);
+		    Element classElement = document.createElement("class");
+		    classElement.appendChild(document.createTextNode(interfaceName));
+		    root.appendChild(classElement);
+		    compString = "extends ";
+		    if (sourceArray[0].substring(0, compString.length()).equals(compString))
+		    {
+			sourceArray[0] = sourceArray[0].substring(compString.length());
+			sourceArray[0] = sourceArray[0].trim();
+			nameArray = new String[1];
+			nameArray[0] = "{";
+			res = goToTokenWithName(sourceArray, nameArray);
+			String extendsName = res.getData();
+			extendsName = extendsName.strip();
+			System.out.println("@extendsName: " + extendsName);
+		    }
+		    done = true;
+		}
+		;
+		if (!done)
+		{
+		    sourceArray[0] = sourceArray[0].substring(1);
+		}
+	    }
+	}
+	catch (Exception e)
+	{
+	    // TODO: handle exception
+	}
+	TransformerFactory tf = TransformerFactory.newInstance();
+	Transformer transformer;
+	try
+	{
+	    transformer = tf.newTransformer();
+	    StringWriter writer = new StringWriter();
+
+	    transformer.transform(new DOMSource(document), new StreamResult(writer));
+
+	    String xmlString = writer.getBuffer().toString();
+	    System.out.println(xmlString); // Print to console or logs
+	}
+	catch (TransformerException e)
+	{
+	    e.printStackTrace();
+	}
+	catch (Exception e)
+	{
+	    e.printStackTrace();
+	}
+	// System.out.println(document.getTextContent());
+
+    }
+
     public String getCommentlessSourceCode(String sourcec) // Entfernt Kommentare eines Strings
     {
 
 //		sourcec = sourcec.replaceAll("\".[^\"]*\"", "");
-	sourcec = sourcec.replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)", "");
+	// sourcec = sourcec.replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)",
+	// "");
 	// "(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)"
-	System.out.println("============================== Commentless Sourcecode: ==============================\n"
-		+ sourcec + "\n====================================================================================");
+//	System.out.println("============================== Commentless Sourcecode: ==============================\n"
+//		+ sourcec + "\n====================================================================================");
 	return sourcec;
     }
 
@@ -337,102 +615,114 @@ public class ParserJava implements ParserIf
      */
     public void parse(String sourceCode)
     {
-	// Auslesen aller Interfacenamen
-	// 1. Suche nach Interface-Deklaration
-	// TODO: BUG! entfernt zu viel! -> l�scht alle Stellen mit // oder /* ... */
-	// deswegen darauf achten, dass keine "//" oder /* ... */ in RegEx oder Strings
-	// benutzt werden
-	sourceCode = getCommentlessSourceCode(sourceCode);
-	Matcher interfaceMatcher = Pattern.compile("interface +([a-zA-Z0-9_]+).*\\R* *\\{").matcher(sourceCode);
-	System.out.println("Interfaces: ");
-	// Solange im Quelltext Interfacedeklarationen gefunden werden, such weiter und
-	// speichere sie ab
-	while (interfaceMatcher.find())
+	sourceCode.trim();
+	String commlessCode = getCommentlessSourceCode(sourceCode);
+	try
 	{
-	    interfaceName.add(interfaceMatcher.group(1));
-	    bothName.add(interfaceMatcher.group(1)); // speichere den Namen
-	    interfaceConnection.add(interfaceMatcher.group()); // speichere die Zeile um sp�ter die Interfaces
-	    // auszulesen, die in Verbindung zu dem Interface stehen
-	    classPos.add(interfaceMatcher.start());
-	    System.out.println(interfaceMatcher.group(1));
+	    buildTree(commlessCode);
 	}
-	System.out.println("Anzahl " + interfaceName.size());
-	int countIN = interfaceName.size(); // Speichern der Gr��e des Interfaces f�r die �bersichtlichkeit
-
-	for (int i = 0; i < interfaceConnection.size(); i++) // suche nach extends, da Interfaces von einem oder
-	// mehreren anderen Interfaces erben k�nnen
+	catch (ParserConfigurationException e)
 	{
-	    if (interfaceConnection.get(i).indexOf("extends") > 1)
-	    {
-		exInterfaceConnection(i); // Funktion, die alle Verbindungen des Interfaces i zu den anderen Interfaces
-		// herausliest und speichert
-	    }
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
 	}
 
-	// Auslesen aller Klassennamen
-	Matcher classMatcher = Pattern.compile("class +([a-zA-Z0-9_]+).*\\R* *\\{").matcher(sourceCode);
-	System.out.println("Klassen: ");
-
-	// Speichern der Klassennamen und der ganzen Zeile bis "{" um Interfaces und
-	// Vererbungen herauszubekommen
-	while (classMatcher.find())
-	{
-	    className.add(classMatcher.group(1));
-	    bothName.add(classMatcher.group(1));
-	    classConnection.add(classMatcher.group());
-	    classPos.add(classMatcher.start());
-	    System.out.println(classMatcher.group(1));
-
-	}
-	System.out.println("Anzahl " + className.size());
-
-	for (String classname : bothName)
-	{
-	    System.out.println("analyzeClassBody() von Klasse " + classname + ": ");
-	    analyzeClassBody(sourceCode.substring(classPos.get(bothName.indexOf(classname))), classname);
-	}
-
-	// Auslesen der Verbindungen zwischen Klassen und Interfaces
-	for (int i = 0; i < classConnection.size(); i++)
-	{
-	    // Auslesen und Zuweisen von Verbindungen die Interfaces implementieren und/oder
-	    // zus�tzlich auch von einer Klasse erben
-	    if (classConnection.get(i).indexOf("implements") > 1)
-	    {
-
-		if (classConnection.get(i).indexOf("extends") > 1)
-		{
-		    impClassConnection(i, countIN);
-		    exClassConnection(i, countIN);
-		    System.out.println("Klasse " + (i + countIN) + " implementiert und erbt");
-		}
-		else
-		{
-		    impClassConnection(i, countIN);
-		    System.out.println("Bin hier");
-		}
-
-	    }
-	    // Klassen, die nur erben
-	    else if (classConnection.get(i).indexOf("extends") > 1)
-	    {
-		exClassConnection(i, countIN);
-	    }
-	    // KLassen, die weder erben noch Interfaces implementieren
-	    else
-	    {
-		System.out.println("Klasse " + (i + countIN) + " implementiert nicht und erbt nicht ");
-	    }
-	}
-	// Ausgabe aller Verbindungen
-	for (int i = 0; i < classConnectionArray.size(); i++)
-	{
-	    System.out.println("Verbindung " + i + " : von " + classConnectionArray.get(i).getFrom() + " nach "
-		    + classConnectionArray.get(i).getTo() + " .");
-	}
-
-	// Speichern der Klassennamen und Verbindungen im result
-	result = new ParsingResult(bothName, classConnectionArray);
+//	// Auslesen aller Interfacenamen
+//	// 1. Suche nach Interface-Deklaration
+//	// TODO: BUG! entfernt zu viel! -> l�scht alle Stellen mit // oder /* ... */
+//	// deswegen darauf achten, dass keine "//" oder /* ... */ in RegEx oder Strings
+//	// benutzt werden
+//	sourceCode = getCommentlessSourceCode(sourceCode);
+//	Matcher interfaceMatcher = Pattern.compile("interface +([a-zA-Z0-9_]+).*\\R* *\\{").matcher(sourceCode);
+//	System.out.println("Interfaces: ");
+//	// Solange im Quelltext Interfacedeklarationen gefunden werden, such weiter und
+//	// speichere sie ab
+//	while (interfaceMatcher.find())
+//	{
+//	    interfaceName.add(interfaceMatcher.group(1));
+//	    bothName.add(interfaceMatcher.group(1)); // speichere den Namen
+//	    interfaceConnection.add(interfaceMatcher.group()); // speichere die Zeile um sp�ter die Interfaces
+//	    // auszulesen, die in Verbindung zu dem Interface stehen
+//	    classPos.add(interfaceMatcher.start());
+//	    System.out.println(interfaceMatcher.group(1));
+//	}
+//	System.out.println("Anzahl " + interfaceName.size());
+//	int countIN = interfaceName.size(); // Speichern der Gr��e des Interfaces f�r die �bersichtlichkeit
+//
+//	for (int i = 0; i < interfaceConnection.size(); i++) // suche nach extends, da Interfaces von einem oder
+//	// mehreren anderen Interfaces erben k�nnen
+//	{
+//	    if (interfaceConnection.get(i).indexOf("extends") > 1)
+//	    {
+//		exInterfaceConnection(i); // Funktion, die alle Verbindungen des Interfaces i zu den anderen Interfaces
+//		// herausliest und speichert
+//	    }
+//	}
+//
+//	// Auslesen aller Klassennamen
+//	Matcher classMatcher = Pattern.compile("class +([a-zA-Z0-9_]+).*\\R* *\\{").matcher(sourceCode);
+//	System.out.println("Klassen: ");
+//
+//	// Speichern der Klassennamen und der ganzen Zeile bis "{" um Interfaces und
+//	// Vererbungen herauszubekommen
+//	while (classMatcher.find())
+//	{
+//	    className.add(classMatcher.group(1));
+//	    bothName.add(classMatcher.group(1));
+//	    classConnection.add(classMatcher.group());
+//	    classPos.add(classMatcher.start());
+//	    System.out.println(classMatcher.group(1));
+//
+//	}
+//	System.out.println("Anzahl " + className.size());
+//
+//	for (String classname : bothName)
+//	{
+//	    System.out.println("analyzeClassBody() von Klasse " + classname + ": ");
+//	    analyzeClassBody(sourceCode.substring(classPos.get(bothName.indexOf(classname))), classname);
+//	}
+//
+//	// Auslesen der Verbindungen zwischen Klassen und Interfaces
+//	for (int i = 0; i < classConnection.size(); i++)
+//	{
+//	    // Auslesen und Zuweisen von Verbindungen die Interfaces implementieren und/oder
+//	    // zus�tzlich auch von einer Klasse erben
+//	    if (classConnection.get(i).indexOf("implements") > 1)
+//	    {
+//
+//		if (classConnection.get(i).indexOf("extends") > 1)
+//		{
+//		    impClassConnection(i, countIN);
+//		    exClassConnection(i, countIN);
+//		    System.out.println("Klasse " + (i + countIN) + " implementiert und erbt");
+//		}
+//		else
+//		{
+//		    impClassConnection(i, countIN);
+//		    System.out.println("Bin hier");
+//		}
+//
+//	    }
+//	    // Klassen, die nur erben
+//	    else if (classConnection.get(i).indexOf("extends") > 1)
+//	    {
+//		exClassConnection(i, countIN);
+//	    }
+//	    // KLassen, die weder erben noch Interfaces implementieren
+//	    else
+//	    {
+//		System.out.println("Klasse " + (i + countIN) + " implementiert nicht und erbt nicht ");
+//	    }
+//	}
+//	// Ausgabe aller Verbindungen
+//	for (int i = 0; i < classConnectionArray.size(); i++)
+//	{
+//	    System.out.println("Verbindung " + i + " : von " + classConnectionArray.get(i).getFrom() + " nach "
+//		    + classConnectionArray.get(i).getTo() + " .");
+//	}
+//
+//	// Speichern der Klassennamen und Verbindungen im result
+//	result = new ParsingResult(bothName, classConnectionArray);
 
     }
 
@@ -443,6 +733,7 @@ public class ParserJava implements ParserIf
      */
     public ParsingResult getParsingResult()
     {
+
 	return result;
     }
 
