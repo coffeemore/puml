@@ -1,9 +1,5 @@
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,19 +7,34 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.cli.ParseException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class MainTest {
 	private PUMLgenerator classUnderTest;
-	private File output;
 	
 	@BeforeEach
 	public void SetUp() throws Exception
 	{
 		classUnderTest = new PUMLgenerator();
 	}
-	
+	@AfterEach
+	public void deleteTestOutFile() throws Exception
+	{
+		File here = new File(".");
+		System.out.println("Waehrend des Tests erzeugte Testfiles unter "+ here.getAbsolutePath()+ " sollen gelöscht werden.");
+		File defaultFile = new File("outPUML_Code_defaultlocation");
+		File givenOutFile = new File("testfolder/datensatz/TestMainoutPUML_Code");
+		if (defaultFile.delete() || givenOutFile.delete())
+		{
+			System.out.println("Testfile erfolgreich nach Test gelöscht.");
+		}
+		else
+		{
+			System.out.println("Testfile konnte nicht gelöscht werden.");
+		}
+	}
 	/*
 	 * Einfacher Test
 	 * Einzelne Klasse aus Datensatz "Main"
@@ -31,30 +42,33 @@ class MainTest {
 	 */
 	@SuppressWarnings({ "static-access", "unlikely-arg-type" })
 	@Test
-	void testMainCmd() throws IOException, ParseException //Test 1 einlesen Main aus Testdatensatz
+	void testMainSimple() throws IOException, ParseException //Test 1 einlesen Main aus Testdatensatz
 	{   
-		String[] testArgs = {"-c","-ijar","--i","./testfolder/datensatz/Main.java"};
+		String[] testArgs = {"-c","-ijar","--i","testfolder/datensatz/Main.java"};
 		classUnderTest.main(testArgs);
 		String[] reference = {"@startuml","class Main","@enduml"};
-		String filePath = "./code/outPUML_Code_defaultlocation";
+		String filePath = "outPUML_Code_defaultlocation";
 		equals(compareTextFile(reference,filePath));
 	 }
-	
 	/*
-	 * Einfacher Test
-	 * Einzelne Klasse aus Datensatz "Main"
-	 * Mit Ausgabepfad "./testfolder/datensatz/"
-	 */
-	@SuppressWarnings({ "static-access", "unlikely-arg-type" })
+	 * Test mit zwei Klassen
+	 * Klasse aus Datensatz "Lebewesen", "Mensch"
+	 * Ohne File Ausgabepfad -> defaultlocation
+	 * */
+	@SuppressWarnings({ "unlikely-arg-type", "static-access" })
 	@Test
-	void testMainCmd() throws IOException, ParseException //Test 1 einlesen Main aus Testdatensatz
+	void testMainLM() throws IOException, ParseException
 	{   
 		String[] testArgs = {"-c","-ijar","--i",
-				"./testfolder/datensatz/Main.java",
-				"-o", "./testfolder/datensatz/TestMain"};
+				"testfolder/datensatz/Lebewesen.java",
+				"testfolder/datensatz/Mensch.java"};
 		classUnderTest.main(testArgs);
-		String[] reference = {"@startuml","class Main","@enduml"};
-		String filePath = "./testfolder/datensatz/TestMain";
+		String[] reference = {"@startuml",
+				"abstract class Lebewesen",
+				"abstract class Mensch",
+				"Mensch --|> Lebewesen",
+				"@enduml"};
+		String filePath = "outPUML_Code_defaultlocation";
 		equals(compareTextFile(reference,filePath));
 	 }
 	/*
@@ -67,9 +81,9 @@ class MainTest {
 	void testMainLMT() throws IOException, ParseException
 	{   
 		String[] testArgs = {"-c","-ijar","--i",
-				"./testfolder/datensatz/Lebewesen.java",
-				"./testfolder/datensatz/Mensch.java",
-				"./testfolder/datensatz/Tier.java"};
+				"testfolder/datensatz/Lebewesen.java",
+				"testfolder/datensatz/Mensch.java",
+				"testfolder/datensatz/Tier.java"};
 		classUnderTest.main(testArgs);
 		String[] reference = {"@startuml",
 				"abstract class Lebewesen",
@@ -78,10 +92,36 @@ class MainTest {
 				"Mensch --|> Lebewesen",
 				"Tier --|> Lebewesen",
 				"@enduml"};
-		String filePath = "./code/outPUML_Code_defaultlocation";
+		String filePath = "outPUML_Code_defaultlocation";
 		equals(compareTextFile(reference,filePath));
 	 }
-	
+	/*
+	 * Test mit vier Klassen
+	 * Klasse aus Datensatz "Lebewesen","Mensch","Tier","Vogel"
+	 * Ohne File Ausgabepfad -> defaultlocation
+	 */
+	@SuppressWarnings({ "unlikely-arg-type", "static-access" })
+	@Test
+	void testMainLMTV() throws IOException, ParseException
+	{   
+		String[] testArgs = {"-c","-ijar","--i",
+				"testfolder/datensatz/Lebewesen.java",
+				"testfolder/datensatz/Mensch.java",
+				"testfolder/datensatz/Tier.java",
+				"testfolder/datensatz/Vogel.java"};
+		classUnderTest.main(testArgs);
+		String[] reference = {"@startuml",
+				"abstract class Lebewesen",
+				"abstract class Mensch",
+				"abstract class Tier",
+				"class Vogel",
+				"Mensch --|> Lebewesen",
+				"Tier --|> Lebewesen",
+				"Vogel --|> Tier",
+				"@enduml"};
+		String filePath = "outPUML_Code_defaultlocation";
+		equals(compareTextFile(reference,filePath));
+	 }
 	/*
 	 * Test mit allen Klassen
 	 * Klasse aus Datensatz "Lebewesen","Mensch","Tier","Vogel","kannFliegen"
@@ -92,25 +132,46 @@ class MainTest {
 	void testMainKompletterDatensatz() throws ParseException, IOException
 	{
 		String[] testArgs = {"-c","-ijar","--i",
-				"./testfolder/datensatz/Lebewesen.java",
-				"./testfolder/datensatz/Main.java",
-				"./testfolder/datensatz/Mensch.java",
-				"./testfolder/datensatz/Tier.java",
-				"./testfolder/datensatz/Vogel.java",
-				"./testfolder/datensatz/kannFliegen.java"};
+				"testfolder/datensatz/Lebewesen.java",
+				"testfolder/datensatz/Main.java",
+				"testfolder/datensatz/Mensch.java",
+				"testfolder/datensatz/Tier.java",
+				"testfolder/datensatz/Vogel.java",
+				"testfolder/datensatz/kannFliegen.java"};
 		classUnderTest.main(testArgs);
-		String[] reference = {"@startuml\n",
+		String[] reference = {"@startuml",
 				"abstract class Lebewesen",
+				"class Main",
 				"abstract class Mensch",
 				"abstract class Tier",
-				/*TODO*/
-				"class Main\n",
+				"class Vogel",
+				"interface kannFliegen",
+				"Mensch --|> Lebewesen",
+				"Tier --|> Lebewesen",
+				"Vogel --|> Tier",
+				"Vogel -|> kannFliegen",
 				"@enduml"};
-		String filePath = "./code/outPUML_Code_defaultlocation";
+		String filePath = "outPUML_Code_defaultlocation";
 		System.out.println("Test q");
 		equals(compareTextFile(reference,filePath));
 	}
-
+	/*
+	 * Einfacher Test
+	 * Einzelne Klasse aus Datensatz "Main"
+	 * Mit Ausgabepfad "./testfolder/datensatz/"
+	 */
+	@SuppressWarnings({ "static-access", "unlikely-arg-type" })
+	@Test
+	void testMainSimpleOutputpath() throws IOException, ParseException //Test 1 einlesen Main aus Testdatensatz
+	{   
+		String[] testArgs = {"-c","-ijar","--i",
+				"testfolder/datensatz/Main.java",
+				"-o", "testfolder/datensatz/TestMain"};
+		classUnderTest.main(testArgs);
+		String[] reference = {"@startuml","class Main","@enduml"};
+		String filePath = "testfolder/datensatz/TestMainoutPUML_Code";
+		equals(compareTextFile(reference,filePath));
+	 }	
 	@SuppressWarnings("resource")
 	boolean compareTextFile (String[] reference,String pumlFile) throws IOException
 	{
