@@ -14,7 +14,7 @@ public class SequenceDiagramGenerator {
     };
     
     /**
-     * Speichert den plantUML-Code aus String in eine Datei
+     * Erstellt den plantUML-Code aus geparstem String
      * 
      * @param parsedData Dokument
      * @param diagrammData plantUML-Code zur Erzeugung in OutputPUML
