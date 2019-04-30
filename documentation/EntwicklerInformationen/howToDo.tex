@@ -195,6 +195,36 @@ Des Weiteren werden auch Logausgaben mit den gleichen Eigenschaften (Uhrzeit, Kl
 \nsecend %{Logger}
 \nsecend %{Code}
 
+\nsecbegin{Profiler}
+\nsecbegin{Installation}
+Help > Eclipse Marketplace\\
+Search: Profiler > Java Mission Control > Install\\
+Nach der Installation sollte in der Symbolleiste ein Icon zum Starten des Profilers erscheinen.
+\nsecend
+\nsecbegin{Verwendung}
+Nach dem Starten wird in dem auftauchenden Fenster unter Local  'Eclipse' und anschließend 'Start JMX Console' ausgewählt.\\
+\begin{itemize}
+\item Overview\\
+Hier sind allgemeine Informationen über die Systembelastungen zu finden.
+\item MBean Browser (Managed Beans)\\
+MBeans sind Java Objekte, die verwaltet werden können. Das können Geräte, Anwendungen oder andere Ressourcen, die verwaltet werden, sein.\\ Diese können unter diesem Reiter abgerufen werden.
+\item Triggers\\
+Um verschiedene Events zu testen, können Trigger gesetzt werden. Mittels 'Add' ruft man eine Liste der möglichen Trigger auf und kann diese nach dem Hinzufügen über die Reiter 'Conditions', 'Actions' und Constraints modifizieren.\\
+Außerdem lassen sich Trigger importieren sowie exportieren.
+\item System\\
+Eingie Systeminformationen werden hier angezeigt.
+\item Memory\\
+Dieser Punkt gibt einen Überblick über Heap und Garbage Collection.
+\item Threads\\
+Hier findet man eine Liste der laufenden Threads.
+\item Diagnostic Commands\\
+Die hier aufgelisteten Befehle können hilfreich sein, um spezielle Diagnosen zu erfragen.\\
+Dafür wird der entsprechende Befehl ausgewählt, falls nötig unter 'Description - Value' mit Werten versehen und dann kann er ausgeführt werden.
+\end{itemize}
+Allgemein können die einzelnen Felder durch die '+'-Symbole weiter angepasst werden.
+\nsecend
+\nsecend %{Profiler}
+
 \nsecbegin{Generell}
 \nsecbegin{Graphviz}
 Um PlantUML richtig und im vollem Umfang anzeigen zu können muss Graphviz installiert werden:

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<parsed>
+	<sequencediagram>
+		<classes>
+			<entry>Class1</entry>
+			<entry>Class2</entry>
+			<entry>Class3</entry>
+		</classes>
+		<entrypoint>
+			<class>Class1</class>
+			<method>method1</method>
+		</entrypoint>
+
+		<methoddefinition>
+			<name>method1</name>
+			<alternative>	<!-- if-Entscheidung (beliebig verschachtelbar, abhängig vom Quellocode) -->
+				<case>
+					<condition>if(a!=b)</condition>
+					<methodcall>
+						<instance>classInstance1</instance>	<!-- Beim Aufruf von Methoden einer Instanz -->
+						<method>call1</method>
+					</methodcall>
+				</case>
+				<case>
+					<condition>else</condition>
+					<loop>	<!-- Kopfgesteuerte Schleife (beliebig verschachtelbar, abhängig vom Quellocode) -->
+						<condition>for(int i=0; i!=100; i++)</condition>
+						<methodcall>
+							<class>Class2</class>	<!-- Aufruf bei statischen Methoden -->
+							<method>call2</method>
+						</methodcall>
+					</loop>
+				</case>
+			</alternative>
+			<methodcall>	
+				<method>method2</method> <!-- Aufruf bei methoden innerhalb der Klasse-->
+			</methodcall>
+		</methoddefinition>
+		
+		<methoddefinition>
+			<name>method2</name>
+			<alternative>
+				<case>
+					<condition>switch(i)/case 0</condition>
+					<loop>		<!-- Kopfgesteuerte Schleife (beliebig verschachtelbar, abhängig vom Quellocode) -->
+						<condition>while(j!=0)</condition>
+						<methodcall>	
+							<method>method3</method>
+						</methodcall>
+					</loop>
+				</case>
+				<case>
+					<condition>switch(i)/case 1</condition>
+					<loop>		<!-- Fußesteuerte Schleife (beliebig verschachtelbar, abhängig vom Quellocode) -->
+						<condition>do/while(j!=0)</condition>
+						<methodcall>	
+							<method>method3</method>
+							<type>handled</type>
+						</methodcall>
+					</loop>
+				</case>
+				<case>
+					<condition>switch(i)/default</condition>
+					<instance>  <!-- Lokale Instanzen-->
+						<name>classInstance3</name>
+						<class>Class2</class>
+					</instance>
+					<instance>  <!-- Gleicher Name wie globale Instanz (beim aufruf soll die lokale verwendet werden)-->
+						<name>classInstance1</name>
+						<class>Class3</class>
+					</instance>
+					<methodcall>
+						<instance>classInstance1</instance>	<!-- Aufruf sollte auf instanz von class3 ausgeführt werden -->
+						<method>call1</method>
+					</methodcall>
+					<methodcall>
+						<instance>classInstance1</instance>	<!-- Klasseninstanz -->
+						<method>call1</method>
+						<validity>class</validity>	<!-- Wird am this-Zeiger festgememacht -->
+					</methodcall>
+					<methodcall>
+						<instance>classInstance2</instance>	<!-- Klasseninstanz -->
+						<method>call1</method>
+					</methodcall>
+					<methodcall>
+						<instance>classInstance3</instance>	<!-- Lokale Instanz -->
+						<method>call1</method>
+					</methodcall>
+					<methodcall>
+						<instance>classInstance4</instance>	<!-- Instanz existiert nicht -->
+						<method>callX</method>
+						<type>unknown</type>
+					</methodcall>
+				</case>
+			</alternative>
+		</methoddefinition>
+		
+		<methoddefinition>
+			<name>method3</name>
+			<alternative>	
+				<case>
+					<condition>if(a!=b)</condition>
+					<methodcall>
+						<method>method3</method> <!-- Rekursiver selbstaufruf -->
+						<type>recursive</type>
+					</methodcall>
+				</case>
+			</alternative>
+			<alternative>	
+				<case>
+					<condition>if(b!=c)</condition>
+					<methodcall>
+						<method>method4</method> <!-- Rekursiver wechselaufruf (Teil1) -->
+					</methodcall>
+				</case>
+			</alternative>
+		</methoddefinition>
+		<methoddefinition>
+			<name>method4</name>
+			<alternative>	
+				<case>
+					<condition>if(d!=e)</condition>
+					<methodcall>
+						<method>method3</method> <!-- Rekursiver wechselaufruf (Teil2) -->
+						<type>recursive</type>
+					</methodcall>
+				</case>
+			</alternative>
+		</methoddefinition>
+	
+	</sequencediagram>
+
+</parsed>
