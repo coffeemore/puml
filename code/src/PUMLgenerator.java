@@ -9,6 +9,9 @@ public class PUMLgenerator
     static ParserIf parser = new ParserJava();
     static OutputPUML outputPUML = new OutputPUML();
     static LogMain logger = new LogMain();
+    static ClassDiagramGenerator classDiagramGenerator = new ClassDiagramGenerator();
+    static SequenceDiagramGenerator seqDiagramGenerator = new SequenceDiagramGenerator();
+    static XmlHelperMethods xmlHelper = new XmlHelperMethods();
   
     /**
      * Launch the application.
