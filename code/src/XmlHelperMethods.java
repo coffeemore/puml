@@ -16,8 +16,8 @@ public class XmlHelperMethods
     }
     
     /**
-     * Konvertiert xml File in String
-     * @param xmlDocument
+     * Konvertiert xml Datei in String
+     * @param xmlDoc lesende Datei
      */
     public String xmlDocToString(Document xmlDoc)
     {
@@ -26,7 +26,8 @@ public class XmlHelperMethods
     
     /**
      * loescht einzelnen Knoten aus xml Datei
-     * @param xmlDocument
+     * @param Knoten eines Elements
+     * @param Wahrheitswert, loeschen/behalten des Knoten
      */
     public void delNode(Element nodeName, boolean keepNodeName)
     {

@@ -17,8 +17,8 @@ public class SequenceDiagramGenerator {
     /**
      * Erstellt den plantUML-Code aus geparstem xmlDocument
      * 
-     * @param parsedData Dokument
-     * @param diagrammData plantUML-Code zur Erzeugung in OutputPUML
+     * @param parsedData xml Eingabe Dokument
+     * @return plantUML-Code zur Erzeugung in OutputPUML als xmlDoc
      */
     public Document createDiagram(Document parsedData)
     {
