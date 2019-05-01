@@ -6,8 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
+import org.w3c.dom.Document;
 
 import net.sourceforge.plantuml.GeneratedImage;
 import net.sourceforge.plantuml.SourceFileReader;
@@ -29,13 +28,26 @@ public class OutputPUML
     };
 
     /**
+     * Liefert den plantUML - Code aus xml zurueck
+     * 
+     * @param diagramData plantUML-Code zur Erzeugung als xmlDoc
+     * @return plantUML Code zur Erstellung mit plantuml.jar
+     */
+    public String getPUML(Document diagramData)
+    {
+    	return new String();
+    }
+    
+    /**
      * Liefert den plantUML-Code zurueck
      * 
      * @param myParsingResult Ergebnisse des Parsens
      * @return String der den plantUML-Code enthaelt
-     * @throws XMLStreamException 
-     */
-    public String getPUML(XMLStreamReader myParsingResult) throws XMLStreamException
+     *
+     *
+     * Methode wird ersetzt durch xml basierte getPuml() Methode
+     *
+    public String getPUML(ParsingResult myParsingResult)
     {
 	String pumlCode = "";
 	int counter=0;
@@ -85,14 +97,29 @@ public class OutputPUML
 	pumlCode += "@enduml";
 	return pumlCode;
     }
+    */
 
     /**
+     * Speichert den plantUML-Code aus XML Dokument der getPUML Methode in eine Datei
+     * 
+     * @param diagramData	Xml Document durch getPUML Methode erzeugt
+     * @param filePath		Pfad an den die Datei gespeichert werden soll
+     * @throws IOException 
+     */
+    public void savePUMLtoFile(Document diagramData, String filePath) throws IOException
+    {
+    	
+    }
+    
+    /**
+     * alte String basierte Methode
+     * 
      * Speichert den plantUML-Code aus dem String der getPUML Methode in eine Datei
      * 
      * @param pumlCode		String der durch die getPUML Methode erzeugt wird
      * @param filePath		Pfad an den die Datei gespeichert werden soll
      * @throws IOException 
-     */
+     *
     public void savePUMLtoFile(String pumlCode, String filePath) throws IOException
     {
 	    BufferedWriter bw = new BufferedWriter(new FileWriter(new File(filePath)));
@@ -100,6 +127,7 @@ public class OutputPUML
 	    bw.flush();
 	    bw.close();
     }
+    */
 
     /**
      * Erzeugt ein PlantUML-Diagramm aus der plantUML-Code-Datei am uebergebenen Pfad

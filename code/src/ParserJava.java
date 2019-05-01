@@ -725,16 +725,25 @@ public class ParserJava implements ParserIf
 //	result = new ParsingResult(bothName, classConnectionArray);
 
     }
-
+    /**
+     * Liefert die Ergebnisse des Parsens zurueck
+     * 
+     * @return XML Document mit den Ergebnissen des Parsens
+     */
+    public Document getParsingResult()
+    {
+    	return null;
+    }
+    
     /**
      * Liefert die Ergebnisse des Parsens zur�ck
      * 
      * @return Struktur mit den Ergebnissen des Parsens
-     */
+     
     public ParsingResult getParsingResult()
     {
 
 	return result;
     }
-
+     */
 }
