@@ -12,7 +12,7 @@ public class XmlHelperMethods
     public XmlHelperMethods()
     {
 	
-    };
+    }
     
     /**
      * Konvertiert xml File in String
@@ -20,9 +20,8 @@ public class XmlHelperMethods
      */
     public String xmlDocToString(File xmlDoc)
     {
-    	String convertedXml = "";
-    	return convertedXml;
-    };
+    	return new String();
+    }
     
     /**
      * loescht einzelnen Knoten aus xml Datei
@@ -31,5 +30,6 @@ public class XmlHelperMethods
     public void delNode(String nodeName, boolean keepNodeName)
     {
   
-    };
+    }
+    
 }

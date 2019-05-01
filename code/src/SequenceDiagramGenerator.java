@@ -1,3 +1,4 @@
+import java.io.File;
 
 /**
  * 
@@ -11,17 +12,17 @@ public class SequenceDiagramGenerator {
     public SequenceDiagramGenerator()
     {
 	
-    };
+    }
     
     /**
-     * Erstellt den plantUML-Code aus geparstem String
+     * Erstellt den plantUML-Code aus geparstem xmlDocument
      * 
      * @param parsedData Dokument
      * @param diagrammData plantUML-Code zur Erzeugung in OutputPUML
      */
-    public String createDiagram(String parsedData)
+    public String createDiagram(File parsedData)
     {
-    	String diagrammData = "";
-    	return diagrammData;
-    };
+    	return new String();
+    }
+    
 }
