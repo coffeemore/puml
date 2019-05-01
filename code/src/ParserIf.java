@@ -1,4 +1,4 @@
-
+import org.w3c.dom.Document;
 
 /**
  * 
@@ -10,6 +10,9 @@ public interface ParserIf
 
     public void parse(String sourceCode);
     
+    public Document getParsingResult();
+    /**
+     * Alte Deklaration
     public ParsingResult getParsingResult();
-
+    */
 }
