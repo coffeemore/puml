@@ -1,4 +1,5 @@
-import java.io.File;
+
+import org.w3c.dom.Document;
 
 /**
  * 
@@ -20,9 +21,9 @@ public class ClassDiagramGenerator
      * @param parsedData Dokument
      * @param diagrammData plantUML-Code zur Erzeugung in OutputPUML
      */
-    public String createDiagram(File parsedData)
+    public Document createDiagram(Document parsedData)
     {
-    	return new String();
+    	return null;
     }
     
 }

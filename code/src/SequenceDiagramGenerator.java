@@ -1,5 +1,5 @@
-import java.io.File;
 
+import org.w3c.dom.Document;
 /**
  * 
  * @author Klasse zur Erzeugung von Sequenzdiagrammendaten
@@ -20,9 +20,9 @@ public class SequenceDiagramGenerator {
      * @param parsedData Dokument
      * @param diagrammData plantUML-Code zur Erzeugung in OutputPUML
      */
-    public String createDiagram(File parsedData)
+    public Document createDiagram(Document parsedData)
     {
-    	return new String();
+    	return null;
     }
     
 }
