@@ -18,10 +18,11 @@ public class ClassDiagramGenerator
      * Konstruktor
 	 * @throws ParserConfigurationException 
 	 * @throws TransformerConfigurationException 
-     */
+     */	
     public ClassDiagramGenerator()
     {
-    	
+    	System.out.println("TestXML erstellen");
+    	createDiagram(null);
     }
 
 	/**
@@ -71,6 +72,12 @@ public class ClassDiagramGenerator
 			Element aggregations = document.createElement("aggregations");
 			classrelations.appendChild(aggregations);
 			
+			try {
+				xmlHelper.writeDocumentToConsole(document);
+			} catch (TransformerConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	    	return document;
 		}
     	catch (ParserConfigurationException e)
