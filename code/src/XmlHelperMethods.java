@@ -53,42 +53,53 @@ public class XmlHelperMethods
      * Hilfsmethode zum Laden eines XML-Documents fuer diverse Zwecke
      * 
      * @param filename Name/Ort des files
+     * @author mariangeissler - Funktion kann ggf. wieder geloescht werden
      * @return Document
-     * @throws ParserConfigurationException 
-     * @throws IOException 
-     * @throws SAXException 
      */
-    public Document getDocumentFrom(String filename) throws ParserConfigurationException, SAXException, IOException
+    public Document getDocumentFrom(String filename)
     {
-    	File file = new File(filename);
-    	DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
-		Document document = documentBuilder.parse(file);
-		
-    	return document;
+	 	File file = new File(filename);
+		try
+		{
+	    	DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
+			
+			Document document = documentBuilder.parse(file);
+			
+			//document.getDocumentElement().normalize();
+			
+			return document;
+		}
+		catch (SAXException | IOException | ParserConfigurationException e)
+		{
+			e.printStackTrace();
+		}
+		return null;
     }
     
     /**
      * Hilfsmethode zum Ausgeben eines XML-Documents in der Console
      * 
-     * @param xmlDoc 
+     * @param xmlDoc
+     * @author mariangeissler - Funktion kann ggf. wieder geloescht werden
      * @throws TransformerConfigurationException 
      */
-    public void writeDocumentToConsole (Document xmlDoc) throws TransformerConfigurationException
+    public void writeDocumentToConsole (Document xmlDoc)
     {
     	TransformerFactory transformerFactory = TransformerFactory.newInstance();
-    	Transformer transformer = transformerFactory.newTransformer();
-    	
-    	//Formatierung der Ausgabe
-    	transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-    	DOMSource domSource = new DOMSource(xmlDoc);
-    	
-    	//Ausgabe in Console
-    	StreamResult console = new StreamResult(System.out);
-    	
-    	//Schreibe Daten
-    	try 
+    	Transformer transformer;
+    	try
     	{
+			transformer = transformerFactory.newTransformer();
+	    	
+			//Formatierung der Ausgabe
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			DOMSource domSource = new DOMSource(xmlDoc);
+	    	
+			//Ausgabe in Console
+			StreamResult console = new StreamResult(System.out);
+	    	
+			//Schreibe Daten
 			transformer.transform(domSource, console);
 		}
     	catch (TransformerException e)

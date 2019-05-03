@@ -21,8 +21,10 @@ public class ClassDiagramGenerator
      */	
     public ClassDiagramGenerator()
     {
+    	Document testDoc = xmlHelper.getDocumentFrom("testfolder/xmlSpecifications/parsedData.xml");
+    	xmlHelper.writeDocumentToConsole(testDoc);
+		createDiagram(testDoc);
     	System.out.println("TestXML erstellen");
-    	createDiagram(null);
     }
 
 	/**
@@ -71,13 +73,8 @@ public class ClassDiagramGenerator
 			
 			Element aggregations = document.createElement("aggregations");
 			classrelations.appendChild(aggregations);
-			
-			try {
-				xmlHelper.writeDocumentToConsole(document);
-			} catch (TransformerConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		
+			xmlHelper.writeDocumentToConsole(document);
 	    	return document;
 		}
     	catch (ParserConfigurationException e)
@@ -85,7 +82,6 @@ public class ClassDiagramGenerator
 			e.printStackTrace();
 		}
 		return null;
-		//xmlHelper.writeDocumentToConsole(document);
     }
     
 }
