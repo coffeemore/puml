@@ -34,9 +34,39 @@ public class ClassDiagramGenerator
     	{
 			DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
 			Document document = documentBuilder.newDocument();
-		
-			//Wurzel anlegen
+					
+			//Wurzel root namens "parsed" wird unter document angelegt
 			Element root = document.createElement("parsed");
+			document.appendChild(root);
+			
+			Element classdiagramm = document.createElement("classdiagramm");
+			root.appendChild(classdiagramm);
+			
+			Element entry = document.createElement("entry");
+			
+			Element classes = document.createElement("classes");
+			classdiagramm.appendChild(classes);
+			
+			Element interfaces = document.createElement("interfaces");
+			classdiagramm.appendChild(interfaces);
+			
+			Element classrelations = document.createElement("classrelations");
+			classdiagramm.appendChild(classrelations);
+			
+			Element from = document.createElement("from");
+			Element to = document.createElement("to");
+			
+			Element extensions = document.createElement("extensions");
+			classrelations.appendChild(extensions);
+			
+			Element implementations = document.createElement("implementations");
+			classrelations.appendChild(implementations);
+			
+			Element compositions = document.createElement("compositions");
+			classrelations.appendChild(compositions);
+			
+			Element aggregations = document.createElement("aggregations");
+			classrelations.appendChild(aggregations);
 			
 	    	return document;
 		}
