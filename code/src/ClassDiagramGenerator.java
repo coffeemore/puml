@@ -2,6 +2,7 @@
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -15,12 +16,14 @@ public class ClassDiagramGenerator
 	private XmlHelperMethods xmlHelper = new XmlHelperMethods();
 	/**
      * Konstruktor
+	 * @throws ParserConfigurationException 
+	 * @throws TransformerConfigurationException 
      */
     public ClassDiagramGenerator()
     {
-    	// xmlHelper.readFile();
+    	
     }
-    
+
 	/**
      * Erstellt den plantUML-Code aus geparstem xmlDocument
      * 
@@ -75,6 +78,7 @@ public class ClassDiagramGenerator
 			e.printStackTrace();
 		}
 		return null;
+		//xmlHelper.writeDocumentToConsole(document);
     }
     
 }
