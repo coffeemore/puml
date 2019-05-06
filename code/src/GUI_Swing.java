@@ -221,6 +221,7 @@ public class GUI_Swing
 		frame.getContentPane().add(toolBar, BorderLayout.NORTH);
 
 		btnOpenDir = new JButton("");
+		btnOpenDir.setIcon(new ImageIcon(GUI_Swing.class.getResource("/img/directory.gif")));
 		btnOpenDir.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -229,11 +230,10 @@ public class GUI_Swing
 			}
 		});
 		btnOpenDir.setToolTipText("Ordner hinzuf\u00FCgen");
-//		btnOpenDir.setIcon(
-//				new ImageIcon(GUI_Swing.class.getResource("/javax/swing/plaf/metal/icons/ocean/directory.gif")));
 		toolBar.add(btnOpenDir);
 
 		btnOpenFile = new JButton("");
+		btnOpenFile.setIcon(new ImageIcon(GUI_Swing.class.getResource("/img/file.gif")));
 		btnOpenFile.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -242,10 +242,10 @@ public class GUI_Swing
 			}
 		});
 		btnOpenFile.setToolTipText("Datei hinzuf\u00FCgen");
-//		btnOpenFile.setIcon(new ImageIcon(GUI_Swing.class.getResource("/javax/swing/plaf/metal/icons/ocean/file.gif")));
 		toolBar.add(btnOpenFile);
 
 		btnSave = new JButton("");
+		btnSave.setIcon(new ImageIcon(GUI_Swing.class.getResource("/img/floppy.gif")));
 		btnSave.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -254,7 +254,6 @@ public class GUI_Swing
 			}
 		});
 		btnSave.setToolTipText("Speichern");
-//		btnSave.setIcon(new ImageIcon(GUI_Swing.class.getResource("/javax/swing/plaf/metal/icons/ocean/floppy.gif")));
 		toolBar.add(btnSave);
 
 		btnRunPUML = new JButton("");
@@ -266,7 +265,7 @@ public class GUI_Swing
 			}
 		});
 		btnRunPUML.setToolTipText("PUML ausf\u00FChren");
-//		btnRunPUML.setIcon(new ImageIcon(GUI_Swing.class.getResource("/javax/swing/plaf/basic/icons/JavaCup16.png")));
+		btnRunPUML.setIcon(new ImageIcon(GUI_Swing.class.getResource("/img/JavaCup16.png")));
 		toolBar.add(btnRunPUML);
 
 		splitPane = new JSplitPane();
