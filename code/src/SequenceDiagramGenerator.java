@@ -9,8 +9,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Document;
 /**
- * 
- * @author Klasse zur Erzeugung von Sequenzdiagrammendaten
+ * @author Leo Rauschke, Elisabeth Schuster
  */
 public class SequenceDiagramGenerator {
 	
@@ -48,7 +47,7 @@ public class SequenceDiagramGenerator {
 	seq.appendChild(entrypoint);
 	
 	Element root1 = parsedData.getDocumentElement();
-	System.out.println(root1.getTagName());
+	//System.out.println(root1.getTagName());
 	
 	listMethoddef(parsedData, seqDiagramm, seq);
 	listAllNodes(root);
@@ -89,10 +88,6 @@ public class SequenceDiagramGenerator {
 	//Schleife, die Methoden auflistet
 	//kommt man so in die Unterpunkte <methoddefinition>?
 	
-	/*methoddefinition*/
-	Element method = seqDiagramm.createElement("methoddefinition");
-	seq.appendChild(method);
-	
 	//Liste mit den einzelnen Knoten der Methoden
 	NodeList mList = parsedData.getElementsByTagName("methoddefinition");
 	
@@ -102,7 +97,7 @@ public class SequenceDiagramGenerator {
 	    
 	    if(mNode.getNodeType() == Node.ELEMENT_NODE) {
 		
-		method.appendChild(seqDiagramm.importNode(mNode, true));
+		seq.appendChild(seqDiagramm.importNode(mNode, true));
 		
 		/**String cName = e.getElementsByTagName("name").item(0).getTextContent();
 		Element entry = seqDiagramm.createElement("entry");
@@ -116,8 +111,6 @@ public class SequenceDiagramGenerator {
 	 * Rekursivität bei methodcalls 
 	 */
 	
-	//Element methoddef = seqDiagramm.createElement("methoddefinition");
-	//seq.appendChild(methoddef);
     }
     
     /**
@@ -125,8 +118,9 @@ public class SequenceDiagramGenerator {
      * nicht nur der Childs
      * @param root
      */
-    private void listAllNodes(Element root) 
+    public void listAllNodes(Element root) 
     {
+	System.out.println(root.getTagName());
 	if(root.hasChildNodes()) 
 	{
 	    NodeList list = root.getChildNodes();

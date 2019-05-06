@@ -11,10 +11,7 @@ import java.util.zip.ZipFile;
 
 /**
  * 
- * @author Die Klasse dient zum Einsammeln des Quellcodes. Sie kann .java-,
- *         .jar-Dateien und komplette Ordner einsammeln. Die Pfade zu den
- *         Dateien und den Ordnern werden von der Anwendung in das paths-Array
- *         geschrieben.
+ * @author Leo Rauschke, Elisabeth Schuster
  */
 public class CodeCollector
 {
