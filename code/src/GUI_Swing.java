@@ -451,6 +451,7 @@ public class GUI_Swing
 		}
 		else
 		{
+			fDialog.setFileFilter(new FileNameExtensionFilter("Image File (.png)", "png"));
 			if (fDialog.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION)
 			{
 				save = fDialog.getSelectedFile();
