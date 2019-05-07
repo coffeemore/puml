@@ -6,7 +6,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 import net.sourceforge.plantuml.GeneratedImage;
 import net.sourceforge.plantuml.SourceFileReader;
@@ -32,10 +39,43 @@ public class OutputPUML
      * 
      * @param diagramData plantUML-Code zur Erzeugung als xmlDoc
      * @return plantUML Code zur Erstellung mit plantuml.jar
+     * @throws XPathExpressionException 
      */
-    public String getPUML(Document diagramData)
+    public String getPUML(Document diagramData) throws XPathExpressionException
     {
-    	return new String();
+//	    XPathExpression expr = xpath.compile("//parsed//sequencediagram//classes/*"); // classes
+//	    XPathExpression expr = xpath.compile("//parsed//sequencediagram//methoddefinition/*"); //TODO Test Löschen
+
+	LogMain logger= new LogMain();
+	    XPathFactory xPathfactory = XPathFactory.newInstance();
+	    XPath xpath = xPathfactory.newXPath();
+	    XPathExpression expr = xpath.compile("//parsed/*"); // classes
+    	    NodeList list = (NodeList) expr.evaluate(diagramData, XPathConstants.NODESET);
+    	    String compare = list.item(0).getNodeName();
+	if(compare == "classdiagram") {
+    		
+    	}
+    	else if(compare == "sequencediagram"){
+
+    	    expr = xpath.compile("//parsed//sequencediagram//classes/*"); // classes
+    	    list = (NodeList) expr.evaluate(diagramData, XPathConstants.NODESET);
+    	    String pumlCode = "@startuml \n";
+    	    for (int i = 0; i < list.getLength(); i++)
+    	    {
+    		System.out.println(list.item(i).getNodeName()); //TODO Test Löschen
+    		pumlCode += "participiant " + list.item(i).getTextContent() + "\n";
+    	    }
+    	    System.out.println(list.getLength()); //Test
+//    	System.out.println(xpath.compile("//parsed/text()").evaluate());
+//    	    
+    	    
+    	    return pumlCode;
+    		
+    	}
+    	else {
+    		logger.getLog().warning("XML-Diagramm fehlerhaft");
+    	}
+	return new String();
     }
     
     /**

@@ -7,18 +7,25 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
 import net.sourceforge.plantuml.FileUtils;
 
 class OutputPUMLTest
 {
 
     @Test
-    void testGetPUML() throws FileNotFoundException
+    void testGetPUML() throws FileNotFoundException, XPathExpressionException
     {
 	
 	// ClassConnection Elemente erstellen
@@ -49,12 +56,14 @@ class OutputPUMLTest
 	String actual = "";
 	try
 	{
-	    File xmlFile = new File("/home/tore/Documents/Softwareprojekt/puml/code/testfolder/ClassDiagramExample.xml");
-	    XMLInputFactory input = XMLInputFactory.newInstance();
-	    XMLStreamReader streamR = input.createXMLStreamReader(new FileInputStream(xmlFile));
-	    actual = new OutputPUML().getPUML(streamR);
+	    DocumentBuilderFactory docBuildFact = DocumentBuilderFactory.newInstance();
+	    DocumentBuilder docBuild = docBuildFact.newDocumentBuilder();
+	    Document doc = docBuild.parse(new File("/home/tore/Documents/Softwareprojekt/puml/code/testfolder/xmlSpecifications/SeqDiagram.xml"));
+	    actual = new OutputPUML().getPUML(doc);
+	    System.out.println(actual); //TODO Test Löschen
+
 	}
-	catch (XMLStreamException e)
+	catch (ParserConfigurationException | SAXException | IOException e)
 	{
 	    System.out.println("Nöö, wollte es nicht, wegen: " + e);
 	    e.printStackTrace();
@@ -65,6 +74,10 @@ class OutputPUMLTest
 	System.out.println("Hier is der Code: \n" + actual + "oder so" + expected);
     }
 
+    
+    
+    
+    
     //@Test
     // expectedFile.txt befindet sich fuer den Test im srcTest Ordner um in Git
     // aufgenommen zu werden.
