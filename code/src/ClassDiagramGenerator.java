@@ -30,7 +30,8 @@ public class ClassDiagramGenerator
     {
     	Document testDoc = xmlHelper.getDocumentFrom("testfolder/xmlSpecifications/parsedData.xml");
     	xmlHelper.writeDocumentToConsole(testDoc);
-		createDiagram(testDoc);
+    	System.out.println("TestXMLen");
+    	createDiagram(testDoc);
     	System.out.println("TestXML erstellen");
     }
 
@@ -55,8 +56,6 @@ public class ClassDiagramGenerator
 			Element classdiagramm = document.createElement("classdiagramm");
 			root.appendChild(classdiagramm);
 			
-			Element entry = document.createElement("entry");
-			
 			Element classes = document.createElement("classes");
 			classdiagramm.appendChild(classes);
 			
@@ -65,9 +64,6 @@ public class ClassDiagramGenerator
 			
 			Element classrelations = document.createElement("classrelations");
 			classdiagramm.appendChild(classrelations);
-			
-			Element from = document.createElement("from");
-			Element to = document.createElement("to");
 			
 			Element extensions = document.createElement("extensions");
 			classrelations.appendChild(extensions);
@@ -178,24 +174,17 @@ public class ClassDiagramGenerator
 				}
 			}
 
-			try {
+			//try {
 				xmlHelper.writeDocumentToConsole(document);
-			} catch (TransformerConfigurationException e) {
+			//} /*catch (TransformerConfigurationException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				//e.printStackTrace();
+			//}*/
 	    	return document;
 		}
     	catch (ParserConfigurationException e)
     	{
 			e.printStackTrace();
-		} catch (SAXException e1) { // nur für Einleseversuch von vorgegebenem Beispiel: wird später nicht mehr
-									// gebraucht
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
 		return null;
 		// xmlHelper.writeDocumentToConsole(document);
