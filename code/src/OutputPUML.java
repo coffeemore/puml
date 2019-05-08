@@ -43,30 +43,61 @@ public class OutputPUML
      */
     public String getPUML(Document diagramData) throws XPathExpressionException
     {
-//	    XPathExpression expr = xpath.compile("//parsed//sequencediagram//classes/*"); // classes
-//	    XPathExpression expr = xpath.compile("//parsed//sequencediagram//methoddefinition/*"); //TODO Test Löschen
-
-	LogMain logger= new LogMain();
+	    LogMain logger= new LogMain();
 	    XPathFactory xPathfactory = XPathFactory.newInstance();
 	    XPath xpath = xPathfactory.newXPath();
-	    XPathExpression expr = xpath.compile("//parsed/*"); // classes
-    	    NodeList list = (NodeList) expr.evaluate(diagramData, XPathConstants.NODESET);
+	    XPathExpression expr = xpath.compile("//parsed/*"); // Startpunkt parse Knoten
+    	    NodeList list = (NodeList) expr.evaluate(diagramData, XPathConstants.NODESET); //in Liste
     	    String compare = list.item(0).getNodeName();
 	if(compare == "classdiagram") {
     		
     	}
     	else if(compare == "sequencediagram"){
 
-    	    expr = xpath.compile("//parsed//sequencediagram//classes/*"); // classes
-    	    list = (NodeList) expr.evaluate(diagramData, XPathConstants.NODESET);
     	    String pumlCode = "@startuml \n";
-    	    for (int i = 0; i < list.getLength(); i++)
-    	    {
-    		System.out.println(list.item(i).getNodeName()); //TODO Test Löschen
-    		pumlCode += "participiant " + list.item(i).getTextContent() + "\n";
-    	    }
-    	    System.out.println(list.getLength()); //Test
-//    	System.out.println(xpath.compile("//parsed/text()").evaluate());
+    	    list = list.item(0).getChildNodes(); //Stelle: <classes>-Ebene
+    	    for (int i = 0; i < list.getLength(); i++) //13 iterations MÜSSEN PER IF ABGEFRAGT WERDEN, DA SCHLIEẞENDE KNOTEN AUCH ANGEZEIGT WERDEN
+	    {
+		if (list.item(i).getNodeName() == "classes")
+		{
+		    list = list.item(i).getChildNodes(); // Ebene Tiefer <entry>-Ebene
+		    for (int j = 0; j < list.getLength(); j++)
+		    {
+			if (list.item(j).getNodeName() != "#text")
+			{
+			    pumlCode += "participiant " + list.item(j).getTextContent() + "\n"; //Einträge Einfügen
+			}
+		    }
+		    list = list.item(0).getParentNode().getChildNodes(); //Ebene hoch wechseln <classes>-Ebene
+		}
+		else if(list.item(i).getNodeName() == "entrypoint")
+		{
+		    if (list.item(i).getNodeName() == "class") // Abfrage auf den Klassennamen TODO hier anpassen der Abfrage
+	    		{
+	    		    tempClass = list.item(i).getTextContent();
+	    		}
+			else if (list.item(i).getNodeName() == "method") {
+			    tempMethod = list.item(i).getTextContent();
+			}
+		}
+		
+	    }
+    	    
+//    	    //////////////////////////////////TEST
+//    	    
+//    	    expr = xpath.compile("//parsed/*"); //Entrypoint als Parent festlegen
+//	    list = (NodeList) expr.evaluate(diagramData, XPathConstants.NODESET);
+//	    list = list.item(0).getChildNodes().item(5).getChildNodes().item(1).getParentNode().getChildNodes();
+//	    /*Rücksprung auf item(5) mit !! .item(1).getParentNode().getChildNodes() !!*/
+//	    for (int i = 0; i < list.getLength(); i++)
+//	    {
+//		System.out.println(list.item(i).getNodeName());
+//	    }
+////	    System.out.println(list.item(0).getChildNodes().item(3).getNodeName()); //Hier kann durchitteriert werden  !!!!!
+//	    System.out.println(list.item(0).getChildNodes().getLength());
+//	    System.out.println("\n\n");
+//	    
+//	    //////////////////////////////////TEST ENDE
 //    	    
     	    
     	    return pumlCode;
@@ -75,7 +106,7 @@ public class OutputPUML
     	else {
     		logger.getLog().warning("XML-Diagramm fehlerhaft");
     	}
-	return new String();
+	return "Error with Loop";
     }
     
     /**
