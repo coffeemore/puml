@@ -53,7 +53,10 @@ public class OutputPUML
     		
     	}
     	else if(compare == "sequencediagram"){
-
+    	    
+    	    
+    	    String tempClass = "";
+    	    String tempMethod= "";
     	    String pumlCode = "@startuml \n";
     	    list = list.item(0).getChildNodes(); //Stelle: <classes>-Ebene
     	    for (int i = 0; i < list.getLength(); i++) //13 iterations MÜSSEN PER IF ABGEFRAGT WERDEN, DA SCHLIEẞENDE KNOTEN AUCH ANGEZEIGT WERDEN
@@ -68,17 +71,32 @@ public class OutputPUML
 			    pumlCode += "participiant " + list.item(j).getTextContent() + "\n"; //Einträge Einfügen
 			}
 		    }
-		    list = list.item(0).getParentNode().getChildNodes(); //Ebene hoch wechseln <classes>-Ebene
+		    list = list.item(i).getParentNode().getParentNode().getChildNodes(); //TOTO item0 Ebene hoch wechseln <classes>-Ebene
 		}
 		else if(list.item(i).getNodeName() == "entrypoint")
 		{
-		    if (list.item(i).getNodeName() == "class") // Abfrage auf den Klassennamen TODO hier anpassen der Abfrage
+		    list = list.item(i).getChildNodes(); //ebene tiefer <class>/<methods>-Ebene
+		    for (int j = 0; j < list.getLength(); j++)
+		    {
+			if (list.item(j).getNodeName() == "class") // Abfrage auf den Klassennamen
 	    		{
-	    		    tempClass = list.item(i).getTextContent();
+	    		    tempClass = list.item(j).getTextContent();
 	    		}
-			else if (list.item(i).getNodeName() == "method") {
-			    tempMethod = list.item(i).getTextContent();
+			else if (list.item(j).getNodeName() == "method") 
+			{
+			    tempMethod = list.item(j).getTextContent();
 			}
+		    }
+		    list = list.item(i).getParentNode().getParentNode().getChildNodes(); //TODO item0
+		    pumlCode += "note over "+ tempClass + ": " + tempMethod + "\n" + 
+		    	    	"activate " + tempClass;
+		    
+		    if (list.item(i).getNodeName() == "methoddefinition")
+		    {
+			list = list.item(i).getChildNodes(); //Unterebene Methoddefinition
+			
+			list = list.item(i).getParentNode().getParentNode().getChildNodes(); //TODO item0 wieder auf <Methoddefinition>-Ebenen
+		    }
 		}
 		
 	    }
