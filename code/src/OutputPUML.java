@@ -61,6 +61,7 @@ public class OutputPUML
     	    list = list.item(0).getChildNodes(); //Stelle: <classes>-Ebene
     	    for (int i = 0; i < list.getLength(); i++) //13 iterations MÜSSEN PER IF ABGEFRAGT WERDEN, DA SCHLIEẞENDE KNOTEN AUCH ANGEZEIGT WERDEN
 	    {
+//    		System.out.println(list.item(i).getNodeName()); //TODO Test
 		if (list.item(i).getNodeName() == "classes")
 		{
 		    list = list.item(i).getChildNodes(); // Ebene Tiefer <entry>-Ebene
@@ -71,7 +72,7 @@ public class OutputPUML
 			    pumlCode += "participiant " + list.item(j).getTextContent() + "\n"; //Einträge Einfügen
 			}
 		    }
-		    list = list.item(i).getParentNode().getParentNode().getChildNodes(); //TOTO item0 Ebene hoch wechseln <classes>-Ebene
+		    list = list.item(0).getParentNode().getParentNode().getChildNodes(); //Ebene hoch wechseln <classes>-Ebene
 		}
 		else if(list.item(i).getNodeName() == "entrypoint")
 		{
@@ -87,18 +88,19 @@ public class OutputPUML
 			    tempMethod = list.item(j).getTextContent();
 			}
 		    }
-		    list = list.item(i).getParentNode().getParentNode().getChildNodes(); //TODO item0
+		    list = list.item(0).getParentNode().getParentNode().getChildNodes(); //<Methoddefinition>-Ebenen
 		    pumlCode += "note over "+ tempClass + ": " + tempMethod + "\n" + 
 		    	    	"activate " + tempClass;
-		    
-		    if (list.item(i).getNodeName() == "methoddefinition")
-		    {
-			list = list.item(i).getChildNodes(); //Unterebene Methoddefinition
-			
-			list = list.item(i).getParentNode().getParentNode().getChildNodes(); //TODO item0 wieder auf <Methoddefinition>-Ebenen
-		    }
 		}
-		
+		else if (list.item(i).getNodeName() == "methoddefinition")
+		{
+		    list = list.item(i).getChildNodes(); //Unterebene Methoddefinition
+		    for (int j = 0; j < list.getLength(); j++)
+		    {
+			    //Hier müssen alle Alternativen für Methoden 
+		    }
+		    list = list.item(0).getParentNode().getParentNode().getChildNodes(); // wieder auf <Methoddefinition>-Ebenen
+		}
 	    }
     	    
 //    	    //////////////////////////////////TEST
