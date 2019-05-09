@@ -91,7 +91,7 @@ public class OutputPUML
 		    }
 		    list = list.item(0).getParentNode().getParentNode().getChildNodes(); //<Methoddefinition>-Ebenen
 		    pumlCode += "note over "+ tempStartClass + ": " + tempMethod + "\n" + 
-		    	    	"activate " + tempStartClass;
+		    	    	"activate " + tempStartClass + "\n";
 		}
 		else if (list.item(i).getNodeName() == "methoddefinition") //TODO Alle Implementationen der <Method>-Ebene
 		{
@@ -124,15 +124,14 @@ public class OutputPUML
 	return "Error with Loop";
     }
     
-    public String helperMethodCall(NodeList list, String pumlCode, int i)
+    public String helperMethodCall(NodeList list, String pumlCode, int i, String entry)
     {
-	String activeClass = "";
-	String destClass = "";
+	boolean alt = false; //wenn case geöffnet ist, sodass danach else
 	for (; i < list.getLength(); i++)
 	{
 	    if (list.item(i).getNodeName() == "class")
 	    {
-		activeClass = list.item(i).getTextContent();
+		
 	    }
 	    else if(list.item(i).getNodeName() == "instance") //hier abfangen, wenn nichts direkt definiert, ebene tiefer!!!
 	    {
@@ -156,24 +155,25 @@ public class OutputPUML
 	    else if(list.item(i).getNodeName() == "case") 
 	    {
 		//Hier Einfügen
-		activeClass = list.item(i).getTextContent();
+		pumlCode += "alt ";
 //		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getTextContent());
-		helperMethodCall(list.item(i).getChildNodes(), pumlCode, 0); //rekursiver Aufruf tieferer Ebene
+		helperMethodCall(list.item(i).getChildNodes(), pumlCode, 0, entry); //rekursiver Aufruf tieferer Ebene
 	    }
 	    else if(list.item(i).getNodeName() == "loop")
 	    {
 		//Hier Einfügen
 //		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getTextContent());
-		helperMethodCall(list.item(i).getChildNodes(), pumlCode, 0); //rekursiver Aufruf tieferer Ebene
+		helperMethodCall(list.item(i).getChildNodes(), pumlCode, 0, entry); //rekursiver Aufruf tieferer Ebene
 	    }
 	    else if(list.item(i).getNodeName() == "methodcall")
 	    {
 		//Hier Einfügen
 //		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getLocalName());
-		helperMethodCall(list.item(i).getChildNodes(), pumlCode, 0); //rekursiver Aufruf tieferer Ebene
+		helperMethodCall(list.item(i).getChildNodes(), pumlCode, 0, entry); //rekursiver Aufruf tieferer Ebene
 	    }
 	    else if(list.item(i).getNodeName() == "condition") //case
 	    {
+		pumlCode += list.item(i).getTextContent() + "\n";
 		//Hier Einfügen
 //		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getLocalName());
 	    }
