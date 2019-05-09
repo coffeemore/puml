@@ -18,6 +18,7 @@
 				<case>
 					<condition>if(a!=b)</condition>
 					<methodcall>
+						<class>Class2</class>
 						<instance>classInstance1</instance>	<!-- Beim Aufruf von Methoden einer Instanz -->
 						<method>call1</method>
 					</methodcall>
