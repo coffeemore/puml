@@ -27,6 +27,7 @@ class SequenceDiagramGeneratorTest
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 		Document parsedData = dBuilder.parse(xmlFile);
 		classUnderTest.createDiagram(parsedData);
+		classUnderTest.listAllNodes(classUnderTest.root1);
 	    }
 
     @Test

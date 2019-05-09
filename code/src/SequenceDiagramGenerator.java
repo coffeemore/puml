@@ -10,7 +10,7 @@ import org.w3c.dom.Document;
  * @author Klasse zur Erzeugung von Sequenzdiagrammendaten
  */
 public class SequenceDiagramGenerator {
-	
+Element root1;
 	/**
      * Konstruktor
      */
@@ -26,7 +26,7 @@ public class SequenceDiagramGenerator {
      * @return plantUML-Code zur Erzeugung in OutputPUML als xmlDoc
      * @throws ParserConfigurationException 
      */
-    public Document createDiagram(Document parsedData) throws ParserConfigurationException
+    public Document createDiagram(Document parsedData, String epClass, String epMethod) throws ParserConfigurationException
     {
 	//neues Dokument, das SeqDiagramm Informationen enthalten wird
 	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -42,9 +42,24 @@ public class SequenceDiagramGenerator {
 	
 	//unklar: woher bekommen wir den Entrypoint?
 	Element entrypoint = seqDiagramm.createElement("entrypoint");
+	
+	Element epClass1 = seqDiagramm.createElement("class");
+	epClass1.setTextContent(epClass);
+	
+	Element epMethod1 = seqDiagramm.createElement("method");
+	epMethod1.setTextContent(epMethod);
+	
+	entrypoint.appendChild(epMethod1);
+	entrypoint.appendChild(epClass1);
+	
+	
 	seq.appendChild(entrypoint);
 	
+	Element root1 = parsedData.getDocumentElement();
+	System.out.println(root1.getTagName());
+	
 	listMethoddef(parsedData, seqDiagramm, seq);
+	listAllNodes(root);
 	
 	return null;
     }
@@ -86,6 +101,20 @@ public class SequenceDiagramGenerator {
 	 * seq.appendChild(method);
 	 */
 	
+	/*methoddefinition*/
+//	Element method = seqDiagramm.createElement("methoddefinition");
+	
+	
+//	seq.appendChild(method);
+	
+	
+	//types (zB rekursiv angeben bei methodcall)
+	// type 
+	//	recursive  <-- ruft sich selber auf
+	//	unknown	<-- ruft unbekannte Methode auf
+	//	handled  <-- ruft bereits aufgerufene Methoden
+	
+	
 	//Liste mit den einzelnen Knoten der Methoden
 	NodeList mList = parsedData.getElementsByTagName("methoddefinition");
 	
@@ -95,10 +124,12 @@ public class SequenceDiagramGenerator {
 	    
 	    if(mNode.getNodeType() == Node.ELEMENT_NODE) {
 		//Knoten wird zu Element
-		Element methodEl = (Element) mNode;
-		//importiert Knoten samt Unterbaum
 		
-		seqDiagramm.importNode(methodEl,true);
+	//	method.appendChild(seqDiagramm.importNode(mNode, true));
+		
+		seq.appendChild(seqDiagramm.importNode(mNode, true));
+		
+		
 		
 		
 		/**String cName = e.getElementsByTagName("name").item(0).getTextContent();
@@ -117,5 +148,41 @@ public class SequenceDiagramGenerator {
 	
 	//Element methoddef = seqDiagramm.createElement("methoddefinition");
 	//seq.appendChild(methoddef);
+    }
+    
+    private void addType(Document parsedData, Document seqDiagramm, Element seq) {
+	NodeList mNode = parsedData.getElementsByTagName("methoddefinition");
+	NodeList cNode = parsedData.getElementsByTagName("classdefinition");
+    }
+   
+    
+    
+    
+    
+    /**
+     * Bug: Fehler bei Textausgabe -> getTextContent listet allen Content der Unterknoten auf
+     * nicht nur der Childs
+     * @param root
+     */
+    public void listAllNodes(Element root) 
+    {
+	if(root.hasChildNodes()) 
+	{
+	    NodeList list = root.getChildNodes();
+	    for(int i=0; i<list.getLength();i++) 
+	    {
+		Node node = list.item(i);
+		
+		if(node.getNodeType()==Node.ELEMENT_NODE) 
+		{
+		    Element e = (Element) node;
+		    String m = e.getTagName();
+		    System.out.println(m);
+		    //System.out.println(e.getElementsByTagName(m).item(0).getTextContent());
+		    listAllNodes(e);
+		    System.out.println("/"+e.getTagName());
+		}
+	    }
+	}
     }
 }
