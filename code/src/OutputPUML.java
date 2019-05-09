@@ -6,6 +6,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+
 import net.sourceforge.plantuml.GeneratedImage;
 import net.sourceforge.plantuml.SourceFileReader;
 import net.sourceforge.plantuml.SourceStringReader;
@@ -26,55 +35,306 @@ public class OutputPUML
     };
 
     /**
+     * Liefert den plantUML - Code aus xml zurueck
+     * 
+     * @param diagramData plantUML-Code zur Erzeugung als xmlDoc
+     * @return plantUML Code zur Erstellung mit plantuml.jar
+     * @throws XPathExpressionException 
+     */
+    public String getPUML(Document diagramData) throws XPathExpressionException
+    {
+	    LogMain logger= new LogMain();
+	    XPathFactory xPathfactory = XPathFactory.newInstance();
+	    XPath xpath = xPathfactory.newXPath();
+	    XPathExpression expr = xpath.compile("//parsed/*"); // Startpunkt parsed Knoten
+	    NodeList list = (NodeList) expr.evaluate(diagramData, XPathConstants.NODESET); //in Liste
+	    String compare = list.item(0).getNodeName();
+	    String pumlCode="@startuml \n";
+	    if(compare == "classdiagram") 
+	    {
+	    	list = list.item(0).getChildNodes();
+    	    for (int i = 0; i < list.getLength(); i++)
+		    {
+				if (list.item(i).getNodeName() == "classes")
+				{
+				    list = list.item(i).getChildNodes();
+				    for (int j = 0; j < list.getLength(); j++)
+				    {
+						if (list.item(j).getNodeName() != "#text")
+						{
+						    pumlCode += "classes " + list.item(j).getTextContent() + " \n"; //Einträge Einfügen
+						}
+				    }
+				    list = list.item(0).getParentNode().getParentNode().getChildNodes(); //Ebene hoch wechseln <classes>-Ebene
+				}
+				else if(list.item(i).getNodeName() == "interfaces")
+				{	
+					list = list.item(i).getChildNodes();
+					for (int j = 0; j < list.getLength(); j++)
+				    {
+						if (list.item(j).getNodeName() != "#text")
+						{
+						    pumlCode += "interface " + list.item(j).getTextContent() + " \n"; //Einträge Einfügen
+						}
+				    }
+					list = list.item(0).getParentNode().getParentNode().getChildNodes();
+				}
+				else if(list.item(i).getNodeName() == "classrelations")
+				{
+					list = list.item(i).getChildNodes();					
+					for (int h = 0; h < list.getLength(); h++)
+				    {
+						if (list.item(h).getNodeName() == "extensions")
+						{
+							list = list.item(h).getChildNodes();
+							for(int j=0; j<list.getLength(); j++) 
+							{
+								if (list.item(j).getNodeName() == "entry")
+								{
+									list = list.item(j).getChildNodes();
+									for(int k=0; k<list.getLength(); k++) 
+									{
+										if ((list.item(k).getNodeName() == "from")&&(list.item(j).getNodeName() != "#text"))
+										{
+											pumlCode +=list.item(k).getTextContent() + " --|> ";
+										}
+										else if((list.item(k).getNodeName() == "to")&&(list.item(j).getNodeName() != "#text"))
+										{
+											pumlCode +=list.item(k).getTextContent()+" \n";
+										}
+										else
+										{
+											logger.getLog().warning("Fehler: extension->from/to");
+										}
+									}
+								}
+							}
+						}
+						else if (list.item(h).getNodeName() == "implementations")
+						{
+							list = list.item(h).getChildNodes();
+							for(int j=0; j<list.getLength(); j++) 
+							{
+								if (list.item(j).getNodeName() == "entry")
+								{
+									list = list.item(j).getChildNodes();
+									for(int k=0; k<list.getLength(); k++) 
+									{
+										if ((list.item(k).getNodeName() == "from")&&(list.item(j).getNodeName() != "#text"))
+										{
+											pumlCode +=list.item(k).getTextContent() + " --|> ";
+										}
+										else if((list.item(k).getNodeName() == "to")&&(list.item(j).getNodeName() != "#text"))
+										{
+											pumlCode +=list.item(k).getTextContent()+" \n";
+										}
+										else
+										{
+											logger.getLog().warning("Fehler: implementations->from/to");
+										}
+									}
+								}
+							}
+						}
+						else if (list.item(h).getNodeName() == "compositions")
+						{
+							list = list.item(h).getChildNodes();
+							for(int j=0; j<list.getLength(); j++) 
+							{
+								if (list.item(j).getNodeName() == "entry")
+								{
+									list = list.item(j).getChildNodes();
+									for(int k=0; k<list.getLength(); k++) 
+									{
+										if ((list.item(k).getNodeName() == "from")&&(list.item(j).getNodeName() != "#text"))
+										{
+											pumlCode +=list.item(k).getTextContent() + " --|> ";
+										}
+										else if((list.item(k).getNodeName() == "to")&&(list.item(j).getNodeName() != "#text"))
+										{
+											pumlCode +=list.item(k).getTextContent()+" \n";
+										}
+										else
+										{
+											logger.getLog().warning("Fehler: compositions->from/to");
+										}
+									}
+								}
+							}
+						}
+						else if (list.item(h).getNodeName() == "aggregations")
+						{
+							list = list.item(h).getChildNodes();
+							for(int j=0; j<list.getLength(); j++) 
+							{
+								if (list.item(j).getNodeName() == "entry")
+								{
+									list = list.item(j).getChildNodes();
+									for(int k=0; k<list.getLength(); k++) 
+									{
+										if ((list.item(k).getNodeName() == "from")&&(list.item(j).getNodeName() != "#text"))
+										{
+											pumlCode +=list.item(k).getTextContent() + " --|> ";
+										}
+										else if((list.item(k).getNodeName() == "to")&&(list.item(j).getNodeName() != "#text"))
+										{
+											pumlCode +=list.item(k).getTextContent()+" \n";
+										}
+										else
+										{
+											logger.getLog().warning("Fehler: aggregations->from/to");
+										}
+									}
+								}
+							}
+						}
+				    }
+				}
+		    }
+	    } 
+				
+				
+				
+    /*	else if(compare == "sequencediagram"){
+
+    	    String pumlCode = "@startuml \n";
+    	    list = list.item(0).getChildNodes(); //Stelle: <classes>-Ebene
+    	    for (int i = 0; i < list.getLength(); i++) //13 iterations MÜSSEN PER IF ABGEFRAGT WERDEN, DA SCHLIEẞENDE KNOTEN AUCH ANGEZEIGT WERDEN
+		    {
+				if (list.item(i).getNodeName() == "classes")
+				{
+				    list = list.item(i).getChildNodes(); // Ebene Tiefer <entry>-Ebene
+				    for (int j = 0; j < list.getLength(); j++)
+				    {
+						if (list.item(j).getNodeName() != "#text")
+						{
+						    pumlCode += "participiant " + list.item(j).getTextContent() + "\n"; //Einträge Einfügen
+						}
+				    }
+				    list = list.item(0).getParentNode().getChildNodes(); //Ebene hoch wechseln <classes>-Ebene
+				}
+				else if(list.item(i).getNodeName() == "entrypoint")
+				{
+				    if (list.item(i).getNodeName() == "class") // Abfrage auf den Klassennamen TODO hier anpassen der Abfrage
+			    		{
+			    		    tempClass = list.item(i).getTextContent();
+			    		}
+					else if (list.item(i).getNodeName() == "method") {
+					    tempMethod = list.item(i).getTextContent();
+					}
+				}
+		
+		    }
+    	    
+//    	    //////////////////////////////////TEST
+//    	    
+//    	    expr = xpath.compile("//parsed/*"); //Entrypoint als Parent festlegen
+//	    list = (NodeList) expr.evaluate(diagramData, XPathConstants.NODESET);
+//	    list = list.item(0).getChildNodes().item(5).getChildNodes().item(1).getParentNode().getChildNodes();
+//	    /*Rücksprung auf item(5) mit !! .item(1).getParentNode().getChildNodes() !!*/
+//	    for (int i = 0; i < list.getLength(); i++)
+//	    {
+//		System.out.println(list.item(i).getNodeName());
+//	    }
+////	    System.out.println(list.item(0).getChildNodes().item(3).getNodeName()); //Hier kann durchitteriert werden  !!!!!
+//	    System.out.println(list.item(0).getChildNodes().getLength());
+//	    System.out.println("\n\n");
+//	    
+//	    //////////////////////////////////TEST ENDE
+//    	    
+    	   /* 
+    	    return pumlCode;
+    		
+    	}*/
+   
+    	else {
+    		logger.getLog().warning("Fehler: XML-Diagramm fehlerhaft");
+    	}
+		return pumlCode;
+    }
+    
+    /**
      * Liefert den plantUML-Code zurueck
      * 
      * @param myParsingResult Ergebnisse des Parsens
      * @return String der den plantUML-Code enthaelt
-     */
+     *
+     *
+     * Methode wird ersetzt durch xml basierte getPuml() Methode
+     *
     public String getPUML(ParsingResult myParsingResult)
     {
 	String pumlCode = "";
-	int from;
-	int to;
+	int counter=0;
 	pumlCode += "@startuml\n";
-	for (int i = 0; i < myParsingResult.classes.size(); i++)
+	while (myParsingResult.getAttributeLocalName(counter)!="parsed" && myParsingResult.isEndElement()) 
 	{
-	    pumlCode += "class ";
-	    pumlCode += myParsingResult.classes.get(i);
-	    pumlCode += "\n";
+		if(myParsingResult.getAttributeLocalName(counter)=="classes" && myParsingResult.isStartElement()) {
+			while(myParsingResult.getAttributeLocalName(counter++)=="entry") {
+					pumlCode+= "class " + myParsingResult.getElementText() + "\n";
+			}
+		}
+		if(myParsingResult.getAttributeLocalName(counter)=="classrelations" && myParsingResult.isStartElement()) {
+			if(myParsingResult.getAttributeLocalName(counter++)=="aggregations" && myParsingResult.isStartElement()) {
+				if(myParsingResult.getAttributeLocalName(counter++)=="entry" && myParsingResult.isStartElement()) {
+					if(myParsingResult.getAttributeLocalName(counter++)=="from") {
+						pumlCode+= myParsingResult.getElementText()+ " o-- ";
+						if(myParsingResult.getAttributeLocalName(counter++)=="to") {
+							pumlCode+= myParsingResult.getElementText()+"\n";
+						}
+					}
+				}
+			}
+			else if(myParsingResult.getAttributeLocalName(counter++)=="compositions" && myParsingResult.isStartElement()) {
+				if(myParsingResult.getAttributeLocalName(counter++)=="entry" && myParsingResult.isStartElement()) {
+					if(myParsingResult.getAttributeLocalName(counter++)=="from") {
+						pumlCode+= myParsingResult.getElementText()+ " *-- ";
+						if(myParsingResult.getAttributeLocalName(counter++)=="to") {
+							pumlCode+= myParsingResult.getElementText()+"\n";
+						}
+					}
+				}
+			}
+			else if(myParsingResult.getAttributeLocalName(counter++)=="extension" && myParsingResult.isStartElement()) {
+				if(myParsingResult.getAttributeLocalName(counter++)=="entry" && myParsingResult.isStartElement()) {
+					if(myParsingResult.getAttributeLocalName(counter++)=="from") {
+						pumlCode+= myParsingResult.getElementText()+ " -- ";
+						if(myParsingResult.getAttributeLocalName(counter++)=="to") {
+							pumlCode+= myParsingResult.getElementText()+"\n";
+						}
+					}
+				}
+			}
+		}
+	counter++;
 	}
-	for (int i = 0; i < myParsingResult.classConnections.size(); i++)
-	{
-	    from = myParsingResult.classConnections.get(i).getFrom();
-	    to = myParsingResult.classConnections.get(i).getTo();
-	    pumlCode += myParsingResult.classes.get(from);
-	    if (myParsingResult.classConnections.get(i).getConnection() == ClassConnection.connectionType.extension)
-	    {
-		pumlCode += " --|> "; // TODO eventuell Pfeile aendern
-	    }
-	    else if (myParsingResult.classConnections.get(i)
-		    .getConnection() == ClassConnection.connectionType.aggregation)
-	    {
-		pumlCode += " o-- "; // TODO eventuell Richtung aendern
-	    }
-	    else
-	    {
-		pumlCode += " *-- "; // TODO eventuell Richtung aendern
-	    }
-	    pumlCode += myParsingResult.classes.get(to);
-	    pumlCode += "\n";
-	}
+	myParsingResult.close();
 	pumlCode += "@enduml";
 	return pumlCode;
     }
+    */
 
     /**
+     * Speichert den plantUML-Code aus XML Dokument der getPUML Methode in eine Datei
+     * 
+     * @param diagramData	Xml Document durch getPUML Methode erzeugt
+     * @param filePath		Pfad an den die Datei gespeichert werden soll
+     * @throws IOException 
+     */
+    public void savePUMLtoFile(Document diagramData, String filePath) throws IOException
+    {
+    	
+    }
+    
+    /**
+     * alte String basierte Methode
+     * 
      * Speichert den plantUML-Code aus dem String der getPUML Methode in eine Datei
      * 
      * @param pumlCode		String der durch die getPUML Methode erzeugt wird
      * @param filePath		Pfad an den die Datei gespeichert werden soll
      * @throws IOException 
-     */
+     *
     public void savePUMLtoFile(String pumlCode, String filePath) throws IOException
     {
 	    BufferedWriter bw = new BufferedWriter(new FileWriter(new File(filePath)));
@@ -82,6 +342,7 @@ public class OutputPUML
 	    bw.flush();
 	    bw.close();
     }
+    */
 
     /**
      * Erzeugt ein PlantUML-Diagramm aus der plantUML-Code-Datei am uebergebenen Pfad

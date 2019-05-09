@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<parsed>
+	<classdiagramm>
+		<classes>
+			<entry>Class1</entry>
+			<entry>Class2</entry>
+			<entry>Class3</entry>
+			<entry>Class4</entry>
+			<entry>Class5</entry>
+		</classes>
+		<interfaces>
+			<entry>If1</entry>
+			<entry>If2</entry>
+		</interfaces>
+		<classrelations>
+			<!-- Die from-to-Beziehungen sind hier immer in Pfeilrichtung angegeben, 
+				dies kann ggf auch geändert werden -->
+			<extensions>
+				<entry>
+					<from>Class1</from>
+					<to>Class3</to>
+				</entry>
+			</extensions>
+			<implementations>
+				<entry>
+					<from>Class1</from>
+					<to>If1</to>
+				</entry>
+				<entry>
+					<from>Class1</from>
+					<to>If2</to>
+				</entry>
+			</implementations>
+			<compositions>
+				<entry>
+					<from>class2</from>
+					<to>class1</to>
+				</entry>
+				<entry>
+					<from>class3</from>
+					<to>class1</to>
+				</entry>
+			</compositions>
+			<aggregations>
+				<entry>
+					<from>class4</from>
+					<to>class1</to>
+				</entry>
+				<entry>
+					<from>class5</from>
+					<to>class1</to>
+				</entry>
+			</aggregations>
+		</classrelations>
+	</classdiagramm>
+</parsed>
