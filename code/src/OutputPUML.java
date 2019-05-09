@@ -27,6 +27,7 @@ import net.sourceforge.plantuml.SourceStringReader;
  */
 public class OutputPUML
 {
+    LogMain logger= new LogMain();
     /**
      * Konstruktor
      */
@@ -43,7 +44,6 @@ public class OutputPUML
      */
     public String getPUML(Document diagramData) throws XPathExpressionException
     {
-	    LogMain logger= new LogMain();
 	    XPathFactory xPathfactory = XPathFactory.newInstance();
 	    XPath xpath = xPathfactory.newXPath();
 	    XPathExpression expr = xpath.compile("//parsed/*"); // Startpunkt parsed Knoten
@@ -148,7 +148,7 @@ public class OutputPUML
 									{
 										if ((list.item(k).getNodeName() == "from")&&(list.item(j).getNodeName() != "#text"))
 										{
-											pumlCode +=list.item(k).getTextContent() + " --|> ";
+											pumlCode +=list.item(k).getTextContent() + " --* ";
 										}
 										else if((list.item(k).getNodeName() == "to")&&(list.item(j).getNodeName() != "#text"))
 										{
@@ -174,7 +174,7 @@ public class OutputPUML
 									{
 										if ((list.item(k).getNodeName() == "from")&&(list.item(j).getNodeName() != "#text"))
 										{
-											pumlCode +=list.item(k).getTextContent() + " --|> ";
+											pumlCode +=list.item(k).getTextContent() + " --o ";
 										}
 										else if((list.item(k).getNodeName() == "to")&&(list.item(j).getNodeName() != "#text"))
 										{
