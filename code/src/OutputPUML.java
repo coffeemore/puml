@@ -55,13 +55,14 @@ public class OutputPUML
     	else if(compare == "sequencediagram"){
     	    
     	    
-    	    String tempClass = "";
+    	    String tempStartClass = "";
+    	    String tempEndClass = "";
     	    String tempMethod= "";
     	    String pumlCode = "@startuml \n";
     	    list = list.item(0).getChildNodes(); //Stelle: <classes>-Ebene
     	    for (int i = 0; i < list.getLength(); i++) //13 iterations MÜSSEN PER IF ABGEFRAGT WERDEN, DA SCHLIEẞENDE KNOTEN AUCH ANGEZEIGT WERDEN
 	    {
-//    		System.out.println(list.item(i).getNodeName()); //TODO Test
+    		System.out.println(list.item(i).getNodeName()); //TODO Test!!!!!!!!!!! Es gehen wieder methodes verloren!!
 		if (list.item(i).getNodeName() == "classes")
 		{
 		    list = list.item(i).getChildNodes(); // Ebene Tiefer <entry>-Ebene
@@ -81,7 +82,7 @@ public class OutputPUML
 		    {
 			if (list.item(j).getNodeName() == "class") // Abfrage auf den Klassennamen
 	    		{
-	    		    tempClass = list.item(j).getTextContent();
+	    		    tempStartClass = list.item(j).getTextContent();
 	    		}
 			else if (list.item(j).getNodeName() == "method") 
 			{
@@ -89,37 +90,35 @@ public class OutputPUML
 			}
 		    }
 		    list = list.item(0).getParentNode().getParentNode().getChildNodes(); //<Methoddefinition>-Ebenen
-		    pumlCode += "note over "+ tempClass + ": " + tempMethod + "\n" + 
-		    	    	"activate " + tempClass;
+		    pumlCode += "note over "+ tempStartClass + ": " + tempMethod + "\n" + 
+		    	    	"activate " + tempStartClass;
 		}
-		else if (list.item(i).getNodeName() == "methoddefinition")
+		else if (list.item(i).getNodeName() == "methoddefinition") //TODO Alle Implementationen der <Method>-Ebene
 		{
 		    list = list.item(i).getChildNodes(); //Unterebene Methoddefinition
 		    for (int j = 0; j < list.getLength(); j++)
 		    {
-			    //Hier müssen alle Alternativen für Methoden 
+			if (list.item(j).getNodeName() == "name") 
+			{
+			    tempMethod = "activate " + list.item(j).getTextContent(); //Called method
+			}
+			else if (list.item(j).getNodeName() == "alternative")
+			{
+//			    System.out.println("Loop before" + list.item(j).getNodeName());
+			    list = list.item(i).getChildNodes(); //Unterebene alternative
+			    for (int j2 = 0; j2 < list.getLength(); j2++)
+			    {
+//				System.out.println("Loop with" + list.item(j2).getNodeName());
+				helperMethodCall(list, pumlCode, j2);
+//				System.out.println("Loop after" + list.item(j2).getNodeName());
+			    }
+			    list = list.item(0).getParentNode().getParentNode().getChildNodes(); // wieder auf <alternative>-Ebenen
+			}
+			
 		    }
 		    list = list.item(0).getParentNode().getParentNode().getChildNodes(); // wieder auf <Methoddefinition>-Ebenen
 		}
-	    }
-    	    
-//    	    //////////////////////////////////TEST
-//    	    
-//    	    expr = xpath.compile("//parsed/*"); //Entrypoint als Parent festlegen
-//	    list = (NodeList) expr.evaluate(diagramData, XPathConstants.NODESET);
-//	    list = list.item(0).getChildNodes().item(5).getChildNodes().item(1).getParentNode().getChildNodes();
-//	    /*Rücksprung auf item(5) mit !! .item(1).getParentNode().getChildNodes() !!*/
-//	    for (int i = 0; i < list.getLength(); i++)
-//	    {
-//		System.out.println(list.item(i).getNodeName());
-//	    }
-////	    System.out.println(list.item(0).getChildNodes().item(3).getNodeName()); //Hier kann durchitteriert werden  !!!!!
-//	    System.out.println(list.item(0).getChildNodes().getLength());
-//	    System.out.println("\n\n");
-//	    
-//	    //////////////////////////////////TEST ENDE
-//    	    
-    	    
+	    } //end initial Loop    	    
     	    return pumlCode;
     		
     	}
@@ -127,6 +126,60 @@ public class OutputPUML
     		logger.getLog().warning("XML-Diagramm fehlerhaft");
     	}
 	return "Error with Loop";
+    }
+    
+    public String helperMethodCall(NodeList list, String pumlCode, int i)
+    {
+	String activeClass = "";
+	String destClass = "";
+	for (int j = i; j < list.getLength(); j++)
+	{
+	    if (list.item(i).getNodeName() == "class") //methodcall
+	    {
+		activeClass = list.item(i).getTextContent();
+	    }
+	    else if(list.item(i).getNodeName() == "instance") //methodcall
+	    {
+		//Hier Einfügen
+		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getTextContent());
+	    }
+	    else if(list.item(i).getNodeName() == "method") //methodcall
+	    {
+		//Hier Einfügen
+		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getTextContent());
+	    }
+	    else if(list.item(i).getNodeName() == "type") //methodcall
+	    {
+		//Hier Einfügen
+		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getTextContent());
+	    }
+	    else if(list.item(i).getNodeName() == "case") 
+	    {
+		//Hier Einfügen
+		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getTextContent());
+		helperMethodCall(list.item(i).getChildNodes(), pumlCode, j); //rekursiver Aufruf tieferer Ebene
+	    }
+	    else if(list.item(i).getNodeName() == "loop")
+	    {
+		//Hier Einfügen
+		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getTextContent());
+		helperMethodCall(list.item(i).getChildNodes(), pumlCode, j); //rekursiver Aufruf tieferer Ebene
+	    }
+	    else if(list.item(i).getNodeName() == "methodcall")
+	    {
+		//Hier Einfügen
+		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getTextContent());
+		helperMethodCall(list.item(i).getChildNodes(), pumlCode, j); //rekursiver Aufruf tieferer Ebene
+	    }
+	    else if(list.item(i).getNodeName() == "condition") //case
+	    {
+		//Hier Einfügen
+		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getTextContent());
+	    }
+	}
+	
+	
+	return pumlCode;
     }
     
     /**
