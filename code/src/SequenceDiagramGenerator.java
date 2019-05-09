@@ -1,3 +1,4 @@
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -6,11 +7,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Document;
 /**
- * 
- * @author Klasse zur Erzeugung von Sequenzdiagrammendaten
+ * @author Leo Rauschke, Elisabeth Schuster
  */
 public class SequenceDiagramGenerator {
-Element root1;
+
 	/**
      * Konstruktor
      */
@@ -42,6 +42,7 @@ Element root1;
 	
 	//unklar: woher bekommen wir den Entrypoint?
 	Element entrypoint = seqDiagramm.createElement("entrypoint");
+  	seq.appendChild(entrypoint);
 	
 	Element epClass1 = seqDiagramm.createElement("class");
 	epClass1.setTextContent(epClass);
@@ -60,6 +61,13 @@ Element root1;
 	
 	listMethoddef(parsedData, seqDiagramm, seq);
 	listAllNodes(root);
+
+	//System.out.println(root1.getTagName());
+	
+	listMethoddef(parsedData, seqDiagramm, seq);
+	listAllNodes(root);
+	
+
 	
 	return null;
     }
@@ -72,12 +80,12 @@ Element root1;
 	//Schleife, die entries auflistet
 	//in parsedData: classdefinition-name
 	NodeList cList = parsedData.getElementsByTagName("classdefinition");
-	//alle EintrÃ¤ge der Liste werden durchgegangen
+	//alle Einträge der Liste werden durchgegangen
 	for(int i = 0; i < cList.getLength(); i++) {
 	    Node cNode = cList.item(i);
 	    //System.out.println("Current Node: " + cNode.getNodeName());
 	    if(cNode.getNodeType() == Node.ELEMENT_NODE) {
-		//in Tag <name> gespeicherter Text wird als Klassenname Ã¼bernommen
+		//in Tag <name> gespeicherter Text wird als Klassenname übernommen
 		Element classEl = (Element) cNode;
 		//String cName = cNode.getFirstChild().getTextContent();
 		String cName = classEl.getElementsByTagName("name").item(0).getTextContent();
@@ -96,6 +104,7 @@ Element root1;
     private void listMethoddef(Document parsedData, Document seqDiagramm, Element seq) {
 	//Schleife, die Methoden auflistet
 	//kommt man so in die Unterpunkte <methoddefinition>?
+
 	/**
 	 * Element method = seqDiagramm.createElement("methoddefinition");
 	 * seq.appendChild(method);
@@ -114,6 +123,7 @@ Element root1;
 	//	unknown	<-- ruft unbekannte Methode auf
 	//	handled  <-- ruft bereits aufgerufene Methoden
 	
+
 	
 	//Liste mit den einzelnen Knoten der Methoden
 	NodeList mList = parsedData.getElementsByTagName("methoddefinition");
@@ -123,15 +133,16 @@ Element root1;
 	    Node mNode = mList.item(i);
 	    
 	    if(mNode.getNodeType() == Node.ELEMENT_NODE) {
+
 		//Knoten wird zu Element
 		
 	//	method.appendChild(seqDiagramm.importNode(mNode, true));
 		
 		seq.appendChild(seqDiagramm.importNode(mNode, true));
 		
+		seq.appendChild(seqDiagramm.importNode(mNode, true));
 		
-		
-		
+
 		/**String cName = e.getElementsByTagName("name").item(0).getTextContent();
 		Element entry = seqDiagramm.createElement("entry");
 		entry.setTextContent(cName);
@@ -139,25 +150,28 @@ Element root1;
 		*/
 	    }
 	}
+
 	
 	System.out.println();
+
 	/**
 	 * unter <methoddefinition> - name und alternatives kopieren
-	 * RekursivitÃ¤t bei methodcalls 
+	 * Rekursivität bei methodcalls 
 	 */
 	
-	//Element methoddef = seqDiagramm.createElement("methoddefinition");
-	//seq.appendChild(methoddef);
     }
     
+    /**
+     * Bug: Fehler bei Textausgabe -> getTextContent listet allen Content der Unterknoten auf
+     * nicht nur der Childs
+     * @param root
+     */
+   
     private void addType(Document parsedData, Document seqDiagramm, Element seq) {
 	NodeList mNode = parsedData.getElementsByTagName("methoddefinition");
 	NodeList cNode = parsedData.getElementsByTagName("classdefinition");
     }
    
-    
-    
-    
     
     /**
      * Bug: Fehler bei Textausgabe -> getTextContent listet allen Content der Unterknoten auf
@@ -186,3 +200,4 @@ Element root1;
 	}
     }
 }
+
