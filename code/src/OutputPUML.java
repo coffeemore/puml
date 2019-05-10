@@ -107,7 +107,7 @@ public class OutputPUML
 			    list = list.item(j).getChildNodes(); //Unterebene alternative
 //			    for (int j2 = 0; j2 < list.getLength(); j2++)
 //			    {
-				helperMethodCall(list, pumlCode, j);
+				helperMethodCall(list, pumlCode, j, tempStartClass);
 //			    }
 			    list = list.item(0).getParentNode().getParentNode().getChildNodes(); // wieder auf <alternative>-Ebenen
 			}
@@ -136,10 +136,7 @@ public class OutputPUML
 	    else if(list.item(i).getNodeName() == "instance") //hier abfangen, wenn nichts direkt definiert, ebene tiefer!!!
 	    {
 		//Hier Einfügen
-		if (list.item(i).getFirstChild().getNodeName() != "#text") //Test
-		{
 		    System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getTextContent());
-		}
 		
 	    }
 	    else if(list.item(i).getNodeName() == "method")
@@ -154,8 +151,18 @@ public class OutputPUML
 	    }
 	    else if(list.item(i).getNodeName() == "case") 
 	    {
+		if (!alt)
+		{
+		    pumlCode += "alt ";
+		    alt = true;
+		}
+		else
+		{
+		    pumlCode += "else ";
+		}
 		//Hier Einfügen
-		pumlCode += "alt ";
+		
+		
 //		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getTextContent());
 		helperMethodCall(list.item(i).getChildNodes(), pumlCode, 0, entry); //rekursiver Aufruf tieferer Ebene
 	    }
