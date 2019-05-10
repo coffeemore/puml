@@ -60,6 +60,33 @@
         <predecessor id="1" predecessor-id="8" type="FS"/>
       </predecessors>
     </task>
+    <task id="10" name="Sprint 2" note="" work="403200" start="20190401T000000Z" end="20190414T170000Z" work-start="20190401T080000Z" percent-complete="100" priority="0" type="normal" scheduling="fixed-work">
+      <constraint type="must-start-on" time="20190401T000000Z"/>
+    </task>
+    <task id="11" name="Sprint 3" note="" work="403200" start="20190415T000000Z" end="20190428T170000Z" work-start="20190415T080000Z" percent-complete="100" priority="0" type="normal" scheduling="fixed-work">
+      <constraint type="must-start-on" time="20190415T000000Z"/>
+    </task>
+    <task id="12" name="Sprint 4" note="" work="201600" start="20190429T000000Z" end="20190505T170000Z" work-start="20190429T080000Z" percent-complete="100" priority="0" type="normal" scheduling="fixed-work">
+      <constraint type="must-start-on" time="20190429T000000Z"/>
+    </task>
+    <task id="13" name="2. Zwischenstandspraesentation" note="" work="28800" start="20190506T000000Z" end="20190506T170000Z" work-start="20190506T080000Z" percent-complete="100" priority="0" type="normal" scheduling="fixed-work">
+      <constraint type="must-start-on" time="20190506T000000Z"/>
+    </task>
+    <task id="14" name="Sprint 3, 4 Review" note="" work="28800" start="20190510T000000Z" end="20190510T170000Z" work-start="20190510T080000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+      <constraint type="must-start-on" time="20190510T000000Z"/>
+    </task>
+    <task id="15" name="Sprint 5 Planning" note="" work="28800" start="20190513T000000Z" end="20190513T170000Z" work-start="20190513T080000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+      <constraint type="must-start-on" time="20190513T000000Z"/>
+    </task>
+    <task id="16" name="Sprint 5" note="" work="201600" start="20190513T000000Z" end="20190519T170000Z" work-start="20190513T080000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+      <constraint type="must-start-on" time="20190513T000000Z"/>
+    </task>
+    <task id="17" name="Sprint 5 Review" note="" work="28800" start="20190524T000000Z" end="20190524T170000Z" work-start="20190524T080000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+      <constraint type="must-start-on" time="20190524T000000Z"/>
+    </task>
+    <task id="18" name="Sprint 6 Planning" note="" work="28800" start="20190524T000000Z" end="20190524T170000Z" work-start="20190524T080000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+      <constraint type="must-start-on" time="20190524T000000Z"/>
+    </task>
   </tasks>
   <resource-groups/>
   <resources/>
