@@ -317,11 +317,11 @@ public class OutputPUML
     /**
      * Speichert den plantUML-Code aus XML Dokument der getPUML Methode in eine Datei
      * 
-     * @param diagramData	Xml Document durch getPUML Methode erzeugt
+     * @param string	Xml Document durch getPUML Methode erzeugt
      * @param filePath		Pfad an den die Datei gespeichert werden soll
      * @throws IOException 
      */
-    public void savePUMLtoFile(Document diagramData, String filePath) throws IOException
+    public void savePUMLtoFile(String string, String filePath) throws IOException
     {
     	
     }
