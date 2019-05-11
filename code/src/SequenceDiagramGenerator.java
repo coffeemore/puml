@@ -1,4 +1,3 @@
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -11,6 +10,7 @@ import org.w3c.dom.Document;
  */
 public class SequenceDiagramGenerator {
 
+    XmlHelperMethods xmlHM = new XmlHelperMethods();
 	/**
      * Konstruktor
      */
@@ -28,6 +28,7 @@ public class SequenceDiagramGenerator {
      */
     public Document createDiagram(Document parsedData, String epClass, String epMethod) throws ParserConfigurationException
     {
+	
 	//neues Dokument, das SeqDiagramm Informationen enthalten wird
 	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 	DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -65,7 +66,7 @@ public class SequenceDiagramGenerator {
 	//System.out.println(root1.getTagName());
 	
 	listMethoddef(parsedData, seqDiagramm, seq);
-	listAllNodes(root);
+	xmlHM.listAllNodes(root);
 	
 
 	
@@ -112,9 +113,7 @@ public class SequenceDiagramGenerator {
 	
 	/*methoddefinition*/
 //	Element method = seqDiagramm.createElement("methoddefinition");
-	
-	
-//	seq.appendChild(method);
+
 	
 	
 	//types (zB rekursiv angeben bei methodcall)
@@ -123,7 +122,6 @@ public class SequenceDiagramGenerator {
 	//	unknown	<-- ruft unbekannte Methode auf
 	//	handled  <-- ruft bereits aufgerufene Methoden
 	
-
 	
 	//Liste mit den einzelnen Knoten der Methoden
 	NodeList mList = parsedData.getElementsByTagName("methoddefinition");
@@ -160,13 +158,7 @@ public class SequenceDiagramGenerator {
 	 */
 	
     }
-    
-    /**
-     * Bug: Fehler bei Textausgabe -> getTextContent listet allen Content der Unterknoten auf
-     * nicht nur der Childs
-     * @param root
-     */
-   
+ 
     private void addType(Document parsedData, Document seqDiagramm, Element seq) {
 	NodeList mNode = parsedData.getElementsByTagName("methoddefinition");
 	NodeList cNode = parsedData.getElementsByTagName("classdefinition");
@@ -178,26 +170,6 @@ public class SequenceDiagramGenerator {
      * nicht nur der Childs
      * @param root
      */
-    public void listAllNodes(Element root) 
-    {
-	if(root.hasChildNodes()) 
-	{
-	    NodeList list = root.getChildNodes();
-	    for(int i=0; i<list.getLength();i++) 
-	    {
-		Node node = list.item(i);
-		
-		if(node.getNodeType()==Node.ELEMENT_NODE) 
-		{
-		    Element e = (Element) node;
-		    String m = e.getTagName();
-		    System.out.println(m);
-		    //System.out.println(e.getElementsByTagName(m).item(0).getTextContent());
-		    listAllNodes(e);
-		    System.out.println("/"+e.getTagName());
-		}
-	    }
-	}
-    }
+  
 }
 

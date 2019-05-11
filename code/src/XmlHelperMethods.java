@@ -1,4 +1,3 @@
-
 import java.io.File;
 import java.io.IOException;
 
@@ -76,6 +75,39 @@ public class XmlHelperMethods
 		}
 		return null;
     }
+    
+    
+    /**
+     * Gibt den Unterbaum des übergebenen Knotens auf der Konsole aus 
+     * @param root
+     */
+    
+    
+    public void listAllNodes(Element root) 
+    {
+	if(root.hasChildNodes()) 
+	{
+	    NodeList list = root.getChildNodes();
+	    for(int i=0; i<list.getLength();i++) 
+	    {
+		Node node = list.item(i);
+		
+		if(node.getNodeType()==Node.ELEMENT_NODE) 
+		{
+		    Element e = (Element) node;
+		    String m = e.getTagName();
+		    System.out.println(m);
+		    listAllNodes(e);
+		    System.out.println("/"+e.getTagName());
+		}
+	    }
+	}
+    }
+    
+    
+    
+    
+    
     
     /**
      * Hilfsmethode zum Ausgeben eines XML-Documents in der Console

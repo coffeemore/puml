@@ -14,7 +14,7 @@ class SequenceDiagramGeneratorTest
 {
     private SequenceDiagramGenerator classUnderTest; 
     File xmlFile;
-    
+    XmlHelperMethods xmlHM = new XmlHelperMethods();
     
     private Document parsedData;
 
