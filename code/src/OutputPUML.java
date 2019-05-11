@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -27,7 +29,8 @@ import net.sourceforge.plantuml.SourceStringReader;
  */
 public class OutputPUML
 {
-    LogMain logger= new LogMain();
+    private static NodeList list = null;
+	LogMain logger= new LogMain();
     /**
      * Konstruktor
      */
@@ -42,18 +45,38 @@ public class OutputPUML
      * @return plantUML Code zur Erstellung mit plantuml.jar
      * @throws XPathExpressionException 
      */
+
     public String getPUML(Document diagramData) throws XPathExpressionException
     {
 	    XPathFactory xPathfactory = XPathFactory.newInstance();
 	    XPath xpath = xPathfactory.newXPath();
 	    XPathExpression expr = xpath.compile("//parsed/*"); // Startpunkt parsed Knoten
-	    NodeList list = (NodeList) expr.evaluate(diagramData, XPathConstants.NODESET); //in Liste
+	    list = (NodeList) expr.evaluate(diagramData, XPathConstants.NODESET); //in Liste
 	    String compare = list.item(0).getNodeName();
 	    String pumlCode="@startuml \n";
-	    if(compare == "classdiagram") 
+	    String tempString="";
+	    if(compare == "classdiagramm")
 	    {
-	    	list = list.item(0).getChildNodes();
-    	    for (int i = 0; i < list.getLength(); i++)
+	    	list = getList(diagramData, xpath, "//parsed/classdiagramm/classes/entry");
+	    	for(int a=0; a<list.getLength(); a++) {
+	    		if(list.item(a).getNodeName() != "#text") {
+	    			System.out.println(list.item(a).getTextContent());
+	    		}
+	    	}
+
+	    	//for (int a=0; a)
+	    	//list=list.item(h).getChildNodes;
+    	    
+	    	
+	    	
+	    	
+	    	
+	    	
+	    	
+	    	
+	    	
+	    	
+	    	for (int i = 0; i < list.getLength(); i++)
 		    {
 				if (list.item(i).getNodeName() == "classes")
 				{
@@ -191,7 +214,8 @@ public class OutputPUML
 				    }
 				}
 		    }
-	    } 
+	    }
+    
 				
 				
 				
@@ -246,7 +270,6 @@ public class OutputPUML
     	    return pumlCode;
     		
     	}*/
-   
     	else {
     		logger.getLog().warning("Fehler: XML-Diagramm fehlerhaft");
     	}
@@ -373,5 +396,15 @@ public class OutputPUML
     	OutputStream png = new FileOutputStream(filePath);
     	SourceStringReader reader = new SourceStringReader(pumlCode);
     	reader.outputImage(png).getDescription();
+    }
+    
+    private static NodeList getList(Document doc, XPath xpath, String path) {
+        try {
+           XPathExpression expr = xpath.compile(path);
+           list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }
