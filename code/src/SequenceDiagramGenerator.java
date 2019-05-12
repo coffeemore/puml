@@ -6,11 +6,6 @@ import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -19,7 +14,8 @@ import org.w3c.dom.Document;
  * @author Leo Rauschke, Elisabeth Schuster
  */
 public class SequenceDiagramGenerator {
-	
+
+    XmlHelperMethods xmlHM = new XmlHelperMethods();
 	/**
      * Konstruktor
      */
@@ -34,18 +30,17 @@ public class SequenceDiagramGenerator {
      * @param parsedData xml Eingabe Dokument
      * @return plantUML-Code zur Erzeugung in OutputPUML als xmlDoc
      * @throws ParserConfigurationException 
-     * @throws XPathExpressionException 
      */
     
     //Fall, wenn keiner Übergeben wurde
     //Rekursivität - Klasse und Methode merken, abprüfen ob noch mal aufgerufen ist
-    public Document createDiagram(Document parsedData, String epClass, String epMethod) throws ParserConfigurationException, XPathExpressionException
+    public Document createDiagram(Document parsedData, String epClass, String epMethod) throws ParserConfigurationException
     {
 	//neues Dokument, das SeqDiagramm Informationen enthalten wird
 	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 	DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 	Document seqDiagramm = docBuilder.newDocument();
-	XPath xPath = XPathFactory.newInstance().newXPath();
+	
 	ArrayList<Element> list2 = new ArrayList<Element>();
 		
 	Element root = seqDiagramm.createElement("parsed");
@@ -72,6 +67,9 @@ public class SequenceDiagramGenerator {
 	addType(parsedData, seqDiagramm, seq);
 	listAllNodes(root);
 	
+	xmlHM.listAllNodes(root);
+	
+
 	
 	return null;
     }
@@ -83,13 +81,16 @@ public class SequenceDiagramGenerator {
 	seq.appendChild(classes);
 	
 	NodeList cList = parsedData.getElementsByTagName("classdefinition");
-	
+	//alle Einträge der Liste werden durchgegangen
 	for(int i = 0; i < cList.getLength(); i++) {
 	    Node cNode = cList.item(i);
+	    //System.out.println("Current Node: " + cNode.getNodeName());
 	    if(cNode.getNodeType() == Node.ELEMENT_NODE) {
+		//in Tag <name> gespeicherter Text wird als Klassenname übernommen
 		Element classEl = (Element) cNode;
 		String cName = classEl.getElementsByTagName("name").item(0).getTextContent();
 		Element entry = seqDiagramm.createElement("entry");
+		//Name der Klasse aus paseddata wird übernommen
 		entry.setTextContent(cName);
 		classes.appendChild(entry);
 	    }
@@ -100,6 +101,7 @@ public class SequenceDiagramGenerator {
 	NodeList mList = parsedData.getElementsByTagName("methoddefinition");
 	
 	for(int i = 0; i < mList.getLength(); i++) {
+	    //jeder einzelner Knoten wird herausgenommen
 	    Node mNode = mList.item(i);
 	    
 	    if(mNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -224,32 +226,6 @@ public class SequenceDiagramGenerator {
 	}
     }
     
-    /**
-     * Bug: Fehler bei Textausgabe -> getTextContent listet allen Content der Unterknoten auf
-     * nicht nur der Childs
-     * @param root
-     */
-    public void listAllNodes(Element root) 
-    {
-	if(root.hasChildNodes()) 
-	{
-	    NodeList list = root.getChildNodes();
-	    for(int i=0; i<list.getLength();i++) 
-	    {
-		Node node = list.item(i);
-		
-		if(node.getNodeType()==Node.ELEMENT_NODE) 
-		{
-		    Element e = (Element) node;
-		    String m = e.getTagName();
-		    System.out.println(m);
-		    //System.out.println(e.getElementsByTagName(m).item(0).getTextContent());
-		    listAllNodes(e);
-		    System.out.println("/"+e.getTagName());
-		}
-	    }
-	}
-    }
     public void listArrayList(ArrayList<ArrayList> list2) {
 	for(int i = 0; i<list2.size();i++) {
 	    System.out.println(list2.get(i));
@@ -265,3 +241,4 @@ public class SequenceDiagramGenerator {
 	}
     }
 }
+
