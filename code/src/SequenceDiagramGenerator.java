@@ -1,8 +1,5 @@
 
-
-
 import java.util.ArrayList;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -65,11 +62,7 @@ public class SequenceDiagramGenerator {
 	
 	listMethoddef(parsedData, seqDiagramm, seq);
 	addType(parsedData, seqDiagramm, seq);
-	listAllNodes(root);
-	
 	xmlHM.listAllNodes(root);
-	
-
 	
 	return null;
     }
@@ -123,62 +116,36 @@ public class SequenceDiagramGenerator {
 	
 	//Liste für bereits aufgerufene Methoden
 	ArrayList<String> calledMethodsList = new ArrayList<String>();
-	/**
-	 * Bug: handled theoretisch auch beim 1. Aufruf
-	 * Bug: type wird zu oft angehangen
-	 */
-	//Schleife für alle methoddefinitions
-	for(int i = 0; i < mList.getLength(); i++) {
-	    Node mNode = mList.item(i);
-	    
-	    if(mNode.getNodeType() == Node.ELEMENT_NODE) {
-		Element methodEl = (Element) mNode;
-		//Liste für alle Methodcalls der gerade angesprochenen Klasse (tmp)
-		NodeList callList = methodEl.getElementsByTagName("methodcall");
-		for(int j = 0; j < callList.getLength(); j++) {
-		    Node callNode = callList.item(j);
-		    if(callNode.getNodeType() == Node.ELEMENT_NODE) {
-			Element callEl = (Element) callNode;
-			String called = callEl.getElementsByTagName("method").item(0).getTextContent();
-			calledMethodsList.add(called);
-			for(int s=0;s<calledMethodsList.size();s++) {
-			    System.out.println(j+": "+calledMethodsList.get(s));
-			}
-			NodeList seqMethodList = seqDiagramm.getElementsByTagName("methoddefinition");
-			for(int m = 0; m < seqMethodList.getLength(); m++) {
-			    Node seqMethodNode = seqMethodList.item(m);
-			    if(seqMethodNode.getNodeType() == Node.ELEMENT_NODE) {
-				Element seqMethodEl = (Element) seqMethodNode;
-				NodeList seqCallList = seqMethodEl.getElementsByTagName("methodcall");
-				for(int n = 0; n < seqCallList.getLength(); n++) {
-				    Node seqCallNode = seqCallList.item(n);
-				    if(seqCallNode.getNodeType() == Node.ELEMENT_NODE) {
-					Element seqCallEl = (Element) seqCallNode;
-					//Element type = seqDiagramm.createElement("type");
-					//handled
-					System.out.println(calledMethodsList.size());
-					for(int d = 0; d < calledMethodsList.size(); d++) {
-					    if(seqCallEl.getElementsByTagName("method").item(0).getTextContent()==calledMethodsList.get(d)) {
-						System.out.println("Fehler?");
-						Element type = seqDiagramm.createElement("type");
-						type.setTextContent("handled");
-						seqCallEl.appendChild(type);
-					    }
-					}
-				    }
-				}
+	NodeList seqMethodList = seqDiagramm.getElementsByTagName("methoddefinition");
+	for(int m = 0; m < seqMethodList.getLength(); m++) {
+	    Node seqMethodNode = seqMethodList.item(m);
+	    if(seqMethodNode.getNodeType() == Node.ELEMENT_NODE) {
+		Element seqMethodEl = (Element) seqMethodNode;
+		NodeList seqCallList = seqMethodEl.getElementsByTagName("methodcall");
+		for(int n = 0; n < seqCallList.getLength(); n++) {
+		    Node seqCallNode = seqCallList.item(n);
+		    if(seqCallNode.getNodeType() == Node.ELEMENT_NODE) {
+			Element seqCallEl = (Element) seqCallNode;
+			String called = seqCallEl.getElementsByTagName("method").item(0).getTextContent();
+			//handled
+			for(int d = 0; d < calledMethodsList.size(); d++) {
+			    String a = calledMethodsList.get(d);
+			    if(called.equals(a)) {
+				Element type = seqDiagramm.createElement("type");
+				type.setTextContent("handled");
+				seqCallEl.appendChild(type);
 			    }
-			    
-			
-			    //unknown
-			
-			    //recursive
 			}
+			calledMethodsList.add(called);
+
+			//unknown
+			
+			//recursive
+			
 		    }
 		}
-	    }
+	    }	    
 	}
-	
     }
     private void addInstances(Document parsedData, Document seqDiagramm, Element seq) {
 	
