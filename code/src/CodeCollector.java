@@ -158,11 +158,6 @@ public class CodeCollector
 			sc += "\n";
 		    }
 		} 
-//		else
-//		{
-//		    System.out.println("Eintrag raus...");
-//		    paths.remove(paths.get(i));
-//		}
 	    } catch (IOException e)
 	    {
 		e.printStackTrace();
@@ -200,9 +195,7 @@ public class CodeCollector
     private String collectJar( BufferedReader buffr, ZipFile zFile)
     {
 	
-	String sc2=new String();
-	//String sc2 = new String();
-	// Exception werfen, wenn in Jardatei nur .class Dateien sind
+	String sc2 = new String();
 	try
 	{
 	    // Schleife, die alle Einträge in paths durchgeht
