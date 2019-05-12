@@ -21,44 +21,19 @@ import org.xml.sax.SAXException;
 
 import net.sourceforge.plantuml.FileUtils;
 
-class OutputPUMLTest
+class OutputPUMLTest_classdia
 {
 
     @Test
     void testGetPUML() throws FileNotFoundException, XPathExpressionException
     {
-	
-	// ClassConnection Elemente erstellen
-	ClassConnection elA = new ClassConnection(1, 4, ClassConnection.connectionType.aggregation);
-
-	ClassConnection elB = new ClassConnection(1, 2, ClassConnection.connectionType.extension);
-
-	ClassConnection elC = new ClassConnection(2, 3, ClassConnection.connectionType.composition);
-
-	// classes fuellen
-	ArrayList<String> classes = new ArrayList<String>();
-	classes.add("BeispielKlasse1");
-	classes.add("BeispielKlasse2");
-	classes.add("BeispielKlasse3");
-	classes.add("BeispielKlasse4");
-	classes.add("BeispielKlasse5");
-
-	// classConnections fuellen
-	ArrayList<ClassConnection> classConnections = new ArrayList<ClassConnection>();
-	classConnections.add(elA);
-	classConnections.add(elB);
-	classConnections.add(elC);
-
-	// ParsingResult erstellen
-//	ParsingResult actualParsTest = new ParsingResult(classes, classConnections);
-
 	// GetPuml testen
 	String actual = "";
 	try
 	{
 	    DocumentBuilderFactory docBuildFact = DocumentBuilderFactory.newInstance();
 	    DocumentBuilder docBuild = docBuildFact.newDocumentBuilder();
-	    Document doc = docBuild.parse(new File("/home/tore/Documents/Softwareprojekt/puml/code/testfolder/xmlSpecifications/SeqDiagram.xml"));
+	    Document doc = docBuild.parse(new File("/home/patrick/Projekte/Java/SWP/puml/code/testfolder/xmlSpecifications/ClassDiagram.xml"));
 	    actual = new OutputPUML().getPUML(doc);
 	    System.out.println(actual); //TODO Test Löschen
 
@@ -69,7 +44,22 @@ class OutputPUMLTest
 	    e.printStackTrace();
 	}
 
-	String expected = "@startuml\nclass BeispielKlasse1\nclass BeispielKlasse2\nclass BeispielKlasse3\nclass BeispielKlasse4\nclass BeispielKlasse5\nBeispielKlasse2 o-- BeispielKlasse5\nBeispielKlasse2 --|> BeispielKlasse3\nBeispielKlasse3 *-- BeispielKlasse4\n@enduml";
+	String expected = "@startuml\n" + 
+			"classes Class1\n" + 
+			"classes Class2\n" + 
+			"classes Class3\n" + 
+			"classes Class4\n" + 
+			"classes Class5\n" + 
+			"interface If1\n" + 
+			"interface If2\n" + 
+			"If1 <|-- Class1\n" + 
+			"If2 <|-- Class1\n" + 
+			"Class3 <|-- Class1\n" + 
+			"Class1 *-- Class2\n" + 
+			"Class1 *-- Class3\n" + 
+			"Class1 o-- Class4\n" + 
+			"Class1 o-- Class5\n" + 
+			"@enduml";
 	assertEquals(expected, actual);
 	System.out.println("Hier is der Code: \n" + actual + "oder so" + expected);
     }
@@ -83,7 +73,7 @@ class OutputPUMLTest
     // aufgenommen zu werden.
     void testSavePUMLtoFile() throws IOException
     {
-	File expected = new File("/home/tore/Test/expectedFile.txt");
+	File expected = new File("/home/patrick/Projekte/Java/SWP/puml/code/testfolder/xmlSpecifications/ClassDiagram.txt");
 
 	// ClassConnection Elemente erstellen
 	ClassConnection elA = new ClassConnection(1, 4, ClassConnection.connectionType.aggregation);
@@ -113,7 +103,7 @@ class OutputPUMLTest
 	// TODO Aendern der Filepaths bevor Test (je nach System), expectedFile
 	// platzieren
 	OutputPUML output = new OutputPUML();
-	output.savePUMLtoFile(output.getPUML(actualParsTest), "/home/tore/Test/actualFile.txt");
+	//output.savePUMLtoFile(output.getPUML(actualParsTest), "/home/tore/Test/actualFile.txt");
 
 	File actual = new File("/home/tore/Test/actualFile.txt");
 	assertEquals(FileUtils.readFile(actual), FileUtils.readFile(expected));
@@ -160,7 +150,7 @@ class OutputPUMLTest
 	File expected = new File("/home/tore/Test/expectedFile.png");
 	OutputPUML output = new OutputPUML();
 	File actual = new File("/home/tore/Test/actualFile.png");
-	output.createPUMLfromString("/home/tore/Test/actualFile.png", output.getPUML(actualParsTest));
+	//output.createPUMLfromString("/home/tore/Test/actualFile.png", output.getPUML(actualParsTest));
 	assertEquals(FileUtils.readFile(actual), FileUtils.readFile(expected));
     }
 }

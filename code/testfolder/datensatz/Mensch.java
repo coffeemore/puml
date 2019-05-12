@@ -1,14 +1,19 @@
 public class Mensch extends Lebewesen
 {
-    public Mensch(String name, int alter)
+	/*
+	 * Kommentare
+	 * zu Testzwecken des Parsers
+	 * */
+    public Mensch(String name, int alter) //Kommentar 
     {
+    	//Kommentar  /* 
         super(name, alter);
     }
 
     @Override
     public void bewegen()
     {
-        System.out.println(getName() +  " fährt Segway.");
+        System.out.println(getName() +  " /* */fährt Segway.");
     }
 
     @Override
