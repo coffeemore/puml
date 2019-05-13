@@ -2,8 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="srcTest"/>
-	<classpathentry excluding="CodeJavaTest.java|CodeJavaTest1.java" kind="src" path="testfolder"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
@@ -17,6 +16,7 @@
 	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-test-sources.jar"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-tests.jar"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4.jar"/>
+<<<<<<< HEAD
 	<classpathentry kind="lib" path="swing2swt.jar"/>
 	<classpathentry kind="lib" path="lib/swt-win32-x86_64-4.9.jar"/>
 	<classpathentry kind="lib" path="/src"/>
@@ -25,5 +25,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+=======
+>>>>>>> develop
 	<classpathentry kind="output" path="bin"/>
 </classpath>

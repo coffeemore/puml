@@ -1,5 +1,8 @@
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
@@ -27,7 +30,7 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Die Klasse benötigt im Build Path den Verweis zur jeweiligen SWT-Bibliothek
+ * Die Klasse benÃ¶tigt im Build Path den Verweis zur jeweiligen SWT-Bibliothek
  * zum jeweiligen OS. Bitte aber nur ein Paket verlinken.
  * 
  * @author Julian Uebe, Jan Sollmann
@@ -123,11 +126,11 @@ public class GUI_SWT
 		pathEditor = new PathEditor(paths);
 
 		fDialog = new FileDialog(shell, SWT.MULTI);
-		fDialog.setText("Dateien auswählen");
+		fDialog.setText("Dateien auswÃ¤hlen");
 		fDialog.setFilterPath(System.getProperty("user.dir"));
 
 		dDialog = new DirectoryDialog(shell);
-		dDialog.setText("Ordner auswählen");
+		dDialog.setText("Ordner auswÃ¤hlen");
 		dDialog.setFilterPath(System.getProperty("user.dir"));
 
 		menu = new Menu(shell, SWT.BAR);
@@ -276,61 +279,16 @@ public class GUI_SWT
 		toolItem_1.addSelectionListener(new SelectionAdapter()
 		{
 			@Override
-			//Ruft eine Version von RunPUML auf welche auf der Datei tmp operiert
-			//outputPath, outputFile wie im CodeCollector
 			public void widgetSelected(SelectionEvent e)
 			{
-				try
-				{
-					PUMLgenerator.codeCollector.paths = paths;
-					PUMLgenerator.codeCollector.setUseJarFiles(useJar);
-					PUMLgenerator.codeCollector.setUseJavaFiles(useJava);
-					srcCode = PUMLgenerator.codeCollector.getSourceCode();
-					System.out.println(srcCode);
-
-					PUMLgenerator.parser.parse(srcCode);
-					ParsingResult tempPR = PUMLgenerator.parser.getParsingResult();
-					pumlCode = PUMLgenerator.outputPUML.getPUML(tempPR);
-					ArrayList<String> classes = tempPR.getClasses();
-					for (int i = 0; i < classes.size(); i++)
-					{
-						TreeItem treeItem0 = new TreeItem(tree, 0);
-					    treeItem0.setText(classes.get(i));
-					    treeItem0.setChecked(true);
-					}
-					
-					PUMLgenerator.outputPUML.createPUMLfromString( outputPath+"tmp.png", pumlCode);
-					text.setText(pumlCode);
-				
-					lblImage.setImage(new Image(display, outputPath+"tmp.png"));
-					lblImage.pack();
-				}
-				catch (NullPointerException npe)
-				{
-					messageBox = new MessageBox(shell, SWT.ICON_ERROR);
-					messageBox.setMessage("Pfadliste leer");
-					messageBox.setText("Fehler");
-					messageBox.open();
-				}
-				catch (IllegalArgumentException iae)
-				{
-					messageBox = new MessageBox(shell, SWT.ICON_ERROR);
-					messageBox.setMessage("Bitte mindestens einen Suchtyp auswählen (jar/java)");
-					messageBox.setText("Fehler");
-					messageBox.open();
-				}
-				catch (IOException e1) 
-				{
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
+				//TODO: Display leer?
+				saveOutput();
 			}
 		});
 		
 		toolItem_1.setImage(
-				SWTResourceManager.getImage(GUI_SWT.class, "/com/sun/java/swing/plaf/windows/icons/HardDrive.gif"));
-		toolItem_1.setToolTipText("Test Vorschau");
+				SWTResourceManager.getImage(GUI_SWT.class, "/com/sun/java/swing/plaf/windows/icons/FloppyDrive.gif"));
+		toolItem_1.setToolTipText("Speichern");
 
 		tltmNewItem_1 = new ToolItem(toolBar, SWT.NONE);
 		tltmNewItem_1.setToolTipText("PUML ausf\u00FChren");
@@ -339,19 +297,6 @@ public class GUI_SWT
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-
-//		for (int loopIndex0 = 0; loopIndex0 < 10; loopIndex0++)
-//		{
-//		    TreeItem treeItem0 = new TreeItem(tree, 0);
-//		    treeItem0.setText("Klasse " + loopIndex0);
-//		    treeItem0.setChecked(true);
-//		    for (int loopIndex1 = 0; loopIndex1 < 5; loopIndex1++)
-//		    {
-//			TreeItem treeItem1 = new TreeItem(treeItem0, 0);
-//			treeItem1.setText("Methode " + loopIndex1);
-//			treeItem1.setChecked(true);
-//		    }
-//		}
 				runPUML();
 			}
 		});
@@ -418,7 +363,8 @@ public class GUI_SWT
 
 	private void runPUML()
 	{
-
+		//Zeigt die tmp.png an welche erzugt wird
+		//outputPath, outputFile wie im CodeCollector
 		try
 		{
 			PUMLgenerator.codeCollector.paths = paths;
@@ -426,36 +372,23 @@ public class GUI_SWT
 			PUMLgenerator.codeCollector.setUseJavaFiles(useJava);
 			srcCode = PUMLgenerator.codeCollector.getSourceCode();
 			System.out.println(srcCode);
-
+	
 			PUMLgenerator.parser.parse(srcCode);
 			ParsingResult tempPR = PUMLgenerator.parser.getParsingResult();
 			pumlCode = PUMLgenerator.outputPUML.getPUML(tempPR);
 			ArrayList<String> classes = tempPR.getClasses();
 			for (int i = 0; i < classes.size(); i++)
 			{
-				// TODO Klassennamen in den Tree aufnehmen
-				// System.out.println(classes.get(i));
 				TreeItem treeItem0 = new TreeItem(tree, 0);
 			    treeItem0.setText(classes.get(i));
 			    treeItem0.setChecked(true);
 			}
-			// System.out.println(pumlCode);
-//			File f = new File(outputPath + outputFile);
-//			if (f.exists()) {
-//				
-//				messageBox = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.YES | SWT.CANCEL);
-//				messageBox.setMessage(outputFile+" ist bereits vorhanden in "+outputPath+". Datei ersetzen?");
-//				PUMLgenerator.outputPUML.createPUMLfromString(outputPath + outputFile, pumlCode);
-//				System.out.println(outputPath + outputFile);
-//			}
 			
-
+			PUMLgenerator.outputPUML.createPUMLfromString( outputPath+"tmp.png", pumlCode);
 			text.setText(pumlCode);
-
-			//TODO: Image durch erzeugtes Image ersetzen und dieses erstmal erzeugen (Julians kommentar? wenn nicht dann weg)
-			lblImage.setImage(SWTResourceManager.getImage(GUI_SWT.class, "/img/test.png"));
+		
+			lblImage.setImage(new Image(display, outputPath+"tmp.png"));
 			lblImage.pack();
-
 		}
 		catch (NullPointerException npe)
 		{
@@ -471,10 +404,85 @@ public class GUI_SWT
 			// von CodeCollector
 			// System.err.println(".jar und .java wird ignoriert");
 			messageBox = new MessageBox(shell, SWT.ICON_ERROR);
-			messageBox.setMessage("Bitte mindestens einen Suchtyp auswählen (jar/java)");
+			messageBox.setMessage("Bitte mindestens einen Suchtyp auswÃ¤hlen (jar/java)");
 			messageBox.setText("Fehler");
 			messageBox.open();
 		}
-
+		catch (IOException e1) 
+		{
+			messageBox = new MessageBox(shell, SWT.ICON_ERROR);
+			messageBox.setMessage("Ein-/Ausgabe-Fehler");
+			messageBox.setText("Fehler");
+			messageBox.open();
+			//e1.printStackTrace();
+		}
 	}
+	
+	//Speichern der aktuellen Ansicht nach belieben
+	private void saveOutput() 
+	{
+		 FileDialog dlg = new FileDialog(shell, SWT.SAVE);
+         dlg.setFilterPath("c:\\"); // Windows path
+         String fn = dlg.open()+".png";
+         File save = new File(fn);
+         try
+         {
+			save.createNewFile();
+		 }
+         catch (IOException e) 
+         {
+        	messageBox = new MessageBox(shell, SWT.ICON_ERROR);
+ 			messageBox.setMessage("Ein-/Ausgabe-Fehler");
+ 			messageBox.setText("Fehler");
+ 			messageBox.open();
+ 			//e.printStackTrace();
+		}
+        System.out.println(save.getAbsolutePath());
+        //Bereits existierende Datei deklarieren
+        File tmp = new File(outputPath+"tmp.png"); 
+        try 
+        {
+			copyFile(tmp, save);
+		} 
+        catch (IOException e) 
+        {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+         
+	 }
+
+	 public static void copyFile(File in, File out) throws IOException 
+	 { 
+	        FileChannel inChannel = null; 
+	        FileChannel outChannel = null; 
+	        try 
+	        { 
+	            inChannel = new FileInputStream(in).getChannel(); 
+	            outChannel = new FileOutputStream(out).getChannel(); 
+	            inChannel.transferTo(0, inChannel.size(), outChannel); 
+	        } 
+	        catch (IOException e) 
+	        { 
+	            throw e; 
+	        }
+	        finally 
+	        { 
+	            try 
+	            { 
+	                if (inChannel != null) 
+	                {
+	                    inChannel.close(); 
+	                }
+	                if (outChannel != null) 
+	                {
+	                    outChannel.close(); 
+	                }
+	            } 
+	            catch (IOException e) 
+	            {
+	            	
+	            } 
+	        } 
+	    } 
 }

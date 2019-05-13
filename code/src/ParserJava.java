@@ -107,16 +107,17 @@ public class ParserJava implements ParserIf
 		}
 	    }
 	}
-	source=source.trim();
-	return new TokenResult(foundNameIndex, part, source); // R�ckgabe welcher Token gefunden wurde und den Inhalt zwischen
-						      // den Tokens (zB einen Klassennamen)
+	source = source.trim();
+	return new TokenResult(foundNameIndex, part, source); // R�ckgabe welcher Token gefunden wurde und den Inhalt
+							      // zwischen
+	// den Tokens (zB einen Klassennamen)
 
     }
 
     public void findToken(String source)
     {
 	String[][] TokenArray = new String[10][10];
-	
+
 	TokenArray[0][0] = "\"";
 	TokenArray[0][1] = "\"";
 	TokenArray[0][2] = "\\\"";
@@ -151,23 +152,23 @@ public class ParserJava implements ParserIf
 
 		if (source.substring(0, TokenArray[i][0].length()).equals(TokenArray[i][0]))
 		{
-		   
-			source = source.substring(TokenArray[i][0].length());
-			source = source.trim();
-			TokenResult res;
-			do
-			{
-			    res = goToTokenWithName(source, TokenArray[i]);
 
-			    if (res.getFoundToken() != 1)
-			    {
-				source = source.substring(1);
-			    }
+		    source = source.substring(TokenArray[i][0].length());
+		    source = source.trim();
+		    TokenResult res;
+		    do
+		    {
+			res = goToTokenWithName(source, TokenArray[i]);
+
+			if (res.getFoundToken() != 1)
+			{
+			    source = source.substring(1);
 			}
-			while (res.getFoundToken() == 1);
-			source = source.substring(1); // Entfernen des ersten Zeichens
-			done = true;
-		    
+		    }
+		    while (res.getFoundToken() == 1);
+		    source = source.substring(1); // Entfernen des ersten Zeichens
+		    done = true;
+
 		}
 	    }
 
@@ -176,8 +177,7 @@ public class ParserJava implements ParserIf
 		source = source.substring(1);
 	    }
 	}
-	
-	
+
     }
 
     /**
@@ -225,13 +225,13 @@ public class ParserJava implements ParserIf
 		    do
 		    {
 			res = goToTokenWithName(sourcec, nameArray);
-			sourcec= res.getSourceCode();
+			sourcec = res.getSourceCode();
 			// System.out.println("@res: " + res.getData());
-			if(res.getFoundToken()!= 2) {
+			if (res.getFoundToken() != 2)
+			{
 			    sourcec = sourcec.substring(2);
 			}
-			
-			
+
 		    }
 		    while (res.getFoundToken() != 2);
 		    sourcec = sourcec.substring(1);
@@ -247,8 +247,8 @@ public class ParserJava implements ParserIf
 		    sourcec = sourcec.trim();
 		    String[] nameArray = new String[1];
 		    nameArray[0] = "\n";
-			res = goToTokenWithName(sourcec, nameArray);
-			sourcec= res.getSourceCode();
+		    res = goToTokenWithName(sourcec, nameArray);
+		    sourcec = res.getSourceCode();
 		    done = true;
 		}
 		;
@@ -262,8 +262,8 @@ public class ParserJava implements ParserIf
 		    sourcec = sourcec.trim();
 		    String[] nameArray = new String[1];
 		    nameArray[0] = "*/";
-			res = goToTokenWithName(sourcec, nameArray);
-			sourcec= res.getSourceCode();
+		    res = goToTokenWithName(sourcec, nameArray);
+		    sourcec = res.getSourceCode();
 		    done = true;
 		}
 		;
@@ -276,8 +276,8 @@ public class ParserJava implements ParserIf
 		    sourcec = sourcec.trim();
 		    String[] nameArray = new String[1];
 		    nameArray[0] = ";";
-			res = goToTokenWithName(sourcec, nameArray);
-			sourcec= res.getSourceCode();
+		    res = goToTokenWithName(sourcec, nameArray);
+		    sourcec = res.getSourceCode();
 		    done = true;
 		}
 		;
@@ -292,12 +292,17 @@ public class ParserJava implements ParserIf
 		    nameArray[1] = "extends";
 		    nameArray[2] = "implements";
 		    TokenResult res = goToTokenWithName(sourcec, nameArray);
-		    String className = res.getData();
-		    className = className.strip();
-		    System.out.println("@className: " + className);
-		    Element classElement = document.createElement("class");
-		    classElement.appendChild(document.createTextNode(className));
-		    root.appendChild(classElement);
+		    sourcec = res.getSourceCode();
+		    String classNameStr = res.getData();
+		    classNameStr = classNameStr.strip();
+		    System.out.println("@className: " + classNameStr);
+
+		    Element classDefinition = document.createElement("classdefinition");
+		    Element classNameEl = document.createElement("name");
+		    classNameEl.appendChild(document.createTextNode(classNameStr));
+		    classDefinition.appendChild(classNameEl);
+		    root.appendChild(classDefinition);
+
 		    compString = "extends ";
 		    if (sourcec.substring(0, compString.length()).equals(compString))
 		    {
@@ -307,13 +312,23 @@ public class ParserJava implements ParserIf
 			nameArray[0] = "{";
 			nameArray[1] = "implements";
 			res = goToTokenWithName(sourcec, nameArray);
-			String extendsName = res.getData();
-			extendsName = extendsName.strip();
-			System.out.println("@extendsName: " + extendsName);
+			String classExtendsStr = res.getData();
+			classExtendsStr = classExtendsStr.strip();
+			System.out.println("@extendsName: " + classExtendsStr);
+
+			Element classExtends = document.createElement("extends");
+			Element classExtendsEl = document.createElement("entry");
+			classExtendsEl.appendChild(document.createTextNode(classExtendsStr));
+			classExtends.appendChild(classExtendsEl);
+			classDefinition.appendChild(classExtends);
+
 		    }
 		    compString = "implements ";
 		    if (sourcec.substring(0, compString.length()).equals(compString))
 		    {
+			Element classImplements = document.createElement("implements");
+			classDefinition.appendChild(classImplements);
+
 			sourcec = sourcec.substring(compString.length());
 			compString = "{";
 			do
@@ -323,9 +338,14 @@ public class ParserJava implements ParserIf
 			    nameArray[0] = "{";
 			    nameArray[1] = ",";
 			    res = goToTokenWithName(sourcec, nameArray);
-			    String interfaceName = res.getData();
-			    interfaceName = interfaceName.strip();
-			    System.out.println("@implements: " + interfaceName);
+			    sourcec = res.getSourceCode();
+			    String classImplementsStr = res.getData();
+			    classImplementsStr = classImplementsStr.strip();
+			    System.out.println("@implements: " + classImplementsStr);
+
+			    Element classImplementsEl = document.createElement("entry");
+			    classImplementsEl.appendChild(document.createTextNode(classImplementsStr));
+			    classImplements.appendChild(classImplementsEl);
 			}
 			while (!(sourcec.substring(0, compString.length()).equals(compString)));
 

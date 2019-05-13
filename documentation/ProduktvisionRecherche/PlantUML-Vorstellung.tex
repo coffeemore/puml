@@ -1,12 +1,237 @@
 \nsecbegin{PlantUML-Vorstellung}
-Denkanstöße:
+
+Diese Recherche soll einen kurzen, ersten Einblick in den Aufbau und die Möglichkeiten von PlantUML gewähren.\\
+Beschreibung in PlantUML
 \begin{itemize}
-\item Wie beschreibt man Klassen allgemein mit PlantUML?
-\item Welche Arten von Beziehungen zwischen Klassen unterscheidet PlantUML (was für Arten von Pfeilen gibt es)?
-\item Gibt es Konstrukte, die mit PlantUML vielleicht nur unzureichend dargestellt werden könnten?
-\item Gibt es PlantUML-Erweiterungen, die von besonderem Interesse für unser Projekt sind?
+\item web server unter: http://www.plantuml.com/plantuml/ für kleine Test, zum ausprobieren
+
+\item Syntax\\
+Beginn mit: „@startuml“
+Ende:  „@enduml“\\
+Kein „;“ zur Abgrenzung\\
+Neue Zeile für neue Anweisung\\
+Bsp.:\\
+\begin{lstlisting}
+@startuml
+Bob -> Alice
+@enduml
+\end{lstlisting}
+
+\item Klassen\\
+- Werden durch Schlüsselwort „class“ eingeleitet\\
+- Kann Attribute und/oder Methoden erhalten\\
+- Bei längeren Klassen „…lange Klasse…“ as long\\
+- Sichtbarkeit der Klasse über Symbole Minus, Tilde, Plus und Doppelkreuz\\
+- Attribute und Merkmale können „Abstract“ oder „Static“-Merkmale bekommen über geschweifte Klammern\\
+\\
+Bsp. 1 - Einzelne Klasse:\\
+\begin{lstlisting}
+@startuml
+class ErsteKlasse
+@enduml
+\end{lstlisting}
+Bsp. 2 - Klasse mit langem Namen:\\
+\begin{lstlisting}
+@startuml
+class "wirklich alleralleraller ErsteKlasse" as long
+@enduml
+\end{lstlisting}
+Bsp. 3 - Klasse mit Methode und Datendeklaration:\\
+\begin{lstlisting}
+@startuml
+class ErsteKlasse : Name
+@enduml
+Bsp.:
+@startuml
+class ZweiteKlasse{
+String name
+Integer wert
+void methode(String parameter1, Int parameter2)
+}
+@enduml
+\end{lstlisting}
+Bsp. 4 - Sichtbarkeit der Klassen:\\
+\begin{lstlisting}
+Bsp.:
+@startuml
+class MeineKlasse{
+- Private
+# Protected
+~ PackagePrivate
++ Public
+}
+@enduml
+\end{lstlisting}
+Bsp. 5 -  Static / Abstract:\\
+\begin{lstlisting}
+@startuml
+class MeineKlasse{
+      {static} String password
+      {abstract} void methods()
+      }
+@enduml
+\end{lstlisting}
+Bsp. 6 - Abstrakte Klasse\\
+\begin{lstlisting}
+@startuml
+abstract class AbstrakteZweiteKlasse
+@enduml
+\end{lstlisting}
+Bsp. 7 . Interface\\
+\begin{lstlisting}
+@startuml
+interface schoenesInterface
+@enduml
+\end{lstlisting}
+\item Klassen Verbinden\\
+- einfach\\
+- gerichtet in eine Richtung\\
+- in Beide Richtungen gerichtet\\
+Bsp. 1 - Einfache Verbindung\\
+\begin{lstlisting}
+@startuml
+class ErsteKlasse
+class ZweiteKlasse
+ErsteKlasse -- ZweiteKlasse
+\end{lstlisting}
+Bsp. 2 - Gerichtete Verbindung\\
+\begin{lstlisting}
+@startuml
+class ErsteKlasse
+class ZweiteKlasse
+ErsteKlasse --> ZweiteKlasse
+@enduml
+\end{lstlisting}
+Bsp. 3 - In beide Richtungen gerichtet\\
+\begin{lstlisting}
+@startuml
+class ErsteKlasse
+class ZweiteKlasse
+ErsteKlasse <--> ZweiteKlasse
+@enduml
+\end{lstlisting}
+Bsp. 4 - Lose-Verbindung\\
+\begin{lstlisting}
+@startuml
+class ErsteKlasse
+class ZweiteKlasse
+ErsteKlasse o-- ZweiteKlasse
+@enduml
+\end{lstlisting}
+Bsp. 5 - Gebundene Klassen\\
+\begin{lstlisting}
+@startuml
+class ErsteKlasse
+class ZweiteKlasse
+ErsteKlasse *-- ZweiteKlasse
+@enduml
+\end{lstlisting}
+Bsp. 6 - Vererbung Unterlass/Oberklasse\\
+\begin{lstlisting}
+@startuml
+class ErsteKlasse
+class ZweiteKlasse
+ErsteKlasse o--|> ZweiteKlasse
+@enduml
+\end{lstlisting}
+Bsp. 7 - Notiz\\
+\begin{lstlisting}
+@startuml
+class ErsteKlasse
+class ZweiteKlasse
+ErsteKlasse -- ZweiteKlasse
+note ``Dies ist`` as notiz1
+ErsteKlasse .. notiz1
+\end{lstlisting}
+\item Pfeile
+- kurze Pfeile/ lange Pfeile (-/—) unterschied Anordnung\\
+- für includes und extends (..)\\
+Bsp. 1 - kurz\\
+\begin{lstlisting}
+@startuml
+class ErsteKlasse
+class ZweiteKlasse
+ErsteKlasse -> ZweiteKlasse
+@enduml
+\end{lstlisting}
+Bsp. 2 - lang\\
+\begin{lstlisting}
+@startuml
+class ErsteKlasse
+class ZweiteKlasse
+ErsteKlasse --> ZweiteKlasse
+@enduml
+\end{lstlisting}
+Bsp. 3 - gestrichelt\\
+\begin{lstlisting}
+@startuml
+class ErsteKlasse
+class ZweiteKlasse
+ErsteKlasse..> ZweiteKlasse
+@enduml
+\end{lstlisting}
+Bsp. 4 - include und extend Assoziation\\
+\begin{lstlisting}
+Bsp2. gestrichelt - include und extend Assoziation:
+@startuml
+(A) .> (B): <<include>>
+(B) .> (C): <<extend>>
+@enduml
+\end{lstlisting}
+Bsp. 5 - Weitere Kombinationen zum Test auf www.plantuml.com/plantuml/\\
+\begin{lstlisting}
+@startuml
+Bob -> Alice: synchrone Nachricht von Bob an Alice
+Bob ->> Alice: asynchrone Nachricht von Bob an Alice
+Bob --> Alice: gestrichelte Linie als Antwortnachricht
+Bob -\ Alice: Pfeilspitze ist nur oberhalb der Linie gezeichnet
+Bob ->x Alice: verlorene Nachricht von Bob an Alice, x an Pfeilspitze
+Bob \\- Alice: Pfeilspitze ist nur unterhalb angezeigt, jedoch offen
+Bob //-- Alice: gestrichelte Linie mit offener Pfeilspitze oberhalb
+Bob ->o Alice: Kreis am Ende der Pfeilspitze auf der Lebenslinie von Alice Bob <-> Alice: bidirektionaler Pfeil
+Bob <->o Alice: bidirektionaler Pfeil mit Kreis am Ende der Pfeilspitze
+@enduml
+\end{lstlisting}
+\item Beschriftungen der Verbindungen\\
+- einfache Annotationen durch „:“\\
+- mit Richtungsangabe\\
+Bsp. 1 - Simple Beschriftung\\
+\begin{lstlisting}
+@startuml
+class ErsteKlasse
+class ZweiteKlasse
+ErsteKlasse - ZweiteKlasse : Beschriftung mit Leerzeichen
+@enduml
+\end{lstlisting}
+Bsp. 2 - Beschriftung mit Leserichtung\\
+\begin{lstlisting}
+@startuml
+class ErsteKlasse
+class ZweiteKlasse
+ErsteKlasse - ZweiteKlasse : Beschriftung mit Leserichtung <
+@enduml
+\end{lstlisting}
+\item Limitierung der Darstellung in PlantUML\\
+-keine direkten Verzweigungen, immer an Element gekoppelt\\
+- es können inkonsistente Zeichnungen entstehen\\
+Bsp. 1 - Vererbung im Kreis:
+\begin{lstlisting}
+@startuml
+class a
+class b
+a -|> b
+b -|> a
+note "Fehler" as notiz1 a .. notiz1
+@enduml
+\end{lstlisting}
+\item UML Erweiterungen von Interesse\\
+Unterstützung für: \\
+- Java API (plantuml.jar)\\
+- png from String -png from File -svg from String\\
+- Command Line/Terminal\\
+- Eclipse (Plug-In)\\
+- LaTex\\
+- Atom, GEdit, VIM, weitere txt-editoren...\\
 \end{itemize}
-Diese Recherche soll einen ersten Einblick in den Aufbau und die Möglichkeiten von PlantUML gewähren.
+
 \nsecend
-
-
