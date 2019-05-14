@@ -33,7 +33,7 @@ class OutputPUMLTest_classdia
 	{
 	    DocumentBuilderFactory docBuildFact = DocumentBuilderFactory.newInstance();
 	    DocumentBuilder docBuild = docBuildFact.newDocumentBuilder();
-	    Document doc = docBuild.parse(new File("/home/patrick/Projekte/Java/SWP/puml/code/testfolder/xmlSpecifications/ClassDiagram.xml"));
+	    Document doc = docBuild.parse(new File("/home/patrick/Studium/Code/puml/code/testfolder/xmlSpecifications/ClassDiagram2.xml"));
 	    actual = new OutputPUML().getPUML(doc);
 	    System.out.println(actual); //TODO Test Löschen
 
@@ -44,21 +44,21 @@ class OutputPUMLTest_classdia
 	    e.printStackTrace();
 	}
 
-	String expected = "@startuml\n" + 
-			"classes Class1\n" + 
-			"classes Class2\n" + 
-			"classes Class3\n" + 
-			"classes Class4\n" + 
-			"classes Class5\n" + 
-			"interface If1\n" + 
-			"interface If2\n" + 
-			"If1 <|-- Class1\n" + 
-			"If2 <|-- Class1\n" + 
-			"Class3 <|-- Class1\n" + 
-			"Class1 *-- Class2\n" + 
-			"Class1 *-- Class3\n" + 
-			"Class1 o-- Class4\n" + 
-			"Class1 o-- Class5\n" + 
+	String expected = "@startuml \n" + 
+			"classes Class1 \n" + 
+			"classes Class2 \n" + 
+			"classes Class3 \n" + 
+			"classes Class4 \n" + 
+			"classes Class5 \n" + 
+			"interfaces If1 \n" + 
+			"interfaces If2 \n" + 
+			"Class3 <|-- Class1 \n" +
+			"If1 <|-- Class1 \n" + 
+			"If2 <|-- Class1 \n" +  
+			"Class1 *-- Class2 \n" + 
+			"Class1 *-- Class3 \n" + 
+			"Class1 o-- Class4 \n" + 
+			"Class1 o-- Class5 \n" + 
 			"@enduml";
 	assertEquals(expected, actual);
 	System.out.println("Hier is der Code: \n" + actual + "oder so" + expected);

@@ -55,178 +55,85 @@ public class OutputPUML
 	    list = (NodeList) expr.evaluate(diagramData, XPathConstants.NODESET); //in Liste
 	    String compare = list.item(0).getNodeName();
 	    String pumlCode="@startuml \n";
-	    String tempString="";
 	    if(compare == "classdiagramm")
 	    {
 	    	list = getList(diagramData, xpath, "//parsed/classdiagramm/classes/entry");
 	    	for(int a=0; a<list.getLength(); a++) {
 	    		if(list.item(a).getNodeName() != "#text") {
-	    			System.out.println(list.item(a).getTextContent());
+	    			pumlCode += "classes " + list.item(a).getTextContent() + " \n";
 	    		}
 	    	}
-
-	    	//for (int a=0; a)
-	    	//list=list.item(h).getChildNodes;
-    	    
+	    	list = getList(diagramData, xpath, "//parsed/classdiagramm/interfaces/entry");
+	    	for(int a=0; a<list.getLength(); a++) {
+	    		if(list.item(a).getNodeName() != "#text") {
+	    			pumlCode += "interfaces " + list.item(a).getTextContent() + " \n";
+	    		}
+	    	}
 	    	
+	    	//EXTENSIONS
+	    	list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/extensions/entry");
+	    	for(int a=0; a<list.getLength(); a++) {
+	    		list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/extensions/entry/to");
+	    		if(list.item(a).getNodeName() != "#text") {
+					pumlCode+=list.item(a).getTextContent()+" <|-- ";
+					
+    				}
+	    		list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/extensions/entry/from");
+	    		if(list.item(a).getNodeName()!="#text") {
+	    			pumlCode+=list.item(a).getTextContent()+" \n";
+	    		}
+	    	}
 	    	
+	    	//IMPLEMENTATIONS
+	    	list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/implementations/entry");
+	    	for(int a=0; a<list.getLength(); a++) {
+	    		list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/implementations/entry/to");
+	    		if(list.item(a).getNodeName() != "#text") {
+					pumlCode+=list.item(a).getTextContent()+" <|-- ";
+					
+    				}
+	    		list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/implementations/entry/from");
+	    		if(list.item(a).getNodeName()!="#text") {
+	    			pumlCode+=list.item(a).getTextContent()+" \n";
+	    		}
+	    	}
 	    	
+	    	//COMPOSITIONS
+	    	list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/compositions/entry");
+	    	for(int a=0; a<list.getLength(); a++) {
+	    		list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/compositions/entry/to");
+	    		if(list.item(a).getNodeName() != "#text") {
+					pumlCode+=list.item(a).getTextContent()+" *-- ";
+					
+    				}
+	    		list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/compositions/entry/from");
+	    		if(list.item(a).getNodeName()!="#text") {
+	    			pumlCode+=list.item(a).getTextContent()+" \n";
+	    		}
+	    	}
 	    	
-	    	
-	    	
-	    	
-	    	
-	    	
-	    	for (int i = 0; i < list.getLength(); i++)
-		    {
-				if (list.item(i).getNodeName() == "classes")
-				{
-				    list = list.item(i).getChildNodes();
-				    for (int j = 0; j < list.getLength(); j++)
-				    {
-						if (list.item(j).getNodeName() != "#text")
-						{
-						    pumlCode += "classes " + list.item(j).getTextContent() + " \n"; //Einträge Einfügen
-						}
-				    }
-				    list = list.item(0).getParentNode().getParentNode().getChildNodes(); //Ebene hoch wechseln <classes>-Ebene
-				}
-				else if(list.item(i).getNodeName() == "interfaces")
-				{	
-					list = list.item(i).getChildNodes();
-					for (int j = 0; j < list.getLength(); j++)
-				    {
-						if (list.item(j).getNodeName() != "#text")
-						{
-						    pumlCode += "interface " + list.item(j).getTextContent() + " \n"; //Einträge Einfügen
-						}
-				    }
-					list = list.item(0).getParentNode().getParentNode().getChildNodes();
-				}
-				else if(list.item(i).getNodeName() == "classrelations")
-				{
-					list = list.item(i).getChildNodes();					
-					for (int h = 0; h < list.getLength(); h++)
-				    {
-						if (list.item(h).getNodeName() == "extensions")
-						{
-							list = list.item(h).getChildNodes();
-							for(int j=0; j<list.getLength(); j++) 
-							{
-								if (list.item(j).getNodeName() == "entry")
-								{
-									list = list.item(j).getChildNodes();
-									for(int k=0; k<list.getLength(); k++) 
-									{
-										if ((list.item(k).getNodeName() == "from")&&(list.item(j).getNodeName() != "#text"))
-										{
-											pumlCode +=list.item(k).getTextContent() + " --|> ";
-										}
-										else if((list.item(k).getNodeName() == "to")&&(list.item(j).getNodeName() != "#text"))
-										{
-											pumlCode +=list.item(k).getTextContent()+" \n";
-										}
-										else
-										{
-											logger.getLog().warning("Fehler: extension->from/to");
-										}
-									}
-								}
-							}
-						}
-						else if (list.item(h).getNodeName() == "implementations")
-						{
-							list = list.item(h).getChildNodes();
-							for(int j=0; j<list.getLength(); j++) 
-							{
-								if (list.item(j).getNodeName() == "entry")
-								{
-									list = list.item(j).getChildNodes();
-									for(int k=0; k<list.getLength(); k++) 
-									{
-										if ((list.item(k).getNodeName() == "from")&&(list.item(j).getNodeName() != "#text"))
-										{
-											pumlCode +=list.item(k).getTextContent() + " --|> ";
-										}
-										else if((list.item(k).getNodeName() == "to")&&(list.item(j).getNodeName() != "#text"))
-										{
-											pumlCode +=list.item(k).getTextContent()+" \n";
-										}
-										else
-										{
-											logger.getLog().warning("Fehler: implementations->from/to");
-										}
-									}
-								}
-							}
-						}
-						else if (list.item(h).getNodeName() == "compositions")
-						{
-							list = list.item(h).getChildNodes();
-							for(int j=0; j<list.getLength(); j++) 
-							{
-								if (list.item(j).getNodeName() == "entry")
-								{
-									list = list.item(j).getChildNodes();
-									for(int k=0; k<list.getLength(); k++) 
-									{
-										if ((list.item(k).getNodeName() == "from")&&(list.item(j).getNodeName() != "#text"))
-										{
-											pumlCode +=list.item(k).getTextContent() + " --* ";
-										}
-										else if((list.item(k).getNodeName() == "to")&&(list.item(j).getNodeName() != "#text"))
-										{
-											pumlCode +=list.item(k).getTextContent()+" \n";
-										}
-										else
-										{
-											logger.getLog().warning("Fehler: compositions->from/to");
-										}
-									}
-								}
-							}
-						}
-						else if (list.item(h).getNodeName() == "aggregations")
-						{
-							list = list.item(h).getChildNodes();
-							for(int j=0; j<list.getLength(); j++) 
-							{
-								if (list.item(j).getNodeName() == "entry")
-								{
-									list = list.item(j).getChildNodes();
-									for(int k=0; k<list.getLength(); k++) 
-									{
-										if ((list.item(k).getNodeName() == "from")&&(list.item(j).getNodeName() != "#text"))
-										{
-											pumlCode +=list.item(k).getTextContent() + " --o ";
-										}
-										else if((list.item(k).getNodeName() == "to")&&(list.item(j).getNodeName() != "#text"))
-										{
-											pumlCode +=list.item(k).getTextContent()+" \n";
-										}
-										else
-										{
-											logger.getLog().warning("Fehler: aggregations->from/to");
-										}
-									}
-								}
-							}
-						}
-				    }
-				}
-		    }
+	    	//AGGREGATIONS
+	    	list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/aggregations/entry");
+	    	for(int a=0; a<list.getLength(); a++) {
+	    		list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/aggregations/entry/to");
+	    		if(list.item(a).getNodeName() != "#text") {
+					pumlCode+=list.item(a).getTextContent()+" o-- ";
+					
+    				}
+	    		list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/aggregations/entry/from");
+	    		if(list.item(a).getNodeName()!="#text") {
+	    			pumlCode+=list.item(a).getTextContent()+" \n";
+	    		}
+	    	}
 	    }
-    
 				
-				
-				
-else if(compare == "sequencediagram"){
+	    else if(compare == "sequencediagram"){
     	    
     	    
     	    String tempStartClass = "";
     	    String tempEndClass = "";
     	    String tempMethod= "";
-    	    String pumlCode = "@startuml \n";
+    	    //pumlCode = "@startuml \n";
     	    list = list.item(0).getChildNodes(); //Stelle: <classes>-Ebene
     	    for (int i = 0; i < list.getLength(); i++) //13 iterations MÜSSEN PER IF ABGEFRAGT WERDEN, DA SCHLIEẞENDE KNOTEN AUCH ANGEZEIGT WERDEN
 	    {
@@ -275,7 +182,7 @@ else if(compare == "sequencediagram"){
 			    list = list.item(j).getChildNodes(); //Unterebene alternative
 //			    for (int j2 = 0; j2 < list.getLength(); j2++)
 //			    {
-				helperMethodCall(list, pumlCode, j);
+				//helperMethodCall(list, pumlCode, j);
 //			    }
 			    list = list.item(0).getParentNode().getParentNode().getChildNodes(); // wieder auf <alternative>-Ebenen
 			}
@@ -283,14 +190,17 @@ else if(compare == "sequencediagram"){
 		    list = list.item(0).getParentNode().getParentNode().getChildNodes(); // wieder auf <Methoddefinition>-Ebenen
 		}
 	    } //end initial Loop    	    
-    	    return pumlCode;
+    	    //return pumlCode;
     		
     	}
     	else {
     		logger.getLog().warning("XML-Diagramm fehlerhaft");
     	}
-	return "Error with Loop";
+	//return "Error with Loop";
+	    pumlCode+="@enduml";
+	    return pumlCode;
     }
+
     
     public String helperMethodCall(NodeList list, String pumlCode, int i, String entry)
     {
@@ -346,7 +256,6 @@ else if(compare == "sequencediagram"){
 //		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getLocalName());
 	    }
 	}
-	
 	
 	return pumlCode;
     }
