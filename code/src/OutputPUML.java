@@ -55,6 +55,7 @@ public class OutputPUML
 	    list = (NodeList) expr.evaluate(diagramData, XPathConstants.NODESET); //in Liste
 	    String compare = list.item(0).getNodeName();
 	    String pumlCode="@startuml \n";
+	    String tempString="";
 	    if(compare == "classdiagramm")
 	    {
 	    	list = getList(diagramData, xpath, "//parsed/classdiagramm/classes/entry");
@@ -126,6 +127,7 @@ public class OutputPUML
 	    		}
 	    	}
 	    }
+    
 				
 	    else if(compare == "sequencediagram"){
     	    
@@ -182,7 +184,7 @@ public class OutputPUML
 			    list = list.item(j).getChildNodes(); //Unterebene alternative
 //			    for (int j2 = 0; j2 < list.getLength(); j2++)
 //			    {
-				//helperMethodCall(list, pumlCode, j);
+				helperMethodCall(list, pumlCode, j, tempStartClass);
 //			    }
 			    list = list.item(0).getParentNode().getParentNode().getChildNodes(); // wieder auf <alternative>-Ebenen
 			}
@@ -200,7 +202,6 @@ public class OutputPUML
 	    pumlCode+="@enduml";
 	    return pumlCode;
     }
-
     
     public String helperMethodCall(NodeList list, String pumlCode, int i, String entry)
     {
@@ -232,8 +233,18 @@ public class OutputPUML
 	    }
 	    else if(list.item(i).getNodeName() == "case") 
 	    {
+		if (!alt)
+		{
+		    pumlCode += "alt ";
+		    alt = true;
+		}
+		else
+		{
+		    pumlCode += "else ";
+		}
 		//Hier Einfügen
-		pumlCode += "alt ";
+		
+		
 //		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getTextContent());
 		helperMethodCall(list.item(i).getChildNodes(), pumlCode, 0, entry); //rekursiver Aufruf tieferer Ebene
 	    }
@@ -256,6 +267,7 @@ public class OutputPUML
 //		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getLocalName());
 	    }
 	}
+	
 	
 	return pumlCode;
     }
