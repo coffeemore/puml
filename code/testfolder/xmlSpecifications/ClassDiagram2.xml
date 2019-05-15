@@ -22,16 +22,6 @@
 					<to>Class3</to>
 				</entry>
 			</extensions>
-			<implementations>
-				<entry>
-					<from>Class1</from>
-					<to>If1</to>
-				</entry>
-				<entry>
-					<from>Class1</from>
-					<to>If2</to>
-				</entry>
-			</implementations>
 			<compositions>
 				<entry>
 					<from>Class2</from>
