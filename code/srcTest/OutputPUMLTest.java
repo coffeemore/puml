@@ -56,6 +56,7 @@ class OutputPUMLTest
 	String actual = "";
 	try
 	{
+	    //TEST FÜR SEQUENCE DIAGRAMME!!
 	    DocumentBuilderFactory docBuildFact = DocumentBuilderFactory.newInstance();
 	    DocumentBuilder docBuild = docBuildFact.newDocumentBuilder();
 	    Document doc = docBuild.parse(new File("/home/tore/Documents/Softwareprojekt/puml/code/testfolder/xmlSpecifications/SeqDiagram.xml"));
