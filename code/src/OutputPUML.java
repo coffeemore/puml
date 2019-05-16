@@ -267,71 +267,8 @@ public class OutputPUML
 //		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getLocalName());
 	    }
 	}
-	
-	
 	return pumlCode;
     }
-    
-    /**
-     * Liefert den plantUML-Code zurueck
-     * 
-     * @param myParsingResult Ergebnisse des Parsens
-     * @return String der den plantUML-Code enthaelt
-     *
-     *
-     * Methode wird ersetzt durch xml basierte getPuml() Methode
-     *
-    public String getPUML(ParsingResult myParsingResult)
-    {
-	String pumlCode = "";
-	int counter=0;
-	pumlCode += "@startuml\n";
-	while (myParsingResult.getAttributeLocalName(counter)!="parsed" && myParsingResult.isEndElement()) 
-	{
-		if(myParsingResult.getAttributeLocalName(counter)=="classes" && myParsingResult.isStartElement()) {
-			while(myParsingResult.getAttributeLocalName(counter++)=="entry") {
-					pumlCode+= "class " + myParsingResult.getElementText() + "\n";
-			}
-		}
-		if(myParsingResult.getAttributeLocalName(counter)=="classrelations" && myParsingResult.isStartElement()) {
-			if(myParsingResult.getAttributeLocalName(counter++)=="aggregations" && myParsingResult.isStartElement()) {
-				if(myParsingResult.getAttributeLocalName(counter++)=="entry" && myParsingResult.isStartElement()) {
-					if(myParsingResult.getAttributeLocalName(counter++)=="from") {
-						pumlCode+= myParsingResult.getElementText()+ " o-- ";
-						if(myParsingResult.getAttributeLocalName(counter++)=="to") {
-							pumlCode+= myParsingResult.getElementText()+"\n";
-						}
-					}
-				}
-			}
-			else if(myParsingResult.getAttributeLocalName(counter++)=="compositions" && myParsingResult.isStartElement()) {
-				if(myParsingResult.getAttributeLocalName(counter++)=="entry" && myParsingResult.isStartElement()) {
-					if(myParsingResult.getAttributeLocalName(counter++)=="from") {
-						pumlCode+= myParsingResult.getElementText()+ " *-- ";
-						if(myParsingResult.getAttributeLocalName(counter++)=="to") {
-							pumlCode+= myParsingResult.getElementText()+"\n";
-						}
-					}
-				}
-			}
-			else if(myParsingResult.getAttributeLocalName(counter++)=="extension" && myParsingResult.isStartElement()) {
-				if(myParsingResult.getAttributeLocalName(counter++)=="entry" && myParsingResult.isStartElement()) {
-					if(myParsingResult.getAttributeLocalName(counter++)=="from") {
-						pumlCode+= myParsingResult.getElementText()+ " -- ";
-						if(myParsingResult.getAttributeLocalName(counter++)=="to") {
-							pumlCode+= myParsingResult.getElementText()+"\n";
-						}
-					}
-				}
-			}
-		}
-	counter++;
-	}
-	myParsingResult.close();
-	pumlCode += "@enduml";
-	return pumlCode;
-    }
-    */
 
     /**
      * Speichert den plantUML-Code aus XML Dokument der getPUML Methode in eine Datei
