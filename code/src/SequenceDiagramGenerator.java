@@ -62,7 +62,14 @@ public class SequenceDiagramGenerator {
 	
 	listMethoddef(parsedData, seqDiagramm, seq);
 	addType(parsedData, seqDiagramm, seq);
-	xmlHM.listAllNodes(root);
+	
+	addClassesToInstances( parsedData,  seqDiagramm);
+	
+	
+	
+	
+//	xmlHM.listAllNodes(root);
+	
 	
 	return null;
     }
@@ -111,7 +118,7 @@ public class SequenceDiagramGenerator {
 	//Liste für alle Methoden und Klassen
 	NodeList mList = parsedData.getElementsByTagName("methoddefinition");
 	NodeList cList = parsedData.getElementsByTagName("classdefinition");
-	ArrayList<ArrayList> list1 = new ArrayList<ArrayList>();
+	ArrayList<ArrayList<String>> list1 = new ArrayList<ArrayList<String>>();
 	createList(parsedData,mList,cList,list1);
 	
 	//Liste für bereits aufgerufene Methoden
@@ -147,8 +154,45 @@ public class SequenceDiagramGenerator {
 	    }	    
 	}
     }
-    private void addInstances(Document parsedData, Document seqDiagramm, Element seq) {
+    /* 
+     * Instanz: von welcher Klasse?
+     * im methodcall ein Tag instanz -> Klassentag + -name muss reingenommen werden
+     * -> Instanzenliste anlegen
+     *  
+     */
+     
+    
+    private void addClassesToInstances(Document parsedData, Document seqDiagramm) {
+	ArrayList<ArrayList<String>> instanceList = new ArrayList<ArrayList<String>>(); // Liste mit den  Klassen und ihren Instanzen
+	// für jede Classdefinition in parsed Data eine Liste, darin auch die Instanzen dieser Klasse vermerken
+	NodeList cList = parsedData.getElementsByTagName("classdefinition");
+	//index i : Klasenliste 
+	//index j: Unterknoten der Klasseneinträge
 	
+	//alle Klassen werden durchgegangen
+	for (int i = 0; i < cList.getLength(); i++) {
+	    int x = 1;
+	    instanceList.add(i, new ArrayList<String>());
+	    NodeList cuList = cList.item(i).getChildNodes();//Liste aller Unterknoten v. Classdefinition
+	    	//alle Unterknoten der Klassen werden durchgegangen
+		//durch if-Bed. wird gewährleistet, dass der Name auch dann eingefügt wird, wenn er nicht der erste Unterknoten ist
+	    for (int j =0; j < cuList.getLength(); j++) {
+		if (cuList.item(j).getNodeName().equals("name")) {		    
+		    
+		    String cname = cuList.item(j).getTextContent();
+		    instanceList.get(i).add(0, cname);		//Klassennamen werden der cList hinzugefügt	    
+		}
+		if (cuList.item(j).getNodeName().equals("instance")) {		    
+		    
+		    String cname = cuList.item(j).getTextContent();
+		    instanceList.get(i).add(0, cname);		//Klassennamen werden der cList hinzugefügt	    
+		}
+		
+	    }
+	    
+	}
+	
+	listArrayList(instanceList );
     }
     private void createMElementList(Document parsedData, ArrayList<Element> list2) {
 	NodeList mList = parsedData.getElementsByTagName("methoddefinition");
@@ -161,7 +205,7 @@ public class SequenceDiagramGenerator {
 	}
 	
     }
-    private void createList(Document parsedData, NodeList mList, NodeList cList, ArrayList<ArrayList> list1) {
+    private void createList(Document parsedData, NodeList mList, NodeList cList, ArrayList<ArrayList<String>> list1) {
 	/**
 	 * gehe jede Klasse durch
 	 * merke dir den Knotennamen
@@ -193,7 +237,7 @@ public class SequenceDiagramGenerator {
 	}
     }
     
-    public void listArrayList(ArrayList<ArrayList> list2) {
+    public void listArrayList(ArrayList<ArrayList<String>> list2) {
 	for(int i = 0; i<list2.size();i++) {
 	    System.out.println(list2.get(i));
 	}

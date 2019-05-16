@@ -63,14 +63,7 @@
 				</case>
 				<case>
 					<condition>switch(i)/default</condition>
-					<instance>  <!-- Lokale Instanzen-->
-						<name>classInstance3</name>
-						<class>Class2</class>
-					</instance>
-					<instance>  <!-- Gleicher Name wie globale Instanz (beim aufruf soll die lokale verwendet werden)-->
-						<name>classInstance1</name>
-						<class>Class3</class>
-					</instance>
+					
 					<methodcall>
 						<instance>classInstance1</instance>	<!-- Aufruf sollte auf instanz von class3 ausgeführt werden -->
 						<method>call1</method>
