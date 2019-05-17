@@ -42,9 +42,9 @@ public class XmlHelperMethods
     /**
      * loescht einzelnen Knoten aus xml Datei
      * @param Knoten eines Elements
-     * @param Wahrheitswert, loeschen/behalten des Knoten
+     * @param true = Unterknoten werden nicht gelöscht; false = Unterknoten werden mit gelöscht
      */
-    public void delNode(Element nodeName, boolean keepNodeName)
+    public void delNode(Element nodeName, boolean keepChildNodes)
     {
   
     }

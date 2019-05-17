@@ -31,4 +31,13 @@
   \addtocounter{sectionlevel}{-1}
 }
 
+\newcommand{\nsecdocumentend}
+{
+	\ifnum\value{sectionlevel} = 1
+	\else
+	\PackageError{nsection}{Es fehlt eine nsecend-Anweisung}
+	\fi
+}
+
 \setcounter{sectionlevel}{1}
+
