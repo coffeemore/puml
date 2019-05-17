@@ -49,99 +49,97 @@ public class OutputPUML
 
     public String getPUML(Document diagramData) throws XPathExpressionException
     {
-	LogMain logger = new LogMain();
 	XPathFactory xPathfactory = XPathFactory.newInstance();
 	XPath xpath = xPathfactory.newXPath();
 	XPathExpression expr = xpath.compile("//parsed/*"); // Startpunkt parsed Knoten
 	list = (NodeList) expr.evaluate(diagramData, XPathConstants.NODESET); // in Liste
 	String compare = list.item(0).getNodeName();
-	String pumlCode = "@startuml \n";
-	String tempString = "";
+	String pumlCode = "@startuml\n";
 	if (compare == "classdiagramm")
 	{
 	    list = getList(diagramData, xpath, "//parsed/classdiagramm/classes/entry");
 	    for (int a = 0; a < list.getLength(); a++)
 	    {
-		if (list.item(a).getNodeName() != "#text")
-		{
-		    pumlCode += "classes " + list.item(a).getTextContent() + " \n";
-		}
+			if (list.item(a).getNodeName() != "#text")
+			{
+			    pumlCode += "class " + list.item(a).getTextContent() + "\n";
+			}
 	    }
 	    list = getList(diagramData, xpath, "//parsed/classdiagramm/interfaces/entry");
 	    for (int a = 0; a < list.getLength(); a++)
 	    {
-		if (list.item(a).getNodeName() != "#text")
-		{
-		    pumlCode += "interfaces " + list.item(a).getTextContent() + " \n";
-		}
+			if (list.item(a).getNodeName() != "#text")
+			{
+			    pumlCode += "interface " + list.item(a).getTextContent() + "\n";
+			}
 	    }
 
 	    // EXTENSIONS
 	    list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/extensions/entry");
 	    for (int a = 0; a < list.getLength(); a++)
 	    {
-		list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/extensions/entry/to");
-		if (list.item(a).getNodeName() != "#text")
-		{
-		    pumlCode += list.item(a).getTextContent() + " <|-- ";
-
-		}
-		list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/extensions/entry/from");
-		if (list.item(a).getNodeName() != "#text")
-		{
-		    pumlCode += list.item(a).getTextContent() + " \n";
-		}
+			list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/extensions/entry/to");
+			if (list.item(a).getNodeName() != "#text")
+			{
+			    pumlCode += list.item(a).getTextContent() + " <|-- ";
+	
+			}
+			list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/extensions/entry/from");
+			if (list.item(a).getNodeName() != "#text")
+			{
+			    pumlCode += list.item(a).getTextContent() + "\n";
+			}
 	    }
 
 	    // IMPLEMENTATIONS
 	    list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/implementations/entry");
 	    for (int a = 0; a < list.getLength(); a++)
 	    {
-		list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/implementations/entry/to");
-		if (list.item(a).getNodeName() != "#text")
-		{
-		    pumlCode += list.item(a).getTextContent() + " <|-- ";
-
-		}
-		list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/implementations/entry/from");
-		if (list.item(a).getNodeName() != "#text")
-		{
-		    pumlCode += list.item(a).getTextContent() + " \n";
-		}
+			list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/implementations/entry/to");
+			if (list.item(a).getNodeName() != "#text")
+			{
+			    pumlCode += list.item(a).getTextContent() + " <|-- ";
+	
+			}
+			list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/implementations/entry/from");
+			if (list.item(a).getNodeName() != "#text")
+			{
+			    pumlCode += list.item(a).getTextContent() + "\n";
+			}
 	    }
 
 	    // COMPOSITIONS
 	    list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/compositions/entry");
 	    for (int a = 0; a < list.getLength(); a++)
 	    {
-		list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/compositions/entry/to");
-		if (list.item(a).getNodeName() != "#text")
-		{
-		    pumlCode += list.item(a).getTextContent() + " *-- ";
-
-		}
-		list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/compositions/entry/from");
-		if (list.item(a).getNodeName() != "#text")
-		{
-		    pumlCode += list.item(a).getTextContent() + " \n";
-		}
+			list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/compositions/entry/to");
+			if (list.item(a).getNodeName() != "#text")
+			{
+			    pumlCode += list.item(a).getTextContent() + " *-- ";
+	
+			}
+			list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/compositions/entry/from");
+			if (list.item(a).getNodeName() != "#text")
+			{
+			    pumlCode += list.item(a).getTextContent() + "\n";
+			}
 	    }
 
 	    // AGGREGATIONS
 	    list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/aggregations/entry");
 	    for (int a = 0; a < list.getLength(); a++)
 	    {
-		list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/aggregations/entry/to");
-		if (list.item(a).getNodeName() != "#text")
-		{
-		    pumlCode += list.item(a).getTextContent() + " o-- ";
-
-		}
-		list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/aggregations/entry/from");
-		if (list.item(a).getNodeName() != "#text")
-		{
-		    pumlCode += list.item(a).getTextContent() + " \n";
-		}
+			list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/aggregations/entry/to");
+			if (list.item(a).getNodeName() != "#text")
+			{
+			    pumlCode += list.item(a).getTextContent() + " o-- ";
+	
+			}
+			list = getList(diagramData, xpath, "//parsed/classdiagramm/classrelations/aggregations/entry/from");
+			if (list.item(a).getNodeName() != "#text")
+			{
+			    pumlCode += list.item(a).getTextContent() + "\n";
+			}
 	    }
 	}
 
@@ -156,7 +154,7 @@ public class OutputPUML
 	    {
 		if (list.item(a).getNodeName() != "#text")
 		{
-		    pumlCode += "participant " + list.item(a).getTextContent() + " \n";
+		    pumlCode += "participant " + list.item(a).getTextContent() + "\n";
 		}
 	    }
 	    list = getList(diagramData, xpath, "//parsed/sequencediagram/entrypoint");
@@ -310,29 +308,14 @@ public class OutputPUML
 
 	return pumlCode;
     }
-
-
-    /**
-     * Speichert den plantUML-Code aus XML Dokument der getPUML Methode in eine Datei
-     * 
-     * @param diagramData	Xml Document durch getPUML Methode erzeugt
-     * @param filePath		Pfad an den die Datei gespeichert werden soll
-     * @throws IOException 
-     */
-    public void savePUMLtoFile(Document diagramData, String filePath) throws IOException
-    {
-    	
-    }
     
     /**
-     * alte String basierte Methode
-     * 
      * Speichert den plantUML-Code aus dem String der getPUML Methode in eine Datei
      * 
      * @param pumlCode		String der durch die getPUML Methode erzeugt wird
      * @param filePath		Pfad an den die Datei gespeichert werden soll
      * @throws IOException 
-     *
+     */
     public void savePUMLtoFile(String pumlCode, String filePath) throws IOException
     {
 	    BufferedWriter bw = new BufferedWriter(new FileWriter(new File(filePath)));
@@ -340,7 +323,7 @@ public class OutputPUML
 	    bw.flush();
 	    bw.close();
     }
-    */
+
 
     /**
      * Erzeugt ein PlantUML-Diagramm aus der plantUML-Code-Datei am uebergebenen Pfad
@@ -373,6 +356,8 @@ public class OutputPUML
     	reader.outputImage(png).getDescription();
     }
     
+    
+    //Liefert NodeList zurück
     private static NodeList getList(Document doc, XPath xpath, String path) {
         try {
            XPathExpression expr = xpath.compile(path);
