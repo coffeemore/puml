@@ -1,6 +1,8 @@
 
 import java.io.IOException;
 
+import javax.xml.xpath.XPathExpressionException;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -94,7 +96,7 @@ public class Console extends PUMLgenerator
 			outputPUML.createPUMLfromString(cmd.getOptionValue("o") + "outPUML_Graph",
 				outputPUML.getPUML(parser.getParsingResult())); // Einbinden der Diagrammfunktion
 		    }
-		    catch (IOException e)
+		    catch (IOException | XPathExpressionException e)
 		    {
 			System.out.println("Kommandozeile: Verarbeitung mit output-Pfad fehlgeschlagen");
 			e.printStackTrace();
@@ -112,7 +114,7 @@ public class Console extends PUMLgenerator
 			outputPUML.createPUMLfromString("./outPUML_Graph_defaultlocation",
 				outputPUML.getPUML(parser.getParsingResult())); // Einbinden der Diagrammfunktion
 		    }
-		    catch (IOException e)
+		    catch (IOException | XPathExpressionException e)
 		    {
 			System.out.println("Kommandozeile: Verarbeitung ohne output-Pfad fehlgeschlagen");
 			e.printStackTrace();
