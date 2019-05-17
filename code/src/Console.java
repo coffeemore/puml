@@ -54,7 +54,23 @@ public class Console extends PUMLgenerator
 	Option output = Option.builder() // Angabe fuer den Ausgabepfad
 		.longOpt("o").argName("filepath").hasArg().desc("Angabe des Pfades fuer den Zielordner.").build();
 	options.addOption(output);
+	
+	//Erstelle Klassendiagramm
+	Options classDiag = new Options();
+	options.addOption("cc",false, "Erzeugt ein Klassendiagramm");
+	
+	//Erstelle SeqenceDiagramm
+	Options seqDiag = new Options();
+	options.addOption("cs",false, "Erzeugt ein Sequenzdiagramm");
 
+	//Alles auflisten
+	Options show = new Options();
+	options.addOption("s",false, "Listet alle Klassen und Methoden auf");
+	
+	//Alles auflisten
+	Options interactive = new Options();
+	options.addOption("int",false, "Startet interaktiven Modus");
+		
 	// Parser
 	CommandLineParser commandParser = new DefaultParser();
 
