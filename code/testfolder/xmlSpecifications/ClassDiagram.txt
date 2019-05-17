@@ -1,14 +1,14 @@
 @startuml
-classes Class1
-classes Class2
-classes Class3
-classes Class4
-classes Class5
+class Class1
+class Class2
+class Class3
+class Class4
+class Class5
 interface If1
 interface If2
+Class3 <|-- Class1
 If1 <|-- Class1
 If2 <|-- Class1
-Class3 <|-- Class1
 Class1 *-- Class2
 Class1 *-- Class3
 Class1 o-- Class4
