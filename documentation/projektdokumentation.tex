@@ -465,7 +465,46 @@ Sonstige Konventionen:
 \nsecbegin{Handbuch}
 \end{shownto} %{-, developer, manualDE}
 \begin{shownto}{-, developer}
-Hier soll das Deutsche Benutzerhandbuch entstehen.
+\nsecbegin{Kommandozeilenaufruf}
+Aufruf:\\
+PUMLgenerator [-c -i inputPathes -o outputPathes (-cc | -s | -int | -cs entryClass entryMethod) [-ijar, -ijava]]
+
+\begin{itemize}
+\item Wird das Programm ohne Parameter aufgerufen öffnet sich die grafische Oberfläche
+\item -c wird verwendet um einen Konsolen-Aufruf zu initiieren
+\item  Nach -c müssen mit -i die Eingabepfade, mit -o der Ausgabepfad und je nach gewünschter Aktion -cc, s, -int oder -cs stehen
+\item mit -ijar und -ijava können bestimmte Dateitypen ignoriert werden
+\item interaktiver Modus
+\begin{itemize}
+\item Fragt ab welcher Typ von Diagramm erzeugt werden soll
+\item Listet bei einem Sequenzdiagramm alle Klassen und Methoden auf und ermöglicht die Auswahl des Einstiegspunktes
+\end{itemize}
+\end{itemize}
+
+\begin{tabular}{|c|c|c|c|}
+\hline 
+Parameter & Übergabewerte & Info & Beschreibung \\ 
+\hline 
+-c & & Konsolenaufruf & keine grafische Oberfläche \\ 
+\hline 
+-i & inputPathes & Input & durch Strichpunkt getrennte Liste der Pfade zu den einzulesenden Dateien und Ordnern \\ 
+\hline 
+-o & outputPath & Output & muss ein Pfad zu einem Ordner sein. Hier soll der plantUML-Code und das Diagramm erzeugt werden \\ 
+\hline 
+-ijar & & Ignore Jar & .jar-Dateien werden ignoriert \\ 
+\hline 
+-ijava & & Ignore Java & .java-Dateien werden ignoriert \\ 
+\hline 
+-cc & & create Classdiagram & erzeugt ein Klassendiagramm \\ 
+\hline
+-cs & entryClass, entryMethod & create Sequencediagram & erzeugt ein Sequenzdiagramm \\
+-s & & show & listet alle Klassen und Methoden auf \\
+-int & & interactive & interaktiver Modus \\
+\hline 
+\end{tabular} 
+
+
+\nsecend
 \end{shownto} %{-, developer}
 \begin{shownto}{-, developer, manualDE}
 \nsecend
@@ -505,6 +544,8 @@ XXX
 
 
 \nsecend %Projektabschluss
+
+\nsecdocumentend
 
 \end{shownto} %{-, developer, manualDE}
 
