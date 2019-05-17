@@ -17,11 +17,24 @@
 	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-tests.jar"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4.jar"/>
 <<<<<<< HEAD
+<<<<<<< HEAD
 	<classpathentry kind="lib" path="lib/swt-linux-x86_64-4.9.jar"/>
 	<classpathentry kind="lib" path="swing2swt.jar"/>
 =======
 	<classpathentry kind="lib" path="swing2swt.jar"/>
 	<classpathentry kind="lib" path="lib/swt-win32-x86_64-4.9.jar"/>
 >>>>>>> a3070491dff03bfb227c5048eb99a8ce65dec255
+=======
+	<classpathentry kind="lib" path="swing2swt.jar"/>
+	<classpathentry kind="lib" path="lib/swt-win32-x86_64-4.9.jar"/>
+	<classpathentry kind="lib" path="/src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+=======
+>>>>>>> develop
+>>>>>>> d07884020ccc4a075cb61c66a0f96949fffeb188
 	<classpathentry kind="output" path="bin"/>
 </classpath>
