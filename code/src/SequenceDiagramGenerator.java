@@ -7,20 +7,23 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Document;
+
 /**
  * @author Leo Rauschke, Elisabeth Schuster
  */
-public class SequenceDiagramGenerator {
+public class SequenceDiagramGenerator
+{
 
     XmlHelperMethods xmlHM = new XmlHelperMethods();
-	/**
+
+    /**
      * Konstruktor
      */
     public SequenceDiagramGenerator()
     {
 
     }
-    
+
     /**
      * Erstellt den plantUML-Code aus geparstem xmlDocument
      * 
@@ -61,16 +64,11 @@ public class SequenceDiagramGenerator {
 	// Element root1 = parsedData.getDocumentElement();
 
 	listMethoddef(parsedData, seqDiagramm, seq);
+	addClassesToInstances(parsedData, seqDiagramm);
 	addType(parsedData, seqDiagramm, seq);
-	
-	addClassesToInstances( parsedData,  seqDiagramm);
-	
-	
+
 	xmlHM.writeDocumentToConsole(seqDiagramm);
-	
-//	xmlHM.listAllNodes(root);
-	
-	
+
 	return null;
     }
 
@@ -191,8 +189,8 @@ public class SequenceDiagramGenerator {
 			 * list1 benutzen aktuell behandelte Methode vergleicht mit Klassenname der
 			 * aktuellen Methode finden und deren Arraylist)
 			 * 
-			 * ToDo: verschachtelte Rekursion - Lösung finden
-			 * ToDo: Klassenzuweisung der Methoden!
+			 * ToDo: verschachtelte Rekursion - Lösung finden ToDo: Klassenzuweisung der
+			 * Methoden!
 			 */
 			Element parent = (Element) seqMethodNode.getParentNode().getFirstChild().getFirstChild();
 			int d = 0;
@@ -201,7 +199,8 @@ public class SequenceDiagramGenerator {
 			    for (int j = 0; j < list1.get(i).size(); j++)
 			    {
 				String tried = seqMethodEl.getElementsByTagName("name").item(0).getTextContent();
-				if (called.equals(tried) && d==0 /*&& list1.get(i).get(0).equals(parent.getTagName())*/)
+				if (called.equals(tried)
+					&& d == 0 /* && list1.get(i).get(0).equals(parent.getTagName()) */)
 				{
 				    seqCallEl.removeChild(type);
 				    type.setTextContent("recursive");
@@ -212,49 +211,157 @@ public class SequenceDiagramGenerator {
 			}
 		    }
 		}
-	    }	    
-	}
-    }
-    /* 
-     * Instanz: von welcher Klasse?
-     * im methodcall ein Tag instanz -> Klassentag + -name muss reingenommen werden
-     * -> Instanzenliste anlegen
-     *  
-     */
-     
-    
-    private void addClassesToInstances(Document parsedData, Document seqDiagramm) {
-	ArrayList<ArrayList<String>> instanceList = new ArrayList<ArrayList<String>>(); // Liste mit den  Klassen und ihren Instanzen
-	// für jede Classdefinition in parsed Data eine Liste, darin auch die Instanzen dieser Klasse vermerken
-	NodeList cList = parsedData.getElementsByTagName("classdefinition");
-	//index i : Klasenliste 
-	//index j: Unterknoten der Klasseneinträge
-	
-	//alle Klassen werden durchgegangen
-	for (int i = 0; i < cList.getLength(); i++) {
-	    int x = 1;
-	    instanceList.add(i, new ArrayList<String>());
-	    NodeList cuList = cList.item(i).getChildNodes();//Liste aller Unterknoten v. Classdefinition
-	    	//alle Unterknoten der Klassen werden durchgegangen
-		//durch if-Bed. wird gewährleistet, dass der Name auch dann eingefügt wird, wenn er nicht der erste Unterknoten ist
-	    for (int j =0; j < cuList.getLength(); j++) {
-		if (cuList.item(j).getNodeName().equals("name")) {		    
-		    
-		    String cname = cuList.item(j).getTextContent();
-		    instanceList.get(i).add(0, cname);		//Klassennamen werden der cList hinzugefügt	    
-		}
-		if (cuList.item(j).getNodeName().equals("instance")) {		    
-		    
-		    String cname = cuList.item(j).getTextContent();
-		    instanceList.get(i).add(0, cname);		//Klassennamen werden der cList hinzugefügt	    
-		}
-		
 	    }
-	    
 	}
-	
-	listArrayList(instanceList );
     }
+    /*
+     * Instanz: von welcher Klasse? im methodcall ein Tag instanz -> Klassentag +
+     * -name muss reingenommen werden -> Instanzenliste anlegen
+     * 
+     * Funktion fügt im seqDiagramm innerhalb der methodcalls das passende class-Tag hinzu, sofern ein instance-Tag existiert
+     * 
+     * param: parsedData - Quell-Dokument
+     * 		seqDiagramm - das generierte Dokument, in dem die Instanzen eingefügt werden sollen
+     */
+
+    private void addClassesToInstances(Document parsedData, Document seqDiagramm)
+    {
+	ArrayList<ArrayList<String>> instanceList = createInstanceList(parsedData);
+
+	NodeList methodcalls = seqDiagramm.getElementsByTagName("methodcall");
+	for (int i = 0; i < methodcalls.getLength(); i++)
+	{
+	    NodeList mchildnodes = methodcalls.item(i).getChildNodes();
+	    for (int j = 0; j < mchildnodes.getLength(); j++)
+	    {
+		if (mchildnodes.item(j).getNodeName().equals("instance"))
+		{
+		    String iname = mchildnodes.item(j).getTextContent();
+		    //wenn Instanz in InstanzenListe vorhanden
+		    String cname = findClassofInstance(instanceList, iname);
+		    if (!cname.equals("")) {
+			
+			Node classTag = seqDiagramm.createElement("class");
+			classTag.setTextContent(cname);
+			methodcalls.item(i).appendChild(classTag);
+			
+		    }
+
+		}
+
+	    }
+	}
+
+    }
+
+    /*
+     * Funktion erstellt eine Liste aller im Document parsedData vorkommenden Klassen mit ihren jeweiligen Instanzen
+     * param: parsedData
+     * return: instanceList
+     * */
+    private ArrayList<ArrayList<String>> createInstanceList(Document parsedData)
+    {
+
+	ArrayList<ArrayList<String>> instanceList = new ArrayList<ArrayList<String>>(); // Liste mit den Klassen und
+											// ihren Instanzen
+	// für jede Classdefinition in parsed Data eine Liste, darin auch die Instanzen
+	// dieser Klasse vermerken
+	NodeList cList = parsedData.getElementsByTagName("classdefinition");
+	// index i : Klasenliste
+	// index j: Unterknoten der Klasseneinträge
+
+	// alle Klassen werden durchgegangen
+	for (int i = 0; i < cList.getLength(); i++)
+	{
+
+	    instanceList.add(i, new ArrayList<String>());
+	    NodeList cuList = cList.item(i).getChildNodes();// Liste aller Unterknoten v. Classdefinition
+	    // alle Unterknoten der Klassen werden durchgegangen
+	    // durch if-Bed. wird gewährleistet, dass der Name auch dann eingefügt wird,
+	    // wenn er nicht der erste Unterknoten ist
+	    for (int j = 0; j < cuList.getLength(); j++)
+	    {
+		if (cuList.item(j).getNodeName().equals("name"))
+		{
+
+		    String cname = cuList.item(j).getTextContent();
+		    instanceList.get(i).add(0, cname); // Klassennamen werden der cList hinzugefügt
+		}
+	    }
+
+	}
+	// alle Klassen werden durchgegangen
+	for (int i = 0; i < cList.getLength(); i++)
+	{
+	    NodeList cuList = cList.item(i).getChildNodes();// Liste aller Unterknoten v. Classdefinition
+	    // alle Unterknoten der Klassen werden durchgegangen
+	    for (int j = 0; j < cuList.getLength(); j++)
+	    {
+		if (cuList.item(j).getNodeName().equals("instance"))
+		{
+		    // iname = Instanzenname
+		    // cname = Klassenname
+		    NodeList ciList = cuList.item(j).getChildNodes();
+//		 String iname = ciList.item(0).getTextContent();
+//		 String cname = ciList.item(1).getTextContent();
+		    String iname = new String();
+		    String cname = new String();
+		    for (int k = 0; k < ciList.getLength(); k++)
+		    {
+			if (ciList.item(k).getNodeName().equals("name"))
+			{
+			    iname = ciList.item(k).getTextContent();
+			}
+			if (ciList.item(k).getNodeName().equals("class"))
+			{
+			    cname = ciList.item(k).getTextContent();
+			}
+		    }
+//		  instanceList =  addToInstanceList(instanceList, "Instanzenname", "Class1");
+		    instanceList = addToInstanceList(instanceList, iname, cname);
+
+		}
+	    }
+	}
+	listArrayList(instanceList);
+
+	return instanceList;
+    }
+
+    // Fügt den Instanzennamen in die Instanzenliste ein
+    private ArrayList<ArrayList<String>> addToInstanceList(ArrayList<ArrayList<String>> instanceList, String iname,
+	    String cname)
+    {
+	for (int i = 0; i < instanceList.size(); i++)
+	{
+	    String classname = instanceList.get(i).get(0);
+	    if (cname.equals(classname))
+	    {
+		instanceList.get(i).add(iname);
+		return instanceList;
+	    }
+	}
+	return instanceList;
+
+    }
+    private String findClassofInstance (ArrayList<ArrayList<String>> instanceList, String iname) {
+	
+	for (int i = 0; i < instanceList.size(); i++) {
+	    //es werden nur die Klassen betrachtet, die auch mindestens eine Instanz haben
+	    if (!(instanceList.get(i).size()==1)) {
+		for (int j = 0; j < instanceList.get(i).size(); j++) {
+		    
+		    if (instanceList.get(i).get(j).equals(iname)) {
+			String cname = instanceList.get(i).get(0);
+			return cname;
+		    }
+		}
+	    }
+	}
+	return "";
+	
+    }
+    
 
     private void createMElementList(Document parsedData, ArrayList<Element> list2)
     {
@@ -328,4 +435,3 @@ public class SequenceDiagramGenerator {
 	}
     }
 }
-
