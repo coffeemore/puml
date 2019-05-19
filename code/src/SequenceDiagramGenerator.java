@@ -64,9 +64,11 @@ public class SequenceDiagramGenerator
 	// Element root1 = parsedData.getDocumentElement();
 
 	listMethoddef(parsedData, seqDiagramm, seq);
-	addClassesToInstances(parsedData, seqDiagramm);
+	
 	addType(parsedData, seqDiagramm, seq);
-
+	addClassesToInstances(parsedData, seqDiagramm);
+	
+	
 	xmlHM.writeDocumentToConsole(seqDiagramm);
 
 	return null;
