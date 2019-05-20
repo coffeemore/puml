@@ -12,14 +12,10 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 /**
@@ -112,6 +108,33 @@ public class XmlHelperMethods
     	{
 			e.printStackTrace();
 		}
+    }
+
+/**
+     * Gibt den Unterbaum des übergebenen Knotens auf der Konsole aus
+     * 
+     * @param root
+     */
+
+    public void listAllNodes(Element root)
+    {
+	if (root.hasChildNodes())
+	{
+	    NodeList list = root.getChildNodes();
+	    for (int i = 0; i < list.getLength(); i++)
+	    {
+		Node node = list.item(i);
+
+		if (node.getNodeType() == Node.ELEMENT_NODE)
+		{
+		    Element e = (Element) node;
+		    String m = e.getTagName();
+		    System.out.println(m);
+		    listAllNodes(e);
+		    System.out.println("/" + e.getTagName());
+		}
+	    }
+	}
     }
 
     //Liefert NodeList zurück
