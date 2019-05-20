@@ -41,36 +41,39 @@ public class Console extends PUMLgenerator
 	Options options = new Options();
 	options.addOption("c", false, "Konsole wird aufgerufen");
 
-	Option input = Option.builder() // Angabe der zu verarbeitenden Dateien
-		.longOpt("i").argName("filepath").hasArg().valueSeparator(';').numberOfArgs(Option.UNLIMITED_VALUES)
-		.desc("Angabe der zu verarbeitenden Pfade, durch ; getrennt").build();
-	options.addOption(input);
-
 	// ignorieren verschiedener Dateitypen
 	options.addOption("ijar", false, "Dateien mit der Endung .jar werden ignoriert.");
 
 	options.addOption("ijava", false, "Dateien mit der Endung .java werden ignoriert.");
-
-	Option output = Option.builder() // Angabe fuer den Ausgabepfad
-		.longOpt("o").argName("filepath").hasArg().desc("Angabe des Pfades fuer den Zielordner.").build();
-	options.addOption(output);
 	
 	//Erstelle Klassendiagramm
 	Options classDiag = new Options();
-	options.addOption("cc",false, "Erzeugt ein Klassendiagramm");
-	
-	//Erstelle SeqenceDiagramm
-	Options seqDiag = new Options();
-	options.addOption("cs",false, "Erzeugt ein Sequenzdiagramm");
-
+	options.addOption("cc",false, "Erzeugt ein Klassendiagramm.");
+		
 	//Alles auflisten
 	Options show = new Options();
-	options.addOption("s",false, "Listet alle Klassen und Methoden auf");
-	
+	options.addOption("s",false, "Listet alle Klassen und Methoden auf.");
+		
 	//Alles auflisten
 	Options interactive = new Options();
-	options.addOption("int",false, "Startet interaktiven Modus");
-		
+	options.addOption("int",false, "Startet interaktiven Modus.");
+
+	// Angabe fuer den Ausgabepfad
+	Option output = Option.builder() 
+		.longOpt("o").argName("filepath").hasArg().desc("Angabe des Pfades fuer den Zielordner.").build();
+	options.addOption(output);
+	
+	//Erstelle SeqenceDiagramm
+	Option seqDiag = Option.builder()
+			.longOpt("cs").argName("Klasse").argName("Methode").hasArgs().valueSeparator(',').numberOfArgs(2).desc("Erzeugt ein Sequenzdiagramm.").build();
+	options.addOption(seqDiag);
+	
+	// Angabe der zu verarbeitenden Dateien
+	Option input = Option.builder() 
+		.longOpt("i").argName("filepath").hasArg().valueSeparator(';').numberOfArgs(Option.UNLIMITED_VALUES)
+		.desc("Angabe der zu verarbeitenden Pfade, durch ; getrennt").build();
+	options.addOption(input);
+
 	// Parser
 	CommandLineParser commandParser = new DefaultParser();
 
@@ -93,22 +96,36 @@ public class Console extends PUMLgenerator
 	    }
 	    if (cmd.hasOption("i")) // Verarbeitung vieler zu verarbeitenden Pfade
 	    {
-	    	for (int i = 0; i < cmd.getOptionValues("i").length; i++) // Pfade in Collector Liste schreiben
-	    	{
-		    codeCollector.paths.add(cmd.getOptionValues("i")[i]);
-		    System.out.println(codeCollector.paths.get(i));
-	    	}
+		    for (int i = 0; i < cmd.getOptionValues("i").length; i++) // Pfade in Collector Liste schreiben
+		    {
+		    	codeCollector.paths.add(cmd.getOptionValues("i")[i]);
+		    	System.out.println(codeCollector.paths.get(i));
+		    }
 			PUMLgenerator.parser.parse(codeCollector.getSourceCode()); // Parser berbeitet Daten welche ihm übergeben werden
-
-		if (cmd.hasOption("o")) // Zielordner abfragen, sonst in Arbeitsverzeichnis sichern
-		{
-		    createClassDiagram(cmd,true);
+			
+			if (cmd.hasOption("o")) // Pruefe ob Zielordner vorhanden
+			{
+				if (cmd.hasOption("cc")) //Gewuenschtes Diagramm
+				{
+					createClassDiagram(cmd, true);
+				}
+				if (cmd.hasOption("cs"))
+				{
+					createSQDiagram();
+				}
+			}
+			else // Falls kein Output-Path definiert
+			{
+				if (cmd.hasOption("cc")) //Gewuenschtes Diagramm
+				{
+					createClassDiagram(cmd, false);
+				}
+				if (cmd.hasOption("cs"))
+				{
+					createSQDiagram();
+				}
+			}
 		}
-		else // Falls kein Output-Path definiert
-		{
-		    createClassDiagram(cmd, false);
-		}
-	    }
 	    else if (!cmd.hasOption("i"))
 	    {
 		System.out.println("Es fehlt ein zu bearbeitender Pfad.");
