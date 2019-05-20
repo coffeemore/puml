@@ -57,7 +57,7 @@ public class SequenceDiagramGenerator
 	entrypoint.appendChild(epMethod1);
 
 	listMethoddef(parsedData, seqDiagramm, seq);
-	addClassesToInstances(parsedData, seqDiagramm);	
+	addClassesToInstances(parsedData, seqDiagramm);
 	addType(parsedData, seqDiagramm, seq, epClass);
 	xmlHM.writeDocumentToConsole(seqDiagramm);
 
@@ -67,9 +67,9 @@ public class SequenceDiagramGenerator
     /**
      * Die Klassen werden aus parsedData übernommen und in seqDiagramm aufgelistet
      * 
-     * @param parsedData - xml Eingabe Dokument
+     * @param parsedData  - xml Eingabe Dokument
      * @param seqDiagramm - Document für OutputPuml
-     * @param seq - Kindelement von root
+     * @param seq         - Kindelement von root
      */
     private void listClasses(Document parsedData, Document seqDiagramm, Element seq)
     {
@@ -91,13 +91,14 @@ public class SequenceDiagramGenerator
 	    }
 	}
     }
-    
+
     /**
-     * Die Methode kopiert aus parsedData alle Methoddefinitions von Klassen in seqDiagramm
+     * Die Methode kopiert aus parsedData alle Methoddefinitions von Klassen in
+     * seqDiagramm
      * 
-     * @param parsedData - xml Eingabe Dokument
+     * @param parsedData  - xml Eingabe Dokument
      * @param seqDiagramm - Document für OutputPuml
-     * @param seq - Kindelement von root
+     * @param seq         - Kindelement von root
      */
     private void listMethoddef(Document parsedData, Document seqDiagramm, Element seq)
     {
@@ -118,14 +119,15 @@ public class SequenceDiagramGenerator
 	}
     }
 
-/*
+    /**
      * Instanz: von welcher Klasse? im methodcall ein Tag instanz -> Klassentag +
      * -name muss reingenommen werden -> Instanzenliste anlegen
      * 
-     * Funktion fügt im seqDiagramm innerhalb der methodcalls das passende class-Tag hinzu, sofern ein instance-Tag existiert
+     * Funktion fügt im seqDiagramm innerhalb der methodcalls das passende class-Tag
+     * hinzu, sofern ein instance-Tag existiert
      * 
-     * param: parsedData - Quell-Dokument
-     * 		seqDiagramm - das generierte Dokument, in dem die Instanzen eingefügt werden sollen
+     * param: parsedData - Quell-Dokument seqDiagramm - das generierte Dokument, in
+     * dem die Instanzen eingefügt werden sollen
      */
 
     private void addClassesToInstances(Document parsedData, Document seqDiagramm)
@@ -141,14 +143,15 @@ public class SequenceDiagramGenerator
 		if (mchildnodes.item(j).getNodeName().equals("instance"))
 		{
 		    String iname = mchildnodes.item(j).getTextContent();
-		    //wenn Instanz in InstanzenListe vorhanden
+		    // wenn Instanz in InstanzenListe vorhanden
 		    String cname = findClassofInstance(instanceList, iname);
-		    if (!cname.equals("")) {
-			
+		    if (!cname.equals(""))
+		    {
+
 			Node classTag = seqDiagramm.createElement("class");
 			classTag.setTextContent(cname);
 			methodcalls.item(i).appendChild(classTag);
-			
+
 		    }
 
 		}
@@ -159,10 +162,9 @@ public class SequenceDiagramGenerator
     }
 
     /*
-     * Funktion erstellt eine Liste aller im Document parsedData vorkommenden Klassen mit ihren jeweiligen Instanzen
-     * param: parsedData
-     * return: instanceList
-     * */
+     * Funktion erstellt eine Liste aller im Document parsedData vorkommenden
+     * Klassen mit ihren jeweiligen Instanzen param: parsedData return: instanceList
+     */
     private ArrayList<ArrayList<String>> createInstanceList(Document parsedData)
     {
 
@@ -248,14 +250,19 @@ public class SequenceDiagramGenerator
 	return instanceList;
 
     }
-    private String findClassofInstance (ArrayList<ArrayList<String>> instanceList, String iname) {
-	
-	for (int i = 0; i < instanceList.size(); i++) {
-	    //es werden nur die Klassen betrachtet, die auch mindestens eine Instanz haben
-	    if (!(instanceList.get(i).size()==1)) {
-		for (int j = 0; j < instanceList.get(i).size(); j++) {
-		    
-		    if (instanceList.get(i).get(j).equals(iname)) {
+
+    private String findClassofInstance(ArrayList<ArrayList<String>> instanceList, String iname)
+    {
+	for (int i = 0; i < instanceList.size(); i++)
+	{
+	    // es werden nur die Klassen betrachtet, die auch mindestens eine Instanz haben
+	    if (!(instanceList.get(i).size() == 1))
+	    {
+		for (int j = 0; j < instanceList.get(i).size(); j++)
+		{
+
+		    if (instanceList.get(i).get(j).equals(iname))
+		    {
 			String cname = instanceList.get(i).get(0);
 			return cname;
 		    }
@@ -263,16 +270,16 @@ public class SequenceDiagramGenerator
 	    }
 	}
 	return "";
-	
+
     }
 
     /**
      * Die Methodcalls werden mit Type-Tags versehen
      * 
-     * @param parsedData - xml Eingabe Dokument
+     * @param parsedData  - xml Eingabe Dokument
      * @param seqDiagramm - Document für OutputPuml
-     * @param seq - Kindelement von root
-     * @param epClass - übergebener Entrypoint
+     * @param seq         - Kindelement von root
+     * @param epClass     - übergebener Entrypoint
      */
     private void addType(Document parsedData, Document seqDiagramm, Element seq, String epClass)
     {
@@ -284,7 +291,7 @@ public class SequenceDiagramGenerator
 	ArrayList<String> calledMethodsList = new ArrayList<String>();
 	// alle Methoddefinitions in SeqDiagram
 	NodeList seqMethodDefList = seqDiagramm.getElementsByTagName("methoddefinition");
-	
+
 	// in jeder Methoddefinition wird nach Methodcalls gesucht
 	for (int m = 0; m < seqMethodDefList.getLength(); m++)
 	{
@@ -307,11 +314,13 @@ public class SequenceDiagramGenerator
 			 */
 			Element type = seqDiagramm.createElement("type");
 			int a = 0;
-			// alle bisher aufgerufenen Methoden werden mit der aktuell aufgerufenen verglichen
+			// alle bisher aufgerufenen Methoden werden mit der aktuell aufgerufenen
+			// verglichen
 			for (int i = 0; i < calledMethodsList.size(); i++)
 			{
 			    String calledEl = calledMethodsList.get(i);
-			    if (calledMethod.equals(calledEl) && a == 0 && (seqMethodCallEl.getElementsByTagName("type").item(0) == null))
+			    if (calledMethod.equals(calledEl) && a == 0
+				    && (seqMethodCallEl.getElementsByTagName("type").item(0) == null))
 			    {
 				type.setTextContent("handled");
 				seqMethodCallEl.appendChild(type);
@@ -332,7 +341,8 @@ public class SequenceDiagramGenerator
 			    b += classesWithMethodsList.get(i).size();
 			    for (int j = 0; j < classesWithMethodsList.get(i).size(); j++)
 			    {
-				// c wird hochgesetzt, wenn die calledMethod mit keinem Eintrag in der Liste übereinstimmt
+				// c wird hochgesetzt, wenn die calledMethod mit keinem Eintrag in der Liste
+				// übereinstimmt
 				if (!calledMethod.equals(classesWithMethodsList.get(i).get(j)))
 				{
 				    c++;
@@ -354,7 +364,8 @@ public class SequenceDiagramGenerator
 			if (calledMethod.equals(currentMethod))
 			{
 			    // Test, ob instance-Tag oder class-Tag vorhanden
-			    if ((seqMethodCallEl.getElementsByTagName("instance").item(0) == null) && (seqMethodCallEl.getElementsByTagName("class").item(0) == null))
+			    if ((seqMethodCallEl.getElementsByTagName("instance").item(0) == null)
+				    && (seqMethodCallEl.getElementsByTagName("class").item(0) == null))
 			    {
 				// kein instance-Tag oder class-Tag
 				for (int i = 0; i < classesWithMethodsList.size(); i++)
@@ -364,7 +375,8 @@ public class SequenceDiagramGenerator
 				    {
 					for (int j = 0; j < classesWithMethodsList.get(i).size(); j++)
 					{
-					    // die Methoden des Entrypoints werden mit der aktuell aufgerufenen Methode verglichen
+					    // die Methoden des Entrypoints werden mit der aktuell aufgerufenen Methode
+					    // verglichen
 					    if (calledMethod.equals(classesWithMethodsList.get(i).get(j)) && (d == 0))
 					    {
 						type.setTextContent("recursive");
@@ -389,10 +401,10 @@ public class SequenceDiagramGenerator
     /**
      * verschachtelte Rekursion wird geprüft
      * 
-     * @param type - Element von Methodcall
-     * @param currentMethod - aktuell aufgerufene Methode
+     * @param type             - Element von Methodcall
+     * @param currentMethod    - aktuell aufgerufene Methode
      * @param seqMethodDefList - Methoddefinition-Liste
-     * @param m - Index der Stelle in der Methoddefinition-Liste
+     * @param m                - Index der Stelle in der Methoddefinition-Liste
      */
     private void recursiveLoop(Element type, String currentMethod, NodeList seqMethodDefList, int m)
     {
@@ -411,7 +423,8 @@ public class SequenceDiagramGenerator
 		    {
 			Element callEl = (Element) callNode;
 			String called = callEl.getElementsByTagName("method").item(0).getTextContent();
-			// die aktuell behandelte Methode wird mit den Methoden der Methodcalls verglichen
+			// die aktuell behandelte Methode wird mit den Methoden der Methodcalls
+			// verglichen
 			if (called.equals(currentMethod))
 			{
 			    type.setTextContent("recursive");
@@ -430,7 +443,7 @@ public class SequenceDiagramGenerator
     /**
      * eine Liste mit allen Klassen und ihren Methoden wird erstellt
      * 
-     * @param parsedData - xml Eingabe Dokument
+     * @param parsedData             - xml Eingabe Dokument
      * @param classesWithMethodsList - Liste mit allen Klassen und ihren Methoden
      */
     private void createList(Document parsedData, ArrayList<ArrayList<String>> classesWithMethodsList)
@@ -466,6 +479,14 @@ public class SequenceDiagramGenerator
 		    }
 		}
 	    }
+	}
+    }
+
+    public void listArrayList(ArrayList<ArrayList<String>> list2)
+    {
+	for (int i = 0; i < list2.size(); i++)
+	{
+	    System.out.println(list2.get(i));
 	}
     }
 }
