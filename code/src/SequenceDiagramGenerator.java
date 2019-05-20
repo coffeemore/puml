@@ -27,22 +27,18 @@ public class SequenceDiagramGenerator
     /**
      * Erstellt den plantUML-Code aus geparstem xmlDocument
      * 
-     * @param parsedData xml Eingabe Dokument
+     * @param parsedData - xml Eingabe Dokument
      * @return plantUML-Code zur Erzeugung in OutputPUML als xmlDoc
      * @throws ParserConfigurationException
      */
 
-    // Fall, wenn keiner Übergeben wurde
-    // Rekursivität - Klasse und Methode merken, abprüfen ob noch mal aufgerufen ist
     public Document createDiagram(Document parsedData, String epClass, String epMethod)
 	    throws ParserConfigurationException
     {
-	// neues Dokument, das SeqDiagramm Informationen enthalten wird
+	// neues Dokument, das seqDiagramm Informationen enthalten wird
 	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 	DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 	Document seqDiagramm = docBuilder.newDocument();
-
-	// ArrayList<Element> list2 = new ArrayList<Element>();
 
 	Element root = seqDiagramm.createElement("parsed");
 	seqDiagramm.appendChild(root);
@@ -51,7 +47,6 @@ public class SequenceDiagramGenerator
 
 	listClasses(parsedData, seqDiagramm, seq);
 
-	// Entrypoint über Strings festgelegt
 	Element entrypoint = seqDiagramm.createElement("entrypoint");
 	seq.appendChild(entrypoint);
 	Element epClass1 = seqDiagramm.createElement("class");
@@ -61,53 +56,59 @@ public class SequenceDiagramGenerator
 	epMethod1.setTextContent(epMethod);
 	entrypoint.appendChild(epMethod1);
 
-	// Element root1 = parsedData.getDocumentElement();
-
 	listMethoddef(parsedData, seqDiagramm, seq);
-	addType(parsedData, seqDiagramm, seq);
-	// xmlHM.listAllNodes(root);
+	addType(parsedData, seqDiagramm, seq, epClass);
 	xmlHM.writeDocumentToConsole(seqDiagramm);
 
-	return null;
+	return seqDiagramm;
     }
 
+    /**
+     * Die Klassen werden aus parsedData übernommen und in seqDiagramm aufgelistet
+     * 
+     * @param parsedData - xml Eingabe Dokument
+     * @param seqDiagramm - Document für OutputPuml
+     * @param seq - Kindelement von root
+     */
     private void listClasses(Document parsedData, Document seqDiagramm, Element seq)
     {
-
 	Element classes = seqDiagramm.createElement("classes");
 	seq.appendChild(classes);
-
+	// alle Klassen aus parsedData werden in eine Liste geschrieben
 	NodeList cList = parsedData.getElementsByTagName("classdefinition");
-	// alle Einträge der Liste werden durchgegangen
 	for (int i = 0; i < cList.getLength(); i++)
 	{
 	    Node cNode = cList.item(i);
-	    // System.out.println("Current Node: " + cNode.getNodeName());
 	    if (cNode.getNodeType() == Node.ELEMENT_NODE)
 	    {
-		// in Tag <name> gespeicherter Text wird als Klassenname übernommen
 		Element classEl = (Element) cNode;
+		// in Tag <name> gespeicherter Text wird als Klassenname übernommen
 		String cName = classEl.getElementsByTagName("name").item(0).getTextContent();
 		Element entry = seqDiagramm.createElement("entry");
-		// Name der Klasse aus paseddata wird übernommen
 		entry.setTextContent(cName);
 		classes.appendChild(entry);
 	    }
 	}
     }
-
+    
+    /**
+     * Die Methode kopiert aus parsedData alle Methoddefinitions von Klassen in seqDiagramm
+     * 
+     * @param parsedData - xml Eingabe Dokument
+     * @param seqDiagramm - Document für OutputPuml
+     * @param seq - Kindelement von root
+     */
     private void listMethoddef(Document parsedData, Document seqDiagramm, Element seq)
     {
+	// alle Methoden aus parsedData werden in die Liste geschrieben
 	NodeList mList = parsedData.getElementsByTagName("methoddefinition");
-
 	for (int i = 0; i < mList.getLength(); i++)
 	{
-	    // jeder einzelner Knoten wird herausgenommen
 	    Node mNode = mList.item(i);
-
 	    if (mNode.getNodeType() == Node.ELEMENT_NODE)
 	    {
 		Element mParent = (Element) mNode.getParentNode();
+		// wenn die Methode zu einer Klasse gehört, wird sie kopiert
 		if (mParent.getTagName().equals("classdefinition"))
 		{
 		    seq.appendChild(seqDiagramm.importNode(mNode, true));
@@ -116,62 +117,74 @@ public class SequenceDiagramGenerator
 	}
     }
 
-    private void addType(Document parsedData, Document seqDiagramm, Element seq)
+    /**
+     * Die Methodcalls werden mit Type-Tags versehen
+     * 
+     * @param parsedData - xml Eingabe Dokument
+     * @param seqDiagramm - Document für OutputPuml
+     * @param seq - Kindelement von root
+     * @param epClass - übergebener Entrypoint
+     */
+    private void addType(Document parsedData, Document seqDiagramm, Element seq, String epClass)
     {
-	/**
-	 * unter methodcall: recursive, unknown, handled
-	 */
-
-	// Liste für alle Methoden und Klassen
-	NodeList mList = parsedData.getElementsByTagName("methoddefinition");
-	NodeList cList = parsedData.getElementsByTagName("classdefinition");
-	ArrayList<ArrayList<String>> list1 = new ArrayList<ArrayList<String>>();
-	createList(parsedData, mList, cList, list1);
+	// Liste mit allen Klassen und ihren zugeordneten Methoden
+	ArrayList<ArrayList<String>> classesWithMethodsList = new ArrayList<ArrayList<String>>();
+	createList(parsedData, classesWithMethodsList);
 
 	// Liste für bereits aufgerufene Methoden
 	ArrayList<String> calledMethodsList = new ArrayList<String>();
-	NodeList seqMethodList = seqDiagramm.getElementsByTagName("methoddefinition");
-	for (int m = 0; m < seqMethodList.getLength(); m++)
+	// alle Methoddefinitions in SeqDiagram
+	NodeList seqMethodDefList = seqDiagramm.getElementsByTagName("methoddefinition");
+	
+	// in jeder Methoddefinition wird nach Methodcalls gesucht
+	for (int m = 0; m < seqMethodDefList.getLength(); m++)
 	{
-	    Node seqMethodNode = seqMethodList.item(m);
-	    if (seqMethodNode.getNodeType() == Node.ELEMENT_NODE)
+	    Node seqMethodDefNode = seqMethodDefList.item(m);
+	    if (seqMethodDefNode.getNodeType() == Node.ELEMENT_NODE)
 	    {
-		Element seqMethodEl = (Element) seqMethodNode;
-		NodeList seqCallList = seqMethodEl.getElementsByTagName("methodcall");
-		for (int n = 0; n < seqCallList.getLength(); n++)
+		Element seqMethodDefEl = (Element) seqMethodDefNode;
+		NodeList seqMethodCallList = seqMethodDefEl.getElementsByTagName("methodcall");
+		for (int n = 0; n < seqMethodCallList.getLength(); n++)
 		{
-		    Node seqCallNode = seqCallList.item(n);
-		    if (seqCallNode.getNodeType() == Node.ELEMENT_NODE)
+		    Node seqMethodCallNode = seqMethodCallList.item(n);
+		    if (seqMethodCallNode.getNodeType() == Node.ELEMENT_NODE)
 		    {
-			Element seqCallEl = (Element) seqCallNode;
-			String called = seqCallEl.getElementsByTagName("method").item(0).getTextContent();
-			// handled
+			Element seqMethodCallEl = (Element) seqMethodCallNode;
+			// aktuell aufgerufene Methode
+			String calledMethod = seqMethodCallEl.getElementsByTagName("method").item(0).getTextContent();
+
+			/**
+			 * type - handled
+			 */
 			Element type = seqDiagramm.createElement("type");
 			int a = 0;
+			// alle bisher aufgerufenen Methoden werden mit der aktuell aufgerufenen verglichen
 			for (int i = 0; i < calledMethodsList.size(); i++)
 			{
 			    String calledEl = calledMethodsList.get(i);
-			    if (called.equals(calledEl))
+			    if (calledMethod.equals(calledEl) && a == 0 && (seqMethodCallEl.getElementsByTagName("type").item(0) == null))
 			    {
-				if (a == 0)
-				{
-				    type.setTextContent("handled");
-				    seqCallEl.appendChild(type);
-				    a++;
-				}
+				type.setTextContent("handled");
+				seqMethodCallEl.appendChild(type);
+				a++;
 			    }
 			}
-			calledMethodsList.add(called);
+			calledMethodsList.add(calledMethod);
 
-			// unknown
+			/**
+			 * type - unknown
+			 */
 			int b = 0;
 			int c = 0;
-			for (int i = 0; i < list1.size(); i++)
+			// alle vorhandenen Methoden werden mit der aktuell aufgerufenen verglichen
+			for (int i = 0; i < classesWithMethodsList.size(); i++)
 			{
-			    b += list1.get(i).size();
-			    for (int j = 0; j < list1.get(i).size(); j++)
+			    // b speichert die Anzahl aller Klassen und Methoden
+			    b += classesWithMethodsList.get(i).size();
+			    for (int j = 0; j < classesWithMethodsList.get(i).size(); j++)
 			    {
-				if (!called.equals(list1.get(i).get(j)))
+				// c wird hochgesetzt, wenn die calledMethod mit keinem Eintrag in der Liste übereinstimmt
+				if (!calledMethod.equals(classesWithMethodsList.get(i).get(j)))
 				{
 				    c++;
 				}
@@ -180,32 +193,43 @@ public class SequenceDiagramGenerator
 			if (b == c)
 			{
 			    type.setTextContent("unknown");
-			    seqCallEl.appendChild(type);
+			    seqMethodCallEl.appendChild(type);
 			}
 
-			// recursive
 			/**
-			 * list1 benutzen aktuell behandelte Methode vergleicht mit Klassenname der
-			 * aktuellen Methode finden und deren Arraylist)
-			 * 
-			 * ToDo: verschachtelte Rekursion - Lösung finden
-			 * ToDo: Klassenzuweisung der Methoden!
+			 * type - recursive
 			 */
-			Element parent = (Element) seqMethodNode.getParentNode().getFirstChild().getFirstChild();
 			int d = 0;
-			for (int i = 0; i < list1.size(); i++)
+			String currentMethod = seqMethodDefEl.getElementsByTagName("name").item(0).getTextContent();
+
+			if (calledMethod.equals(currentMethod))
 			{
-			    for (int j = 0; j < list1.get(i).size(); j++)
+			    // Test, ob instance-Tag oder class-Tag vorhanden
+			    if ((seqMethodCallEl.getElementsByTagName("instance").item(0) == null) && (seqMethodCallEl.getElementsByTagName("class").item(0) == null))
 			    {
-				String tried = seqMethodEl.getElementsByTagName("name").item(0).getTextContent();
-				if (called.equals(tried) && d==0 /*&& list1.get(i).get(0).equals(parent.getTagName())*/)
+				// kein instance-Tag oder class-Tag
+				for (int i = 0; i < classesWithMethodsList.size(); i++)
 				{
-				    seqCallEl.removeChild(type);
-				    type.setTextContent("recursive");
-				    seqCallEl.appendChild(type);
-				    d++;
+				    // Klasse des Entrypoints wird gesucht
+				    if (classesWithMethodsList.get(i).get(0).equals(epClass))
+				    {
+					for (int j = 0; j < classesWithMethodsList.get(i).size(); j++)
+					{
+					    // die Methoden des Entrypoints werden mit der aktuell aufgerufenen Methode verglichen
+					    if (calledMethod.equals(classesWithMethodsList.get(i).get(j)) && (d == 0))
+					    {
+						type.setTextContent("recursive");
+						seqMethodCallEl.appendChild(type);
+						d++;
+					    }
+					}
+				    }
 				}
 			    }
+			} else
+			{
+			    // Funktion zur Prüfung verschachtelter Rekursion
+			    recursiveLoop(type, currentMethod, seqMethodDefList, m);
 			}
 		    }
 		}
@@ -213,42 +237,72 @@ public class SequenceDiagramGenerator
 	}
     }
 
-    
+    /**
+     * verschachtelte Rekursion wird geprüft
+     * 
+     * @param type - Element von Methodcall
+     * @param currentMethod - aktuell aufgerufene Methode
+     * @param seqMethodDefList - Methoddefinition-Liste
+     * @param m - Index der Stelle in der Methoddefinition-Liste
+     */
+    private void recursiveLoop(Element type, String currentMethod, NodeList seqMethodDefList, int m)
+    {
+	// die Methodcalls der aufgerufenen Methoden werden auf Rekursivität geprüft
+	if (m < seqMethodDefList.getLength())
+	{
+	    Node defNode = seqMethodDefList.item(m);
+	    if (defNode.getNodeType() == Node.ELEMENT_NODE)
+	    {
+		Element defEl = (Element) defNode;
+		NodeList callList = defEl.getElementsByTagName("methodcall");
+		for (int j = 0; j < callList.getLength(); j++)
+		{
+		    Node callNode = callList.item(j);
+		    if (callNode.getNodeType() == Node.ELEMENT_NODE)
+		    {
+			Element callEl = (Element) callNode;
+			String called = callEl.getElementsByTagName("method").item(0).getTextContent();
+			// die aktuell behandelte Methode wird mit den Methoden der Methodcalls verglichen
+			if (called.equals(currentMethod))
+			{
+			    type.setTextContent("recursive");
+			    callEl.appendChild(type);
+			} else
+			{
+			    m++;
+			    recursiveLoop(type, currentMethod, seqMethodDefList, m);
+			}
+		    }
+		}
+	    }
+	}
+    }
+
     private void addInstances(Document parsedData, Document seqDiagramm, Element seq)
     {
 
     }
 
-    private void createMElementList(Document parsedData, ArrayList<Element> list2)
+    /**
+     * eine Liste mit allen Klassen und ihren Methoden wird erstellt
+     * 
+     * @param parsedData - xml Eingabe Dokument
+     * @param classesWithMethodsList - Liste mit allen Klassen und ihren Methoden
+     */
+    private void createList(Document parsedData, ArrayList<ArrayList<String>> classesWithMethodsList)
     {
 	NodeList mList = parsedData.getElementsByTagName("methoddefinition");
-	for (int i = 0; i < mList.getLength(); i++)
-	{
-	    Node mNode = mList.item(i);
-	    if (mNode.getNodeType() == Node.ELEMENT_NODE)
-	    {
-		Element methodEl = (Element) mNode;
-		list2.add(methodEl);
-	    }
-	}
-
-    }
-
-    private void createList(Document parsedData, NodeList mList, NodeList cList, ArrayList<ArrayList<String>> list1)
-    {
-	/**
-	 * gehe jede Klasse durch merke dir den Knotennamen und gehe dann alle Methoden
-	 * dieses Knotens durch jede Klasse bekommt ihre eigene Arraylist
-	 */
+	NodeList cList = parsedData.getElementsByTagName("classdefinition");
 	for (int i = 0; i < cList.getLength(); i++)
 	{
-	    list1.add(i, new ArrayList<String>());
+	    // jede Klasse bekommt ihre eigene ArrayList
+	    classesWithMethodsList.add(i, new ArrayList<String>());
 	    Node cNode = cList.item(i);
 	    if (cNode.getNodeType() == Node.ELEMENT_NODE)
 	    {
 		Element classEl = (Element) cNode;
 		String tmpClass = classEl.getElementsByTagName("name").item(0).getTextContent();
-		list1.get(i).add(tmpClass);
+		classesWithMethodsList.get(i).add(tmpClass);
 
 		for (int j = 0; j < mList.getLength(); j++)
 		{
@@ -263,31 +317,11 @@ public class SequenceDiagramGenerator
 			String tmpMethod = methodEl.getElementsByTagName("name").item(0).getTextContent();
 			if (tmpParent == tmpClass)
 			{
-			    list1.get(i).add(tmpMethod);
+			    classesWithMethodsList.get(i).add(tmpMethod);
 			}
 		    }
 		}
 	    }
-	}
-    }
-
-    public void listArrayList(ArrayList<ArrayList<String>> list2)
-    {
-	for (int i = 0; i < list2.size(); i++)
-	{
-	    System.out.println(list2.get(i));
-	}
-    }
-
-    public void listArray(String[][] feld1, NodeList cList, NodeList mList)
-    {
-	for (int i = 0; i < cList.getLength(); i++)
-	{
-	    for (int j = 0; j < mList.getLength(); j++)
-	    {
-		System.out.print(feld1[i][j] + " ");
-	    }
-	    System.out.println();
 	}
     }
 }
