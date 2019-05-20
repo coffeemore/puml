@@ -91,6 +91,14 @@ public class Console extends PUMLgenerator
 	    {
 		codeCollector.setUseJavaFiles(false);
 	    }
+	    if (cmd.hasOption("cc")) /*TODO*/
+	    {
+	    	
+	    }
+	    if (cmd.hasOption("cs")) /*TODO*/
+	    {
+	    	
+	    }	
 	    if (cmd.hasOption("i")) // Verarbeitung vieler zu verarbeitenden Pfade
 	    {
 		for (int i = 0; i < cmd.getOptionValues("i").length; i++) // Pfade in Collector Liste schreiben
