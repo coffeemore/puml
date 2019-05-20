@@ -81,68 +81,32 @@ public class Console extends PUMLgenerator
 	    // Argumentauswertungen und Ausfuehrungen
 	    if (cmd.hasOption("c")) // Anleitung ausgeben
 	    {
-		System.out.println("Consolemode");
+	    	System.out.println("Consolemode");
 	    }
 	    if (cmd.hasOption("ijar")) // ignore jar files
 	    {
-		codeCollector.setUseJarFiles(false);
+	    	codeCollector.setUseJarFiles(false);
 	    }
 	    if (cmd.hasOption("ijava")) // ignore java files
 	    {
-		codeCollector.setUseJavaFiles(false);
+	    	codeCollector.setUseJavaFiles(false);
 	    }
-	    if (cmd.hasOption("cc")) /*TODO*/
-	    {
-	    	
-	    }
-	    if (cmd.hasOption("cs")) /*TODO*/
-	    {
-	    	
-	    }	
 	    if (cmd.hasOption("i")) // Verarbeitung vieler zu verarbeitenden Pfade
 	    {
-		for (int i = 0; i < cmd.getOptionValues("i").length; i++) // Pfade in Collector Liste schreiben
-		{
+	    	for (int i = 0; i < cmd.getOptionValues("i").length; i++) // Pfade in Collector Liste schreiben
+	    	{
 		    codeCollector.paths.add(cmd.getOptionValues("i")[i]);
 		    System.out.println(codeCollector.paths.get(i));
-		}
-		PUMLgenerator.parser.parse(codeCollector.getSourceCode()); // Parser berbeitet Daten welche ihm
-									   // übergeben
-									   // werden
+	    	}
+			PUMLgenerator.parser.parse(codeCollector.getSourceCode()); // Parser berbeitet Daten welche ihm übergeben werden
 
 		if (cmd.hasOption("o")) // Zielordner abfragen, sonst in Arbeitsverzeichnis sichern
 		{
-		    try
-		    {
-			outputPUML.savePUMLtoFile(outputPUML.getPUML(parser.getParsingResult()),
-				cmd.getOptionValue("o") + "outPUML_Code"); // Einbinden der neuen Code Funktion
-
-			outputPUML.createPUMLfromString(cmd.getOptionValue("o") + "outPUML_Graph",
-				outputPUML.getPUML(parser.getParsingResult())); // Einbinden der Diagrammfunktion
-		    }
-		    catch (IOException | XPathExpressionException e)
-		    {
-			System.out.println("Kommandozeile: Verarbeitung mit output-Pfad fehlgeschlagen");
-			e.printStackTrace();
-		    }
-		    System.out.println(
-			    "Zielordner:" + cmd.getOptionValue("o") + "\nQuelle: " + codeCollector.getSourceCode());
+		    createClassDiagram(cmd,true);
 		}
 		else // Falls kein Output-Path definiert
 		{
-		    try
-		    {
-			outputPUML.savePUMLtoFile(outputPUML.getPUML(parser.getParsingResult()),
-				"./outPUML_Code_defaultlocation"); // Code erzeugen Funktion
-
-			outputPUML.createPUMLfromString("./outPUML_Graph_defaultlocation",
-				outputPUML.getPUML(parser.getParsingResult())); // Einbinden der Diagrammfunktion
-		    }
-		    catch (IOException | XPathExpressionException e)
-		    {
-			System.out.println("Kommandozeile: Verarbeitung ohne output-Pfad fehlgeschlagen");
-			e.printStackTrace();
-		    }
+		    createClassDiagram(cmd, false);
 		}
 	    }
 	    else if (!cmd.hasOption("i"))
@@ -157,5 +121,48 @@ public class Console extends PUMLgenerator
 	    formatter.printHelp("PUML", options);
 	}
 
+    }
+    
+    private void createClassDiagram(CommandLine cmd, Boolean outPath)
+    {
+    	if (!outPath) //Falls kein Ausgabeordner definiert, in Arbeitsverzeichnis schreiben
+    	{
+    		try
+		    {
+    			
+    			outputPUML.savePUMLtoFile(outputPUML.getPUML(parser.getParsingResult()),
+				"./outPUML_Code_defaultlocation"); // Code erzeugen Funktion
+
+    			outputPUML.createPUMLfromString("./outPUML_Graph_defaultlocation",
+				outputPUML.getPUML(parser.getParsingResult())); // Einbinden der Diagrammfunktion
+		    }
+		    catch (IOException | XPathExpressionException e)
+		    {
+		    	System.out.println("Kommandozeile: Verarbeitung ohne output-Pfad fehlgeschlagen");
+		    	e.printStackTrace();
+		    }
+    	}
+    	else // Sonst in Verzeichniss schreiben
+    	{
+    		try
+		    {
+    			outputPUML.savePUMLtoFile(outputPUML.getPUML(parser.getParsingResult()),
+				cmd.getOptionValue("o") + "outPUML_Code"); // Einbinden der neuen Code Funktion
+
+    			outputPUML.createPUMLfromString(cmd.getOptionValue("o") + "outPUML_Graph",
+				outputPUML.getPUML(parser.getParsingResult())); // Einbinden der Diagrammfunktion
+		    }
+		    catch (IOException | XPathExpressionException e)
+		    {
+		    	System.out.println("Kommandozeile: Verarbeitung mit output-Pfad fehlgeschlagen");
+		    	e.printStackTrace();
+		    }
+		    	System.out.println(
+			    "Zielordner:" + cmd.getOptionValue("o") + "\nQuelle: " + codeCollector.getSourceCode());
+    	}
+    }
+    private void createSQDiagram()
+    {
+ 
     }
 }
