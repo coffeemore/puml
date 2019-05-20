@@ -63,6 +63,7 @@
 				</case>
 				<case>
 					<condition>switch(i)/default</condition>
+					
 					<methodcall>
 						<instance>classInstance1</instance>	<!-- Aufruf sollte auf instanz von class3 ausgeführt werden -->
 						<method>call1</method>
