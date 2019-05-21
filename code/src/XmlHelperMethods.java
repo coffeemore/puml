@@ -28,12 +28,16 @@ import org.xml.sax.SAXException;
  */
 public class XmlHelperMethods
 {
+	private XPath xpath;
+	private XPathFactory xPathfactory;
+	
 	 /**
      * Konstruktor
      */
     public XmlHelperMethods()
     {
-	
+    	this.xPathfactory = XPathFactory.newInstance();
+    	this.xpath = xPathfactory.newXPath();
     }
     
     /**
@@ -115,11 +119,9 @@ public class XmlHelperMethods
     }
 
     //Liefert NodeList zurück
-    public static NodeList getList(Document doc, String path) throws XPathExpressionException 
+    public NodeList getList(Document doc, String path) throws XPathExpressionException 
     {
-    		XPathFactory xPathfactory = XPathFactory.newInstance();
-        	XPath xpath = xPathfactory.newXPath();
-        	XPathExpression expr = xpath.compile(path);
+        	XPathExpression expr = this.xpath.compile(path);
         	NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 
         return list;

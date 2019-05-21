@@ -28,6 +28,7 @@ public class OutputPUML
 {
     public NodeList list = null;
     LogMain logger = new LogMain();
+    XmlHelperMethods helper = new XmlHelperMethods();
 
     /**
      * Konstruktor
@@ -54,7 +55,7 @@ public class OutputPUML
 		String pumlCode = "@startuml\n";
 		if (compare == "classdiagramm")
 		{
-		    list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classes/entry");
+			list = helper.getList(diagramData, "/parsed/classdiagramm/classes/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
 				if (list.item(a).getNodeName() != "#text")
@@ -62,7 +63,7 @@ public class OutputPUML
 				    pumlCode += "class " + list.item(a).getTextContent() + "\n";
 				}
 		    }
-		    list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/interfaces/entry");
+		    list = helper.getList(diagramData, "/parsed/classdiagramm/interfaces/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
 				if (list.item(a).getNodeName() != "#text")
@@ -72,16 +73,16 @@ public class OutputPUML
 		    }
 	
 		    // EXTENSIONS
-		    list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/extensions/entry");
+		    list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/extensions/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-				list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/extensions/entry/to");
+				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/extensions/entry/to");
 				if (list.item(a).getNodeName() != "#text")
 				{
 				    pumlCode += list.item(a).getTextContent() + " <|-- ";
 		
 				}
-				list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/extensions/entry/from");
+				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/extensions/entry/from");
 				if (list.item(a).getNodeName() != "#text")
 				{
 				    pumlCode += list.item(a).getTextContent() + "\n";
@@ -89,16 +90,16 @@ public class OutputPUML
 		    }
 	
 		    // IMPLEMENTATIONS
-		    list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/implementations/entry");
+		    list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/implementations/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-				list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/implementations/entry/to");
+				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/implementations/entry/to");
 				if (list.item(a).getNodeName() != "#text")
 				{
 				    pumlCode += list.item(a).getTextContent() + " <|-- ";
 		
 				}
-				list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/implementations/entry/from");
+				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/implementations/entry/from");
 				if (list.item(a).getNodeName() != "#text")
 				{
 				    pumlCode += list.item(a).getTextContent() + "\n";
@@ -106,16 +107,16 @@ public class OutputPUML
 		    }
 	
 		    // COMPOSITIONS
-		    list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/compositions/entry");
+		    list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/compositions/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-				list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/compositions/entry/to");
+				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/compositions/entry/to");
 				if (list.item(a).getNodeName() != "#text")
 				{
 				    pumlCode += list.item(a).getTextContent() + " *-- ";
 		
 				}
-				list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/compositions/entry/from");
+				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/compositions/entry/from");
 				if (list.item(a).getNodeName() != "#text")
 				{
 				    pumlCode += list.item(a).getTextContent() + "\n";
@@ -123,16 +124,16 @@ public class OutputPUML
 		    }
 	
 		    // AGGREGATIONS
-		    list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/aggregations/entry");
+		    list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/aggregations/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-				list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/aggregations/entry/to");
+				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/aggregations/entry/to");
 				if (list.item(a).getNodeName() != "#text")
 				{
 				    pumlCode += list.item(a).getTextContent() + " o-- ";
 		
 				}
-				list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/aggregations/entry/from");
+				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/aggregations/entry/from");
 				if (list.item(a).getNodeName() != "#text")
 				{
 				    pumlCode += list.item(a).getTextContent() + "\n";
@@ -146,7 +147,7 @@ public class OutputPUML
 		    String tempStartClass = "";
 		    String tempEndClass = "";
 		    String tempMethod = "";
-		    list = XmlHelperMethods.getList(diagramData, "/parsed/sequencediagram/classes/entry");
+		    list = helper.getList(diagramData, "/parsed/sequencediagram/classes/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
 			if (list.item(a).getNodeName() != "#text")
@@ -154,7 +155,7 @@ public class OutputPUML
 			    pumlCode += "participant " + list.item(a).getTextContent() + "\n";
 			}
 		    }
-		    list = XmlHelperMethods.getList(diagramData, "/parsed/sequencediagram/entrypoint");
+		    list = helper.getList(diagramData, "/parsed/sequencediagram/entrypoint");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
 			list = list.item(a).getChildNodes();
