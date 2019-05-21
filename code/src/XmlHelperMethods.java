@@ -12,6 +12,11 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,12 +29,16 @@ import org.xml.sax.SAXException;
  */
 public class XmlHelperMethods
 {
+	private XPath xpath;
+	private XPathFactory xPathfactory;
+	
 	 /**
      * Konstruktor
      */
     public XmlHelperMethods()
     {
-	
+    	this.xPathfactory = XPathFactory.newInstance();
+    	this.xpath = xPathfactory.newXPath();
     }
     
     /**
@@ -138,11 +147,9 @@ public class XmlHelperMethods
     }
 
     //Liefert NodeList zurück
-    public static NodeList getList(Document doc, String path) throws XPathExpressionException 
+    public NodeList getList(Document doc, String path) throws XPathExpressionException 
     {
-    		XPathFactory xPathfactory = XPathFactory.newInstance();
-        	XPath xpath = xPathfactory.newXPath();
-        	XPathExpression expr = xpath.compile(path);
+        	XPathExpression expr = this.xpath.compile(path);
         	NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 
         return list;
