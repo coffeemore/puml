@@ -1,7 +1,10 @@
 
 import java.io.IOException;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -11,6 +14,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.UnrecognizedOptionException;
+import org.w3c.dom.NodeList;
 
 /**
  * 
@@ -47,15 +51,12 @@ public class Console extends PUMLgenerator
 	options.addOption("ijava", false, "Dateien mit der Endung .java werden ignoriert.");
 	
 	//Erstelle Klassendiagramm
-	Options classDiag = new Options();
 	options.addOption("cc",false, "Erzeugt ein Klassendiagramm.");
 		
 	//Alles auflisten
-	Options show = new Options();
 	options.addOption("s",false, "Listet alle Klassen und Methoden auf.");
 		
 	//Alles auflisten
-	Options interactive = new Options();
 	options.addOption("int",false, "Startet interaktiven Modus.");
 
 	// Angabe fuer den Ausgabepfad
@@ -65,7 +66,7 @@ public class Console extends PUMLgenerator
 	
 	//Erstelle SeqenceDiagramm
 	Option seqDiag = Option.builder()
-			.longOpt("cs").argName("Klasse").argName("Methode").hasArgs().valueSeparator(',').numberOfArgs(2).desc("Erzeugt ein Sequenzdiagramm.").build();
+			.longOpt("cs").argName("Klasse, Methode").hasArgs().valueSeparator(',').numberOfArgs(2).desc("Erzeugt ein Sequenzdiagramm.").build();
 	options.addOption(seqDiag);
 	
 	// Angabe der zu verarbeitenden Dateien
@@ -102,7 +103,10 @@ public class Console extends PUMLgenerator
 		    	System.out.println(codeCollector.paths.get(i));
 		    }
 			PUMLgenerator.parser.parse(codeCollector.getSourceCode()); // Parser berbeitet Daten welche ihm übergeben werden
-			
+			if (cmd.hasOption("s"))
+			{
+				showAllClassesMethods();
+			}
 			if (cmd.hasOption("o")) // Pruefe ob Zielordner vorhanden
 			{
 				if (cmd.hasOption("cc")) //Gewuenschtes Diagramm
@@ -111,10 +115,10 @@ public class Console extends PUMLgenerator
 				}
 				if (cmd.hasOption("cs"))
 				{
-					createSQDiagram();
+					createSQDiagram(cmd,true);
 				}
 			}
-			else // Falls kein Output-Path definiert
+			else 
 			{
 				if (cmd.hasOption("cc")) //Gewuenschtes Diagramm
 				{
@@ -122,7 +126,7 @@ public class Console extends PUMLgenerator
 				}
 				if (cmd.hasOption("cs"))
 				{
-					createSQDiagram();
+					createSQDiagram(cmd,false);
 				}
 			}
 		}
@@ -139,7 +143,13 @@ public class Console extends PUMLgenerator
 	}
 
     }
-    
+    /*
+     * Erstellt den Quellcode fuer ein Klassendiagramm und erzeugt das Textfile,
+     * entweder im aktuellen Arbeitsverzeichnis oder unter spezifiziertem Pfad
+     * @param cmd Uebergabe des Kommandos
+     * @param outPath Ausgabeort festgelegt ja/nein
+     * 
+     */
     private void createClassDiagram(CommandLine cmd, Boolean outPath)
     {
     	if (!outPath) //Falls kein Ausgabeordner definiert, in Arbeitsverzeichnis schreiben
@@ -178,8 +188,43 @@ public class Console extends PUMLgenerator
 			    "Zielordner:" + cmd.getOptionValue("o") + "\nQuelle: " + codeCollector.getSourceCode());
     	}
     }
-    private void createSQDiagram()
+    /*
+     * Erstellt den Quellcode fuer ein Klassendiagramm und erzeugt das Textfile,
+     * entweder im aktuellen Arbeitsverzeichnis oder unter spezifiziertem Pfad
+     * @param cmd Uebergabe des Kommandos
+     * @param outPath Ausgabeort festgelegt ja/nein
+     * 
+     */
+    private void createSQDiagram(CommandLine cmd, Boolean outpath)
     {
- 
+    	if (!outpath)
+    	{
+    		
+    	}
+    	else
+    	{
+    		
+    	}
+    	System.out.println("Klasse: " + cmd.getOptionValues("cs")[0] + " und Methode: " + cmd.getOptionValues("cs")[1]);
+    }
+    /*
+     * Ausgabe aller Klassen und Methoden im Konsolendialog
+     * 
+     */
+	private void showAllClassesMethods()
+    {
+		try
+		{
+			/*TODO*/
+			NodeList outNodeList = XmlHelperMethods.getList(PUMLgenerator.parser.getParsingResult(), "//source/classdefinition/name");
+			for (int i = 0; i < 5; i++)
+			{
+				System.out.println(i+" "+outNodeList.item(i));
+			}
+		}
+		catch (XPathExpressionException e)
+		{
+			e.printStackTrace();
+		}
     }
 }
