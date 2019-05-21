@@ -1,7 +1,12 @@
 
+import java.io.File;
 import java.io.IOException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -14,7 +19,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.UnrecognizedOptionException;
+import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * 
@@ -205,7 +212,8 @@ public class Console extends PUMLgenerator
     	{
     		
     	}
-    	System.out.println("Klasse: " + cmd.getOptionValues("cs")[0] + " und Methode: " + cmd.getOptionValues("cs")[1]);
+    	//Verwenden:
+    	//System.out.println("Klasse: " + cmd.getOptionValues("cs")[0] + " und Methode: " + cmd.getOptionValues("cs")[1]);
     }
     /*
      * Ausgabe aller Klassen und Methoden im Konsolendialog
@@ -216,10 +224,26 @@ public class Console extends PUMLgenerator
 		try
 		{
 			/*TODO*/
-			NodeList outNodeList = XmlHelperMethods.getList(PUMLgenerator.parser.getParsingResult(), "//source/classdefinition/name");
-			for (int i = 0; i < 5; i++)
+			Document parserDoc = PUMLgenerator.parser.getParsingResult();
+			XPathFactory xPathfactory = XPathFactory.newInstance();
+			XPath xpath = xPathfactory.newXPath();
+			XPathExpression expr = xpath.compile("/parsed/*"); // Startpunkt parsed Knoten
+			NodeList classNodeList = (NodeList) expr.evaluate(parserDoc, XPathConstants.NODESET); // in Liste
+			
+			classNodeList = xmlHelper.getList(parserDoc, "//classdefinition/name");
+			System.out.println("Anzahl Klassen: "+ classNodeList.getLength());
+			
+			for (int i = 0; i < classNodeList.getLength(); i++)
 			{
-				System.out.println(i+" "+outNodeList.item(i));
+				System.out.println("Klasse "+ i + ": "+ classNodeList.item(i).getTextContent());
+			}
+			
+			classNodeList = xmlHelper.getList(parserDoc, "//classdefinition/methoddefinition/name");
+			System.out.println("Anzahl Methoden: "+ classNodeList.getLength());
+			
+			for (int i = 0; i < classNodeList.getLength(); i++)
+			{
+				System.out.println("Methode "+ i + ": "+ classNodeList.item(i).getTextContent());
 			}
 		}
 		catch (XPathExpressionException e)
