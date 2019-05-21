@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -56,7 +58,9 @@ public class SequenceDiagramGenerator
 	epMethod1.setTextContent(epMethod);
 	entrypoint.appendChild(epMethod1);
 
+	parsedData = deleteInstancesNotInMethodcalls(parsedData);
 	listMethoddef(parsedData, seqDiagramm, seq);
+
 	addClassesToInstances(parsedData, seqDiagramm);
 	addType(parsedData, seqDiagramm, seq, epClass);
 	xmlHM.writeDocumentToConsole(seqDiagramm);
@@ -128,10 +132,14 @@ public class SequenceDiagramGenerator
      * 
      * param: parsedData - Quell-Dokument seqDiagramm - das generierte Dokument, in
      * dem die Instanzen eingefügt werden sollen
+     * 
+     * @throws XPathExpressionException
      */
 
     private void addClassesToInstances(Document parsedData, Document seqDiagramm)
     {
+//	NodeList list = xmlHM.listChildnodeswithName(parsedData, "instance"); 
+
 	ArrayList<ArrayList<String>> instanceList = createInstanceList(parsedData);
 
 	NodeList methodcalls = seqDiagramm.getElementsByTagName("methodcall");
@@ -161,9 +169,12 @@ public class SequenceDiagramGenerator
 
     }
 
-    /*
+    /**
      * Funktion erstellt eine Liste aller im Document parsedData vorkommenden
      * Klassen mit ihren jeweiligen Instanzen param: parsedData return: instanceList
+     * 
+     * @param parsedData
+     * @return instanceList
      */
     private ArrayList<ArrayList<String>> createInstanceList(Document parsedData)
     {
@@ -172,6 +183,7 @@ public class SequenceDiagramGenerator
 											// ihren Instanzen
 	// für jede Classdefinition in parsed Data eine Liste, darin auch die Instanzen
 	// dieser Klasse vermerken
+
 	NodeList cList = parsedData.getElementsByTagName("classdefinition");
 	// index i : Klasenliste
 	// index j: Unterknoten der Klasseneinträge
@@ -229,7 +241,7 @@ public class SequenceDiagramGenerator
 		}
 	    }
 	}
-	listArrayList(instanceList);
+//	listArrayList(instanceList);
 
 	return instanceList;
     }
@@ -480,6 +492,41 @@ public class SequenceDiagramGenerator
 		}
 	    }
 	}
+    }
+
+    public Document deleteInstancesNotInMethodcalls(Document parsedData)
+    {
+	// mList = Liste der Methoddefinitions
+	try
+	{
+	    NodeList iList = xmlHM.getList(parsedData, "//instance");
+	    for (int i = 0; i < iList.getLength(); i++)
+	    {
+//		System.out.println("Klasseninstanz gefunden: ");
+//		if (xmlHM.hasChildwithName(iList.item(i), "name"))
+//		{
+//		    System.out.println(xmlHM.getChildwithName(iList.item(i), "name").getTextContent());
+//		}
+//		System.out.println("Parent Node:");
+//		System.out.println(iList.item(i).getParentNode().getNodeName());
+		if (iList.item(i).getParentNode().equals(null))
+		{
+		    System.out.println("kein ParentNode");
+		}
+		if (!(iList.item(i).getParentNode().getNodeName().equals("methodcall")
+			|| iList.item(i).getParentNode().getNodeName().equals("classdefinition")))
+		{
+		    iList.item(i).getParentNode().removeChild(iList.item(i));
+//		    System.out.println("Instanz-Knoten entfernt");
+		}
+	    }
+	} catch (Exception e)
+	{
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+
+	return parsedData;
     }
 
     public void listArrayList(ArrayList<ArrayList<String>> list2)
