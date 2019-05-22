@@ -19,6 +19,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.UnrecognizedOptionException;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -73,7 +74,7 @@ public class Console extends PUMLgenerator
 	
 	//Erstelle SeqenceDiagramm
 	Option seqDiag = Option.builder()
-			.longOpt("cs").argName("Klasse, Methode").hasArgs().valueSeparator(',').numberOfArgs(2).desc("Erzeugt ein Sequenzdiagramm.").build();
+			.longOpt("cs").argName("Klasse, Methode").hasArgs().type(Integer.class).valueSeparator(',').numberOfArgs(2).desc("Erzeugt ein Sequenzdiagramm.").build();
 	options.addOption(seqDiag);
 	
 	// Angabe der zu verarbeitenden Dateien
@@ -170,12 +171,17 @@ public class Console extends PUMLgenerator
     	{
     		try
 		    {
-    			
+    			//PUML code erstellen
+    			outputPUML.savePUMLtoFile(outputPUML.getPUML(classDiagramGenerator.createDiagram(parser.getParsingResult())),"./outPUML_Code_defaultlocation");
+    			//Diagramm erzeugen
+    			outputPUML.createPUMLfromFile("./outPUML_Code_defaultlocation", "./outPUML_Graph_defaultlocation");
+    			/*
     			outputPUML.savePUMLtoFile(outputPUML.getPUML(parser.getParsingResult()),
 				"./outPUML_Code_defaultlocation"); // Code erzeugen Funktion
 
     			outputPUML.createPUMLfromString("./outPUML_Graph_defaultlocation",
 				outputPUML.getPUML(parser.getParsingResult())); // Einbinden der Diagrammfunktion
+				*/
 		    }
 		    catch (IOException | XPathExpressionException e)
 		    {
@@ -187,11 +193,14 @@ public class Console extends PUMLgenerator
     	{
     		try
 		    {
-    			outputPUML.savePUMLtoFile(outputPUML.getPUML(parser.getParsingResult()),
-				cmd.getOptionValue("o") + "outPUML_Code"); // Einbinden der neuen Code Funktion
 
-    			outputPUML.createPUMLfromString(cmd.getOptionValue("o") + "outPUML_Graph",
-				outputPUML.getPUML(parser.getParsingResult())); // Einbinden der Diagrammfunktion
+    			//PUML code erstellen
+    			outputPUML.savePUMLtoFile(outputPUML.getPUML(classDiagramGenerator.createDiagram(parser.getParsingResult())),cmd.getOptionValue("o") + "/outPUML_Code");
+    			//Diagramm erzeugen
+    			outputPUML.createPUMLfromFile(cmd.getOptionValue("o") + "/outPUML_Code", cmd.getOptionValue("o") + "outPUML_Graph");
+    			//outputPUML.savePUMLtoFile(outputPUML.getPUML(parser.getParsingResult()),cmd.getOptionValue("o") + "outPUML_Code"); // Einbinden der neuen Code Funktion
+
+    			//outputPUML.createPUMLfromString(cmd.getOptionValue("o") + "outPUML_Graph",outputPUML.getPUML(parser.getParsingResult())); // Einbinden der Diagrammfunktion
 		    }
 		    catch (IOException | XPathExpressionException e)
 		    {
@@ -215,16 +224,63 @@ public class Console extends PUMLgenerator
     	{
     		System.out.println("Keine Klasse / Methode als Einstiegspunkt gewaehlt. <int, int>");
     	}
-    	if (!outpath)
-    	{
-    		
-    	}
-    	else
-    	{
-    		
-    	}
-    	//Verwenden:
-    	//System.out.println("Klasse: " + cmd.getOptionValues("cs")[0] + " und Methode: " + cmd.getOptionValues("cs")[1]);
+    	System.out.println("Klasse: " + cmd.getOptionValues("cs")[0] + " und Methode: " + cmd.getOptionValues("cs")[1]);
+    
+		try
+		{
+			//Doc Initialisierung und filtern der Elemente aus xml -> Klasse und Methode
+	    	Document parserDoc = PUMLgenerator.parser.getParsingResult();
+			XPathFactory xPathfactory = XPathFactory.newInstance();
+			XPath xpath = xPathfactory.newXPath();
+			XPathExpression expr = xpath.compile("/parsed/*"); // Startpunkt parsed Knoten
+			NodeList classNodeList = (NodeList) expr.evaluate(parserDoc, XPathConstants.NODESET);
+			
+			classNodeList = xmlHelper.getList(parserDoc, "/source/classdefinition/name");
+			System.out.println("Anzahl Klassen: "+ classNodeList.getLength() + "\n");
+			
+			NodeList methodeNodeList = (NodeList) expr.evaluate(parserDoc, XPathConstants.NODESET);
+			
+			methodeNodeList = xmlHelper.getList(parserDoc, "/source/classdefinition/methoddefinition/name");
+			System.out.println("Anzahl Methoden: "+ methodeNodeList.getLength() + "\n");
+		
+			//Funktionenaufruf
+			int entryClass = Integer.parseInt(cmd.getOptionValues("cs")[0]);
+    		int entryMethode = Integer.parseInt(cmd.getOptionValues("cs")[1]);
+	    	if (!outpath) //Falls kein Ausgabeordner definiert, in Arbeitsverzeichnis schreiben
+	    	{
+	    		try
+	    		{
+	    			//Code Erzeugen
+					outputPUML.savePUMLtoFile(outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), classNodeList.item(entryClass).getTextContent(), classNodeList.item(entryMethode).getTextContent())),"./outPUML_Code_defaultlocation");
+					//Diagramm erzeugen
+	    			outputPUML.createPUMLfromFile("./outPUML_Code_defaultlocation", "./outPUML_Graph_defaultlocation");
+	    		}
+	    		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException e)
+	    		{
+	    			System.out.println("Kommandozeile: Verarbeitung SQ ohne output-Pfad fehlgeschlagen");
+					e.printStackTrace();
+				}
+	    	}
+	    	else
+	    	{
+	    		try
+	    		{
+	    			//Code Erzeugen
+					outputPUML.savePUMLtoFile(outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), classNodeList.item(entryClass).getTextContent(), classNodeList.item(entryMethode).getTextContent())), cmd.getOptionValue("o") + "/outPUML_Code");
+					//Diagramm erzeugen
+					outputPUML.createPUMLfromFile(cmd.getOptionValue("o") + "/outPUML_Code", cmd.getOptionValue("o") + "outPUML_Graph");
+				}
+	    		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException e)
+	    		{
+	    			System.out.println("Kommandozeile: Verarbeitung SQ ohne output-Pfad fehlgeschlagen");
+					e.printStackTrace();
+				}
+	    	}
+		}
+		catch (XPathExpressionException e1)
+		{
+			e1.printStackTrace();
+		}
     }
     /*
      * Ausgabe aller Klassen und Methoden im Konsolendialog
@@ -234,13 +290,14 @@ public class Console extends PUMLgenerator
     {
 		try
 		{
+			
 			/*TODO*/
 			Document parserDoc = getTestDoc(); //Test
 			/* Document parserDoc = PUMLgenerator.parser.getParsingResult(); */
 			XPathFactory xPathfactory = XPathFactory.newInstance();
 			XPath xpath = xPathfactory.newXPath();
 			XPathExpression expr = xpath.compile("/parsed/*"); // Startpunkt parsed Knoten
-			NodeList classNodeList = (NodeList) expr.evaluate(parserDoc, XPathConstants.NODESET); // in Liste
+			NodeList classNodeList = (NodeList) expr.evaluate(parserDoc, XPathConstants.NODESET);
 			
 			classNodeList = xmlHelper.getList(parserDoc, "/source/classdefinition/name");
 			System.out.println("Anzahl Klassen: "+ classNodeList.getLength() + "\n");
@@ -250,7 +307,8 @@ public class Console extends PUMLgenerator
 				System.out.println("Klasse  "+ i + ": "+ classNodeList.item(i).getTextContent());
 			}
 			System.out.println();
-			NodeList methodeNodeList = (NodeList) expr.evaluate(parserDoc, XPathConstants.NODESET); // in Liste
+			NodeList methodeNodeList = (NodeList) expr.evaluate(parserDoc, XPathConstants.NODESET);
+			
 			methodeNodeList = xmlHelper.getList(parserDoc, "/source/classdefinition/methoddefinition/name");
 			System.out.println("Anzahl Methoden: "+ methodeNodeList.getLength() + "\n");
 			for (int i = 0; i < methodeNodeList.getLength(); i++)
@@ -264,6 +322,7 @@ public class Console extends PUMLgenerator
 			e.printStackTrace();
 		}
     }
+	
 	public Document getTestDoc()
 	{
 		try {
