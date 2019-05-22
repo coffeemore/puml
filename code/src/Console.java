@@ -102,6 +102,13 @@ public class Console extends PUMLgenerator
 	    {
 	    	codeCollector.setUseJavaFiles(false);
 	    }
+	    /*Zu testzwecken*/
+	    if (cmd.hasOption("s"))
+	    {
+	    	showAllClassesMethods();
+	    }
+	    /* Test Ende TODO */
+	    
 	    if (cmd.hasOption("i")) // Verarbeitung vieler zu verarbeitenden Pfade
 	    {
 		    for (int i = 0; i < cmd.getOptionValues("i").length; i++) // Pfade in Collector Liste schreiben
@@ -109,7 +116,7 @@ public class Console extends PUMLgenerator
 		    	codeCollector.paths.add(cmd.getOptionValues("i")[i]);
 		    	System.out.println(codeCollector.paths.get(i));
 		    }
-			PUMLgenerator.parser.parse(codeCollector.getSourceCode()); // Parser berbeitet Daten welche ihm übergeben werden
+			PUMLgenerator.parser.parse(codeCollector.getSourceCode()); // Parser berbeitet Daten welche ihm übergeben werden 
 			if (cmd.hasOption("s"))
 			{
 				showAllClassesMethods();
@@ -204,6 +211,10 @@ public class Console extends PUMLgenerator
      */
     private void createSQDiagram(CommandLine cmd, Boolean outpath)
     {
+    	if (cmd.getOptionValues("cs")[0].isEmpty() || cmd.getOptionValues("cs")[1].isEmpty())
+    	{
+    		System.out.println("Keine Klasse / Methode als Einstiegspunkt gewaehlt. <int, int>");
+    	}
     	if (!outpath)
     	{
     		
@@ -224,31 +235,48 @@ public class Console extends PUMLgenerator
 		try
 		{
 			/*TODO*/
-			Document parserDoc = PUMLgenerator.parser.getParsingResult();
+			Document parserDoc = getTestDoc(); //Test
+			/* Document parserDoc = PUMLgenerator.parser.getParsingResult(); */
 			XPathFactory xPathfactory = XPathFactory.newInstance();
 			XPath xpath = xPathfactory.newXPath();
 			XPathExpression expr = xpath.compile("/parsed/*"); // Startpunkt parsed Knoten
 			NodeList classNodeList = (NodeList) expr.evaluate(parserDoc, XPathConstants.NODESET); // in Liste
 			
-			classNodeList = xmlHelper.getList(parserDoc, "//classdefinition/name");
-			System.out.println("Anzahl Klassen: "+ classNodeList.getLength());
+			classNodeList = xmlHelper.getList(parserDoc, "/source/classdefinition/name");
+			System.out.println("Anzahl Klassen: "+ classNodeList.getLength() + "\n");
 			
 			for (int i = 0; i < classNodeList.getLength(); i++)
 			{
-				System.out.println("Klasse "+ i + ": "+ classNodeList.item(i).getTextContent());
+				System.out.println("Klasse  "+ i + ": "+ classNodeList.item(i).getTextContent());
 			}
-			
-			classNodeList = xmlHelper.getList(parserDoc, "//classdefinition/methoddefinition/name");
-			System.out.println("Anzahl Methoden: "+ classNodeList.getLength());
-			
-			for (int i = 0; i < classNodeList.getLength(); i++)
+			System.out.println();
+			NodeList methodeNodeList = (NodeList) expr.evaluate(parserDoc, XPathConstants.NODESET); // in Liste
+			methodeNodeList = xmlHelper.getList(parserDoc, "/source/classdefinition/methoddefinition/name");
+			System.out.println("Anzahl Methoden: "+ methodeNodeList.getLength() + "\n");
+			for (int i = 0; i < methodeNodeList.getLength(); i++)
 			{
-				System.out.println("Methode "+ i + ": "+ classNodeList.item(i).getTextContent());
+				System.out.println("Methode "+ i + ": " + methodeNodeList.item(i).getTextContent());
 			}
+			System.out.println();
 		}
 		catch (XPathExpressionException e)
 		{
 			e.printStackTrace();
 		}
     }
+	public Document getTestDoc()
+	{
+		try {
+		DocumentBuilderFactory docBuildFact = DocumentBuilderFactory.newInstance();
+		DocumentBuilder docBuild = docBuildFact.newDocumentBuilder();
+		Document doc = docBuild.parse(new File("/Users/mariangeissler/Entwickler/eclipse-workspace/puml/code/testfolder/xmlSpecifications/parsedData.xml"));
+		return doc;
+		}
+		catch (ParserConfigurationException | SAXException | IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
