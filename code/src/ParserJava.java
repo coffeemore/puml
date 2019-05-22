@@ -1,9 +1,4 @@
-
-import java.util.ArrayList;
-import java.io.FileOutputStream;
 import java.io.StringWriter;
-import java.util.*;
-import java.util.Vector;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -195,9 +190,11 @@ public class ParserJava implements ParserIf
 	DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
 
 	document = documentBuilder.newDocument();
-
+	Element curNode;
 	// root element
 	Element root = document.createElement("source");
+	curNode = root;
+	int curlBrace = 0;
 	document.appendChild(root);
 	// System.out.println(sourcec);
 	String compString;
@@ -293,6 +290,11 @@ public class ParserJava implements ParserIf
 		    nameArray[2] = "implements";
 		    TokenResult res = goToTokenWithName(sourcec, nameArray);
 		    sourcec = res.getSourceCode();
+		    if (res.getFoundToken() == 0)
+		    {
+			sourcec = sourcec.substring(1);
+			curlBrace++;
+		    }
 		    String classNameStr = res.getData();
 		    classNameStr = classNameStr.strip();
 		    System.out.println("@className: " + classNameStr);
@@ -301,7 +303,8 @@ public class ParserJava implements ParserIf
 		    Element classNameEl = document.createElement("name");
 		    classNameEl.appendChild(document.createTextNode(classNameStr));
 		    classDefinition.appendChild(classNameEl);
-		    root.appendChild(classDefinition);
+		    curNode.appendChild(classDefinition);
+		    curNode = (Element) curNode.getLastChild();
 
 		    compString = "extends ";
 		    if (sourcec.substring(0, compString.length()).equals(compString))
@@ -313,6 +316,11 @@ public class ParserJava implements ParserIf
 			nameArray[1] = "implements";
 			res = goToTokenWithName(sourcec, nameArray);
 			String classExtendsStr = res.getData();
+			if (res.getFoundToken() == 0)
+			{
+			    sourcec = sourcec.substring(1);
+			    curlBrace++;
+			}
 			classExtendsStr = classExtendsStr.strip();
 			System.out.println("@extendsName: " + classExtendsStr);
 
@@ -326,11 +334,13 @@ public class ParserJava implements ParserIf
 		    compString = "implements ";
 		    if (sourcec.substring(0, compString.length()).equals(compString))
 		    {
+
 			Element classImplements = document.createElement("implements");
 			classDefinition.appendChild(classImplements);
 
 			sourcec = sourcec.substring(compString.length());
-			compString = "{";
+			boolean curlBraceBool = false;
+			//Lösung 1 compString = "{";
 			do
 			{
 			    sourcec = sourcec.trim();
@@ -339,6 +349,12 @@ public class ParserJava implements ParserIf
 			    nameArray[1] = ",";
 			    res = goToTokenWithName(sourcec, nameArray);
 			    sourcec = res.getSourceCode();
+			    if (res.getFoundToken() == 0)
+			    {
+				sourcec = sourcec.substring(1);
+				curlBrace++;
+				curlBraceBool = true;
+			    }
 			    String classImplementsStr = res.getData();
 			    classImplementsStr = classImplementsStr.strip();
 			    System.out.println("@implements: " + classImplementsStr);
@@ -347,7 +363,8 @@ public class ParserJava implements ParserIf
 			    classImplementsEl.appendChild(document.createTextNode(classImplementsStr));
 			    classImplements.appendChild(classImplementsEl);
 			}
-			while (!(sourcec.substring(0, compString.length()).equals(compString)));
+			while(!(curlBraceBool));
+			//Lösung 1 while (!(sourcec.substring(0, compString.length()).equals(compString)));
 
 		    }
 		    done = true;
@@ -362,11 +379,29 @@ public class ParserJava implements ParserIf
 		    nameArray[1] = "extends";
 		    TokenResult res = goToTokenWithName(sourcec, nameArray);
 		    String interfaceName = res.getData();
+		    if (res.getFoundToken() == 0)
+		    {
+			sourcec = sourcec.substring(1);
+			curlBrace++;
+		    }
+
 		    interfaceName = interfaceName.strip();
 		    System.out.println("@interfaceName: " + interfaceName);
-		    Element classElement = document.createElement("class");
-		    classElement.appendChild(document.createTextNode(interfaceName));
-		    root.appendChild(classElement);
+
+		    Element classDefinition = document.createElement("classdefinition");
+		    Element classNameEl = document.createElement("name");
+
+		    // Element classElement = document.createElement("class");
+		    classNameEl.appendChild(document.createTextNode(interfaceName));
+		    classDefinition.appendChild(classNameEl);
+		    curNode.appendChild(classDefinition);
+		    curNode = (Element) curNode.getLastChild();
+
+		    //////// Temporär///////
+		    // Name der Klasse/des Interfaces
+		    System.out.println(curNode.getFirstChild().getTextContent());
+		    ///////////////////////
+
 		    compString = "extends ";
 		    if (sourcec.substring(0, compString.length()).equals(compString))
 		    {
@@ -376,10 +411,37 @@ public class ParserJava implements ParserIf
 			nameArray[0] = "{";
 			res = goToTokenWithName(sourcec, nameArray);
 			String extendsName = res.getData();
+			if (res.getFoundToken() == 0)
+			{
+			    sourcec = sourcec.substring(1);
+			    curlBrace++;
+			}
 			extendsName = extendsName.strip();
 			System.out.println("@extendsName: " + extendsName);
 		    }
 		    done = true;
+		}
+		;
+		
+		
+		//Temporäre Lösung
+		compString = "{";
+		if (sourcec.substring(0, compString.length()).equals(compString))
+		{
+		    sourcec = sourcec.substring(1);
+		    curlBrace++;
+		    Element somethingWCB = document.createElement("something"); //WCB - with curly brace
+		    somethingWCB.appendChild(document.createTextNode(" Funktion || Schleife || Abfrage "));
+		    curNode.appendChild(somethingWCB);
+		    curNode = (Element) curNode.getLastChild();
+		}
+		;
+		compString = "}";
+		if (sourcec.substring(0, compString.length()).equals(compString))
+		{
+		    sourcec = sourcec.substring(1);
+		    curlBrace--;
+		    curNode = (Element) curNode.getParentNode();
 		}
 		;
 		if (!done)
