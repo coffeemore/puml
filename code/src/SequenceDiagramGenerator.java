@@ -24,13 +24,6 @@ import org.w3c.dom.Document;
 /**
  * @author Leo Rauschke, Elisabeth Schuster
  */
-
-//lokale Instanzen müssen noch berücksichticǵt werden
-// unbekannte Instanz -> class auf "" setzen
-
-
-
-
 public class SequenceDiagramGenerator
 {
 
@@ -174,19 +167,12 @@ public class SequenceDiagramGenerator
 		    String iname = mchildnodes.item(j).getTextContent();
 		    // wenn Instanz in InstanzenListe vorhanden
 		    String cname = findClassofInstance(instanceList, iname);
-		   
-
 			Node classTag = seqDiagramm.createElement("class");
 			classTag.setTextContent(cname);
 			methodcalls.item(i).appendChild(classTag);
-
-		    
-
 		}
-
 	    }
 	}
-
     }
 
     /**

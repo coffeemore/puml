@@ -238,21 +238,4 @@ public class XmlHelperMethods
 	}
 	return false;
     }
-
-//    public void tried (Element root) {
-//	if(root.hasChildNodes()) {
-//	    NodeList list = root.getChildNodes();
-//	    for(int i = 0; i < list.getLength(); i++) {
-//		Node s = list.item(i);
-//		Element e = (Element) s;
-//		if(s.getNodeType()==Node.COMMENT_NODE) {
-//		    System.out.println("true");
-//		} else {
-//		    tried(e);
-//		}
-//	    }
-//	    
-//	}
-//	
-//    }
 }
