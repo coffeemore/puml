@@ -274,7 +274,7 @@ public class SequenceDiagramGenerator
 		}
 	    }
 	}
-	return "";
+	return " ";
 
     }
 
