@@ -24,6 +24,13 @@ import org.w3c.dom.Document;
 /**
  * @author Leo Rauschke, Elisabeth Schuster
  */
+
+//lokale Instanzen müssen noch berücksichticǵt werden
+// unbekannte Instanz -> class auf "" setzen
+
+
+
+
 public class SequenceDiagramGenerator
 {
 
@@ -167,14 +174,13 @@ public class SequenceDiagramGenerator
 		    String iname = mchildnodes.item(j).getTextContent();
 		    // wenn Instanz in InstanzenListe vorhanden
 		    String cname = findClassofInstance(instanceList, iname);
-		    if (!cname.equals(""))
-		    {
+		   
 
 			Node classTag = seqDiagramm.createElement("class");
 			classTag.setTextContent(cname);
 			methodcalls.item(i).appendChild(classTag);
 
-		    }
+		    
 
 		}
 
@@ -199,29 +205,17 @@ public class SequenceDiagramGenerator
 	// dieser Klasse vermerken
 
 	NodeList cList = parsedData.getElementsByTagName("classdefinition");
-	// index i : Klasenliste
-	// index j: Unterknoten der Klasseneinträge
 
 	// alle Klassen werden durchgegangen
 	for (int i = 0; i < cList.getLength(); i++)
 	{
-
 	    instanceList.add(i, new ArrayList<String>());
-	    NodeList cuList = cList.item(i).getChildNodes();// Liste aller Unterknoten v. Classdefinition
-	    // alle Unterknoten der Klassen werden durchgegangen
-	    // durch if-Bed. wird gewährleistet, dass der Name auch dann eingefügt wird,
-	    // wenn er nicht der erste Unterknoten ist
-	    for (int j = 0; j < cuList.getLength(); j++)
-	    {
-		if (cuList.item(j).getNodeName().equals("name"))
-		{
 
-		    String cname = cuList.item(j).getTextContent();
-		    instanceList.get(i).add(0, cname); // Klassennamen werden der cList hinzugefügt
-		}
-	    }
+	    String cname = xmlHM.getChildwithName(cList.item(i), "name").getTextContent();
+	    instanceList.get(i).add(0, cname); // der Klassenname wird der InstanceList hinzugefügt
 
 	}
+	
 	// alle Klassen werden durchgegangen
 	for (int i = 0; i < cList.getLength(); i++)
 	{
@@ -233,29 +227,17 @@ public class SequenceDiagramGenerator
 		{
 		    // iname = Instanzenname
 		    // cname = Klassenname
-		    NodeList ciList = cuList.item(j).getChildNodes();
-//		 String iname = ciList.item(0).getTextContent();
-//		 String cname = ciList.item(1).getTextContent();
+
 		    String iname = new String();
 		    String cname = new String();
-		    for (int k = 0; k < ciList.getLength(); k++)
-		    {
-			if (ciList.item(k).getNodeName().equals("name"))
-			{
-			    iname = ciList.item(k).getTextContent();
-			}
-			if (ciList.item(k).getNodeName().equals("class"))
-			{
-			    cname = ciList.item(k).getTextContent();
-			}
-		    }
-//		  instanceList =  addToInstanceList(instanceList, "Instanzenname", "Class1");
+		    iname = xmlHM.getChildwithName(cuList.item(j), "name").getTextContent();
+		    cname = xmlHM.getChildwithName(cuList.item(j), "class").getTextContent();
+		
 		    instanceList = addToInstanceList(instanceList, iname, cname);
-
 		}
 	    }
 	}
-//	listArrayList(instanceList);
+	listArrayList(instanceList);
 
 	return instanceList;
     }
@@ -277,6 +259,15 @@ public class SequenceDiagramGenerator
 
     }
 
+    /**
+     * Die Funktion geht die Instanzenliste durch und gibt den Klassennamen zu dem
+     * übergebenen Instanzennamen zurück. Existiert keine Instnz mit dem Namen, wird
+     * "" zurückgegeben
+     * 
+     * @param instanceList - InstanzenListe
+     * @param iname        - Name der Instanz, deren Klasse gesucht wird
+     * @return - Name der Klasse (oder "")
+     */
     private String findClassofInstance(ArrayList<ArrayList<String>> instanceList, String iname)
     {
 	for (int i = 0; i < instanceList.size(); i++)
@@ -520,12 +511,20 @@ public class SequenceDiagramGenerator
 	}
     }
 
-    public Document deleteInstancesNotInMethodcalls(Document parsedData)
+    /**
+     * Die Instanzen, die nicht in methodcalls drin sind, werden gelöscht (=
+     * Deklarationen v. lokalen Instanzen werden aus der Sequenzdiagramm-XML
+     * entfernt)
+     * 
+     * @param doc - das Dokument, aus dem die Einträge gelöscht werden
+     * @return - das bearbeitete Dokument
+     */
+    public Document deleteInstancesNotInMethodcalls(Document doc)
     {
 	// mList = Liste der Methoddefinitions
 	try
 	{
-	    NodeList iList = xmlHM.getList(parsedData, "//instance");
+	    NodeList iList = xmlHM.getList(doc, "//instance");
 	    for (int i = 0; i < iList.getLength(); i++)
 	    {
 //		System.out.println("Klasseninstanz gefunden: ");
@@ -535,10 +534,10 @@ public class SequenceDiagramGenerator
 //		}
 //		System.out.println("Parent Node:");
 //		System.out.println(iList.item(i).getParentNode().getNodeName());
-		if (iList.item(i).getParentNode().equals(null))
-		{
-		    System.out.println("kein ParentNode");
-		}
+//		if (iList.item(i).getParentNode().equals(null))
+//		{
+//		    System.out.println("kein ParentNode");
+//		}
 		if (!(iList.item(i).getParentNode().getNodeName().equals("methodcall")
 			|| iList.item(i).getParentNode().getNodeName().equals("classdefinition")))
 		{
@@ -548,12 +547,20 @@ public class SequenceDiagramGenerator
 	    }
 	} catch (Exception e)
 	{
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
 
-	return parsedData;
+	return doc;
     }
+    
+    public Document handleLocalInstances(Document doc){
+	
+	
+	
+	return doc;
+    }
+    
+    
 
     public void listArrayList(ArrayList<ArrayList<String>> list2)
     {

@@ -7,6 +7,7 @@ import java.io.IOException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -54,6 +55,19 @@ class SequenceDiagramGeneratorTest
 	    assertEquals(seqDiagram, test);
 	  });
 	
+	File xmlFile;
+	XmlHelperMethods xmlH = new XmlHelperMethods();
+	
+	xmlFile = new File("//home//developer//workspace//puml//code//testfolder//xmlSpecifications//parsedData.xml");
+	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	Document parsedData = dBuilder.parse(xmlFile);
+	
+//	Document seqDia = classUnderTest.createDiagram(parsedData, "class1","method1");
+	//seqgen.listAllNodes(seqDia.getDocumentElement());
+	//seqgen.listAllNodes(parsedData.getDocumentElement());
+//	xmlH.writeDocumentToConsole(xmlH.deleteComments(parsedData));
+	xmlH.listChildnodeswithName(parsedData, "instance");
 	
     }
 
