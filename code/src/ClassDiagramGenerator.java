@@ -24,7 +24,7 @@ public class ClassDiagramGenerator
      */	
     public ClassDiagramGenerator()
     {
-    	
+    	//createDiagram(xmlHelper.getDocumentFrom("testfolder/xmlSpecifications/parsedData.xml"));
     }
 
 	/**
@@ -68,7 +68,7 @@ public class ClassDiagramGenerator
 			
 			Element aggregations = document.createElement("aggregations");
 			classrelations.appendChild(aggregations);
-
+			
 			//Knoten auflisten 
 			NodeList classList = parsedData.getElementsByTagName("classdefinition");
 			for (int i = 0; i < classList.getLength(); i++)
@@ -78,8 +78,75 @@ public class ClassDiagramGenerator
 				classes.appendChild(entry);
 				Element elClassdef = (Element) classdefinitionNode;
 				//Erzeugt "Entry"-Tag mit Classennamen als Texteintrag
-				entry.appendChild(document
-						.createTextNode(elClassdef.getElementsByTagName("name").item(0).getTextContent()));
+				entry.appendChild(document.createTextNode(
+						elClassdef.getElementsByTagName("name").item(0).getTextContent()));				
+				
+				String[] excoag = {"extends", "compositions", "aggregations", "implements"};
+				for(int k = 0; k < 4; k++)
+				{
+					if (elClassdef.getElementsByTagName(excoag[k]).getLength() > 0)
+					{
+						NodeList nodeList = elClassdef.getElementsByTagName(excoag[k]);
+						Element element = (Element) nodeList.item(0);
+						
+						NodeList entryList = element.getElementsByTagName("entry");
+						for (int j = 0; j < entryList.getLength(); j++)
+						{
+							Element nextEntry = document.createElement("entry");	
+							switch(k) {
+							case 0:
+								extensions.appendChild(nextEntry);
+								Element from = document.createElement("from");
+								nextEntry.appendChild(from);
+								from.appendChild(document.createTextNode(
+										elClassdef.getElementsByTagName("name").item(i).getTextContent()));
+								Element to = document.createElement("to");
+								nextEntry.appendChild(to);
+								to.appendChild(document.createTextNode(
+										element.getElementsByTagName("entry").item(j).getTextContent()));
+								break;
+							case 1:
+								compositions.appendChild(nextEntry);
+								Element from1 = document.createElement("from");
+								nextEntry.appendChild(from1);
+								from1.appendChild(document.createTextNode(
+										element.getElementsByTagName("entry").item(j).getTextContent()));
+								Element to1 = document.createElement("to");
+								nextEntry.appendChild(to1);
+								to1.appendChild(document.createTextNode(
+										elClassdef.getElementsByTagName("name").item(0).getTextContent()));
+								break;
+							case 2:
+								aggregations.appendChild(nextEntry);
+								Element from2 = document.createElement("from");
+								nextEntry.appendChild(from2);
+								from2.appendChild(document.createTextNode(
+										element.getElementsByTagName("entry").item(j).getTextContent()));
+								Element to2 = document.createElement("to");
+								nextEntry.appendChild(to2);
+								to2.appendChild(document.createTextNode(
+										elClassdef.getElementsByTagName("name").item(0).getTextContent()));								
+								break;
+							default:
+								implementations.appendChild(nextEntry);
+								Element from3 = document.createElement("from");
+								nextEntry.appendChild(from3);
+								from3.appendChild(document.createTextNode(
+										elClassdef.getElementsByTagName("name").item(0).getTextContent()));
+								Element to3 = document.createElement("to");
+								nextEntry.appendChild(to3);
+								to3.appendChild(document.createTextNode(
+										element.getElementsByTagName("entry").item(j).getTextContent()));
+
+								Element veryNextEntry = document.createElement("entry");
+								interfaces.appendChild(veryNextEntry);
+								veryNextEntry.appendChild(document.createTextNode(
+										element.getElementsByTagName("entry").item(j).getTextContent()));							
+							}
+						}
+					}
+				}
+				/*
 				//Pruefen auf Vererbungsstruktur
 				if (elClassdef.getElementsByTagName("extends").getLength() > 0)
 				{
@@ -97,38 +164,11 @@ public class ClassDiagramGenerator
 						Element from = document.createElement("from");
 						nextEntry.appendChild(from);
 						from.appendChild(document.createTextNode(
-								elClassdef.getElementsByTagName("name").item(0).getTextContent())); /*0 durch Laufvariable i ersetzen? TODO*/
+								elClassdef.getElementsByTagName("name").item(i).getTextContent()));
 						Element to = document.createElement("to");
 						nextEntry.appendChild(to);
 						to.appendChild(document
 								.createTextNode(elExtends.getElementsByTagName("entry").item(j).getTextContent()));
-					}
-				}
-				//Pruefen auf Interfaces
-				if (elClassdef.getElementsByTagName("implements").getLength() > 0)
-				{
-					NodeList implementsList = elClassdef.getElementsByTagName("implements");
-					Node implementsNode = implementsList.item(0);
-					Element elImplements = (Element) implementsNode;
-
-					NodeList entryList = elImplements.getElementsByTagName("entry");
-					for (int j = 0; j < entryList.getLength(); j++)
-					{
-						Element nextEntry = document.createElement("entry");
-						implementations.appendChild(nextEntry);
-						Element from = document.createElement("from");
-						nextEntry.appendChild(from);
-						from.appendChild(document.createTextNode(
-								elClassdef.getElementsByTagName("name").item(0).getTextContent()));
-						Element to = document.createElement("to");
-						nextEntry.appendChild(to);
-						to.appendChild(document
-								.createTextNode(elImplements.getElementsByTagName("entry").item(j).getTextContent()));
-
-						Element veryNextEntry = document.createElement("entry");
-						interfaces.appendChild(veryNextEntry);
-						veryNextEntry.appendChild(document
-								.createTextNode(elImplements.getElementsByTagName("entry").item(j).getTextContent()));
 					}
 				}
 				//Pruefen auf Komposition
@@ -174,6 +214,35 @@ public class ClassDiagramGenerator
 								elClassdef.getElementsByTagName("name").item(0).getTextContent()));
 					}
 				}
+				//
+				
+				//Pruefen auf Interfaces
+				if (elClassdef.getElementsByTagName("implements").getLength() > 0)
+				{
+					NodeList implementsList = elClassdef.getElementsByTagName("implements");
+					Node implementsNode = implementsList.item(0);
+					Element elImplements = (Element) implementsNode;
+
+					NodeList entryList = elImplements.getElementsByTagName("entry");
+					for (int j = 0; j < entryList.getLength(); j++)
+					{
+						Element nextEntry = document.createElement("entry");
+						implementations.appendChild(nextEntry);
+						Element from = document.createElement("from");
+						nextEntry.appendChild(from);
+						from.appendChild(document.createTextNode(
+								elClassdef.getElementsByTagName("name").item(0).getTextContent()));
+						Element to = document.createElement("to");
+						nextEntry.appendChild(to);
+						to.appendChild(document
+								.createTextNode(elImplements.getElementsByTagName("entry").item(j).getTextContent()));
+
+						Element veryNextEntry = document.createElement("entry");
+						interfaces.appendChild(veryNextEntry);
+						veryNextEntry.appendChild(document
+								.createTextNode(elImplements.getElementsByTagName("entry").item(j).getTextContent()));
+					}
+				} */
 			}
 			//Ausgabe Konsole
 			xmlHelper.writeDocumentToConsole(document);
