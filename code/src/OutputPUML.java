@@ -28,6 +28,7 @@ public class OutputPUML
 {
     public NodeList list = null;
     LogMain logger = new LogMain();
+    XmlHelperMethods helper = new XmlHelperMethods();
 
     /**
      * Konstruktor
@@ -54,7 +55,7 @@ public class OutputPUML
 		String pumlCode = "@startuml\n";
 		if (compare == "classdiagramm")
 		{
-		    list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classes/entry");
+			list = helper.getList(diagramData, "/parsed/classdiagramm/classes/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
 				if (list.item(a).getNodeName() != "#text")
@@ -62,7 +63,7 @@ public class OutputPUML
 				    pumlCode += "class " + list.item(a).getTextContent() + "\n";
 				}
 		    }
-		    list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/interfaces/entry");
+		    list = helper.getList(diagramData, "/parsed/classdiagramm/interfaces/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
 				if (list.item(a).getNodeName() != "#text")
@@ -72,16 +73,16 @@ public class OutputPUML
 		    }
 	
 		    // EXTENSIONS
-		    list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/extensions/entry");
+		    list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/extensions/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-				list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/extensions/entry/to");
+				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/extensions/entry/to");
 				if (list.item(a).getNodeName() != "#text")
 				{
 				    pumlCode += list.item(a).getTextContent() + " <|-- ";
 		
 				}
-				list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/extensions/entry/from");
+				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/extensions/entry/from");
 				if (list.item(a).getNodeName() != "#text")
 				{
 				    pumlCode += list.item(a).getTextContent() + "\n";
@@ -89,16 +90,16 @@ public class OutputPUML
 		    }
 	
 		    // IMPLEMENTATIONS
-		    list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/implementations/entry");
+		    list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/implementations/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-				list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/implementations/entry/to");
+				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/implementations/entry/to");
 				if (list.item(a).getNodeName() != "#text")
 				{
 				    pumlCode += list.item(a).getTextContent() + " <|-- ";
 		
 				}
-				list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/implementations/entry/from");
+				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/implementations/entry/from");
 				if (list.item(a).getNodeName() != "#text")
 				{
 				    pumlCode += list.item(a).getTextContent() + "\n";
@@ -106,16 +107,16 @@ public class OutputPUML
 		    }
 	
 		    // COMPOSITIONS
-		    list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/compositions/entry");
+		    list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/compositions/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-				list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/compositions/entry/to");
+				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/compositions/entry/to");
 				if (list.item(a).getNodeName() != "#text")
 				{
 				    pumlCode += list.item(a).getTextContent() + " *-- ";
 		
 				}
-				list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/compositions/entry/from");
+				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/compositions/entry/from");
 				if (list.item(a).getNodeName() != "#text")
 				{
 				    pumlCode += list.item(a).getTextContent() + "\n";
@@ -123,16 +124,16 @@ public class OutputPUML
 		    }
 	
 		    // AGGREGATIONS
-		    list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/aggregations/entry");
+		    list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/aggregations/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-				list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/aggregations/entry/to");
+				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/aggregations/entry/to");
 				if (list.item(a).getNodeName() != "#text")
 				{
 				    pumlCode += list.item(a).getTextContent() + " o-- ";
 		
 				}
-				list = XmlHelperMethods.getList(diagramData, "/parsed/classdiagramm/classrelations/aggregations/entry/from");
+				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/aggregations/entry/from");
 				if (list.item(a).getNodeName() != "#text")
 				{
 				    pumlCode += list.item(a).getTextContent() + "\n";
@@ -145,9 +146,8 @@ public class OutputPUML
 	
 		    String tempStartClass = "";
 		    String tempEndClass = "";
-		    String tempStartMethod = "";
-		    String tempActiveMethod = "";
-		    list = XmlHelperMethods.getList(diagramData, "/parsed/sequencediagram/classes/entry");
+		    String tempMethod = "";
+		    list = helper.getList(diagramData, "/parsed/sequencediagram/classes/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
 			if (list.item(a).getNodeName() != "#text")
@@ -155,43 +155,80 @@ public class OutputPUML
 			    pumlCode += "participant " + list.item(a).getTextContent() + "\n";
 			}
 		    }
-		    list = XmlHelperMethods.getList(diagramData, "/parsed/sequencediagram/entrypoint/class");
+		    list = helper.getList(diagramData, "/parsed/sequencediagram/entrypoint");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-			if (list.item(a).getNodeName() != "#text")
+			list = list.item(a).getChildNodes();
+			System.out.println(list.item(a).getNodeName());
+			for (int b = 0; b < list.getLength(); b++)
 			{
-			    pumlCode += "note over " + list.item(a).getTextContent();
-			    tempStartClass = list.item(a).getTextContent();
-			}
-		    }
-		    list = XmlHelperMethods.getList(diagramData, "/parsed/sequencediagram/entrypoint/method");
-		    for (int a = 0; a < list.getLength(); a++)
-		    {
-			if (list.item(a).getNodeName() != "#text")
-			{
-			    pumlCode += " " + list.item(a).getTextContent() + "\n";
-			    tempStartMethod = list.item(a).getTextContent();
-			}
-		    }
-		    list = XmlHelperMethods.getList(diagramData, "/parsed/sequencediagram/methoddefinition");
-		    boolean finishedMethod[] = new boolean[list.getLength()]; 
-		    for (int a = 0; a < list.getLength(); a++) //initializierung Abfrage, ob Methode behandelt
-		    {
-			finishedMethod[a] = false;
-		    }
-		    for(int a = 0; a < list.getLength(); a++) 
-		    {
-			if (list.item(a).getNodeName() != "#text") //methoddefinition TODO fortsetzen
-			{
-			    System.out.println("bin hier : " + list.item(a).getNodeName());
-			    for(int b = 0; b < list.getLength(); b++)
-			    if (list.item(a).getChildNodes().item(b).getNodeName() != "#text")
+			    if (list.item(b).getNodeName() != "#text" && list.item(b).getNodeName() == "class")
 			    {
-				System.out.println("Danach hier : " + a + " : "+ list.item(a).getChildNodes().item(b).getNodeName());
+				pumlCode += "note over " + list.item(b).getTextContent();
 			    }
-//			    methodList = list.item(a).getChildNodes()
+			    else if(list.item(b).getNodeName() != "#text" && list.item(b).getNodeName() == "method")
+			    {
+				pumlCode += " " + list.item(b).getTextContent();
+			    }
 			}
 		    }
+	//    	    for (int i = 0; i < list.getLength(); i++) //13 iterations MÜSSEN PER IF ABGEFRAGT WERDEN, DA SCHLIEẞENDE KNOTEN AUCH ANGEZEIGT WERDEN
+	//	    {
+	////    		System.out.println(list.item(i).getNodeName()); //TODO Test!!!!!!!!!!! Es gehen wieder methodes verloren!!
+	//		if (list.item(i).getNodeName() == "classes")
+	//		{
+	//		    list = list.item(i).getChildNodes(); // Ebene Tiefer <entry>-Ebene
+	//		    for (int j = 0; j < list.getLength(); j++)
+	//		    {
+	//			if (list.item(j).getNodeName() != "#text")
+	//			{
+	//			    pumlCode += "participiant " + list.item(j).getTextContent() + "\n"; //Einträge Einfügen
+	//			}
+	//		    }
+	//		    list = list.item(0).getParentNode().getParentNode().getChildNodes(); //Ebene hoch wechseln <classes>-Ebene
+	//		}
+	//		else if(list.item(i).getNodeName() == "entrypoint")
+	//		{
+	//		    list = list.item(i).getChildNodes(); //ebene tiefer <class>/<methods>-Ebene
+	//		    for (int j = 0; j < list.getLength(); j++)
+	//		    {
+	//			if (list.item(j).getNodeName() == "class") // Abfrage auf den Klassennamen
+	//	    		{
+	//	    		    tempStartClass = list.item(j).getTextContent();
+	//	    		}
+	//			else if (list.item(j).getNodeName() == "method") 
+	//			{
+	//			    tempMethod = list.item(j).getTextContent();
+	//			}
+	//		    }
+	//		    list = list.item(0).getParentNode().getParentNode().getChildNodes(); //<Methoddefinition>-Ebenen
+	//		    pumlCode += "note over "+ tempStartClass + ": " + tempMethod + "\n" + 
+	//		    	    	"activate " + tempStartClass + "\n";
+	//		}
+	//		else if (list.item(i).getNodeName() == "methoddefinition") //TODO Alle Implementationen der <Method>-Ebene
+	//		{
+	//		    list = list.item(i).getChildNodes(); //Unterebene Methoddefinition
+	//		    for (int j = 0; j < list.getLength(); j++)
+	//		    {
+	//			if (list.item(j).getNodeName() == "name") 
+	//			{
+	//			    tempMethod = "activate " + list.item(j).getTextContent(); //Called method
+	//			}
+	//			else if (list.item(j).getNodeName() == "alternative")
+	//			{
+	//			    list = list.item(j).getChildNodes(); //Unterebene alternative
+	////			    for (int j2 = 0; j2 < list.getLength(); j2++)
+	////			    {
+	//				helperMethodCall(list, pumlCode, j, tempStartClass);
+	////			    }
+	//			    list = list.item(0).getParentNode().getParentNode().getChildNodes(); // wieder auf <alternative>-Ebenen
+	//			}
+	//		    }
+	//		    list = list.item(0).getParentNode().getParentNode().getChildNodes(); // wieder auf <Methoddefinition>-Ebenen
+	//		}
+	//	    } //end initial Loop    	    
+	//    	    //return pumlCode;
+	//    		
 		}
 		else
 		{
@@ -266,8 +303,10 @@ public class OutputPUML
 //		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getLocalName());
 	    }
 	}
+
 	return pumlCode;
     }
+    
     /**
      * Speichert den plantUML-Code aus dem String der getPUML Methode in eine Datei
      * 
@@ -282,6 +321,7 @@ public class OutputPUML
 	    bw.flush();
 	    bw.close();
     }
+
 
     /**
      * Erzeugt ein PlantUML-Diagramm aus der plantUML-Code-Datei am uebergebenen Pfad
@@ -298,6 +338,8 @@ public class OutputPUML
 	List<GeneratedImage> list = reader.getGeneratedImages();
 	list.get(0).getPngFile();
     }
+    
+    
     /**
      * Erzeugt ein PlantUML-Diagramm aus dem durch die Methode getPUML erzeugten String
      * 
