@@ -26,6 +26,8 @@ import javax.swing.JTextArea;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -384,11 +386,47 @@ public class GUI_Swing
 			Document tempPR = PUMLgenerator.parser.getParsingResult();
 			Document tmpClass = PUMLgenerator.classDiagramGenerator.createDiagram(tempPR);
 			pumlCode = PUMLgenerator.outputPUML.getPUML(tempPR);
-//			ArrayList<String> classes = tempPR.getClasses();
-//			for (int i = 0; i < classes.size(); i++)
-//			{
-//				dmtnClasses.add(new DefaultMutableTreeNode(classes.get(i)));
-//			}
+		
+			/*TREE*/
+			//Erstellen eines Trees zur Auswahl des Einstiegpunktes im Sequenzdiagramm	
+			JFrame frame = new JFrame();
+			frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+
+			//Füllen des Trees
+			DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Einstiegspunkt" );
+			for ( int nodeCnt = 0; nodeCnt < 4; nodeCnt++ )
+			{
+			  DefaultMutableTreeNode dmtn = new DefaultMutableTreeNode( "Knoten " + nodeCnt );
+			  root.add( dmtn );
+
+			  for ( int leafCnt = 1; leafCnt < 4; leafCnt++ )
+			    dmtn.add( new DefaultMutableTreeNode( "Blatt " + (nodeCnt * 3 + leafCnt) ) );
+			}
+			
+			final JTree tree = new JTree( root );
+			frame.add( new JScrollPane( tree ) );
+			frame.pack();
+			frame.setVisible( true );
+			
+			//Selection Listener welches Leaf und welcher Parent ausgewählt wurden (nur Leaf-Ebene)
+			tree.addTreeSelectionListener(new TreeSelectionListener() {
+			    public void valueChanged(TreeSelectionEvent e) 
+			    {
+			        DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+			        if (node == null) 
+			        {
+			        	return;
+			        }
+			 
+			        if(node.isLeaf()) 
+			        {
+			        	 System.out.println(node.getUserObject()+"  ||  "+node.toString()+"  ||  "+node.getParent());
+			        }
+			    }
+			});
+			
+			
+			
 			tree.expandRow(0);
 			textClass.setText(pumlCode);
 
