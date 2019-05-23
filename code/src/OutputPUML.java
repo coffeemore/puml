@@ -175,7 +175,6 @@ public class OutputPUML
 			    tempStartMethod = list.item(a).getTextContent();
 			}
 		    }
-		    String num = tempStartMethod.substring(tempStartMethod.length()-1);
 		    // Einsetzen : [name=" + tempStartMethod + "]
 		    list = helper.getList(diagramData, "/parsed/sequencediagram/methoddefinition[name=\"" + tempStartMethod + "\"]"); //an Position der entry Methoddefinition
 		    pumlCode += helperMethodCall(list.item(0), tempStartClass);
@@ -205,7 +204,7 @@ public class OutputPUML
     private String helperMethodCall(Node methodefNode, String startClass) throws XPathExpressionException
     {
 	 String pumlCode = "";
-	 NodeList methodNameList = XmlHelperMethods.getList(methodefNode, "name");
+	 NodeList methodNameList = helper.getList(methodefNode, "name");
 	 String methodName =  methodNameList.item(0).getTextContent();
 	 Node nextNode = methodefNode.getNextSibling();
 	 System.out.println(nextNode.getNodeName());
@@ -253,11 +252,11 @@ public class OutputPUML
     private String helperAlternativeCall(Node alternativeNode, String startClass) throws XPathExpressionException
     {
 	String pumlCode = "";
-	NodeList cases = XmlHelperMethods.getList(alternativeNode, "case");
+	NodeList cases = helper.getList(alternativeNode, "case");
 	boolean first = true;
 	for(int i=0; i<cases.getLength(); i++)
 	{
-	    String caseName = XmlHelperMethods.getList(cases.item(i), "condition").item(0).getTextContent();
+	    String caseName = helper.getList(cases.item(i), "condition").item(0).getTextContent();
 	    if(first)
 	    {
 		pumlCode += "alt " + caseName;
@@ -280,7 +279,7 @@ public class OutputPUML
 		}
 		else if(nextNode.getFirstChild().getNodeName() == "class")
 		{
-		    NodeList methodCalls = XmlHelperMethods.getList(nextNode, "class");
+		    NodeList methodCalls = helper.getList(nextNode, "class");
 		}
 		
 		
@@ -294,7 +293,7 @@ public class OutputPUML
     {
 	String pumlCode = "";
 	listPath += "/case"; //an position name in der Methoddefinition
-	list = XmlHelperMethods.getList(diagramData, listPath);
+	list = helper.getList(diagramData, listPath);
 	for(int i = 0; i < list.getLength(); i++)
 	{
 	    System.out.println("-- " + i);

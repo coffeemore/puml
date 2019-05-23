@@ -120,7 +120,7 @@ public class XmlHelperMethods
     }
 
     //Liefert NodeList zurück
-    public static NodeList getList(Node doc, String path) throws XPathExpressionException 
+    public NodeList getList(Node doc, String path) throws XPathExpressionException 
     {
         	XPathExpression expr = this.xpath.compile(path);
         	NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
