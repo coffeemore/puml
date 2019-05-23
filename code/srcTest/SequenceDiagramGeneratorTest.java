@@ -17,27 +17,27 @@ class SequenceDiagramGeneratorTest
 {
 //    private SequenceDiagramGenerator classUnderTest; 
     File xmlFile;
-    XmlHelperMethods xmlHM = new XmlHelperMethods();
+    XmlHelperMethods xmlHM = new XmlHelperMethods(); 
     
   
 
-	public void SetUp() throws Exception
-	    {
-	    	
-//		classUnderTest = new SequenceDiagramGenerator();
-		
-		xmlFile = new File("home//developer//workspace//puml//code//testfolder//xmlSpecifications//parsedData.xml");
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document parsedData = dBuilder.parse(xmlFile);
-		
-//		classUnderTest.listAllNodes(classUnderTest.root1);
-	    }
+//	public void SetUp() throws Exception
+//	    {
+//	    	
+////		classUnderTest = new SequenceDiagramGenerator();
+//		
+//		xmlFile = new File("home//developer//workspace//puml//code//testfolder//xmlSpecifications//parsedData.xml");
+//		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+//		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+//		Document parsedData = dBuilder.parse(xmlFile);
+//		
+////		classUnderTest.listAllNodes(classUnderTest.root1);
+//	    }
 
     @Test
-    void testCreateDiagram() throws ParserConfigurationException, SAXException, IOException, XPathExpressionException
+    void testCreateDiagram() throws Exception
     {
-	
+//	SetUp();
 	File xmlFile;
 	XmlHelperMethods xmlH = new XmlHelperMethods();
 	
@@ -50,7 +50,7 @@ class SequenceDiagramGeneratorTest
 	//seqgen.listAllNodes(seqDia.getDocumentElement());
 	//seqgen.listAllNodes(parsedData.getDocumentElement());
 //	xmlH.writeDocumentToConsole(xmlH.deleteComments(parsedData));
-	xmlH.listChildnodeswithName(parsedData, "instance");
+	
 	
     }
 
