@@ -194,7 +194,7 @@ public class ParserJava implements ParserIf
 	// root element
 	Element root = document.createElement("source");
 	curNode = root;
-	int curlBrace = 0;
+	int curlBrace = 0, roundBrace = 0;
 	document.appendChild(root);
 	// System.out.println(sourcec);
 	String compString;
@@ -444,6 +444,92 @@ public class ParserJava implements ParserIf
 		    sourcec = sourcec.substring(1);
 		    curlBrace--;
 		    curNode = (Element) curNode.getParentNode();
+		}
+		;
+		compString = "(";
+		if (sourcec.substring(0, compString.length()).equals(compString))
+		{
+		    sourcec = sourcec.substring(1);
+		    roundBrace++;
+		    
+		}
+		;
+		compString = ")";
+		if (sourcec.substring(0, compString.length()).equals(compString))
+		{
+		    sourcec = sourcec.substring(1);
+		    roundBrace--;
+		   
+		}
+		;
+		compString = "if";
+		if (sourcec.substring(0, compString.length()).equals(compString))
+		{
+		    
+		    int countb = roundBrace;
+		    String conditionText="if";
+		    sourcec = sourcec.substring(compString.length());
+		    sourcec = sourcec.trim();
+		    
+		    String[] nameArray = new String[2];
+		    nameArray[0] = "(";
+		    nameArray[1] = ")";
+		    do
+		    {
+			TokenResult res = goToTokenWithName(sourcec, nameArray);
+			sourcec = res.getSourceCode();
+			if(res.getFoundToken() == 0) countb++; else countb--;
+			conditionText+=res.getData();
+			
+		    }
+		    while (countb != roundBrace);
+		    
+		    Element somethingWCB = document.createElement("alternative");
+		    Element caseEl = document.createElement("case");
+		    Element conditionEl = document.createElement("condition"); //WCB - with curly brace
+		    
+		    somethingWCB.appendChild(caseEl);
+		    caseEl.appendChild(conditionEl);
+		    conditionEl.appendChild(document.createTextNode(conditionText));
+		    
+		    curNode.appendChild(somethingWCB);
+		    curNode = (Element) curNode.getLastChild();
+		    done = true;
+		}
+		;
+		compString = "while";
+		if (sourcec.substring(0, compString.length()).equals(compString))
+		{
+		    
+		    int countb = roundBrace;
+		    String conditionText="while";
+		    sourcec = sourcec.substring(compString.length());
+		    sourcec = sourcec.trim();
+		    
+		    String[] nameArray = new String[2];
+		    nameArray[0] = "(";
+		    nameArray[1] = ")";
+		    do
+		    {
+			TokenResult res = goToTokenWithName(sourcec, nameArray);
+			sourcec = res.getSourceCode();
+			if(res.getFoundToken() == 0) countb++; else countb--;
+			conditionText+=res.getData();
+			
+		    }
+		    while (countb != roundBrace);
+		    
+		    Element somethingWCB = document.createElement("alternative");
+		    Element caseEl = document.createElement("case");
+		    Element conditionEl = document.createElement("condition"); //WCB - with curly brace
+		    
+		    somethingWCB.appendChild(caseEl);
+		    caseEl.appendChild(conditionEl);
+		    conditionEl.appendChild(document.createTextNode(conditionText));
+		    
+		    curNode.appendChild(somethingWCB);
+		    curNode = (Element) curNode.getLastChild();
+		    done = true;
 		}
 		;
 		if (!done)
