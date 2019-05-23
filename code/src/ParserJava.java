@@ -519,7 +519,7 @@ public class ParserJava implements ParserIf
 //			    System.out.println("Konstruktor");
 //			}
 
-		    }
+	//	    }
 
 		}
 
@@ -696,3 +696,4 @@ public class ParserJava implements ParserIf
 	return document;
     }
 }
+

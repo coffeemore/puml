@@ -1,4 +1,4 @@
-import org.xmlunit.util.*;
+//import org.xmlunit.util.*;
 
   public class CompareXML 
   {

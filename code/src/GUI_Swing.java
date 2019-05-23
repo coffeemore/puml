@@ -28,6 +28,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Document;
 
@@ -410,6 +411,11 @@ public class GUI_Swing
 		{
 			JOptionPane.showMessageDialog(frame, "Ein-/Ausgabe-Fehler", "Fehler", JOptionPane.ERROR_MESSAGE);
 			// e1.printStackTrace();
+		}
+		catch (XPathExpressionException e)
+		{
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
 		}
 
 	}
