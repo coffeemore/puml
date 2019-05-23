@@ -1,9 +1,4 @@
-
-import java.util.ArrayList;
-import java.io.FileOutputStream;
 import java.io.StringWriter;
-import java.util.*;
-import java.util.Vector;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -83,7 +78,7 @@ public class ParserJava implements ParserIf
     {
 	String part = ""; // Variable wird genutztum zB Namen zu speichern
 	boolean found = false;
-	int foundNameIndex = 0;
+	int foundNameIndex = -1;
 	// Erstes/Erste Zeichen werden auf die �bertragenen Tokens �berpr�ft
 	for (int i = 0; i < name.length; i++)
 	{
@@ -91,13 +86,18 @@ public class ParserJava implements ParserIf
 	    {
 		found = true;
 		foundNameIndex = i;
+		// source = source.substring(name[i].length());
 	    }
 	}
-	while (!found)
+	while (!found && !source.isEmpty())
 	{
 
 	    part = part + source.substring(0, 1); // erstes Zeichen wird in Part geschrieben
 	    source = source.substring(1); // erstes Zeichen wird aus dem Sourcecode entfernt
+	    if (source.isEmpty())
+	    {
+		break;
+	    }
 	    for (int i = 0; i < name.length; i++)
 	    {
 		if (source.substring(0, name[i].length()).equals(name[i]))
@@ -106,6 +106,7 @@ public class ParserJava implements ParserIf
 		    foundNameIndex = i;
 		}
 	    }
+
 	}
 	source = source.trim();
 	return new TokenResult(foundNameIndex, part, source); // R�ckgabe welcher Token gefunden wurde und den Inhalt
@@ -114,71 +115,71 @@ public class ParserJava implements ParserIf
 
     }
 
-    public void findToken(String source)
-    {
-	String[][] TokenArray = new String[10][10];
-
-	TokenArray[0][0] = "\"";
-	TokenArray[0][1] = "\"";
-	TokenArray[0][2] = "\\\"";
-
-	TokenArray[1][0] = "//";
-	TokenArray[1][1] = "\n";
-
-	TokenArray[2][0] = "/*";
-	TokenArray[2][1] = "*/";
-
-	TokenArray[3][0] = "import ";
-	TokenArray[3][1] = ";";
-
-	TokenArray[4][0] = "class ";
-	TokenArray[4][1] = "extends";
-	TokenArray[4][2] = "implements";
-	TokenArray[4][3] = "{";
-
-	TokenArray[5][0] = "interface ";
-	TokenArray[5][1] = "{";
-	TokenArray[5][2] = "extends";
-
-	source = source.trim();
-
-	while (!source.isEmpty())
-	{
-
-	    boolean done = false;
-	    source = source.trim();
-	    for (int i = 0; i < TokenArray.length; i++)
-	    {
-
-		if (source.substring(0, TokenArray[i][0].length()).equals(TokenArray[i][0]))
-		{
-
-		    source = source.substring(TokenArray[i][0].length());
-		    source = source.trim();
-		    TokenResult res;
-		    do
-		    {
-			res = goToTokenWithName(source, TokenArray[i]);
-
-			if (res.getFoundToken() != 1)
-			{
-			    source = source.substring(1);
-			}
-		    }
-		    while (res.getFoundToken() == 1);
-		    source = source.substring(1); // Entfernen des ersten Zeichens
-		    done = true;
-
-		}
-	    }
-
-	    if (!done)
-	    {
-		source = source.substring(1);
-	    }
-	}
-
-    }
+//    public void findToken(String source)
+//    {
+//	String[][] TokenArray = new String[10][10];
+//
+//	TokenArray[0][0] = "\"";
+//	TokenArray[0][1] = "\"";
+//	TokenArray[0][2] = "\\\"";
+//
+//	TokenArray[1][0] = "//";
+//	TokenArray[1][1] = "\n";
+//
+//	TokenArray[2][0] = "/*";
+//	TokenArray[2][1] = "*/";
+//
+//	TokenArray[3][0] = "import ";
+//	TokenArray[3][1] = ";";
+//
+//	TokenArray[4][0] = "class ";
+//	TokenArray[4][1] = "extends";
+//	TokenArray[4][2] = "implements";
+//	TokenArray[4][3] = "{";
+//
+//	TokenArray[5][0] = "interface ";
+//	TokenArray[5][1] = "{";
+//	TokenArray[5][2] = "extends";
+//
+//	source = source.trim();
+//
+//	while (!source.isEmpty())
+//	{
+//
+//	    boolean done = false;
+//	    source = source.trim();
+//	    for (int i = 0; i < TokenArray.length; i++)
+//	    {
+//
+//		if (source.substring(0, TokenArray[i][0].length()).equals(TokenArray[i][0]))
+//		{
+//
+//		    source = source.substring(TokenArray[i][0].length());
+//		    source = source.trim();
+//		    TokenResult res;
+//		    do
+//		    {
+//			res = goToTokenWithName(source, TokenArray[i]);
+//
+//			if (res.getFoundToken() != 1)
+//			{
+//			    source = source.substring(1);
+//			}
+//		    }
+//		    while (res.getFoundToken() == 1);
+//		    source = source.substring(1); // Entfernen des ersten Zeichens
+//		    done = true;
+//
+//		}
+//	    }
+//
+//	    if (!done)
+//	    {
+//		source = source.substring(1);
+//	    }
+//	}
+//
+//    }
 
     /**
      * Entfernt Kommentare aus �bergebenem String
@@ -195,9 +196,11 @@ public class ParserJava implements ParserIf
 	DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
 
 	document = documentBuilder.newDocument();
-
+	Element curNode;
 	// root element
 	Element root = document.createElement("source");
+	curNode = root;
+	int curlBrace = 0, roundBrace = 0;
 	document.appendChild(root);
 	// System.out.println(sourcec);
 	String compString;
@@ -244,7 +247,7 @@ public class ParserJava implements ParserIf
 		{
 		    TokenResult res;
 		    sourcec = sourcec.substring(compString.length());
-		    sourcec = sourcec.trim();
+		    // sourcec = sourcec.trim();
 		    String[] nameArray = new String[1];
 		    nameArray[0] = "\n";
 		    res = goToTokenWithName(sourcec, nameArray);
@@ -293,6 +296,11 @@ public class ParserJava implements ParserIf
 		    nameArray[2] = "implements";
 		    TokenResult res = goToTokenWithName(sourcec, nameArray);
 		    sourcec = res.getSourceCode();
+		    if (res.getFoundToken() == 0)
+		    {
+			sourcec = sourcec.substring(1);
+			curlBrace++;
+		    }
 		    String classNameStr = res.getData();
 		    classNameStr = classNameStr.strip();
 		    System.out.println("@className: " + classNameStr);
@@ -301,7 +309,8 @@ public class ParserJava implements ParserIf
 		    Element classNameEl = document.createElement("name");
 		    classNameEl.appendChild(document.createTextNode(classNameStr));
 		    classDefinition.appendChild(classNameEl);
-		    root.appendChild(classDefinition);
+		    curNode.appendChild(classDefinition);
+		    curNode = (Element) curNode.getLastChild();
 
 		    compString = "extends ";
 		    if (sourcec.substring(0, compString.length()).equals(compString))
@@ -312,7 +321,13 @@ public class ParserJava implements ParserIf
 			nameArray[0] = "{";
 			nameArray[1] = "implements";
 			res = goToTokenWithName(sourcec, nameArray);
+			sourcec = res.getSourceCode();
 			String classExtendsStr = res.getData();
+			if (res.getFoundToken() == 0)
+			{
+			    sourcec = sourcec.substring(1);
+			    curlBrace++;
+			}
 			classExtendsStr = classExtendsStr.strip();
 			System.out.println("@extendsName: " + classExtendsStr);
 
@@ -326,11 +341,13 @@ public class ParserJava implements ParserIf
 		    compString = "implements ";
 		    if (sourcec.substring(0, compString.length()).equals(compString))
 		    {
+
 			Element classImplements = document.createElement("implements");
 			classDefinition.appendChild(classImplements);
 
 			sourcec = sourcec.substring(compString.length());
-			compString = "{";
+			boolean curlBraceBool = false;
+			// Lösung 1 compString = "{";
 			do
 			{
 			    sourcec = sourcec.trim();
@@ -339,6 +356,15 @@ public class ParserJava implements ParserIf
 			    nameArray[1] = ",";
 			    res = goToTokenWithName(sourcec, nameArray);
 			    sourcec = res.getSourceCode();
+			    if (res.getFoundToken() == 0)
+			    {
+
+				curlBrace++;
+				curlBraceBool = true;
+			    }
+
+			    sourcec = sourcec.substring(1);
+
 			    String classImplementsStr = res.getData();
 			    classImplementsStr = classImplementsStr.strip();
 			    System.out.println("@implements: " + classImplementsStr);
@@ -347,7 +373,9 @@ public class ParserJava implements ParserIf
 			    classImplementsEl.appendChild(document.createTextNode(classImplementsStr));
 			    classImplements.appendChild(classImplementsEl);
 			}
-			while (!(sourcec.substring(0, compString.length()).equals(compString)));
+			while (!(curlBraceBool));
+			// Lösung 1 while (!(sourcec.substring(0,
+			// compString.length()).equals(compString)));
 
 		    }
 		    done = true;
@@ -361,12 +389,31 @@ public class ParserJava implements ParserIf
 		    nameArray[0] = "{";
 		    nameArray[1] = "extends";
 		    TokenResult res = goToTokenWithName(sourcec, nameArray);
+		    sourcec = res.getSourceCode();
 		    String interfaceName = res.getData();
+		    if (res.getFoundToken() == 0)
+		    {
+			sourcec = sourcec.substring(1);
+			curlBrace++;
+		    }
+
 		    interfaceName = interfaceName.strip();
 		    System.out.println("@interfaceName: " + interfaceName);
-		    Element classElement = document.createElement("class");
-		    classElement.appendChild(document.createTextNode(interfaceName));
-		    root.appendChild(classElement);
+
+		    Element classDefinition = document.createElement("classdefinition");
+		    Element classNameEl = document.createElement("name");
+
+		    // Element classElement = document.createElement("class");
+		    classNameEl.appendChild(document.createTextNode(interfaceName));
+		    classDefinition.appendChild(classNameEl);
+		    curNode.appendChild(classDefinition);
+		    curNode = (Element) curNode.getLastChild();
+
+		    //////// Temporär///////
+		    // Name der Klasse/des Interfaces
+		    System.out.println(curNode.getFirstChild().getTextContent());
+		    ///////////////////////
+
 		    compString = "extends ";
 		    if (sourcec.substring(0, compString.length()).equals(compString))
 		    {
@@ -376,12 +423,214 @@ public class ParserJava implements ParserIf
 			nameArray[0] = "{";
 			res = goToTokenWithName(sourcec, nameArray);
 			String extendsName = res.getData();
+			if (res.getFoundToken() == 0)
+			{
+			    sourcec = sourcec.substring(1);
+			    curlBrace++;
+			}
 			extendsName = extendsName.strip();
 			System.out.println("@extendsName: " + extendsName);
 		    }
 		    done = true;
 		}
 		;
+		////////////
+		if (curNode.getNodeName().equals("classdefinition"))
+		{
+		    String[] nameArray = new String[1];
+		    nameArray[0] = "(";
+
+		    TokenResult res1 = goToTokenWithName(sourcec, nameArray);
+		    String functionData = res1.getData();
+		    String[] prefixRBrace = functionData.split(" ");
+		    
+		    if (prefixRBrace.length>3 || prefixRBrace.length<=1 )
+		    {
+			System.out.println("Keine Funktion");
+		    }
+		    switch (prefixRBrace.length)
+		    {
+		    case 0:
+			System.out.println("nichts");
+			break;
+		    case 1:
+			switch (prefixRBrace[0])
+			{
+			case "if":
+			    
+			    break;
+			case "for":
+			    
+			    break;
+			case "while":
+			    
+			    break;
+
+			default:
+			    System.out.println("Funktionsaufruf");
+			    break;
+			}		
+			break;
+
+		    default:
+			break;
+		    }
+//		    else
+//		    {
+//			String returnType = res2.getData();
+//			functionData = functionData.substring(returnType.length());
+//			functionData.trim();
+//			nameArray[0] = "(";
+//			TokenResult res3 = goToTokenWithName(functionData, nameArray);
+//
+//			String methodName = res3.getData();
+//			String[] methodNamePart = methodName.split(" ");
+//			
+//			if (methodName.isEmpty())
+//			{
+//			    System.out.println("Funktionsaufruf");
+//			} 
+//			else if (methodNamePart.length==2)
+//			{
+//			    System.out.println("Funktionsdeklaration");
+//
+//			    nameArray[0] = "{";
+//
+//			    TokenResult res4 = goToTokenWithName(sourcec, nameArray);
+//			    sourcec = res4.getSourceCode();
+//			    sourcec = sourcec.substring(1);
+//
+//			    curlBrace++;
+//			    Element methodDefinition = document.createElement("methoddefinition"); // WCB - with curly
+//												   // brace
+//			    Element methodNameNode = document.createElement("name");
+//			    Element resultNameNode = document.createElement("result");
+//			    methodNameNode.appendChild(document.createTextNode(methodNamePart[1]));
+//			    resultNameNode.appendChild(document.createTextNode(methodNamePart[0]));
+//
+//			    methodDefinition.appendChild(methodNameNode);
+//			    methodDefinition.appendChild(resultNameNode);
+//
+//			    curNode.appendChild(methodDefinition);
+//			    curNode = (Element) curNode.getLastChild();
+//			}else if (methodNamePart.length==1)
+//			{
+//			    
+//			    System.out.println("Konstruktor");
+//			}
+
+		    }
+
+		}
+
+		////////////
+
+		// Temporäre Lösung
+		compString = "{";
+		if (sourcec.substring(0, compString.length()).equals(compString))
+		{
+		    sourcec = sourcec.substring(1);
+		    curlBrace++;
+		    Element somethingWCB = document.createElement("something"); // WCB - with curly brace
+		    somethingWCB.appendChild(document.createTextNode(" Funktion || Schleife || Abfrage "));
+		    curNode.appendChild(somethingWCB);
+		    curNode = (Element) curNode.getLastChild();
+		}
+		;
+		compString = "}";
+		if (sourcec.substring(0, compString.length()).equals(compString))
+		{
+		    sourcec = sourcec.substring(1);
+		    curlBrace--;
+		    curNode = (Element) curNode.getParentNode();
+		}
+		;
+//		compString = "(";
+//		if (sourcec.substring(0, compString.length()).equals(compString))
+//		{
+//		    sourcec = sourcec.substring(1);
+//		    roundBrace++;
+//		    
+//		}
+//		;
+//		compString = ")";
+//		if (sourcec.substring(0, compString.length()).equals(compString))
+//		{
+//		    sourcec = sourcec.substring(1);
+//		    roundBrace--;
+//		   
+//		}
+//		;
+//		compString = "if";
+//		if (sourcec.substring(0, compString.length()).equals(compString))
+//		{
+//		    
+//		    int countb = roundBrace;
+//		    String conditionText="if";
+//		    sourcec = sourcec.substring(compString.length());
+//		    sourcec = sourcec.trim();
+//		    
+//		    String[] nameArray = new String[2];
+//		    nameArray[0] = "(";
+//		    nameArray[1] = ")";
+//		    do
+//		    {
+//			TokenResult res = goToTokenWithName(sourcec, nameArray);
+//			sourcec = res.getSourceCode();
+//			if(res.getFoundToken() == 0) countb++; else countb--;
+//			conditionText+=res.getData();
+//			
+//		    }
+//		    while (countb != roundBrace);
+//		    
+//		    Element somethingWCB = document.createElement("alternative");
+//		    Element caseEl = document.createElement("case");
+//		    Element conditionEl = document.createElement("condition"); //WCB - with curly brace
+//		    
+//		    somethingWCB.appendChild(caseEl);
+//		    caseEl.appendChild(conditionEl);
+//		    conditionEl.appendChild(document.createTextNode(conditionText));
+//		    
+//		    curNode.appendChild(somethingWCB);
+//		    curNode = (Element) curNode.getLastChild();
+//		    done = true;
+//		}
+//		;
+//		compString = "while";
+//		if (sourcec.substring(0, compString.length()).equals(compString))
+//		{
+//		    
+//		    int countb = roundBrace;
+//		    String conditionText="while";
+//		    sourcec = sourcec.substring(compString.length());
+//		    sourcec = sourcec.trim();
+//		    
+//		    String[] nameArray = new String[2];
+//		    nameArray[0] = "(";
+//		    nameArray[1] = ")";
+//		    do
+//		    {
+//			TokenResult res = goToTokenWithName(sourcec, nameArray);
+//			sourcec = res.getSourceCode();
+//			if(res.getFoundToken() == 0) countb++; else countb--;
+//			conditionText+=res.getData();
+//			
+//		    }
+//		    while (countb != roundBrace);
+//		    
+//		    Element somethingWCB = document.createElement("alternative");
+//		    Element caseEl = document.createElement("case");
+//		    Element conditionEl = document.createElement("condition"); //WCB - with curly brace
+//		    
+//		    somethingWCB.appendChild(caseEl);
+//		    caseEl.appendChild(conditionEl);
+//		    conditionEl.appendChild(document.createTextNode(conditionText));
+//		    
+//		    curNode.appendChild(somethingWCB);
+//		    curNode = (Element) curNode.getLastChild();
+//		    done = true;
+//		}
+//		;
 		if (!done)
 		{
 		    sourcec = sourcec.substring(1);

@@ -1,7 +1,4 @@
 
-import java.io.File;
-import java.io.IOException;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -11,7 +8,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  * 
@@ -28,11 +24,7 @@ public class ClassDiagramGenerator
      */	
     public ClassDiagramGenerator()
     {
-    	Document testDoc = xmlHelper.getDocumentFrom("testfolder/xmlSpecifications/parsedData.xml");
-    	xmlHelper.writeDocumentToConsole(testDoc);
-    	System.out.println("TestXMLen");
-    	createDiagram(testDoc);
-    	System.out.println("TestXML erstellen");
+    	
     }
 
 	/**
@@ -77,109 +69,114 @@ public class ClassDiagramGenerator
 			Element aggregations = document.createElement("aggregations");
 			classrelations.appendChild(aggregations);
 
+			//Knoten auflisten 
 			NodeList classList = parsedData.getElementsByTagName("classdefinition");
-			for (int i = 0; i < classList.getLength(); i++) {
+			for (int i = 0; i < classList.getLength(); i++)
+			{
 				Node classdefinitionNode = classList.item(i);
 				Element entry = document.createElement("entry");
 				classes.appendChild(entry);
-				Element Eclassdefinition = (Element) classdefinitionNode;
+				Element elClassdef = (Element) classdefinitionNode;
+				//Erzeugt "Entry"-Tag mit Classennamen als Texteintrag
 				entry.appendChild(document
-						.createTextNode(Eclassdefinition.getElementsByTagName("name").item(0).getTextContent()));
-
-				if (Eclassdefinition.getElementsByTagName("extends").getLength() > 0) {
-					NodeList extendsList = Eclassdefinition.getElementsByTagName("extends");
+						.createTextNode(elClassdef.getElementsByTagName("name").item(0).getTextContent()));
+				//Pruefen auf Vererbungsstruktur
+				if (elClassdef.getElementsByTagName("extends").getLength() > 0)
+				{
+					//Knoten fuer Vererbung eintragen
+					NodeList extendsList = elClassdef.getElementsByTagName("extends");
 					Node extendsNode = extendsList.item(0);
-					Element Eextends = (Element) extendsNode;
-
-					NodeList entryList = Eextends.getElementsByTagName("entry");
-					for (int j = 0; j < entryList.getLength(); j++) {
-
-						Element entry2 = document.createElement("entry");
-						extensions.appendChild(entry2);
+					Element elExtends = (Element) extendsNode;
+					//Alle mit "entry" eingeleiteten Vererbungen unter extends durchgehen
+					NodeList entryList = elExtends.getElementsByTagName("entry");
+					for (int j = 0; j < entryList.getLength(); j++)
+					{
+						Element nextEntry = document.createElement("entry");
+						extensions.appendChild(nextEntry);
+						//Vererbungsstruktur von "klasse" zu "klasse" eintragen
 						Element from = document.createElement("from");
-						entry2.appendChild(from);
+						nextEntry.appendChild(from);
 						from.appendChild(document.createTextNode(
-								Eclassdefinition.getElementsByTagName("name").item(0).getTextContent()));
+								elClassdef.getElementsByTagName("name").item(0).getTextContent())); /*0 durch Laufvariable i ersetzen? TODO*/
 						Element to = document.createElement("to");
-						entry2.appendChild(to);
+						nextEntry.appendChild(to);
 						to.appendChild(document
-								.createTextNode(Eextends.getElementsByTagName("entry").item(j).getTextContent()));
+								.createTextNode(elExtends.getElementsByTagName("entry").item(j).getTextContent()));
 					}
 				}
-
-				if (Eclassdefinition.getElementsByTagName("implements").getLength() > 0) {
-					NodeList implementsList = Eclassdefinition.getElementsByTagName("implements");
+				//Pruefen auf Interfaces
+				if (elClassdef.getElementsByTagName("implements").getLength() > 0)
+				{
+					NodeList implementsList = elClassdef.getElementsByTagName("implements");
 					Node implementsNode = implementsList.item(0);
-					Element Eimplements = (Element) implementsNode;
+					Element elImplements = (Element) implementsNode;
 
-					NodeList entryList = Eimplements.getElementsByTagName("entry");
-					for (int j = 0; j < entryList.getLength(); j++) {
-						Element entry2 = document.createElement("entry");
-						implementations.appendChild(entry2);
+					NodeList entryList = elImplements.getElementsByTagName("entry");
+					for (int j = 0; j < entryList.getLength(); j++)
+					{
+						Element nextEntry = document.createElement("entry");
+						implementations.appendChild(nextEntry);
 						Element from = document.createElement("from");
-						entry2.appendChild(from);
+						nextEntry.appendChild(from);
 						from.appendChild(document.createTextNode(
-								Eclassdefinition.getElementsByTagName("name").item(0).getTextContent()));
+								elClassdef.getElementsByTagName("name").item(0).getTextContent()));
 						Element to = document.createElement("to");
-						entry2.appendChild(to);
+						nextEntry.appendChild(to);
 						to.appendChild(document
-								.createTextNode(Eimplements.getElementsByTagName("entry").item(j).getTextContent()));
+								.createTextNode(elImplements.getElementsByTagName("entry").item(j).getTextContent()));
 
-						Element entry3 = document.createElement("entry");
-						interfaces.appendChild(entry3);
-						entry3.appendChild(document
-								.createTextNode(Eimplements.getElementsByTagName("entry").item(j).getTextContent()));
-
+						Element veryNextEntry = document.createElement("entry");
+						interfaces.appendChild(veryNextEntry);
+						veryNextEntry.appendChild(document
+								.createTextNode(elImplements.getElementsByTagName("entry").item(j).getTextContent()));
 					}
 				}
-
-				if (Eclassdefinition.getElementsByTagName("compositions").getLength() > 0) {
-					NodeList compositionsList = Eclassdefinition.getElementsByTagName("compositions");
+				//Pruefen auf Komposition
+				if (elClassdef.getElementsByTagName("compositions").getLength() > 0)
+				{
+					NodeList compositionsList = elClassdef.getElementsByTagName("compositions");
 					Node compositionsNode = compositionsList.item(0);
 					Element Ecompositions = (Element) compositionsNode;
 
 					NodeList entryList = Ecompositions.getElementsByTagName("entry");
 					for (int j = 0; j < entryList.getLength(); j++) {
-						Element entry2 = document.createElement("entry");
-						compositions.appendChild(entry2);
+						Element nextEntry = document.createElement("entry");
+						compositions.appendChild(nextEntry);
 						Element from = document.createElement("from");
-						entry2.appendChild(from);
+						nextEntry.appendChild(from);
 						from.appendChild(document
 								.createTextNode(Ecompositions.getElementsByTagName("entry").item(j).getTextContent()));
 						Element to = document.createElement("to");
-						entry2.appendChild(to);
+						nextEntry.appendChild(to);
 						to.appendChild(document.createTextNode(
-								Eclassdefinition.getElementsByTagName("name").item(0).getTextContent()));
+								elClassdef.getElementsByTagName("name").item(0).getTextContent()));
 					}
 				}
-
-				if (Eclassdefinition.getElementsByTagName("aggregations").getLength() > 0) {
-					NodeList aggregationsList = Eclassdefinition.getElementsByTagName("aggregations");
+				//Pruefen auf Aggregation
+				if (elClassdef.getElementsByTagName("aggregations").getLength() > 0)
+				{
+					NodeList aggregationsList = elClassdef.getElementsByTagName("aggregations");
 					Node aggregationsNode = aggregationsList.item(0);
-					Element Eaggregation = (Element) aggregationsNode;
+					Element elAggregation = (Element) aggregationsNode;
 
-					NodeList entryList = Eaggregation.getElementsByTagName("entry");
-					for (int j = 0; j < entryList.getLength(); j++) {
-						Element entry2 = document.createElement("entry");
-						aggregations.appendChild(entry2);
+					NodeList entryList = elAggregation.getElementsByTagName("entry");
+					for (int j = 0; j < entryList.getLength(); j++)
+					{
+						Element nextEntry = document.createElement("entry");
+						aggregations.appendChild(nextEntry);
 						Element from = document.createElement("from");
-						entry2.appendChild(from);
+						nextEntry.appendChild(from);
 						from.appendChild(document
-								.createTextNode(Eaggregation.getElementsByTagName("entry").item(j).getTextContent()));
+								.createTextNode(elAggregation.getElementsByTagName("entry").item(j).getTextContent()));
 						Element to = document.createElement("to");
-						entry2.appendChild(to);
+						nextEntry.appendChild(to);
 						to.appendChild(document.createTextNode(
-								Eclassdefinition.getElementsByTagName("name").item(0).getTextContent()));
+								elClassdef.getElementsByTagName("name").item(0).getTextContent()));
 					}
 				}
 			}
-
-			//try {
-				xmlHelper.writeDocumentToConsole(document);
-			//} /*catch (TransformerConfigurationException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
-			//}*/
+			//Ausgabe Konsole
+			xmlHelper.writeDocumentToConsole(document);
 	    	return document;
 		}
     	catch (ParserConfigurationException e)
@@ -187,6 +184,5 @@ public class ClassDiagramGenerator
 			e.printStackTrace();
 		}
 		return null;
-		// xmlHelper.writeDocumentToConsole(document);
 	}
 }
