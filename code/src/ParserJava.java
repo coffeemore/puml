@@ -241,7 +241,7 @@ public class ParserJava implements ParserIf
 		{
 		    TokenResult res;
 		    sourcec = sourcec.substring(compString.length());
-		    sourcec = sourcec.trim();
+		    //sourcec = sourcec.trim();
 		    String[] nameArray = new String[1];
 		    nameArray[0] = "\n";
 		    res = goToTokenWithName(sourcec, nameArray);
@@ -315,6 +315,7 @@ public class ParserJava implements ParserIf
 			nameArray[0] = "{";
 			nameArray[1] = "implements";
 			res = goToTokenWithName(sourcec, nameArray);
+			sourcec = res.getSourceCode();
 			String classExtendsStr = res.getData();
 			if (res.getFoundToken() == 0)
 			{
@@ -378,6 +379,7 @@ public class ParserJava implements ParserIf
 		    nameArray[0] = "{";
 		    nameArray[1] = "extends";
 		    TokenResult res = goToTokenWithName(sourcec, nameArray);
+		    sourcec = res.getSourceCode();
 		    String interfaceName = res.getData();
 		    if (res.getFoundToken() == 0)
 		    {
