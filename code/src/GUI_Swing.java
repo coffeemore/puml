@@ -26,6 +26,7 @@ import javax.swing.JTextArea;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -83,6 +84,9 @@ public class GUI_Swing {
 	private boolean useJar;
 	private boolean modified;
 	private File tmpImage;
+	private JLabel lblMethode;
+	private JLabel lblKlasse;
+	private JPanel panel_1;
 
 
 	/**
@@ -247,10 +251,23 @@ public class GUI_Swing {
 
 		pnlSeqPrev = new JPanel();
 		panel.add(pnlSeqPrev, BorderLayout.SOUTH);
+		pnlSeqPrev.setLayout(new BorderLayout(0, 0));
 
 		btnSeqPrev = new JButton("Vorschau");
-		pnlSeqPrev.add(btnSeqPrev);
+		pnlSeqPrev.add(btnSeqPrev, BorderLayout.SOUTH);
+		
+		panel_1 = new JPanel();
+		panel_1.setBorder(new TitledBorder("Entry-Point:"));
+		pnlSeqPrev.add(panel_1, BorderLayout.CENTER);
+		panel_1.setLayout(new BorderLayout(0, 0));
+			
+		lblMethode = new JLabel("Methode:");
+		panel_1.add(lblMethode);
+		
+		lblKlasse = new JLabel("Klasse:");
+		panel_1.add(lblKlasse, BorderLayout.NORTH);
 
+		
 		tree_1 = new JTree();
 		splitPane.setLeftComponent(tree_1);
 
@@ -265,6 +282,8 @@ public class GUI_Swing {
 
 				if (node.isLeaf()) {
 					System.out.println(node.getUserObject() + "  ||  " + node.toString() + "  ||  " + node.getParent());
+					//TODO: lblKlasse
+					
 				}
 			}
 		});
