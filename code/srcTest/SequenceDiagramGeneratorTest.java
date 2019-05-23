@@ -48,6 +48,8 @@ class SequenceDiagramGeneratorTest
 	    DocumentBuilderFactory dbFactory2 = DocumentBuilderFactory.newInstance();
 	    DocumentBuilder dBuilder2 = dbFactory2.newDocumentBuilder();
 	    Document seqDiagram = dBuilder2.parse(xmlFile2);
+	    System.out.println(seqDiagram.getDocumentElement());
+	    xmlHM.removeComments(seqDiagram.getDocumentElement());
 	    
 	    assertEquals(seqDiagram, test);
 	  });

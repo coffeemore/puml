@@ -1,13 +1,24 @@
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.w3c.dom.Document;
 
 /**
@@ -32,10 +43,12 @@ public class SequenceDiagramGenerator
      * @param parsedData - xml Eingabe Dokument
      * @return plantUML-Code zur Erzeugung in OutputPUML als xmlDoc
      * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws SAXException
      */
 
     public Document createDiagram(Document parsedData, String epClass, String epMethod)
-	    throws ParserConfigurationException
+	    throws ParserConfigurationException, SAXException, IOException
     {
 	// neues Dokument, das seqDiagramm Informationen enthalten wird
 	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -63,6 +76,7 @@ public class SequenceDiagramGenerator
 
 	addClassesToInstances(parsedData, seqDiagramm);
 	addType(parsedData, seqDiagramm, seq, epClass);
+	xmlHM.removeComments(root);
 	xmlHM.writeDocumentToConsole(seqDiagramm);
 
 	return seqDiagramm;
@@ -300,7 +314,7 @@ public class SequenceDiagramGenerator
 	createList(parsedData, classesWithMethodsList);
 
 	// Liste für bereits aufgerufene Methoden
-	ArrayList<String> calledMethodsList = new ArrayList<String>();
+	ArrayList<ArrayList<String>> calledMethodsList = new ArrayList<ArrayList<String>>();
 	// alle Methoddefinitions in SeqDiagram
 	NodeList seqMethodDefList = seqDiagramm.getElementsByTagName("methoddefinition");
 
@@ -320,7 +334,7 @@ public class SequenceDiagramGenerator
 			Element seqMethodCallEl = (Element) seqMethodCallNode;
 			// aktuell aufgerufene Methode
 			String calledMethod = seqMethodCallEl.getElementsByTagName("method").item(0).getTextContent();
-
+			String calledClass = seqMethodCallEl.getElementsByTagName("class").item(0).getTextContent();
 			/**
 			 * type - handled
 			 */
@@ -330,16 +344,21 @@ public class SequenceDiagramGenerator
 			// verglichen
 			for (int i = 0; i < calledMethodsList.size(); i++)
 			{
-			    String calledEl = calledMethodsList.get(i);
-			    if (calledMethod.equals(calledEl) && a == 0
-				    && (seqMethodCallEl.getElementsByTagName("type").item(0) == null))
+			    for (int j = 0; i < calledMethodsList.get(i).size(); j++)
 			    {
-				type.setTextContent("handled");
-				seqMethodCallEl.appendChild(type);
-				a++;
+				String calledEl = calledMethodsList.get(i).get(1);
+				String calledCl = calledMethodsList.get(i).get(0);
+				if (calledMethod.equals(calledEl) && calledClass.equals(calledCl) && a == 0
+					&& (seqMethodCallEl.getElementsByTagName("type").item(0) == null))
+				{
+				    type.setTextContent("handled");
+				    seqMethodCallEl.appendChild(type);
+				    a++;
+				}
 			    }
+			    calledMethodsList.get(i).add(1, calledMethod);
+			    calledMethodsList.get(i).add(0, calledClass);
 			}
-			calledMethodsList.add(calledMethod);
 
 			/**
 			 * type - unknown
@@ -347,25 +366,32 @@ public class SequenceDiagramGenerator
 			int b = 0;
 			int c = 0;
 			// alle vorhandenen Methoden werden mit der aktuell aufgerufenen verglichen
-			for (int i = 0; i < classesWithMethodsList.size(); i++)
-			{
-			    // b speichert die Anzahl aller Klassen und Methoden
-			    b += classesWithMethodsList.get(i).size();
-			    for (int j = 0; j < classesWithMethodsList.get(i).size(); j++)
+//			if (!(seqMethodCallEl.getElementsByTagName("class").item(0).getTextContent().equals("")))
+//			{
+			    for (int i = 0; i < classesWithMethodsList.size(); i++)
 			    {
-				// c wird hochgesetzt, wenn die calledMethod mit keinem Eintrag in der Liste
-				// übereinstimmt
-				if (!calledMethod.equals(classesWithMethodsList.get(i).get(j)))
+				// b speichert die Anzahl aller Klassen und Methoden
+				b += classesWithMethodsList.get(i).size();
+				for (int j = 0; j < classesWithMethodsList.get(i).size(); j++)
 				{
-				    c++;
+				    // c wird hochgesetzt, wenn die calledMethod mit keinem Eintrag in der Liste
+				    // übereinstimmt
+				    if (!calledMethod.equals(classesWithMethodsList.get(i).get(j)))
+				    {
+					c++;
+				    }
 				}
 			    }
-			}
-			if (b == c)
-			{
-			    type.setTextContent("unknown");
-			    seqMethodCallEl.appendChild(type);
-			}
+			    if (b == c)
+			    {
+				type.setTextContent("unknown");
+				seqMethodCallEl.appendChild(type);
+			    }
+//			} else
+//			{
+//			    type.setTextContent("unknown");
+//			    seqMethodCallEl.appendChild(type);
+//			}
 
 			/**
 			 * type - recursive
@@ -407,7 +433,7 @@ public class SequenceDiagramGenerator
 		    }
 		}
 	    }
-	}
+	}listArrayList(calledMethodsList);
     }
 
     /**

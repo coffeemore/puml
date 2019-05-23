@@ -1,6 +1,7 @@
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -144,6 +145,39 @@ public class XmlHelperMethods
 	}
     }
 
+    public void removeComments(Element root)
+    {
+	if (root.hasChildNodes())
+	{
+	    NodeList list = root.getChildNodes();
+	    for (int i = 0; i < list.getLength(); i++)
+	    {
+		Node node = list.item(i);
+
+		if (node.getNodeType() == Node.ELEMENT_NODE)
+		{
+		    Element e = (Element) node;
+		    removeComments(e);
+		} else if (node.getNodeType() == Node.COMMENT_NODE)
+		{
+		    root.removeChild(node);
+		}
+	    }
+	}
+    }
+
+    private String removeWhitespace(Document seq) throws TransformerException
+    {
+	StringWriter sw = new StringWriter();
+	TransformerFactory tf = TransformerFactory.newInstance();
+	Transformer transformer = tf.newTransformer();
+	transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+	transformer.transform(new DOMSource(seq), new StreamResult(sw));
+	String s = sw.toString();
+	String m = s.replaceAll("\\s+\\n", "\n");
+	return m;
+    }
+
     /**
      * Funktion zum Suchen aller Knoten mit einem bestimmten Pfad
      * 
@@ -204,4 +238,21 @@ public class XmlHelperMethods
 	}
 	return false;
     }
+
+//    public void tried (Element root) {
+//	if(root.hasChildNodes()) {
+//	    NodeList list = root.getChildNodes();
+//	    for(int i = 0; i < list.getLength(); i++) {
+//		Node s = list.item(i);
+//		Element e = (Element) s;
+//		if(s.getNodeType()==Node.COMMENT_NODE) {
+//		    System.out.println("true");
+//		} else {
+//		    tried(e);
+//		}
+//	    }
+//	    
+//	}
+//	
+//    }
 }
