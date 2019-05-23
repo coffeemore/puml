@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<source>
+	<classdefinition>
+		<name>Class1</name>
+		<extends>
+			<entry>Class3</entry>
+		</extends>
+		<implements>
+			<entry>If1</entry>
+			<entry>If2</entry>
+		</implements>
+		<methoddefinition>
+			<name> Class2 classInstance1 = new Class2</name>
+			<result> Class2 classInstance1 = new Class2</result>
+		</methoddefinition>
+		<methoddefinition>
+			<name> int method1</name>
+			<result> int method1</result>
+			<something> Funktion || Schleife || Abfrage </something>
+			<something>
+				Funktion || Schleife || Abfrage
+				<something> Funktion || Schleife || Abfrage </something>
+			</something>
+		</methoddefinition>
+		<methoddefinition>
+			<name> void method2</name>
+			<result> void method2</result>
+			<something>
+				Funktion || Schleife || Abfrage
+				<something>
+					Funktion || Schleife || Abfrage
+					<something> Funktion || Schleife || Abfrage </something>
+				</something>
+				<something>
+					Funktion || Schleife || Abfrage
+					<something> Funktion || Schleife || Abfrage </something>
+				</something>
+				<something> Funktion || Schleife || Abfrage </something>
+			</something>
+		</methoddefinition>
+		<methoddefinition>
+			<name> void method3</name>
+			<result> void method3</result>
+			<something> Funktion || Schleife || Abfrage </something>
+			<something> Funktion || Schleife || Abfrage </something>
+		</methoddefinition>
+		<methoddefinition>
+			<name> void method4</name>
+			<result> void method4</result>
+			<something> Funktion || Schleife || Abfrage </something>
+		</methoddefinition>
+		<methoddefinition>
+			<name> xmlSpecifications;
+
+
+				public class Class2
+				{
+
+				public void call1</name>
+			<result> xmlSpecifications;
+
+
+				public class Class2
+				{
+
+				public void call1</result>
+			<something> Funktion || Schleife || Abfrage </something>
+			<something> Funktion || Schleife || Abfrage </something>
+		</methoddefinition>
+		<methoddefinition>
+			<name> xmlSpecifications;
+
+				public class Class3
+				{
+				public void call1</name>
+			<result> xmlSpecifications;
+
+				public class Class3
+				{
+				public void call1</result>
+			<something> Funktion || Schleife || Abfrage </something>
+		</methoddefinition>
+		<methoddefinition>
+			<name> xmlSpecifications;
+
+				public class Class4
+				{
+
+				}
+				package xmlSpecifications;
+
+				public class Class5
+				{
+
+				}</name>
+			<result> xmlSpecifications;
+
+				public class Class4
+				{
+
+				}
+				package xmlSpecifications;
+
+				public class Class5
+				{
+
+				}</result>
+		</methoddefinition>
+		<methoddefinition>
+			<name> xmlSpecifications;
+
+				public class Class5
+				{
+
+				}</name>
+			<result> xmlSpecifications;
+
+				public class Class5
+				{
+
+				}</result>
+		</methoddefinition>
+	</classdefinition>
+</source>
