@@ -392,11 +392,6 @@ public class GUI_Swing {
 			JOptionPane.showMessageDialog(frame, "Ein-/Ausgabe-Fehler", "Fehler", JOptionPane.ERROR_MESSAGE);
 			// e1.printStackTrace();
 		}
-		catch (XPathExpressionException e)
-		{
-		    // TODO Auto-generated catch block
-		    e.printStackTrace();
-		}
 
 	}
 
