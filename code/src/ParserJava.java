@@ -442,51 +442,82 @@ public class ParserJava implements ParserIf
 
 		    TokenResult res1 = goToTokenWithName(sourcec, nameArray);
 		    String functionData = res1.getData();
-
-		    nameArray[0] = " ";
-		    TokenResult res2 = goToTokenWithName(functionData, nameArray);
-		    if (res2.getFoundToken() == -1)
+		    String[] prefixRBrace = functionData.split(" ");
+		    
+		    if (prefixRBrace.length>3 || prefixRBrace.length<=1 )
 		    {
 			System.out.println("Keine Funktion");
 		    }
-		    else
+		    switch (prefixRBrace.length)
 		    {
-			String returnType = res2.getData();
-			functionData = functionData.substring(returnType.length());
-			functionData.trim();
-			nameArray[0] = "(";
-			TokenResult res3 = goToTokenWithName(functionData, nameArray);
-
-			String methodName = res3.getData();
-
-			if (methodName.isEmpty())
+		    case 0:
+			System.out.println("nichts");
+			break;
+		    case 1:
+			switch (prefixRBrace[0])
 			{
+			case "if":
+			    
+			    break;
+			case "for":
+			    
+			    break;
+			case "while":
+			    
+			    break;
+
+			default:
 			    System.out.println("Funktionsaufruf");
-			}
-			else
-			{
-			    System.out.println("Funktionsdeklaration");
+			    break;
+			}		
+			break;
 
-			    nameArray[0] = "{";
-
-			    TokenResult res4 = goToTokenWithName(sourcec, nameArray);
-			    sourcec = res4.getSourceCode();
-			    sourcec = sourcec.substring(1);
-
-			    curlBrace++;
-			    Element methodDefinition = document.createElement("methoddefinition"); // WCB - with curly
-												   // brace
-			    Element methodNameNode = document.createElement("name");
-			    Element resultNameNode = document.createElement("result");
-			    methodNameNode.appendChild(document.createTextNode(methodName));
-			    resultNameNode.appendChild(document.createTextNode(methodName));
-
-			    methodDefinition.appendChild(methodNameNode);
-			    methodDefinition.appendChild(resultNameNode);
-
-			    curNode.appendChild(methodDefinition);
-			    curNode = (Element) curNode.getLastChild();
-			}
+		    default:
+			break;
+		    }
+//		    else
+//		    {
+//			String returnType = res2.getData();
+//			functionData = functionData.substring(returnType.length());
+//			functionData.trim();
+//			nameArray[0] = "(";
+//			TokenResult res3 = goToTokenWithName(functionData, nameArray);
+//
+//			String methodName = res3.getData();
+//			String[] methodNamePart = methodName.split(" ");
+//			
+//			if (methodName.isEmpty())
+//			{
+//			    System.out.println("Funktionsaufruf");
+//			} 
+//			else if (methodNamePart.length==2)
+//			{
+//			    System.out.println("Funktionsdeklaration");
+//
+//			    nameArray[0] = "{";
+//
+//			    TokenResult res4 = goToTokenWithName(sourcec, nameArray);
+//			    sourcec = res4.getSourceCode();
+//			    sourcec = sourcec.substring(1);
+//
+//			    curlBrace++;
+//			    Element methodDefinition = document.createElement("methoddefinition"); // WCB - with curly
+//												   // brace
+//			    Element methodNameNode = document.createElement("name");
+//			    Element resultNameNode = document.createElement("result");
+//			    methodNameNode.appendChild(document.createTextNode(methodNamePart[1]));
+//			    resultNameNode.appendChild(document.createTextNode(methodNamePart[0]));
+//
+//			    methodDefinition.appendChild(methodNameNode);
+//			    methodDefinition.appendChild(resultNameNode);
+//
+//			    curNode.appendChild(methodDefinition);
+//			    curNode = (Element) curNode.getLastChild();
+//			}else if (methodNamePart.length==1)
+//			{
+//			    
+//			    System.out.println("Konstruktor");
+//			}
 
 		    }
 
