@@ -166,7 +166,7 @@ public class XmlHelperMethods
 	}
     }
 
-    private String removeWhitespace(Document seq) throws TransformerException
+    public String removeWhitespace(Document seq) throws TransformerException
     {
 	StringWriter sw = new StringWriter();
 	TransformerFactory tf = TransformerFactory.newInstance();
