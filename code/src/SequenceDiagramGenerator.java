@@ -17,9 +17,6 @@ import org.w3c.dom.Document;
 //lokale Instanzen müssen noch berücksichticǵt werden
 // unbekannte Instanz -> class auf "" setzen
 
-
-
-
 public class SequenceDiagramGenerator
 {
 
@@ -39,10 +36,11 @@ public class SequenceDiagramGenerator
      * @param parsedData - xml Eingabe Dokument
      * @return plantUML-Code zur Erzeugung in OutputPUML als xmlDoc
      * @throws ParserConfigurationException
+     * @throws XPathExpressionException
      */
 
     public Document createDiagram(Document parsedData, String epClass, String epMethod)
-	    throws ParserConfigurationException
+	    throws ParserConfigurationException, XPathExpressionException
     {
 	// neues Dokument, das seqDiagramm Informationen enthalten wird
 	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -65,10 +63,13 @@ public class SequenceDiagramGenerator
 	epMethod1.setTextContent(epMethod);
 	entrypoint.appendChild(epMethod1);
 
-	parsedData = deleteInstancesNotInMethodcalls(parsedData);
+//	parsedData = deleteInstancesNotInMethodcalls(parsedData);
 	listMethoddef(parsedData, seqDiagramm, seq);
 
 	addClassesToInstances(parsedData, seqDiagramm);
+
+	seqDiagramm = deleteInstancesNotInMethodcalls(seqDiagramm);
+
 	addType(parsedData, seqDiagramm, seq, epClass);
 	xmlHM.writeDocumentToConsole(seqDiagramm);
 
@@ -143,9 +144,11 @@ public class SequenceDiagramGenerator
      * @throws XPathExpressionException
      */
 
-    private void addClassesToInstances(Document parsedData, Document seqDiagramm)
+    private void addClassesToInstances(Document parsedData, Document seqDiagramm) throws XPathExpressionException
     {
 //	NodeList list = xmlHM.listChildnodeswithName(parsedData, "instance"); 
+
+	seqDiagramm = handleLocalInstances(seqDiagramm);
 
 	ArrayList<ArrayList<String>> instanceList = createInstanceList(parsedData);
 
@@ -157,17 +160,16 @@ public class SequenceDiagramGenerator
 	    {
 		if (mchildnodes.item(j).getNodeName().equals("instance"))
 		{
-		    String iname = mchildnodes.item(j).getTextContent();
-		    // wenn Instanz in InstanzenListe vorhanden
-		    String cname = findClassofInstance(instanceList, iname);
-		   
+		    if (!xmlHM.hasChildwithName(mchildnodes.item(j).getParentNode(), "class"))
+		    {
+			String iname = mchildnodes.item(j).getTextContent();
+			// wenn Instanz in InstanzenListe vorhanden
+			String cname = findClassofInstance(instanceList, iname);
 
 			Node classTag = seqDiagramm.createElement("class");
 			classTag.setTextContent(cname);
 			methodcalls.item(i).appendChild(classTag);
-
-		    
-
+		    }
 		}
 
 	    }
@@ -201,7 +203,7 @@ public class SequenceDiagramGenerator
 	    instanceList.get(i).add(0, cname); // der Klassenname wird der InstanceList hinzugefügt
 
 	}
-	
+
 	// alle Klassen werden durchgegangen
 	for (int i = 0; i < cList.getLength(); i++)
 	{
@@ -218,12 +220,12 @@ public class SequenceDiagramGenerator
 		    String cname = new String();
 		    iname = xmlHM.getChildwithName(cuList.item(j), "name").getTextContent();
 		    cname = xmlHM.getChildwithName(cuList.item(j), "class").getTextContent();
-		
+
 		    instanceList = addToInstanceList(instanceList, iname, cname);
 		}
 	    }
 	}
-	listArrayList(instanceList);
+//	listArrayList(instanceList);
 
 	return instanceList;
     }
@@ -526,15 +528,94 @@ public class SequenceDiagramGenerator
 
 	return doc;
     }
-    
-    public Document handleLocalInstances(Document doc){
-	
-	
-	
+
+    /**
+     * Funktion, die die class-Tags bei lokale Instanzen in das Dokument einfügt
+     * 
+     * @param doc - das Dokument, das bearbeitet wird
+     * @return - das bearbeitete Dokument
+     * @throws XPathExpressionException
+     */
+    public Document handleLocalInstances(Document doc) throws XPathExpressionException
+    {
+
+	NodeList iList = xmlHM.getList(doc, "//instance");
+	for (int i = 0; i < iList.getLength(); i++)
+	{
+	    System.out.println("instanz gefunden");
+
+	    // Instanzen nicht direkt unterhalb v methodcalls -> lokale Instanzen
+	    if (!(iList.item(i).getParentNode().getNodeName().equals("methodcall")
+		    || iList.item(i).getParentNode().getNodeName().equals("classdefinition")))
+	    {
+		Node currentI = iList.item(i); // currentI ist ein instance-Knoten
+		Node linode = currentI.getParentNode(); // Knoten mit darin gültigen lokalen instanzen
+
+		String instanceName = xmlHM.getChildwithName(currentI, "name").getTextContent();
+		String instanceClass = xmlHM.getChildwithName(currentI, "class").getTextContent();
+		System.out.println("Parent Node : " + linode.getNodeName());
+
+		recursiveHandlelocalInstances(doc, currentI, instanceName, instanceClass);
+
+	    }
+	}
+
 	return doc;
     }
-    
-    
+
+    /**
+     * rekursiver Teil zum Einfügen der class-Tags bei lokalen Instanzen
+     * 
+     * @param doc           - Dokument, in dem die class-Tags eingefügt werden
+     *                      sollen
+     * @param currentNode   - aktuell betrachteter Knoten
+     * @param instanceName  - Name der lokalen Instanz
+     * @param instanceClass - Name der Klasse der lokalen Instanz
+     */
+
+    private void recursiveHandlelocalInstances(Document doc, Node currentNode, String instanceName,
+	    String instanceClass)
+    {
+	// TODO
+	// lokale Instanz ist in späteren Siblings gültig
+	Node current = currentNode;
+	while (!(current.getNextSibling() == null))
+	{
+	    while (current.getNodeType() != Node.ELEMENT_NODE || current.getNodeName().equals("instance"))
+	    {
+//		   while (current.getNodeName().equals("instance")) {
+		current = current.getNextSibling();
+
+//		   }   
+	    }
+//	      Node current = currentNode;
+	    System.out.println("current: " + current.getNodeName());
+//	       current = currentNode.getNextSibling();
+	    if (current.getNodeName().equals("methodcall"))
+	    {
+		Node instanceNode = xmlHM.getChildwithName(current, "instance");
+
+		if (instanceNode.getTextContent().equals(instanceName)
+			&& !xmlHM.hasChildwithName(instanceNode.getParentNode(), "validity"))
+		{
+		    Node classTag = doc.createElement("class");
+		    classTag.setTextContent(instanceClass);
+		    instanceNode.getParentNode().appendChild(classTag);
+		}
+
+	    }
+	    if (current.hasChildNodes() && !current.getNodeName().equals("methodcall"))
+	    {
+		NodeList cnodes = current.getChildNodes();
+		for (int k = 0; k < cnodes.getLength(); k++)
+		{
+		    recursiveHandlelocalInstances(doc, current, instanceName, instanceClass);
+		}
+	    }
+	    current = current.getNextSibling();
+	}
+
+    }
 
     public void listArrayList(ArrayList<ArrayList<String>> list2)
     {
