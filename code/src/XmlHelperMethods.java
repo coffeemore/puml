@@ -20,6 +20,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 /**
@@ -115,7 +116,7 @@ public class XmlHelperMethods
     }
 
     //Liefert NodeList zurück
-    public static NodeList getList(Document doc, String path) throws XPathExpressionException 
+    public static NodeList getList(Node doc, String path) throws XPathExpressionException 
     {
     		XPathFactory xPathfactory = XPathFactory.newInstance();
         	XPath xpath = xPathfactory.newXPath();
