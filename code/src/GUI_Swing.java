@@ -639,6 +639,11 @@ public class GUI_Swing
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		catch (SAXException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void showPreview(File imageFile, String title)
