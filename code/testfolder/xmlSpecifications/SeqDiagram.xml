@@ -6,7 +6,10 @@
 			<entry>Class1</entry>
 			<entry>Class2</entry>
 			<entry>Class3</entry>
+			<entry>Class4</entry>
+			<entry>Class5</entry>
 		</classes>
+		
 		<entrypoint>
 			<class>Class1</class>
 			<method>method1</method>
@@ -18,9 +21,9 @@
 				<case>
 					<condition>if(a!=b)</condition>
 					<methodcall>
-						<class>Class2</class>
 						<instance>classInstance1</instance>	<!-- Beim Aufruf von Methoden einer Instanz -->
 						<method>call1</method>
+						<class>Class2</class>
 					</methodcall>
 				</case>
 				<case>
@@ -63,34 +66,33 @@
 				</case>
 				<case>
 					<condition>switch(i)/default</condition>
-					<instance>  <!-- Lokale Instanzen-->
-						<name>classInstance3</name>
-						<class>Class2</class>
-					</instance>
-					<instance>  <!-- Gleicher Name wie globale Instanz (beim aufruf soll die lokale verwendet werden)-->
-						<name>classInstance1</name>
-						<class>Class3</class>
-					</instance>
+					
 					<methodcall>
 						<instance>classInstance1</instance>	<!-- Aufruf sollte auf instanz von class3 ausgeführt werden -->
+						<class>Class3</class>
 						<method>call1</method>
+						
 					</methodcall>
 					<methodcall>
 						<instance>classInstance1</instance>	<!-- Klasseninstanz -->
-						<method>call1</method>
+						<class>Class2</class>
+						<method>call1</method>						
 						<validity>class</validity>	<!-- Wird am this-Zeiger festgememacht -->
 					</methodcall>
 					<methodcall>
 						<instance>classInstance2</instance>	<!-- Klasseninstanz -->
+						<class>Class2</class>							
 						<method>call1</method>
 					</methodcall>
 					<methodcall>
 						<instance>classInstance3</instance>	<!-- Lokale Instanz -->
+						<class>Class2</class>
 						<method>call1</method>
 					</methodcall>
 					<methodcall>
 						<instance>classInstance4</instance>	<!-- Instanz existiert nicht -->
-						<method>callX</method>
+						<class></class>
+						<method>callX</method>						
 						<type>unknown</type>
 					</methodcall>
 				</case>
