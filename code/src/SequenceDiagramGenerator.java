@@ -131,19 +131,24 @@ public class SequenceDiagramGenerator
 	    }
 	}
 	NodeList list = seqDiagramm.getElementsByTagName("methoddefinition");
-	for(int i = 0; i < list.getLength(); i++) {
+	for (int i = 0; i < list.getLength(); i++)
+	{
 	    Node node = list.item(i);
-	    if(node.getNodeType() == Node.ELEMENT_NODE) {
+	    if (node.getNodeType() == Node.ELEMENT_NODE)
+	    {
 		NodeList childs = node.getChildNodes();
-		for(int j = 0; j < childs.getLength(); j++) {
+		for (int j = 0; j < childs.getLength(); j++)
+		{
 		    Node child = childs.item(j);
-		    if(child.getNodeType() == Node.ELEMENT_NODE && (child.getNodeName().equals("parameters") || child.getNodeName().equals("result"))) {
+		    if (child.getNodeType() == Node.ELEMENT_NODE
+			    && (child.getNodeName().equals("parameters") || child.getNodeName().equals("result")))
+		    {
 			node.removeChild(child);
 		    }
 		}
 	    }
 	}
-	//parameters, result
+	// parameters, result
     }
 
     /**
@@ -340,7 +345,12 @@ public class SequenceDiagramGenerator
 				calledClass = seqMethodCallEl.getElementsByTagName("class").item(0).getTextContent();
 			    }
 			}
-			//System.out.println(calledClass +" + " + calledMethod);
+			String calledInstance = " ";
+			if (seqMethodCallEl.getElementsByTagName("instance").item(0) != null)
+			{
+			    calledInstance = seqMethodCallEl.getElementsByTagName("instance").item(0).getTextContent();
+			}
+			
 			/**
 			 * type - handled
 			 */
@@ -355,7 +365,9 @@ public class SequenceDiagramGenerator
 			    {
 				String calledEl = calledMethodsList.get(i).get(1);
 				String calledCl = calledMethodsList.get(i).get(0);
-				if (calledMethod.equals(calledEl) && calledClass.equals(calledCl) && a == 0
+				String calledIn = calledMethodsList.get(i).get(2);
+				if (calledMethod.equals(calledEl) && calledClass.equals(calledCl)
+					&& calledInstance.equals(calledIn) && a == 0
 					&& (seqMethodCallEl.getElementsByTagName("type").item(0) == null))
 				{
 				    type.setTextContent("handled");
@@ -363,13 +375,13 @@ public class SequenceDiagramGenerator
 				    a++;
 				}
 			    }
-			    
 			}
 			calledMethodsList.add(e, new ArrayList<String>());
 			calledMethodsList.get(e).add(calledClass);
 			calledMethodsList.get(e).add(calledMethod);
-			e+=1;
-			
+			calledMethodsList.get(e).add(calledInstance);
+			e += 1;
+
 			/**
 			 * type - unknown
 			 */
