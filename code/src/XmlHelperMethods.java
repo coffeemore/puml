@@ -24,44 +24,47 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
 /**
  * 
  * @author Klasse fuer Unterstuetzungsfunktionen zur XML Handhabung
  */
 public class XmlHelperMethods
 {
-	private XPath xpath;
-	private XPathFactory xPathfactory;
-	
-	 /**
+    private XPath xpath;
+    private XPathFactory xPathfactory;
+
+    /**
      * Konstruktor
      */
     public XmlHelperMethods()
     {
-    	this.xPathfactory = XPathFactory.newInstance();
-    	this.xpath = xPathfactory.newXPath();
+	this.xPathfactory = XPathFactory.newInstance();
+	this.xpath = xPathfactory.newXPath();
     }
-    
+
     /**
      * Konvertiert xml Datei in String
+     * 
      * @param xmlDoc lesende Datei
      */
     public String xmlDocToString(Document xmlDoc)
     {
-    	return new String();
+	return new String();
     }
-    
+
     /**
      * loescht einzelnen Knoten aus xml Datei
+     * 
      * @param Knoten eines Elements
      * @param        true = Unterknoten werden nicht gelöscht; false = Unterknoten
      *               werden mit gelöscht
      */
     public void delNode(Element nodeName, boolean keepChildNodes)
     {
-  
+
     }
-    
+
     /**
      * Hilfsmethode zum Laden eines XML-Documents fuer diverse Zwecke
      * 
@@ -88,7 +91,7 @@ public class XmlHelperMethods
 	}
 	return null;
     }
-    
+
     /**
      * Hilfsmethode zum Ausgeben eines XML-Documents in der Console
      * 
@@ -190,10 +193,10 @@ public class XmlHelperMethods
      */
     public NodeList getList(Document doc, String path) throws XPathExpressionException
     {
-    		XPathFactory xPathfactory = XPathFactory.newInstance();
-        	XPath xpath = xPathfactory.newXPath();
-        	XPathExpression expr = xpath.compile(path);
-        	NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+	XPathFactory xPathfactory = XPathFactory.newInstance();
+	XPath xpath = xPathfactory.newXPath();
+	XPathExpression expr = xpath.compile(path);
+	NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 
 	return list;
     }

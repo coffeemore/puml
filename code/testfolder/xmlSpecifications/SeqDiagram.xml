@@ -22,8 +22,8 @@
 					<condition>if(a!=b)</condition>
 					<methodcall>
 						<instance>classInstance1</instance>	<!-- Beim Aufruf von Methoden einer Instanz -->
-						<class>Class2</class>
 						<method>call1</method>
+						<class>Class2</class>
 					</methodcall>
 				</case>
 				<case>

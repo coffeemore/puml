@@ -46,10 +46,10 @@ public class SequenceDiagramGenerator
 	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 	DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 	Document seqDiagramm = docBuilder.newDocument();
-	
+
 	Element root = seqDiagramm.createElement("parsed");
 	seqDiagramm.appendChild(root);
-	Element seq = seqDiagramm.createElement("sequencediagramm");
+	Element seq = seqDiagramm.createElement("sequencediagram");
 	root.appendChild(seq);
 
 	listClasses(parsedData, seqDiagramm, seq);
@@ -130,6 +130,20 @@ public class SequenceDiagramGenerator
 		}
 	    }
 	}
+	NodeList list = seqDiagramm.getElementsByTagName("methoddefinition");
+	for(int i = 0; i < list.getLength(); i++) {
+	    Node node = list.item(i);
+	    if(node.getNodeType() == Node.ELEMENT_NODE) {
+		NodeList childs = node.getChildNodes();
+		for(int j = 0; j < childs.getLength(); j++) {
+		    Node child = childs.item(j);
+		    if(child.getNodeType() == Node.ELEMENT_NODE && (child.getNodeName().equals("parameters") || child.getNodeName().equals("result"))) {
+			node.removeChild(child);
+		    }
+		}
+	    }
+	}
+	//parameters, result
     }
 
     /**
@@ -290,9 +304,9 @@ public class SequenceDiagramGenerator
 	// Liste mit allen Klassen und ihren zugeordneten Methoden
 	ArrayList<ArrayList<String>> classesWithMethodsList = new ArrayList<ArrayList<String>>();
 	createList(parsedData, classesWithMethodsList);
-
+	listArrayList(classesWithMethodsList);
 	// Liste für bereits aufgerufene Methoden
-	ArrayList<String> calledMethodsList = new ArrayList<String>();
+	ArrayList<ArrayList<String>> calledMethodsList = new ArrayList<ArrayList<String>>();
 	// alle Methoddefinitions in SeqDiagram
 	NodeList seqMethodDefList = seqDiagramm.getElementsByTagName("methoddefinition");
 
@@ -312,59 +326,84 @@ public class SequenceDiagramGenerator
 			Element seqMethodCallEl = (Element) seqMethodCallNode;
 			// aktuell aufgerufene Methode
 			String calledMethod = seqMethodCallEl.getElementsByTagName("method").item(0).getTextContent();
-
+			String calledClass;
+			if (seqMethodCallEl.getElementsByTagName("class").item(0) == null)
+			{
+			    calledClass = epClass;
+			} else
+			{
+			    if (seqMethodCallEl.getElementsByTagName("class").item(0).getTextContent().equals(" "))
+			    {
+				calledClass = " ";
+			    } else
+			    {
+				calledClass = seqMethodCallEl.getElementsByTagName("class").item(0).getTextContent();
+			    }
+			}
+			//System.out.println(calledClass +" + " + calledMethod);
 			/**
 			 * type - handled
 			 */
 			Element type = seqDiagramm.createElement("type");
 			int a = 0;
+			int e = 0;
 			// alle bisher aufgerufenen Methoden werden mit der aktuell aufgerufenen
 			// verglichen
 			for (int i = 0; i < calledMethodsList.size(); i++)
 			{
-			    String calledEl = calledMethodsList.get(i);
-
-			    if (calledMethod.equals(calledEl) && a == 0
-				    && (seqMethodCallEl.getElementsByTagName("type").item(0) == null))
+			    for (int j = 0; j < calledMethodsList.get(i).size(); j++)
 			    {
-				type.setTextContent("handled");
-				seqMethodCallEl.appendChild(type);
-				a++;
+				String calledEl = calledMethodsList.get(i).get(1);
+				String calledCl = calledMethodsList.get(i).get(0);
+				if (calledMethod.equals(calledEl) && calledClass.equals(calledCl) && a == 0
+					&& (seqMethodCallEl.getElementsByTagName("type").item(0) == null))
+				{
+				    type.setTextContent("handled");
+				    seqMethodCallEl.appendChild(type);
+				    a++;
+				}
 			    }
+			    
 			}
-			calledMethodsList.add(calledMethod);
+			calledMethodsList.add(e, new ArrayList<String>());
+			calledMethodsList.get(e).add(calledClass);
+			calledMethodsList.get(e).add(calledMethod);
+			e+=1;
+			
 			/**
 			 * type - unknown
 			 */
 			int b = 0;
 			int c = 0;
 			// alle vorhandenen Methoden werden mit der aktuell aufgerufenen verglichen
-//			if (!(seqMethodCallEl.getElementsByTagName("class").item(0).getTextContent().equals("")))
-//			{
-			for (int i = 0; i < classesWithMethodsList.size(); i++)
+			// Prüfung des Class-Tags
+			if (seqMethodCallEl.getElementsByTagName("class").item(0) == null || !(seqMethodCallEl
+				.getElementsByTagName("class").item(0).getTextContent().equals(" ")))
 			{
-			    // b speichert die Anzahl aller Klassen und Methoden
-			    b += classesWithMethodsList.get(i).size();
-			    for (int j = 0; j < classesWithMethodsList.get(i).size(); j++)
+			    for (int i = 0; i < classesWithMethodsList.size(); i++)
 			    {
-				// c wird hochgesetzt, wenn die calledMethod mit keinem Eintrag in der Liste
-				// übereinstimmt
-				if (!calledMethod.equals(classesWithMethodsList.get(i).get(j)))
+				// b speichert die Anzahl aller Klassen und Methoden
+				b += classesWithMethodsList.get(i).size();
+				for (int j = 0; j < classesWithMethodsList.get(i).size(); j++)
 				{
-				    c++;
+				    // c wird hochgesetzt, wenn die calledMethod mit keinem Eintrag in der Liste
+				    // übereinstimmt
+				    if (!calledMethod.equals(classesWithMethodsList.get(i).get(j)))
+				    {
+					c++;
+				    }
 				}
 			    }
-			}
-			if (b == c)
+			    if (b == c)
+			    {
+				type.setTextContent("unknown");
+				seqMethodCallEl.appendChild(type);
+			    }
+			} else
 			{
 			    type.setTextContent("unknown");
 			    seqMethodCallEl.appendChild(type);
 			}
-//			} else
-//			{
-//			    type.setTextContent("unknown");
-//			    seqMethodCallEl.appendChild(type);
-//			}
 
 			/**
 			 * type - recursive
