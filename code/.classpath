@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="org/eclipse/wb/swt/SWTResourceManager.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="srcTest"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
@@ -14,7 +14,7 @@
 	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-sources.jar"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-test-sources.jar"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-tests.jar"/>
-	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4.jar" sourcepath="lib/commons-cli-1.4/commons-cli-1.4.jar"/>
 	<classpathentry kind="lib" path="swing2swt.jar"/>
 	<classpathentry kind="lib" path="lib/swt-win32-x86_64-4.9.jar"/>
 	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-core-2.6.2.jar"/>
