@@ -19,6 +19,10 @@ public class SequenceDiagramGenerator
 {
 
     XmlHelperMethods xmlHM = new XmlHelperMethods();
+    String dataClassDef = "/source/classdefinition/";
+    String seqMethodDef = "/parsed/sequencediagram/methoddefinition";
+    ArrayList<String> usedClasses = new ArrayList<String>();
+    ArrayList<String> usedMethods = new ArrayList<String>();
 
     /**
      * Konstruktor
@@ -64,7 +68,7 @@ public class SequenceDiagramGenerator
 	entrypoint.appendChild(epMethod1);
 
 //	parsedData = deleteInstancesNotInMethodcalls(parsedData);
-	listMethoddef(parsedData, seqDiagramm, seq);
+	listMethoddef(parsedData, seqDiagramm, seq, epClass);
 
 	addClassesToInstances(parsedData, seqDiagramm);
 
@@ -77,31 +81,29 @@ public class SequenceDiagramGenerator
 	return seqDiagramm;
     }
 
+    // nur Klassen, die von der epClass aufgerufen werden
+
     /**
      * Die Klassen werden aus parsedData übernommen und in seqDiagramm aufgelistet
      * 
      * @param parsedData  - xml Eingabe Dokument
      * @param seqDiagramm - Document für OutputPuml
      * @param seq         - Kindelement von root
+     * @throws XPathExpressionException
      */
-    private void listClasses(Document parsedData, Document seqDiagramm, Element seq)
+    private void listClasses(Document parsedData, Document seqDiagramm, Element seq) throws XPathExpressionException
     {
 	Element classes = seqDiagramm.createElement("classes");
 	seq.appendChild(classes);
 	// alle Klassen aus parsedData werden in eine Liste geschrieben
-	NodeList cList = parsedData.getElementsByTagName("classdefinition");
+	NodeList cList = xmlHM.getList(parsedData, dataClassDef + "name");
 	for (int i = 0; i < cList.getLength(); i++)
 	{
-	    Node cNode = cList.item(i);
-	    if (cNode.getNodeType() == Node.ELEMENT_NODE)
-	    {
-		Element classEl = (Element) cNode;
-		// in Tag <name> gespeicherter Text wird als Klassenname übernommen
-		String cName = classEl.getElementsByTagName("name").item(0).getTextContent();
-		Element entry = seqDiagramm.createElement("entry");
-		entry.setTextContent(cName);
-		classes.appendChild(entry);
-	    }
+	    // in Tag <name> gespeicherter Text wird als Klassenname übernommen
+	    String cName = cList.item(i).getTextContent();
+	    Element entry = seqDiagramm.createElement("entry");
+	    entry.setTextContent(cName);
+	    classes.appendChild(entry);
 	}
     }
 
@@ -112,43 +114,43 @@ public class SequenceDiagramGenerator
      * @param parsedData  - xml Eingabe Dokument
      * @param seqDiagramm - Document für OutputPuml
      * @param seq         - Kindelement von root
+     * @throws XPathExpressionException
      */
-    private void listMethoddef(Document parsedData, Document seqDiagramm, Element seq)
+    private void listMethoddef(Document parsedData, Document seqDiagramm, Element seq, String epClass)
+	    throws XPathExpressionException
     {
 	// alle Methoden aus parsedData werden in die Liste geschrieben
-	NodeList mList = parsedData.getElementsByTagName("methoddefinition");
+	Element classTag = seqDiagramm.createElement("class");
+	NodeList mList = xmlHM.getList(parsedData, dataClassDef + "methoddefinition");
 	for (int i = 0; i < mList.getLength(); i++)
 	{
 	    Node mNode = mList.item(i);
-	    if (mNode.getNodeType() == Node.ELEMENT_NODE)
-	    {
-		Element mParent = (Element) mNode.getParentNode();
-		// wenn die Methode zu einer Klasse gehört, wird sie kopiert
-		if (mParent.getTagName().equals("classdefinition"))
-		{
-		    seq.appendChild(seqDiagramm.importNode(mNode, true));
-		}
-	    }
+	    seq.appendChild(seqDiagramm.importNode(mNode, true));
+	    
+	    NodeList seqMList = xmlHM.getList(seqDiagramm, "");
+	    Element classEl = (Element) mNode.getParentNode();
+	    String cName = classEl.getElementsByTagName("name").item(0).getTextContent();
+	    classTag.setTextContent(cName);
+	    //.appendChild(classTag);
 	}
-	NodeList list = seqDiagramm.getElementsByTagName("methoddefinition");
+	NodeList list = xmlHM.getList(seqDiagramm, seqMethodDef);
 	for (int i = 0; i < list.getLength(); i++)
 	{
 	    Node node = list.item(i);
-	    if (node.getNodeType() == Node.ELEMENT_NODE)
+	    NodeList childs = node.getChildNodes();
+	    for (int j = 0; j < childs.getLength(); j++)
 	    {
-		NodeList childs = node.getChildNodes();
-		for (int j = 0; j < childs.getLength(); j++)
+		Node child = childs.item(j);
+		if ((child.getNodeName().equals("parameters") || child.getNodeName().equals("result")))
 		{
-		    Node child = childs.item(j);
-		    if (child.getNodeType() == Node.ELEMENT_NODE
-			    && (child.getNodeName().equals("parameters") || child.getNodeName().equals("result")))
-		    {
-			node.removeChild(child);
-		    }
+		    node.removeChild(child);
 		}
 	    }
 	}
-	// parameters, result
+    }
+    
+    private void addClassTag() {
+	
     }
 
     /**
@@ -297,15 +299,151 @@ public class SequenceDiagramGenerator
     }
 
     /**
+     * Die Instanzen, die nicht in methodcalls drin sind, werden gelöscht (=
+     * Deklarationen v. lokalen Instanzen werden aus der Sequenzdiagramm-XML
+     * entfernt)
+     * 
+     * @param doc - das Dokument, aus dem die Einträge gelöscht werden
+     * @return - das bearbeitete Dokument
+     */
+    public Document deleteInstancesNotInMethodcalls(Document doc)
+    {
+	// mList = Liste der Methoddefinitions
+	try
+	{
+	    NodeList iList = xmlHM.getList(doc, "//instance");
+	    for (int i = 0; i < iList.getLength(); i++)
+	    {
+//		System.out.println("Klasseninstanz gefunden: ");
+//		if (xmlHM.hasChildwithName(iList.item(i), "name"))
+//		{
+//		    System.out.println(xmlHM.getChildwithName(iList.item(i), "name").getTextContent());
+//		}
+//		System.out.println("Parent Node:");
+//		System.out.println(iList.item(i).getParentNode().getNodeName());
+//		if (iList.item(i).getParentNode().equals(null))
+//		{
+//		    System.out.println("kein ParentNode");
+//		}
+		if (!(iList.item(i).getParentNode().getNodeName().equals("methodcall")
+			|| iList.item(i).getParentNode().getNodeName().equals("classdefinition")))
+		{
+		    iList.item(i).getParentNode().removeChild(iList.item(i));
+//		    System.out.println("Instanz-Knoten entfernt");
+		}
+	    }
+	} catch (Exception e)
+	{
+	    e.printStackTrace();
+	}
+
+	return doc;
+    }
+
+    /**
+     * Funktion, die die class-Tags bei lokale Instanzen in das Dokument einfügt
+     * 
+     * @param doc - das Dokument, das bearbeitet wird
+     * @return - das bearbeitete Dokument
+     * @throws XPathExpressionException
+     */
+    public Document handleLocalInstances(Document doc) throws XPathExpressionException
+    {
+
+	NodeList iList = xmlHM.getList(doc, "//instance");
+	for (int i = 0; i < iList.getLength(); i++)
+	{
+	    // System.out.println("instanz gefunden");
+
+	    // Instanzen nicht direkt unterhalb v methodcalls -> lokale Instanzen
+	    if (!(iList.item(i).getParentNode().getNodeName().equals("methodcall")
+		    || iList.item(i).getParentNode().getNodeName().equals("classdefinition")))
+	    {
+		Node currentI = iList.item(i); // currentI ist ein instance-Knoten
+		Node linode = currentI.getParentNode(); // Knoten mit darin gültigen lokalen instanzen
+
+		String instanceName = xmlHM.getChildwithName(currentI, "name").getTextContent();
+		String instanceClass = xmlHM.getChildwithName(currentI, "class").getTextContent();
+		// System.out.println("Parent Node : " + linode.getNodeName());
+
+		recursiveHandlelocalInstances(doc, currentI, instanceName, instanceClass);
+
+	    }
+	}
+
+	return doc;
+    }
+
+    /**
+     * rekursiver Teil zum Einfügen der class-Tags bei lokalen Instanzen
+     * 
+     * @param doc           - Dokument, in dem die class-Tags eingefügt werden
+     *                      sollen
+     * @param currentNode   - aktuell betrachteter Knoten
+     * @param instanceName  - Name der lokalen Instanz
+     * @param instanceClass - Name der Klasse der lokalen Instanz
+     */
+
+    private void recursiveHandlelocalInstances(Document doc, Node currentNode, String instanceName,
+	    String instanceClass)
+    {
+	// TODO
+	// lokale Instanz ist in späteren Siblings gültig
+	Node current = currentNode;
+	while (!(current.getNextSibling() == null))
+	{
+	    while (current.getNodeType() != Node.ELEMENT_NODE || current.getNodeName().equals("instance"))
+	    {
+//		   while (current.getNodeName().equals("instance")) {
+		current = current.getNextSibling();
+
+//		   }   
+	    }
+//	      Node current = currentNode;
+	    // System.out.println("current: " + current.getNodeName());
+//	       current = currentNode.getNextSibling();
+	    if (current.getNodeName().equals("methodcall"))
+	    {
+		Node instanceNode = xmlHM.getChildwithName(current, "instance");
+
+		if (instanceNode.getTextContent().equals(instanceName)
+			&& !xmlHM.hasChildwithName(instanceNode.getParentNode(), "validity"))
+		{
+		    Node classTag = doc.createElement("class");
+		    classTag.setTextContent(instanceClass);
+		    instanceNode.getParentNode().appendChild(classTag);
+		}
+
+	    }
+	    if (current.hasChildNodes() && !current.getNodeName().equals("methodcall"))
+	    {
+		NodeList cnodes = current.getChildNodes();
+		for (int k = 0; k < cnodes.getLength(); k++)
+		{
+		    recursiveHandlelocalInstances(doc, current, instanceName, instanceClass);
+		}
+	    }
+	    current = current.getNextSibling();
+	}
+
+    }
+
+    /**
      * Die Methodcalls werden mit Type-Tags versehen
      * 
      * @param parsedData  - xml Eingabe Dokument
      * @param seqDiagramm - Document für OutputPuml
      * @param seq         - Kindelement von root
      * @param epClass     - übergebener Entrypoint
+     * @throws XPathExpressionException
      */
     private void addType(Document parsedData, Document seqDiagramm, Element seq, String epClass)
+	    throws XPathExpressionException
     {
+	/**
+	 *  String dataClassDef = "/source/classdefinition/";
+    String seqMethodDef = "/parsed/sequencediagram/methoddefinition";
+	 */
 	// Liste mit allen Klassen und ihren zugeordneten Methoden
 	ArrayList<ArrayList<String>> classesWithMethodsList = new ArrayList<ArrayList<String>>();
 	createList(parsedData, classesWithMethodsList);
@@ -350,7 +488,7 @@ public class SequenceDiagramGenerator
 			{
 			    calledInstance = seqMethodCallEl.getElementsByTagName("instance").item(0).getTextContent();
 			}
-			
+
 			/**
 			 * type - handled
 			 */
@@ -507,171 +645,35 @@ public class SequenceDiagramGenerator
      * 
      * @param parsedData             - xml Eingabe Dokument
      * @param classesWithMethodsList - Liste mit allen Klassen und ihren Methoden
+     * @throws XPathExpressionException
      */
     private void createList(Document parsedData, ArrayList<ArrayList<String>> classesWithMethodsList)
+	    throws XPathExpressionException
     {
-	NodeList mList = parsedData.getElementsByTagName("methoddefinition");
-	NodeList cList = parsedData.getElementsByTagName("classdefinition");
+	NodeList mList = xmlHM.getList(parsedData, dataClassDef + "methoddefinition/name");
+	NodeList cList = xmlHM.getList(parsedData, dataClassDef + "name");
 	for (int i = 0; i < cList.getLength(); i++)
 	{
 	    // jede Klasse bekommt ihre eigene ArrayList
 	    classesWithMethodsList.add(i, new ArrayList<String>());
-	    Node cNode = cList.item(i);
-	    if (cNode.getNodeType() == Node.ELEMENT_NODE)
-	    {
-		Element classEl = (Element) cNode;
-		String tmpClass = classEl.getElementsByTagName("name").item(0).getTextContent();
-		classesWithMethodsList.get(i).add(tmpClass);
 
-		for (int j = 0; j < mList.getLength(); j++)
+	    String tmpClass = cList.item(i).getTextContent();
+	    classesWithMethodsList.get(i).add(tmpClass);
+
+	    for (int j = 0; j < mList.getLength(); j++)
+	    {
+		Node mNode = mList.item(j);
+		Element parentEl = (Element) mNode.getParentNode().getParentNode();
+		String tmpParent = parentEl.getElementsByTagName("name").item(0).getTextContent();
+		String tmpMethod = mNode.getTextContent();
+		if (tmpParent == tmpClass)
 		{
-		    Node mNode = mList.item(j);
-
-		    if (mNode.getNodeType() == Node.ELEMENT_NODE
-			    && mNode.getParentNode().getNodeName() == "classdefinition")
-		    {
-			Element methodEl = (Element) mNode;
-			Element parentEl = (Element) mNode.getParentNode();
-			String tmpParent = parentEl.getElementsByTagName("name").item(0).getTextContent();
-			String tmpMethod = methodEl.getElementsByTagName("name").item(0).getTextContent();
-			if (tmpParent == tmpClass)
-			{
-			    classesWithMethodsList.get(i).add(tmpMethod);
-			}
-		    }
-		}
-	    }
-	}
-    }
-
-    /**
-     * Die Instanzen, die nicht in methodcalls drin sind, werden gelöscht (=
-     * Deklarationen v. lokalen Instanzen werden aus der Sequenzdiagramm-XML
-     * entfernt)
-     * 
-     * @param doc - das Dokument, aus dem die Einträge gelöscht werden
-     * @return - das bearbeitete Dokument
-     */
-    public Document deleteInstancesNotInMethodcalls(Document doc)
-    {
-	// mList = Liste der Methoddefinitions
-	try
-	{
-	    NodeList iList = xmlHM.getList(doc, "//instance");
-	    for (int i = 0; i < iList.getLength(); i++)
-	    {
-//		System.out.println("Klasseninstanz gefunden: ");
-//		if (xmlHM.hasChildwithName(iList.item(i), "name"))
-//		{
-//		    System.out.println(xmlHM.getChildwithName(iList.item(i), "name").getTextContent());
-//		}
-//		System.out.println("Parent Node:");
-//		System.out.println(iList.item(i).getParentNode().getNodeName());
-//		if (iList.item(i).getParentNode().equals(null))
-//		{
-//		    System.out.println("kein ParentNode");
-//		}
-		if (!(iList.item(i).getParentNode().getNodeName().equals("methodcall")
-			|| iList.item(i).getParentNode().getNodeName().equals("classdefinition")))
-		{
-		    iList.item(i).getParentNode().removeChild(iList.item(i));
-//		    System.out.println("Instanz-Knoten entfernt");
-		}
-	    }
-	} catch (Exception e)
-	{
-	    e.printStackTrace();
-	}
-
-	return doc;
-    }
-
-    /**
-     * Funktion, die die class-Tags bei lokale Instanzen in das Dokument einfügt
-     * 
-     * @param doc - das Dokument, das bearbeitet wird
-     * @return - das bearbeitete Dokument
-     * @throws XPathExpressionException
-     */
-    public Document handleLocalInstances(Document doc) throws XPathExpressionException
-    {
-
-	NodeList iList = xmlHM.getList(doc, "//instance");
-	for (int i = 0; i < iList.getLength(); i++)
-	{
-	    // System.out.println("instanz gefunden");
-
-	    // Instanzen nicht direkt unterhalb v methodcalls -> lokale Instanzen
-	    if (!(iList.item(i).getParentNode().getNodeName().equals("methodcall")
-		    || iList.item(i).getParentNode().getNodeName().equals("classdefinition")))
-	    {
-		Node currentI = iList.item(i); // currentI ist ein instance-Knoten
-		Node linode = currentI.getParentNode(); // Knoten mit darin gültigen lokalen instanzen
-
-		String instanceName = xmlHM.getChildwithName(currentI, "name").getTextContent();
-		String instanceClass = xmlHM.getChildwithName(currentI, "class").getTextContent();
-		// System.out.println("Parent Node : " + linode.getNodeName());
-
-		recursiveHandlelocalInstances(doc, currentI, instanceName, instanceClass);
-
-	    }
-	}
-
-	return doc;
-    }
-
-    /**
-     * rekursiver Teil zum Einfügen der class-Tags bei lokalen Instanzen
-     * 
-     * @param doc           - Dokument, in dem die class-Tags eingefügt werden
-     *                      sollen
-     * @param currentNode   - aktuell betrachteter Knoten
-     * @param instanceName  - Name der lokalen Instanz
-     * @param instanceClass - Name der Klasse der lokalen Instanz
-     */
-
-    private void recursiveHandlelocalInstances(Document doc, Node currentNode, String instanceName,
-	    String instanceClass)
-    {
-	// TODO
-	// lokale Instanz ist in späteren Siblings gültig
-	Node current = currentNode;
-	while (!(current.getNextSibling() == null))
-	{
-	    while (current.getNodeType() != Node.ELEMENT_NODE || current.getNodeName().equals("instance"))
-	    {
-//		   while (current.getNodeName().equals("instance")) {
-		current = current.getNextSibling();
-
-//		   }   
-	    }
-//	      Node current = currentNode;
-	    // System.out.println("current: " + current.getNodeName());
-//	       current = currentNode.getNextSibling();
-	    if (current.getNodeName().equals("methodcall"))
-	    {
-		Node instanceNode = xmlHM.getChildwithName(current, "instance");
-
-		if (instanceNode.getTextContent().equals(instanceName)
-			&& !xmlHM.hasChildwithName(instanceNode.getParentNode(), "validity"))
-		{
-		    Node classTag = doc.createElement("class");
-		    classTag.setTextContent(instanceClass);
-		    instanceNode.getParentNode().appendChild(classTag);
+		    classesWithMethodsList.get(i).add(tmpMethod);
 		}
 
 	    }
-	    if (current.hasChildNodes() && !current.getNodeName().equals("methodcall"))
-	    {
-		NodeList cnodes = current.getChildNodes();
-		for (int k = 0; k < cnodes.getLength(); k++)
-		{
-		    recursiveHandlelocalInstances(doc, current, instanceName, instanceClass);
-		}
-	    }
-	    current = current.getNextSibling();
-	}
 
+	}
     }
 
     public void listArrayList(ArrayList<ArrayList<String>> list2)
