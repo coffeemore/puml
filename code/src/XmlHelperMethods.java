@@ -191,15 +191,15 @@ public class XmlHelperMethods
      * @return - NodeList aller gefundenen Knoten
      * @throws XPathExpressionException
      */
-    public NodeList getList(Document doc, String path) throws XPathExpressionException
+    //Liefert NodeList zurück
+    public NodeList getList(Node doc, String path) throws XPathExpressionException 
     {
-	XPathFactory xPathfactory = XPathFactory.newInstance();
-	XPath xpath = xPathfactory.newXPath();
-	XPathExpression expr = xpath.compile(path);
-	NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+        	XPathExpression expr = this.xpath.compile(path);
+        	NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 
-	return list;
+        return list;
     }
+
 
     /**
      * Funktion zur Suche eines Childnodes mit einem bestimmten Namen; gibt ersten
