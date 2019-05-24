@@ -206,8 +206,9 @@ public class OutputPUML
 	 String pumlCode = "";
 	 NodeList methodNameList = helper.getList(methodefNode, "name");
 	 String methodName =  methodNameList.item(0).getTextContent();
+	 System.out.println(methodName);
 	 Node nextNode = methodefNode.getNextSibling();
-	 System.out.println(nextNode.getNodeName());
+	 System.out.println(nextNode.getNextSibling().getNodeName()); //TODO fortfahren
 	 if(nextNode.getNodeName()=="name")
 	 {
 	     nextNode = nextNode.getNextSibling();
