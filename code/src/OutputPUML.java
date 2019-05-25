@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Iterator;
 import java.util.List;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -146,9 +147,7 @@ public class OutputPUML
 		{
 	
 		    String tempStartClass = "";
-		    String tempEndClass = "";
 		    String tempStartMethod = "";
-		    String tempActiveMethod = "";
 		    list = helper.getList(diagramData, "/parsed/sequencediagram/classes/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
@@ -178,18 +177,7 @@ public class OutputPUML
 		    // Einsetzen : [name=" + tempStartMethod + "]
 		    list = helper.getList(diagramData, "/parsed/sequencediagram/methoddefinition[name=\"" + tempStartMethod + "\"]"); //an Position der entry Methoddefinition
 		    pumlCode += helperMethodCall(list.item(0), tempStartClass);
-/*		   
-		    for (int a = 0; a < list.getLength(); a++)
-		    {
-			if (list.item(a).getNodeName() != "#text")
-			{
-			    System.out.println("get in there" + num);
-			    //ruft die helperMethod mit der entry Methoddefinition auf
-			    pumlCode += helperMethodCall(diagramData, "/parsed/sequencediagram/methoddefinition[" + num + "]", tempStartClass) + "\n";
-			    pumlCode += "deactivate " + tempStartClass + "\n";
-			}
-		    }
-*/
+
 		}
 		else
 		{
@@ -203,17 +191,15 @@ public class OutputPUML
     //for Methoddefinitions
     private String helperMethodCall(Node methodefNode, String startClass) throws XPathExpressionException
     {
+	//TODO Method noch flexibler gestalten
 	 String pumlCode = "";
 	 NodeList methodNameList = helper.getList(methodefNode, "name");
 	 String methodName =  methodNameList.item(0).getTextContent();
-	 System.out.println(methodName);
-	 Node nextNode = methodefNode.getNextSibling();
-	 System.out.println(nextNode.getNextSibling().getNodeName()); //TODO fortfahren
+	 Node nextNode = methodNameList.item(0);
 	 if(nextNode.getNodeName()=="name")
 	 {
-	     nextNode = nextNode.getNextSibling();
+	     nextNode = nextNode.getNextSibling().getNextSibling(); //zweimal getNextSibiling, weil dazwischen #text
 	 }
-	 
 	 pumlCode += "activate " + startClass + "\n";
 	 
 	 if(nextNode.getNodeName()=="alternative")
@@ -222,30 +208,7 @@ public class OutputPUML
 	    
 	 }
 	 
-	 /*
-	 String pumlCode = "";
-	    String templistPath = listPath + "/name"; //an position name in der Methoddefinition
-		list = XmlHelperMethods.getList(diagramData, listPath).item(0).getChildNodes();
-		for (int a = 0; a < list.getLength(); a++)
-		{
-		    if (list.item(a).getNodeName() == "name")
-		    {
-			System.out.println("-- " + list.item(a).getNodeName());
-			pumlCode += "activate " + startClass + "\n";
-		    }
-		}
-		templistPath = listPath + "/alternative";
-		list = XmlHelperMethods.getList(diagramData, templistPath);
-		for (int a = 0; a < list.getLength(); a++)
-		{
-		    if (list.item(a).getNodeName() != "#text")
-		    {
-			pumlCode += helperCaseCall(diagramData, templistPath, startClass, false);
-		    }
-		}
-
-	return pumlCode;
-	*/
+	 pumlCode += "deactivate " + startClass + "\n";
 	 return pumlCode;
     }
     
@@ -260,45 +223,118 @@ public class OutputPUML
 	    String caseName = helper.getList(cases.item(i), "condition").item(0).getTextContent();
 	    if(first)
 	    {
-		pumlCode += "alt " + caseName;
+		pumlCode += "alt " + caseName + "\n";
 		first = false;
 	    }
 	    else
 	    {
-		pumlCode += "else " + caseName;
+		pumlCode += "else " + caseName + "\n";
 	    }
-	    Node nextNode = cases.item(i).getFirstChild();
-	    if(nextNode.getNodeName()=="conditition")
+	    Node nextNode = cases.item(i).getFirstChild().getNextSibling();
+	    if(nextNode.getNodeName()=="condition")
 	    {
-		nextNode = nextNode.getNextSibling();
+		nextNode = nextNode.getNextSibling().getNextSibling();
 	    }
 	    if(nextNode.getNodeName() == "methodcall")
 	    {
-		if(nextNode.getFirstChild().getNodeName() == "method")
-		{
-		    helperMethodCall(nextNode, startClass);
-		}
-		else if(nextNode.getFirstChild().getNodeName() == "class")
-		{
-		    NodeList methodCalls = helper.getList(nextNode, "class");
-		}
+		nextNode = nextNode.getFirstChild().getNextSibling();
 		
-		
+		if(nextNode.getNodeName() == "method")
+		{
+		    try 
+		    {
+			//hier Abfragen auf nextSibiling != null 
+			//nextSibiling == type
+			//nextsibiling == validity
+		    }
+		    catch (Exception e)
+		    {
+			// TODO: handle exception
+		    }
+		    String activeMethod = nextNode.getTextContent();
+		    NodeList callList = helper.getList(nextNode, "\\methoddefinition[name=\"" + activeMethod + "\"]");
+		    System.out.println(callList.item(0));
+//		    helperMethodCall(callList.item(0), startClass);
+		}
+		else
+		{
+		    String inst ="";
+		    String method ="";
+		    String toClass ="";
+		    String type ="";
+		    try
+		    {
+			Node methodCallNode = nextNode;
+			while (methodCallNode.getNodeName() != null)
+			{
+			    if (methodCallNode.getNodeName() == "instance")
+			    {
+				inst = methodCallNode.getTextContent();
+//				System.out.println("inst = "+ inst);
+
+			    }
+			    else if(methodCallNode.getNodeName() == "class")
+			    {
+				toClass = methodCallNode.getTextContent();
+//				System.out.println("class = " + toClass);
+
+			    }
+			    else if(methodCallNode.getNodeName() == "method")
+			    {
+				method = methodCallNode.getTextContent();
+//				System.out.println("meth = " + method);
+
+			    }
+			    else if(methodCallNode.getNodeName() == "type")
+			    {
+				
+				type = methodCallNode.getTextContent();
+//				System.out.println("type = " + type);
+			    }
+			    
+			    methodCallNode = methodCallNode.getNextSibling().getNextSibling();
+			}
+		    }
+		    catch (Exception e)
+		    {
+			// TODO: handle exception
+		    }
+		    //hier pumlCode schreiben
+		    pumlCode += startClass + " -> " + toClass + ": " + method + " (" + toClass + ")\n";
+		    pumlCode += "activate " + toClass;
+		    //TODO Hier eventuell noch weiterführende Abfrage
+		    pumlCode += toClass + " -- > " + startClass + "\n";
+		    pumlCode += "deactivate " + toClass + "\n";
+		}
 	    }
-	}	
+	    if(nextNode.getNodeName()== "loop")
+	    {
+		pumlCode += helperLoopCall(nextNode, startClass);
+		//TODO Weiterführend 
+	    }
+	}
+	pumlCode += "end\n";
 	return pumlCode;
     }
     
     //for loops
-    private String helperLoopCall(Document diagramData, String listPath, String startClass) throws XPathExpressionException
+    private String helperLoopCall(Node loopNode, String startClass) throws XPathExpressionException
     {
-	String pumlCode = "";
-	listPath += "/case"; //an position name in der Methoddefinition
-	list = helper.getList(diagramData, listPath);
-	for(int i = 0; i < list.getLength(); i++)
+	String pumlCode = "loop ";
+	NodeList loopList = helper.getList(loopNode, "condition");
+	Node nextNode = loopList.item(0);
+	
+	
+	if(nextNode.getNodeName()=="condition")
 	{
-	    System.out.println("-- " + i);
+	    pumlCode += nextNode.getTextContent() + "\n";
+	    nextNode = nextNode.getNextSibling().getNextSibling(); //zweimal getNextSibiling, weil dazwischen #text
+	}if(nextNode.getNodeName() == "methodcall")
+	{
+	    
 	}
+	
+	pumlCode += "end\n";
 	return pumlCode;
     }
     /**
