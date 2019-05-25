@@ -196,17 +196,38 @@ public class OutputPUML
 	 NodeList methodNameList = helper.getList(methodefNode, "name");
 	 String methodName =  methodNameList.item(0).getTextContent();
 	 Node nextNode = methodNameList.item(0);
-	 if(nextNode.getNodeName()=="name")
-	 {
-	     nextNode = nextNode.getNextSibling().getNextSibling(); //zweimal getNextSibiling, weil dazwischen #text
-	 }
-	 pumlCode += "activate " + startClass + "\n";
+	 try
+	{
+		 while(nextNode.getNodeName() != null) //Versuch
+		 {
+		     if(nextNode.getNodeName()=="name")
+		     {
+			 nextNode = nextNode.getNextSibling().getNextSibling(); //zweimal getNextSibiling, weil dazwischen #text
+		     }
+		     pumlCode += "activate " + startClass + "\n";
+			 
+		     if(nextNode.getNodeName()=="alternative")
+		     {
+			 pumlCode += helperAlternativeCall(nextNode, startClass);
+			    
+		     }
+		     if(nextNode.getNodeName() == "methodcall")
+		     {
+			 Node methodNode = nextNode.getFirstChild().getNextSibling();
+			 String activeMethod = methodNode.getTextContent();
+			 NodeList callList = helper.getList(nextNode, "//methoddefinition[name=\"" + activeMethod + "\"]");
+			 helperMethodCall(callList.item(0), startClass);
+		     }
+		     nextNode = nextNode.getNextSibling().getNextSibling();
+		 }   
+	}
+	catch (Exception e)
+	{
+	    // TODO: handle exception
+	}
 	 
-	 if(nextNode.getNodeName()=="alternative")
-	 {
-	     pumlCode += helperAlternativeCall(nextNode, startClass);
-	    
-	 }
+
+	 
 	 
 	 pumlCode += "deactivate " + startClass + "\n";
 	 return pumlCode;
@@ -215,6 +236,7 @@ public class OutputPUML
     //for Cases
     private String helperAlternativeCall(Node alternativeNode, String startClass) throws XPathExpressionException
     {
+	//TODO --------------- Hier wird die method2 nicht erkannt????? ---------------
 	String pumlCode = "";
 	NodeList cases = helper.getList(alternativeNode, "case");
 	boolean first = true;
@@ -258,62 +280,68 @@ public class OutputPUML
 		}
 		else
 		{
-		    String inst ="";
-		    String method ="";
-		    String toClass ="";
-		    String type ="";
-		    try
-		    {
-			Node methodCallNode = nextNode;
-			while (methodCallNode.getNodeName() != null)
-			{
-			    if (methodCallNode.getNodeName() == "instance")
-			    {
-				inst = methodCallNode.getTextContent();
-//				System.out.println("inst = "+ inst);
-
-			    }
-			    else if(methodCallNode.getNodeName() == "class")
-			    {
-				toClass = methodCallNode.getTextContent();
-//				System.out.println("class = " + toClass);
-
-			    }
-			    else if(methodCallNode.getNodeName() == "method")
-			    {
-				method = methodCallNode.getTextContent();
-//				System.out.println("meth = " + method);
-
-			    }
-			    else if(methodCallNode.getNodeName() == "type")
-			    {
-				
-				type = methodCallNode.getTextContent();
-//				System.out.println("type = " + type);
-			    }
-			    
-			    methodCallNode = methodCallNode.getNextSibling().getNextSibling();
-			}
-		    }
-		    catch (Exception e)
-		    {
-			// TODO: handle exception
-		    }
-		    //hier pumlCode schreiben
-		    pumlCode += startClass + " -> " + toClass + ": " + method + " (" + toClass + ")\n";
-		    pumlCode += "activate " + toClass;
-		    //TODO Hier eventuell noch weiterführende Abfrage
-		    pumlCode += toClass + " -- > " + startClass + "\n";
-		    pumlCode += "deactivate " + toClass + "\n";
+		    pumlCode += helperMethodCallHandler(startClass, nextNode);
 		}
 	    }
 	    if(nextNode.getNodeName()== "loop")
 	    {
 		pumlCode += helperLoopCall(nextNode, startClass);
-		//TODO Weiterführend 
+		//TODO Weiterführend ???
 	    }
 	}
 	pumlCode += "end\n";
+	return pumlCode;
+    }
+
+    private String helperMethodCallHandler(String startClass, Node methodCallNode)
+    {
+	String pumlCode ="";
+	String inst ="";
+	String method ="";
+	String toClass ="";
+	String type ="";
+	try
+	{
+	while (methodCallNode.getNodeName() != null)
+	{
+	    if (methodCallNode.getNodeName() == "instance")
+	    {
+		inst = methodCallNode.getTextContent();
+				System.out.println("inst = "+ inst);
+
+	    }
+	    else if(methodCallNode.getNodeName() == "class")
+	    {
+		toClass = methodCallNode.getTextContent();
+//				System.out.println("class = " + toClass);
+
+	    }
+	    else if(methodCallNode.getNodeName() == "method")
+	    {
+		method = methodCallNode.getTextContent();
+//				System.out.println("meth = " + method);
+
+	    }
+	    else if(methodCallNode.getNodeName() == "type")
+	    {
+		
+		type = methodCallNode.getTextContent();
+//				System.out.println("type = " + type);
+	    }
+	    
+	    methodCallNode = methodCallNode.getNextSibling().getNextSibling();
+	}
+	}
+	catch (Exception e)
+	{
+	// TODO: handle exception
+	}
+	//hier pumlCode schreiben
+	pumlCode += startClass + " -> " + toClass + ": " + method + " (" + inst + ")\n";
+	pumlCode += "activate " + toClass + "\n";
+	//TODO Hier eventuell noch weiterführende Abfrage ???
+	pumlCode += toClass + " -- > " + startClass + "\n";
+	pumlCode += "deactivate " + toClass + "\n";
 	return pumlCode;
     }
     
@@ -331,7 +359,8 @@ public class OutputPUML
 	    nextNode = nextNode.getNextSibling().getNextSibling(); //zweimal getNextSibiling, weil dazwischen #text
 	}if(nextNode.getNodeName() == "methodcall")
 	{
-	    
+	    nextNode = nextNode.getFirstChild().getNextSibling();
+	    pumlCode += helperMethodCallHandler(startClass, nextNode);
 	}
 	
 	pumlCode += "end\n";
