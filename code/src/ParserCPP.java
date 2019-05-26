@@ -2,8 +2,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 
-import ParserJava.TokenResult;
-
 public class ParserCPP implements ParserIf 
 {
 	private Document document;
@@ -133,7 +131,7 @@ public class ParserCPP implements ParserIf
 	}
 	
 	/**
-     * Liest den �bergebenen Quellcode ein und parsed die Informationen daraus
+     * Liest den uebergebenen Quellcode ein und parsed die Informationen daraus
      * @param sourceCode Vollstaendiger Java-Quellcode
      */
     public void parse(String sourceCode)
