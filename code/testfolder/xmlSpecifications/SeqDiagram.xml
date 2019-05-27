@@ -17,6 +17,7 @@
 
 		<methoddefinition>
 			<name>method1</name>
+			<class>Class1</class>
 			<alternative>	<!-- if-Entscheidung (beliebig verschachtelbar, abhängig vom Quellocode) -->
 				<case>
 					<condition>if(a!=b)</condition>
@@ -44,6 +45,7 @@
 		
 		<methoddefinition>
 			<name>method2</name>
+			<class>Class1</class>
 			<alternative>
 				<case>
 					<condition>switch(i)/case 0</condition>
@@ -101,6 +103,7 @@
 		
 		<methoddefinition>
 			<name>method3</name>
+			<class>Class1</class>
 			<alternative>	
 				<case>
 					<condition>if(a!=b)</condition>
@@ -121,6 +124,7 @@
 		</methoddefinition>
 		<methoddefinition>
 			<name>method4</name>
+			<class>Class1</class>
 			<alternative>	
 				<case>
 					<condition>if(d!=e)</condition>
