@@ -237,4 +237,27 @@ Graphviz soll für den Endkunden in den Installer implementiert werden.
 \nsecend %{Graphviz}
 \nsecend %{Generell}
 
+\nsecbegin{XML / XPath}
+\nsecbegin{XPath-Ausdrücke ausführen}
+Für das Verarbeiten von XPath-Ausdrücken wurde die Methode "'getList"' in der Klasse "'XmlHelperMethods"' erstellt. Von dieser Klasse existiert eine Instanz in der Klasse "'PUMLGenerator"' mit dem Namen "'xmlHelper"'. Ein XPath-Ausdruck kann also folgendermaßen ausgeführt werden:
+\begin{lstlisting}
+NodeList myNodeList = PUMLGenerator.xmlHelper.getList(myNode, "myXPathExpression");
+\end{lstlisting}
+Wobei eine List mit allen gefunden Knoten zurückgeliefert wird. Es kann relativ zum übergebenen Knoten (myNode) gesucht werden.
+Weitere Informationen zu XPath-Ausdrücken unter:\\
+\url{https://www.w3schools.com/xml/xpath_syntax.asp}
+\nsecend
+
+\nsecbegin{Nächsten Nachbarknoten suchen}
+Weil sich die "'nextSibling"'-Methode der Java-XML-Implementierung etwas seltsam verhält und ggf. die Leerzeichen der Zwischenräume zwischen den Knoten als #text-Knoten erkennt, sollte auch hier ein XPath-Ausdruck verwendet werden. (\url{https://stackoverflow.com/questions/17641496/how-can-i-get-the-siblings-of-an-xml-element-in-java-using-the-dom-parser}) Der Ausdruck:
+\begin{lstlisting}
+Node nextNode = PUMLGenerator.xmlHelper.getList(currentNode, "following-sibling::*").item(0);
+\end{lstlisting}
+wählt den nächsten Nachbarknoten aus. Das selbe gilt für die Auswahl des ersten Kindknotens. Der hierfür benötigte Ausdruck:
+\begin{lstlisting}
+Node childNode = PUMLgenerator.xmlHelper.getList(methodefNode, "child::*").item(0);
+\end{lstlisting}
+\nsecend
+\nsecend %{XML / XPath}
+
 \nsecend %{Was wird wie gemacht?}
