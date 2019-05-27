@@ -31,16 +31,29 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.swing.JFileChooser;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
 
-public class GUI_Swing {
+public class GUI_Swing
+{
 
 	private JFrame frame;
 	private JMenuBar menuBar;
@@ -66,7 +79,7 @@ public class GUI_Swing {
 	private JPanel pnlSeqPrev;
 	private JButton btnSeqPrev;
 	private JFileChooser fDialog;
-	private DefaultMutableTreeNode dmtnClasses;
+	private DefaultMutableTreeNode dmtnRoot;
 	private JScrollPane scrollPaneClass;
 	private JTextArea textClass;
 	private JScrollPane scrollPaneSequence;
@@ -76,29 +89,41 @@ public class GUI_Swing {
 	private JSplitPane splitPane;
 	private JPanel panel;
 	private JTree tree_1;
+	private JLabel lblMethod;
+	private JLabel lblClass;
+	private JPanel panel_1;
 
 	private ArrayList<String> paths;
 	private String srcCode;
-	private String pumlCode;
+	private String classPumlCode;
+	private String seqPumlCode;
+	private String epClass;
+	private String epMethod;
 	private boolean useJava;
 	private boolean useJar;
 	private boolean modified;
+	private boolean parsed;
 	private File tmpImage;
-	private JLabel lblMethode;
-	private JLabel lblKlasse;
-	private JPanel panel_1;
-
+	private Document parsedDoc;
+	private JButton btnParse;
+	private JMenuItem mntmParse;
 
 	/**
 	 * Launch the application.
 	 */
-	public static void showGUI() {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
+	public static void showGUI()
+	{
+		EventQueue.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				try
+				{
 					GUI_Swing window = new GUI_Swing();
 					window.frame.setVisible(true);
-				} catch (Exception e) {
+				}
+				catch (Exception e)
+				{
 					e.printStackTrace();
 				}
 			}
@@ -108,19 +133,24 @@ public class GUI_Swing {
 	/**
 	 * Create the application.
 	 */
-	public GUI_Swing() {
+	public GUI_Swing()
+	{
 		initialize();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize()
+	{
 		paths = new ArrayList<String>();
 		useJava = true;
 		useJar = false;
 		modified = true;
+		parsed = false;
 		tmpImage = new File(System.getProperty("user.dir"), "tmp.png");
+		epClass = "";
+		epMethod = "";
 
 		frame = new JFrame();
 		frame.setBounds(100, 100, 640, 480);
@@ -137,16 +167,20 @@ public class GUI_Swing {
 		menuBar.add(mnDatei);
 
 		mntmAddFile = new JMenuItem("Datei hinzuf\u00FCgen");
-		mntmAddFile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		mntmAddFile.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
 				openFile(true);
 			}
 		});
 		mnDatei.add(mntmAddFile);
 
 		mntmAddDir = new JMenuItem("Ordner hinzuf\u00FCgen");
-		mntmAddDir.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		mntmAddDir.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
 				openFile(false);
 			}
 		});
@@ -156,8 +190,10 @@ public class GUI_Swing {
 		mnDatei.add(separator);
 
 		mntmPathEditor = new JMenuItem("Suchliste bearbeiten");
-		mntmPathEditor.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		mntmPathEditor.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
 				JOptionPane.showMessageDialog(frame, new PathEditorPanel(paths), "Pfade bearbeiten",
 						JOptionPane.PLAIN_MESSAGE);
 			}
@@ -165,11 +201,30 @@ public class GUI_Swing {
 		mnDatei.add(mntmPathEditor);
 
 		mntmRunPUML = new JMenuItem("PUML ausf\u00FChren");
-		mntmRunPUML.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		mntmRunPUML.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if (!parsed)
+				{
+					parse();
+				}
 				runPUML();
 			}
 		});
+
+		mntmParse = new JMenuItem("Parse");
+		mntmParse.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if (!parsed)
+				{
+					parse();
+				}
+			}
+		});
+		mnDatei.add(mntmParse);
 		mnDatei.add(mntmRunPUML);
 
 		mnOptionen = new JMenu("Optionen");
@@ -177,11 +232,16 @@ public class GUI_Swing {
 
 		chckbxmntmUseJava = new JCheckBoxMenuItem("Java-Dateien verwenden");
 		chckbxmntmUseJava.setSelected(useJava);
-		chckbxmntmUseJava.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (chckbxmntmUseJava.isSelected()) {
+		chckbxmntmUseJava.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if (chckbxmntmUseJava.isSelected())
+				{
 					useJava = true;
-				} else {
+				}
+				else
+				{
 					useJava = false;
 				}
 			}
@@ -189,11 +249,16 @@ public class GUI_Swing {
 		mnOptionen.add(chckbxmntmUseJava);
 
 		chckbxmntmUseJar = new JCheckBoxMenuItem("Jar-Dateien verwenden");
-		chckbxmntmUseJar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (chckbxmntmUseJar.isSelected()) {
+		chckbxmntmUseJar.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if (chckbxmntmUseJar.isSelected())
+				{
 					useJar = true;
-				} else {
+				}
+				else
+				{
 					useJar = false;
 				}
 			}
@@ -212,8 +277,10 @@ public class GUI_Swing {
 		pnlClass.add(pnlClassPrev, BorderLayout.SOUTH);
 
 		btnClassPrev = new JButton("Vorschau");
-		btnClassPrev.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		btnClassPrev.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
 				showPreview(tmpImage, "Klassendiagramm");
 			}
 		});
@@ -254,36 +321,48 @@ public class GUI_Swing {
 		pnlSeqPrev.setLayout(new BorderLayout(0, 0));
 
 		btnSeqPrev = new JButton("Vorschau");
+		btnSeqPrev.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+
+			}
+		});
 		pnlSeqPrev.add(btnSeqPrev, BorderLayout.SOUTH);
-		
+
 		panel_1 = new JPanel();
 		panel_1.setBorder(new TitledBorder("Entry-Point:"));
 		pnlSeqPrev.add(panel_1, BorderLayout.CENTER);
 		panel_1.setLayout(new BorderLayout(0, 0));
-			
-		lblMethode = new JLabel("Methode:");
-		panel_1.add(lblMethode);
-		
-		lblKlasse = new JLabel("Klasse:");
-		panel_1.add(lblKlasse, BorderLayout.NORTH);
 
-		
-		tree_1 = new JTree();
+		lblMethod = new JLabel("Methode:");
+		panel_1.add(lblMethod);
+
+		lblClass = new JLabel("Klasse:");
+		panel_1.add(lblClass, BorderLayout.NORTH);
+
+		dmtnRoot = new DefaultMutableTreeNode("Klassen", true);
+		tree_1 = new JTree(dmtnRoot);
 		splitPane.setLeftComponent(tree_1);
 
 		// Selection Listener welches Leaf und welcher Parent ausgewählt wurden (nur
 		// Leaf-Ebene)
-		tree_1.addTreeSelectionListener(new TreeSelectionListener() {
-			public void valueChanged(TreeSelectionEvent e) {
+		tree_1.addTreeSelectionListener(new TreeSelectionListener()
+		{
+			public void valueChanged(TreeSelectionEvent e)
+			{
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree_1.getLastSelectedPathComponent();
-				if (node == null) {
+				if (node == null)
+				{
 					return;
 				}
 
-				if (node.isLeaf()) {
-					System.out.println(node.getUserObject() + "  ||  " + node.toString() + "  ||  " + node.getParent());
-					//TODO: lblKlasse
-					
+				if (node.isLeaf())
+				{
+					epClass = node.getParent().toString();
+					epMethod = node.toString();
+					lblClass.setText("Klasse: " + epClass);
+					lblMethod.setText("Methode: " + epMethod);
 				}
 			}
 		});
@@ -294,8 +373,10 @@ public class GUI_Swing {
 
 		btnOpenDir = new JButton("");
 		btnOpenDir.setIcon(new ImageIcon(GUI_Swing.class.getResource("/img/directory.gif")));
-		btnOpenDir.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		btnOpenDir.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
 				openFile(false);
 			}
 		});
@@ -304,8 +385,10 @@ public class GUI_Swing {
 
 		btnOpenFile = new JButton("");
 		btnOpenFile.setIcon(new ImageIcon(GUI_Swing.class.getResource("/img/file.gif")));
-		btnOpenFile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		btnOpenFile.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
 				openFile(true);
 			}
 		});
@@ -314,162 +397,340 @@ public class GUI_Swing {
 
 		btnSave = new JButton("");
 		btnSave.setIcon(new ImageIcon(GUI_Swing.class.getResource("/img/floppy.gif")));
-		btnSave.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		btnSave.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
 				saveOutput();
 			}
 		});
 		btnSave.setToolTipText("Speichern");
 		toolBar.add(btnSave);
 
+		btnParse = new JButton("");
+		btnParse.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+
+				parse();
+
+			}
+		});
+		btnParse.setToolTipText("Parse");
+		btnParse.setIcon(new ImageIcon(GUI_Swing.class.getResource("/img/JavaCup16.png")));
+		toolBar.add(btnParse);
+
 		btnRunPUML = new JButton("");
-		btnRunPUML.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		btnRunPUML.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
 				runPUML();
 			}
 		});
 		btnRunPUML.setToolTipText("PUML ausf\u00FChren");
 		btnRunPUML.setIcon(new ImageIcon(GUI_Swing.class.getResource("/img/JavaCup16.png")));
 		toolBar.add(btnRunPUML);
-
-		dmtnClasses = new DefaultMutableTreeNode("Klassen");
 	}
 
-	private void openFile(boolean useFiles) {
-		File[] items = {};
-		if (useFiles) {
+	private void openFile(boolean useFiles)
+	{
+		File[] items =
+		{};
+		if (useFiles)
+		{
 			fDialog.setDialogTitle("Dateien ausw�hlen");
 			fDialog.setFileFilter(new FileNameExtensionFilter("Java Code (.jar, .java)", "java", "jar"));
 			fDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			fDialog.setMultiSelectionEnabled(true);
 			fDialog.showOpenDialog(frame);
 			items = fDialog.getSelectedFiles();
-			for (int i = 0; i < items.length; i++) {
+			for (int i = 0; i < items.length; i++)
+			{
 				paths.add(items[i].getPath());
 			}
 
-		} else {
+		}
+		else
+		{
 			fDialog.setDialogTitle("Ordner ausw�hlen");
 			fDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			fDialog.setMultiSelectionEnabled(true);
 			fDialog.setAcceptAllFileFilterUsed(false);
-			if (fDialog.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+			if (fDialog.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION)
+			{
 				items = fDialog.getSelectedFiles();
-				for (int i = 0; i < items.length; i++) {
+				for (int i = 0; i < items.length; i++)
+				{
 					paths.add(items[i].getPath());
 				}
 			}
 		}
-		if (items.length > 0) {
+		if (items.length > 0)
+		{
 			modified = true;
+			parsed = false;
 		}
 
 	}
 
-	private void runPUML() {
+	private void parse()
+	{
 
-		try {
-			PUMLgenerator.codeCollector.paths = paths;
-			PUMLgenerator.codeCollector.setUseJarFiles(useJar);
-			PUMLgenerator.codeCollector.setUseJavaFiles(useJava);
-			srcCode = PUMLgenerator.codeCollector.getSourceCode();
-			//System.out.println(srcCode);
+		try
+		{
+			if (!parsed)
+			{
 
-			PUMLgenerator.parser.parse(srcCode);
-			Document tempPR = PUMLgenerator.parser.getParsingResult();
-			Document tmpClass = PUMLgenerator.classDiagramGenerator.createDiagram(tempPR);
-			//pumlCode = PUMLgenerator.outputPUML.getPUML(tempPR);
+//				PUMLgenerator.codeCollector.paths = paths;
+//				PUMLgenerator.codeCollector.setUseJarFiles(useJar);
+//				PUMLgenerator.codeCollector.setUseJavaFiles(useJava);
+//				srcCode = PUMLgenerator.codeCollector.getSourceCode();
+//				PUMLgenerator.parser.parse(srcCode);
+//				parsedDoc = PUMLgenerator.parser.getParsingResult();
 
-			/* TREE */
-			// Erstellen eines Trees zur Auswahl des Einstiegpunktes im Sequenzdiagramm
-			// Füllen des Trees
-			DefaultMutableTreeNode root = new DefaultMutableTreeNode("Einstiegspunkt");
-			for (int nodeCnt = 0; nodeCnt < 4; nodeCnt++) {
-				DefaultMutableTreeNode dmtn = new DefaultMutableTreeNode("Knoten " + nodeCnt);
-				root.add(dmtn);
+				// Test-Code
+				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder builder = factory.newDocumentBuilder();
+				parsedDoc = builder.parse(new File("testfolder/xmlSpecifications/parsedData.xml"));
 
-				for (int leafCnt = 1; leafCnt < 4; leafCnt++)
-					dmtn.add(new DefaultMutableTreeNode("Blatt " + (nodeCnt * 3 + leafCnt)));
+				parsed = true;
 			}
-			tree_1.expandRow(0);
-		
-
-			
-			
-			textClass.setText(pumlCode);
-
-			PUMLgenerator.outputPUML.createPUMLfromString(tmpImage.getAbsolutePath(), pumlCode);
-			modified = false;
-
-		} catch (NullPointerException npe) {
+		}
+		catch (NullPointerException npe)
+		{
 			// von CodeCollector
 			JOptionPane.showMessageDialog(frame, "Pfadliste ist leer!", "Fehler", JOptionPane.ERROR_MESSAGE);
-		} catch (IllegalArgumentException iae) {
-			// von CodeCollector
-			JOptionPane.showMessageDialog(frame, "Kein Suchtyp ausgew�hlt!", "Fehler", JOptionPane.ERROR_MESSAGE);
-		} catch (IOException e1) {
-			JOptionPane.showMessageDialog(frame, "Ein-/Ausgabe-Fehler", "Fehler", JOptionPane.ERROR_MESSAGE);
-			// e1.printStackTrace();
 		}
-
+		catch (ParserConfigurationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (SAXException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	private void showPreview(File imageFile, String title) {
-		if (modified) {
-			if (paths.isEmpty()) {
+	private void runPUML()
+	{
+
+		try
+		{
+			if (!parsed)
+			{
+				parse();
+			}
+
+			// JTree generieren für den Einstiegspunkt des Sequenzdiagramms
+			// TODO Methoden werden noch nicht richtig angezeigt
+//			Node sourceNode = parsedDoc.getFirstChild();
+//			NodeList nodes = sourceNode.getChildNodes();
+//			DefaultMutableTreeNode dmtnTmpMethod;
+//			DefaultMutableTreeNode dmtnTmpClass;
+//			// classdefinition loop
+//			for (int cntC = 0; cntC < nodes.getLength(); cntC++)
+//			{
+//
+//				if (nodes.item(cntC).getNodeName() == "classdefinition")
+//				{
+//					NodeList tmpNodes1 = nodes.item(cntC).getChildNodes();
+//
+//					// methoddefinition loop
+//					for (int cntM = 0; cntM < tmpNodes1.getLength(); cntM++)
+//					{
+//						dmtnTmpClass = new DefaultMutableTreeNode();
+//						if (tmpNodes1.item(cntM).getNodeName() == "name")
+//						{
+//							System.out.println(tmpNodes1.item(cntM).getTextContent());
+//							dmtnTmpClass.setUserObject(tmpNodes1.item(cntM).getTextContent());
+//							dmtnRoot.add(dmtnTmpClass);
+//
+//						}
+//						if (tmpNodes1.item(cntM).getNodeName() == "methoddefinition")
+//						{
+//							NodeList tmpNodes2 = tmpNodes1.item(cntM).getChildNodes();
+//							// methodname loop
+//							for (int cntMN = 0; cntMN < tmpNodes2.getLength(); cntMN++)
+//							{
+//								if (tmpNodes2.item(cntMN).getNodeName() == "name")
+//								{
+//									System.out.println("" + tmpNodes2.item(cntMN).getTextContent());
+//									dmtnTmpMethod = new DefaultMutableTreeNode(tmpNodes2.item(cntMN).getTextContent());
+//									dmtnTmpClass.add(dmtnTmpMethod);
+//								}
+//							}
+//						}
+//					}
+//				}
+//				// TODO interfaces
+//			}
+
+			// JTree Beispiel zur Auswahl des Einstiegspunktes
+			for (int nodeCnt = 0; nodeCnt < 4; nodeCnt++)
+			{
+				DefaultMutableTreeNode dmtnTmp = new DefaultMutableTreeNode("Class" + nodeCnt);
+				dmtnRoot.add(dmtnTmp);
+
+				for (int leafCnt = 1; leafCnt < 4; leafCnt++)
+					dmtnTmp.add(new DefaultMutableTreeNode("method" + (nodeCnt * 3 + leafCnt)));
+			}
+			
+			tree_1.expandRow(0);
+
+			// Code einlesen
+			Document classDoc = PUMLgenerator.classDiagramGenerator.createDiagram(parsedDoc);
+			classPumlCode = PUMLgenerator.outputPUML.getPUML(classDoc);
+			textClass.setText(classPumlCode);
+			PUMLgenerator.outputPUML.createPUMLfromString(tmpImage.getAbsolutePath(), classPumlCode);
+			
+			
+			Document seqDoc = PUMLgenerator.seqDiagramGenerator.createDiagram(parsedDoc, "Class1", "method1");
+
+			// XML output test
+			//PUMLgenerator.xmlHelper.writeDocumentToConsole(seqDoc);
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource domSource = new DOMSource(seqDoc);
+			StreamResult streamResult = new StreamResult(new File("test.xml"));
+			transformer.transform(domSource, streamResult);
+
+			seqPumlCode = PUMLgenerator.outputPUML.getPUML(seqDoc);
+			textSequence.setText(seqPumlCode);
+
+			modified = false;
+
+		}
+		catch (IllegalArgumentException iae)
+		{
+			// von CodeCollector
+			JOptionPane.showMessageDialog(frame, "Kein Suchtyp ausgew�hlt!", "Fehler", JOptionPane.ERROR_MESSAGE);
+		}
+		catch (XPathExpressionException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (ParserConfigurationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (TransformerConfigurationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (TransformerException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (SAXException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void showPreview(File imageFile, String title)
+	{
+		if (modified)
+		{
+			if (paths.isEmpty())
+			{
 				JOptionPane.showMessageDialog(frame, "Pfadliste ist leer!", "Fehler", JOptionPane.ERROR_MESSAGE);
-			} else {
+			}
+			else
+			{
 				JOptionPane.showMessageDialog(frame, "Pfadliste wurde ver�ndert.\nBitte erst PUML ausf�hren!", "Fehler",
 						JOptionPane.ERROR_MESSAGE);
 			}
-		} else {
-			// Vorschau �ffnen
+		}
+		else
+		{
+			// Vorschau öffnen
 			JOptionPane.showMessageDialog(frame, new JLabel(new ImageIcon(imageFile.getAbsolutePath())), title,
 					JOptionPane.PLAIN_MESSAGE);
 		}
 	}
 
-	private void saveOutput() {
+	private void saveOutput()
+	{
 
 		File save;
-		if (modified) {
-			if (paths.isEmpty()) {
+		if (modified)
+		{
+			if (paths.isEmpty())
+			{
 				JOptionPane.showMessageDialog(frame, "Pfadliste ist leer!", "Fehler", JOptionPane.ERROR_MESSAGE);
-			} else {
+			}
+			else
+			{
 				JOptionPane.showMessageDialog(frame, "Pfadliste wurde ver�ndert.\nBitte erst PUML ausf�hren!", "Fehler",
 						JOptionPane.ERROR_MESSAGE);
 			}
-		} else {
+		}
+		else
+		{
 			fDialog.setFileFilter(new FileNameExtensionFilter("Image File (.png)", "png"));
-			if (fDialog.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+			if (fDialog.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION)
+			{
 				save = fDialog.getSelectedFile();
-				try {
+				try
+				{
 					copyFile(tmpImage, save);
-				} catch (IOException e) {
+				}
+				catch (IOException e)
+				{
 					JOptionPane.showMessageDialog(frame, "Ein-/Ausgabe-Fehler", "Fehler", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		}
 	}
 
-	public void copyFile(File in, File out) throws IOException {
+	public void copyFile(File in, File out) throws IOException
+	{
 		FileChannel inChannel = null;
 		FileChannel outChannel = null;
-		try {
+		try
+		{
 			inChannel = new FileInputStream(in).getChannel();
 			outChannel = new FileOutputStream(out).getChannel();
 			inChannel.transferTo(0, inChannel.size(), outChannel);
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			throw e;
-		} finally {
-			try {
-				if (inChannel != null) {
+		}
+		finally
+		{
+			try
+			{
+				if (inChannel != null)
+				{
 					inChannel.close();
 				}
-				if (outChannel != null) {
+				if (outChannel != null)
+				{
 					outChannel.close();
 				}
-			} catch (IOException e) {
+			}
+			catch (IOException e)
+			{
 
 			}
 		}

@@ -24,7 +24,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
 /**
  * 
  * @author Klasse fuer Unterstuetzungsfunktionen zur XML Handhabung
@@ -42,29 +41,23 @@ public class XmlHelperMethods
 	this.xPathfactory = XPathFactory.newInstance();
 	this.xpath = xPathfactory.newXPath();
     }
-
     /**
      * Konvertiert xml Datei in String
-     * 
      * @param xmlDoc lesende Datei
      */
     public String xmlDocToString(Document xmlDoc)
     {
 	return new String();
     }
-
     /**
      * loescht einzelnen Knoten aus xml Datei
-     * 
      * @param Knoten eines Elements
      * @param        true = Unterknoten werden nicht gelöscht; false = Unterknoten
      *               werden mit gelöscht
      */
     public void delNode(Element nodeName, boolean keepChildNodes)
     {
-
     }
-
     /**
      * Hilfsmethode zum Laden eines XML-Documents fuer diverse Zwecke
      * 
@@ -91,7 +84,6 @@ public class XmlHelperMethods
 	}
 	return null;
     }
-
     /**
      * Hilfsmethode zum Ausgeben eines XML-Documents in der Console
      * 
@@ -191,15 +183,13 @@ public class XmlHelperMethods
      * @return - NodeList aller gefundenen Knoten
      * @throws XPathExpressionException
      */
-    //Liefert NodeList zurück
     public NodeList getList(Node doc, String path) throws XPathExpressionException 
     {
         	XPathExpression expr = this.xpath.compile(path);
         	NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 
-        return list;
+	return list;
     }
-
 
     /**
      * Funktion zur Suche eines Childnodes mit einem bestimmten Namen; gibt ersten
