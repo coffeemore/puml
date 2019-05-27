@@ -68,7 +68,7 @@ public class SequenceDiagramGenerator
 	entrypoint.appendChild(epMethod1);
 
 //	parsedData = deleteInstancesNotInMethodcalls(parsedData);
-	listMethoddef(parsedData, seqDiagramm, seq, epClass);
+	listMethoddef(parsedData, seqDiagramm, seq);
 
 	addClassesToInstances(parsedData, seqDiagramm);
 
@@ -80,8 +80,6 @@ public class SequenceDiagramGenerator
 
 	return seqDiagramm;
     }
-
-    // nur Klassen, die von der epClass aufgerufen werden
 
     /**
      * Die Klassen werden aus parsedData übernommen und in seqDiagramm aufgelistet
@@ -116,26 +114,26 @@ public class SequenceDiagramGenerator
      * @param seq         - Kindelement von root
      * @throws XPathExpressionException
      */
-    private void listMethoddef(Document parsedData, Document seqDiagramm, Element seq, String epClass)
-	    throws XPathExpressionException
+    private void listMethoddef(Document parsedData, Document seqDiagramm, Element seq) throws XPathExpressionException
     {
 	// alle Methoden aus parsedData werden in die Liste geschrieben
-	Element classTag = seqDiagramm.createElement("class");
 	NodeList mList = xmlHM.getList(parsedData, dataClassDef + "methoddefinition");
+
 	for (int i = 0; i < mList.getLength(); i++)
 	{
-	    Node mNode = mList.item(i);
-	    seq.appendChild(seqDiagramm.importNode(mNode, true));
-	    
-	    NodeList seqMList = xmlHM.getList(seqDiagramm, "");
-	    Element classEl = (Element) mNode.getParentNode();
-	    String cName = classEl.getElementsByTagName("name").item(0).getTextContent();
+	    // jede Methode wird in das Dokument seqDiagramm importiert
+	    seq.appendChild(seqDiagramm.importNode(mList.item(i), true));
+
+	    Element classTag = seqDiagramm.createElement("class");
+	    NodeList list = xmlHM.getList(seqDiagramm, seqMethodDef);
+
+	    // zu jeder Methode wird ihre Klasse mittels Class-Tag eingefügt
+	    Node seqMethodNode = list.item(i);
+	    String cName = xmlHM.getList(mList.item(i), "../name").item(0).getTextContent();
 	    classTag.setTextContent(cName);
-	    //.appendChild(classTag);
-	}
-	NodeList list = xmlHM.getList(seqDiagramm, seqMethodDef);
-	for (int i = 0; i < list.getLength(); i++)
-	{
+	    seqMethodNode.insertBefore(classTag, seqMethodNode.getFirstChild());
+
+	    // vorhandene Parameters- oder Result-Tags werden gesucht und entfernt
 	    Node node = list.item(i);
 	    NodeList childs = node.getChildNodes();
 	    for (int j = 0; j < childs.getLength(); j++)
@@ -147,10 +145,6 @@ public class SequenceDiagramGenerator
 		}
 	    }
 	}
-    }
-    
-    private void addClassTag() {
-	
     }
 
     /**
@@ -441,8 +435,8 @@ public class SequenceDiagramGenerator
 	    throws XPathExpressionException
     {
 	/**
-	 *  String dataClassDef = "/source/classdefinition/";
-    String seqMethodDef = "/parsed/sequencediagram/methoddefinition";
+	 * String dataClassDef = "/source/classdefinition/"; String seqMethodDef =
+	 * "/parsed/sequencediagram/methoddefinition";
 	 */
 	// Liste mit allen Klassen und ihren zugeordneten Methoden
 	ArrayList<ArrayList<String>> classesWithMethodsList = new ArrayList<ArrayList<String>>();
