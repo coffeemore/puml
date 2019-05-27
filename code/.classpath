@@ -21,13 +21,5 @@
 	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-core-2.6.2-javadoc.jar"/>
 	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-core-2.6.2-sources.jar"/>
 	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-core-2.6.2-tests.jar"/>
-	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-matchers-2.6.2.jar"/>
-	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-matchers-2.6.2-javadoc.jar"/>
-	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-matchers-2.6.2-sources.jar"/>
-	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-matchers-2.6.2-tests.jar"/>
-	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-placeholders-2.6.2.jar"/>
-	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-placeholders-2.6.2-javadoc.jar"/>
-	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-placeholders-2.6.2-sources.jar"/>
-	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-placeholders-2.6.2-tests.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
