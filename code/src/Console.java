@@ -40,7 +40,6 @@ public class Console extends PUMLgenerator
 	// System.out.println("Aufruf Console() wird erstmal nicht genutzt.");
 
     }
-
     /**
      * Startet die Abarbeitung der Konsolenanwendung und ggf. Dialoge
      * 
@@ -273,7 +272,7 @@ public class Console extends PUMLgenerator
 					//Diagramm erzeugen
 	    			outputPUML.createPUMLfromFile("./outPUML_Code_defaultlocation", "./outPUML_Graph_defaultlocation");
 	    		}
-	    		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException e)
+	    		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException | SAXException e)
 	    		{
 	    			System.out.println("Kommandozeile: Verarbeitung SQ ohne output-Pfad fehlgeschlagen");
 					e.printStackTrace();
@@ -288,7 +287,7 @@ public class Console extends PUMLgenerator
 					//Diagramm erzeugen
 					outputPUML.createPUMLfromFile(cmd.getOptionValue("o") + "/outPUML_Code", cmd.getOptionValue("o") + "outPUML_Graph");
 				}
-	    		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException e)
+	    		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException | SAXException e)
 	    		{
 	    			System.out.println("Kommandozeile: Verarbeitung SQ ohne output-Pfad fehlgeschlagen");
 					e.printStackTrace();
@@ -451,7 +450,7 @@ public class Console extends PUMLgenerator
 					//Diagramm erzeugen
 	    			outputPUML.createPUMLfromFile("./outPUML_Code_defaultlocation", "./outPUML_Graph_defaultlocation");
 	    		}
-	    		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException e)
+	    		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException | SAXException e)
 	    		{
 	    			System.out.println("Kommandozeile: Verarbeitung SQ ohne output-Pfad fehlgeschlagen");
 					e.printStackTrace();
@@ -466,7 +465,7 @@ public class Console extends PUMLgenerator
 					//Diagramm erzeugen
 					outputPUML.createPUMLfromFile(out, out + "outPUML_Graph");
 				}
-	    		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException e)
+	    		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException | SAXException e)
 	    		{
 	    			System.out.println("Kommandozeile: Verarbeitung SQ ohne output-Pfad fehlgeschlagen");
 					e.printStackTrace();
