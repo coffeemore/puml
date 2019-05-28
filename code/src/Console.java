@@ -135,11 +135,13 @@ public class Console extends PUMLgenerator
 					if (cmd.hasOption("cc")) //Gewuenschtes Diagramm
 					{
 						//createClassDiagram(cmd, true);
-						createClassDiag(cmd,false,false,"");
+						createClassDiag(cmd,false,true,"");
 					}
 					if (cmd.hasOption("cs"))
 					{
-						createSQDiagram(cmd,true);
+						int entryClass = Integer.parseInt(cmd.getOptionValues("cs")[0]);
+			    		int entryMethode = Integer.parseInt(cmd.getOptionValues("cs")[1]);
+						createInteractiveSQDiagram(cmd,entryClass,entryMethode,true,cmd.getOptionValue("o"),true);
 					}
 				}
 			}
@@ -157,7 +159,9 @@ public class Console extends PUMLgenerator
 				}
 				if (cmd.hasOption("cs"))
 				{
-					createSQDiagram(cmd,false);
+					int entryClass = Integer.parseInt(cmd.getOptionValues("cs")[0]);
+		    		int entryMethode = Integer.parseInt(cmd.getOptionValues("cs")[1]);
+					createInteractiveSQDiagram(cmd,entryClass,entryMethode,false,"",false);
 				}
 			}
 		}
@@ -234,7 +238,6 @@ public class Console extends PUMLgenerator
      * @param cmd Uebergabe des Kommandos
      * @param outPath Ausgabeort festgelegt ja/nein
      * 
-     */
     private void createSQDiagram(CommandLine cmd, Boolean outpath)
     {
     	if (cmd.getOptionValues("cs")[0].isEmpty() || cmd.getOptionValues("cs")[1].isEmpty())
@@ -299,6 +302,7 @@ public class Console extends PUMLgenerator
 			e1.printStackTrace();
 		}
     }
+     */
     
     /*
      * Ausgabe aller Klassen und Methoden im Konsolendialog
@@ -389,7 +393,7 @@ public class Console extends PUMLgenerator
 					entryMethode = scanner.nextInt();
 				}
 				System.out.println("Klasse: " + entryClass + " und Methode: " + entryMethode);
-				createInteractiveSQDiagram(entryClass, entryMethode, "", false);
+				createInteractiveSQDiagram(null, entryClass, entryMethode, true, "", false);
 			}
 		}
 		else //mit ausgabepfad
@@ -417,7 +421,7 @@ public class Console extends PUMLgenerator
 					entryMethode = scanner.nextInt();
 				}
 				System.out.println("Klasse: " + entryClass + " und Methode: " + entryMethode);
-				createInteractiveSQDiagram(entryClass, entryMethode, outPath, false);
+				createInteractiveSQDiagram(null, entryClass, entryMethode, true, outPath, true);
 			}
 		}
 		scanner.close();
@@ -478,8 +482,18 @@ public class Console extends PUMLgenerator
 	 * @param cmd
 	 * @param existingOutpath
 	 */
-	private void createInteractiveSQDiagram(int entryClass, int entryMethode, Boolean existingOutpath,String outPath)
+	private void createInteractiveSQDiagram(CommandLine cmd,int entryClass, int entryMethode, Boolean useString, String outPath, Boolean existingOutpath)
     {
+		String actualOutputPath = new String();
+		if (useString) //Wenn Aufruf ohne cmd 
+		{
+			actualOutputPath = outPath;
+		}
+		else // Sonst verwende Commando Parameter als Ausgabeort
+		{
+			actualOutputPath = cmd.getOptionValue("o");
+		}
+		
 		try
 		{
 			//Doc Initialisierung und filtern der Elemente aus xml -> Klasse und Methode
@@ -504,7 +518,7 @@ public class Console extends PUMLgenerator
 	    			//Code Erzeugen
 					outputPUML.savePUMLtoFile(outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), classNodeList.item(entryClass).getTextContent(), classNodeList.item(entryMethode).getTextContent())),"./outPUML_Code_defaultlocation");
 					//Diagramm erzeugen
-	    			outputPUML.createPUMLfromFile("./outPUML_Code_defaultlocation", "./outPUML_Graph_defaultlocation");
+					outputPUML.createPUMLfromString("./outPUML_Graph_defaultlocation", outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), classNodeList.item(entryClass).getTextContent(), classNodeList.item(entryMethode).getTextContent())));
 	    		}
 	    		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException | SAXException e)
 	    		{
@@ -517,9 +531,9 @@ public class Console extends PUMLgenerator
 	    		try
 	    		{
 	    			//Code Erzeugen
-					outputPUML.savePUMLtoFile(outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), classNodeList.item(entryClass).getTextContent(), classNodeList.item(entryMethode).getTextContent())), outPath + "/outPUML_Code");
+					outputPUML.savePUMLtoFile(outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), classNodeList.item(entryClass).getTextContent(), classNodeList.item(entryMethode).getTextContent())), actualOutputPath);
 					//Diagramm erzeugen
-					outputPUML.createPUMLfromFile(outPath, outPath + "outPUML_Graph");
+					outputPUML.createPUMLfromString(actualOutputPath, outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), classNodeList.item(entryClass).getTextContent(), classNodeList.item(entryMethode).getTextContent())));
 				}
 	    		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException | SAXException e)
 	    		{
