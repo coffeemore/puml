@@ -10,11 +10,9 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import net.sourceforge.plantuml.GeneratedImage;
 import net.sourceforge.plantuml.SourceFileReader;
 import net.sourceforge.plantuml.SourceStringReader;
@@ -28,8 +26,10 @@ import net.sourceforge.plantuml.SourceStringReader;
 public class OutputPUML
 {
     public NodeList list = null;
-    LogMain logger = new LogMain();
+    //LogMain logger = new LogMain();
+    PUMLgenerator puml = new PUMLgenerator();
     XmlHelperMethods helper = new XmlHelperMethods();
+    
 
     /**
      * Konstruktor
@@ -44,10 +44,12 @@ public class OutputPUML
      * @param diagramData plantUML-Code zur Erzeugung als xmlDoc
      * @return plantUML Code zur Erstellung mit plantuml.jar
      * @throws XPathExpressionException
+     * @throws IOException 
      */
 
     public String getPUML(Document diagramData) throws XPathExpressionException
     {
+    	//PUMLgenerator.logger.getLog().warning("XML-Diagramm fehlerhaft");
 		XPathFactory xPathfactory = XPathFactory.newInstance();
 		XPath xpath = xPathfactory.newXPath();
 		XPathExpression expr = xpath.compile("/parsed/*"); // Startpunkt parsed Knoten
@@ -56,91 +58,61 @@ public class OutputPUML
 		String pumlCode = "@startuml\n";
 		if (compare == "classdiagramm")
 		{
-			list = helper.getList(diagramData, "/parsed/classdiagramm/classes/entry");
+			list = helper.getList(list.item(0), "classes/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-				if (list.item(a).getNodeName() != "#text")
-				{
 				    pumlCode += "class " + list.item(a).getTextContent() + "\n";
-				}
 		    }
-		    list = helper.getList(diagramData, "/parsed/classdiagramm/interfaces/entry");
+		    list = helper.getList(list.item(0).getParentNode().getParentNode(), "interfaces/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-				if (list.item(a).getNodeName() != "#text")
-				{
-				    pumlCode += "interface " + list.item(a).getTextContent() + "\n";
-				}
+			    pumlCode += "interface " + list.item(a).getTextContent() + "\n";
 		    }
 	
 		    // EXTENSIONS
-		    list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/extensions/entry");
+		    list = helper.getList(list.item(0).getParentNode().getParentNode(), "classrelations/extensions/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/extensions/entry/to");
-				if (list.item(a).getNodeName() != "#text")
-				{
-				    pumlCode += list.item(a).getTextContent() + " <|-- ";
-		
-				}
-				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/extensions/entry/from");
-				if (list.item(a).getNodeName() != "#text")
-				{
-				    pumlCode += list.item(a).getTextContent() + "\n";
-				}
+		    	NodeList tempList;
+		    	tempList = helper.getList(list.item(a), "to");
+		    	pumlCode += tempList.item(0).getTextContent() + " <|-- ";
+			    tempList = helper.getList(list.item(a), "from");
+		    	pumlCode += tempList.item(0).getTextContent() + "\n";
 		    }
 	
 		    // IMPLEMENTATIONS
-		    list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/implementations/entry");
+		    list = helper.getList(list.item(0).getParentNode().getParentNode(), "implementations/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/implementations/entry/to");
-				if (list.item(a).getNodeName() != "#text")
-				{
-				    pumlCode += list.item(a).getTextContent() + " <|-- ";
-		
-				}
-				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/implementations/entry/from");
-				if (list.item(a).getNodeName() != "#text")
-				{
-				    pumlCode += list.item(a).getTextContent() + "\n";
-				}
+		    	NodeList tempList;
+		    	tempList = helper.getList(list.item(a), "to");
+		    	pumlCode += tempList.item(0).getTextContent() + " <|-- ";
+			    tempList = helper.getList(list.item(a), "from");
+		    	pumlCode += tempList.item(0).getTextContent() + "\n";
 		    }
 	
 		    // COMPOSITIONS
-		    list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/compositions/entry");
+		    list = helper.getList(list.item(0).getParentNode().getParentNode(), "compositions/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/compositions/entry/to");
-				if (list.item(a).getNodeName() != "#text")
-				{
-				    pumlCode += list.item(a).getTextContent() + " *-- ";
-		
-				}
-				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/compositions/entry/from");
-				if (list.item(a).getNodeName() != "#text")
-				{
-				    pumlCode += list.item(a).getTextContent() + "\n";
-				}
+		    	NodeList tempList;
+		    	tempList = helper.getList(list.item(a), "to");
+		    	pumlCode += tempList.item(0).getTextContent() + " *-- ";
+				tempList = helper.getList(list.item(a), "from");
+			    pumlCode += tempList.item(0).getTextContent() + "\n";
 		    }
 	
 		    // AGGREGATIONS
-		    list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/aggregations/entry");
+		    list = helper.getList(list.item(0).getParentNode().getParentNode(), "aggregations/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/aggregations/entry/to");
-				if (list.item(a).getNodeName() != "#text")
-				{
-				    pumlCode += list.item(a).getTextContent() + " o-- ";
-		
-				}
-				list = helper.getList(diagramData, "/parsed/classdiagramm/classrelations/aggregations/entry/from");
-				if (list.item(a).getNodeName() != "#text")
-				{
-				    pumlCode += list.item(a).getTextContent() + "\n";
-				}
+		    	NodeList tempList;
+		    	tempList = helper.getList(list.item(a), "to");
+				pumlCode += tempList.item(0).getTextContent() + " o-- ";
+				tempList = helper.getList(list.item(a), "from");
+			    pumlCode += tempList.item(0).getTextContent() + "\n";
 		    }
-		}
+    	}
 	
 		else if (compare == "sequencediagram")
 		{
@@ -193,7 +165,7 @@ public class OutputPUML
 		}
 		else
 		{
-		    logger.getLog().warning("XML-Diagramm fehlerhaft");
+		    PUMLgenerator.logger.getLog().warning("XML-Diagramm fehlerhaft");
 		}
 		// return "Error with Loop";
 		pumlCode += "@enduml";

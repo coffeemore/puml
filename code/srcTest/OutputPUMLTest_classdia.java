@@ -1,6 +1,5 @@
 import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,10 +16,8 @@ class OutputPUMLTest_classdia
 	public Document getDoc() throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory docBuildFact = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuild = docBuildFact.newDocumentBuilder();
-		Document doc = docBuild.parse(new File("/home/patrick/Studium/Code/puml/code/testfolder/xmlSpecifications/ClassDiagram.xml"));
+		Document doc = docBuild.parse(new File("../code/testfolder/xmlSpecifications/ClassDiagram.xml"));
 		return doc;
-	}
-	public OutputPUMLTest_classdia(){
 	}
     @Test
     void testGetPUML() throws XPathExpressionException, ParserConfigurationException, SAXException, IOException
@@ -54,13 +51,13 @@ class OutputPUMLTest_classdia
     // aufgenommen zu werden.
     void testSavePUMLtoFile() throws IOException, ParserConfigurationException, SAXException, XPathExpressionException
     {
-		File expected = new File("/home/patrick/Studium/Code/puml/code/testfolder/xmlSpecifications/ClassDiagram.txt");
+		File expected = new File("../code/testfolder/xmlSpecifications/ClassDiagram.txt");
 		// savePumltoFile testen
 		// TODO Aendern der Filepaths bevor Test (je nach System), expectedFile
 		// platzieren
 		OutputPUML output = new OutputPUML();
-		output.savePUMLtoFile(output.getPUML(getDoc()), "/home/patrick/Studium/Code/puml/code/testfolder/xmlSpecifications/actualFile.txt");
-		File actual = new File("/home/patrick/Studium/Code/puml/code/testfolder/xmlSpecifications/actualFile.txt");
+		output.savePUMLtoFile(output.getPUML(getDoc()), "../code/testfolder/xmlSpecifications/actualFile.txt");
+		File actual = new File("../code/testfolder/xmlSpecifications/actualFile.txt");
 		assertEquals(FileUtils.readFile(actual), FileUtils.readFile(expected));
     }
 
@@ -68,10 +65,10 @@ class OutputPUMLTest_classdia
     void testCreatePUMLfromFile() throws IOException
     {
 		// TODO Aendern der Filepaths bevor Test (je nach System)
-		File expected = new File("/home/patrick/Studium/Code/puml/code/testfolder/xmlSpecifications/ClassDiagram.png");
+		File expected = new File("../code/testfolder/xmlSpecifications/ClassDiagram.png");
 		OutputPUML output = new OutputPUML();
-		output.createPUMLfromFile("/home/patrick/Studium/Code/puml/code/testfolder/xmlSpecifications/ClassDiagram.txt", "/home/patrick/Studium/Code/puml/code/testfolder/xmlSpecifications/ClassD_fromFile.png");
-		File actual = new File("/home/patrick/Studium/Code/puml/code/testfolder/xmlSpecifications/ClassD_fromFile.png");
+		output.createPUMLfromFile("../code/testfolder/xmlSpecifications/ClassDiagram.txt", "../code/testfolder/xmlSpecifications/ClassD_fromFile.png");
+		File actual = new File("../code/testfolder/xmlSpecifications/ClassD_fromFile.png");
 		assertEquals(FileUtils.readFile(actual), FileUtils.readFile(expected));
 	}
 	
@@ -79,15 +76,15 @@ class OutputPUMLTest_classdia
     void testCreatePUMLfromString() throws IOException, ParserConfigurationException, SAXException
     {
 	// TODO Aendern der Filepaths bevor Test (je nach System)
-	File expected = new File("/home/patrick/Studium/Code/puml/code/testfolder/xmlSpecifications/ClassDiagram.png");
+	File expected = new File("../code/testfolder/xmlSpecifications/ClassDiagram.png");
 	OutputPUML output = new OutputPUML();
 	try {
-		output.createPUMLfromString("/home/patrick/Studium/Code/puml/code/testfolder/xmlSpecifications/ClassD_fromString.png", output.getPUML(getDoc()));
+		output.createPUMLfromString("../code/testfolder/xmlSpecifications/ClassD_fromString.png", output.getPUML(getDoc()));
 	} catch (XPathExpressionException | IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-	File actual = new File("/home/patrick/Studium/Code/puml/code/testfolder/xmlSpecifications/ClassD_fromString.png");
+	File actual = new File("../code/testfolder/xmlSpecifications/ClassD_fromString.png");
 	assertEquals(FileUtils.readFile(actual), FileUtils.readFile(expected));
     }
 }
