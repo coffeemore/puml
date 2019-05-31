@@ -2,12 +2,15 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="srcTest"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+<<<<<<< HEAD
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+=======
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/java-11-openjdk-amd64">
+>>>>>>> ab64814ba9524f6b9422ba35921985f5bdd67eb2
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry excluding="CodeJavaTest.java|CodeJavaTest1.java" kind="src" path="testfolder"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/PUMLlib"/>
 	<classpathentry kind="lib" path="lib/plantuml.jar"/>
@@ -16,12 +19,19 @@
 	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-test-sources.jar"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-tests.jar"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4.jar"/>
-<<<<<<< HEAD
-	<classpathentry kind="lib" path="lib/swt-linux-x86_64-4.9.jar"/>
-	<classpathentry kind="lib" path="swing2swt.jar"/>
-=======
 	<classpathentry kind="lib" path="swing2swt.jar"/>
 	<classpathentry kind="lib" path="lib/swt-win32-x86_64-4.9.jar"/>
->>>>>>> a3070491dff03bfb227c5048eb99a8ce65dec255
+	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-core-2.6.2.jar"/>
+	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-core-2.6.2-javadoc.jar"/>
+	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-core-2.6.2-sources.jar"/>
+	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-core-2.6.2-tests.jar"/>
+	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-matchers-2.6.2.jar"/>
+	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-matchers-2.6.2-javadoc.jar"/>
+	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-matchers-2.6.2-sources.jar"/>
+	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-matchers-2.6.2-tests.jar"/>
+	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-placeholders-2.6.2.jar"/>
+	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-placeholders-2.6.2-javadoc.jar"/>
+	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-placeholders-2.6.2-sources.jar"/>
+	<classpathentry kind="lib" path="/home/patrick/Studium/Code/puml/code/lib/xmlunit-2.6.2/xmlunit-placeholders-2.6.2-tests.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

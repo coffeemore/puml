@@ -1,6 +1,7 @@
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -23,43 +24,40 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
 /**
  * 
  * @author Klasse fuer Unterstuetzungsfunktionen zur XML Handhabung
  */
 public class XmlHelperMethods
 {
+    private XPath xpath;
+    private XPathFactory xPathfactory;
+
     /**
      * Konstruktor
      */
     public XmlHelperMethods()
     {
-
+	this.xPathfactory = XPathFactory.newInstance();
+	this.xpath = xPathfactory.newXPath();
     }
-
     /**
      * Konvertiert xml Datei in String
-     * 
      * @param xmlDoc lesende Datei
      */
     public String xmlDocToString(Document xmlDoc)
     {
 	return new String();
     }
-
     /**
      * loescht einzelnen Knoten aus xml Datei
-     * 
      * @param Knoten eines Elements
      * @param        true = Unterknoten werden nicht gelöscht; false = Unterknoten
      *               werden mit gelöscht
      */
     public void delNode(Element nodeName, boolean keepChildNodes)
     {
-
     }
-
     /**
      * Hilfsmethode zum Laden eines XML-Documents fuer diverse Zwecke
      * 
@@ -86,7 +84,6 @@ public class XmlHelperMethods
 	}
 	return null;
     }
-
     /**
      * Hilfsmethode zum Ausgeben eines XML-Documents in der Console
      * 
@@ -144,6 +141,39 @@ public class XmlHelperMethods
 	}
     }
 
+    public void removeComments(Element root)
+    {
+	if (root.hasChildNodes())
+	{
+	    NodeList list = root.getChildNodes();
+	    for (int i = 0; i < list.getLength(); i++)
+	    {
+		Node node = list.item(i);
+
+		if (node.getNodeType() == Node.ELEMENT_NODE)
+		{
+		    Element e = (Element) node;
+		    removeComments(e);
+		} else if (node.getNodeType() == Node.COMMENT_NODE)
+		{
+		    root.removeChild(node);
+		}
+	    }
+	}
+    }
+
+    public String removeWhitespace(Document seq) throws TransformerException
+    {
+	StringWriter sw = new StringWriter();
+	TransformerFactory tf = TransformerFactory.newInstance();
+	Transformer transformer = tf.newTransformer();
+	transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+	transformer.transform(new DOMSource(seq), new StreamResult(sw));
+	String s = sw.toString();
+	String m = s.replaceAll("\\s+\\n", "\n");
+	return m;
+    }
+
     /**
      * Funktion zum Suchen aller Knoten mit einem bestimmten Pfad
      * 
@@ -153,12 +183,10 @@ public class XmlHelperMethods
      * @return - NodeList aller gefundenen Knoten
      * @throws XPathExpressionException
      */
-    public NodeList getList(Document doc, String path) throws XPathExpressionException
+    public NodeList getList(Node doc, String path) throws XPathExpressionException 
     {
-	XPathFactory xPathfactory = XPathFactory.newInstance();
-	XPath xpath = xPathfactory.newXPath();
-	XPathExpression expr = xpath.compile(path);
-	NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+        	XPathExpression expr = this.xpath.compile(path);
+        	NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 
 	return list;
     }
