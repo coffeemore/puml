@@ -59,7 +59,7 @@ public class CodeCollector
      * @return String, der den vollständigen Quellcode enthält
      */
     @SuppressWarnings("unchecked")
-    public String getSourceCode()
+    public ArrayList<String> getSourceCode()
     {
 	String sc = new String();
 	BufferedReader buffr = null;
@@ -101,13 +101,17 @@ public class CodeCollector
 	    if (useJavaFiles && !useJarFiles)
 	    {
 		// sammelt den Quellcode aus den Java-Dateien ein
-		return (collectJava(buffr, filer));
+		ArrayList<String> result = new ArrayList<String>();
+		result.add(collectSimpleFiles(buffr, filer, ".java"));
+		return (result);
 	    } else
 	    {
 		if (!useJavaFiles && useJarFiles)
 		{
 		    // sammelt den Quellcode aus den Jar-Dateien ein
-		    return (collectJar(buffr, zFile));
+		    ArrayList<String> result = new ArrayList<String>();
+		    result.add(collectJar(buffr, zFile));
+		    return (result);
 		}
 		/**
 		 * wenn useJavaFiles und useJarFiles beide auf true oder false gesetzt sind bzw.
@@ -118,9 +122,11 @@ public class CodeCollector
 		    // sammelt den Quellcode aus den Jar- und Java-Dateien ein
 		    if (useJavaFiles && useJarFiles)
 		    {
-			sc = collectJava(buffr, filer);
+			sc = collectSimpleFiles(buffr, filer, ".java");
 			sc += collectJar(buffr, zFile);
-			return sc;
+			ArrayList<String> result = new ArrayList<String>();
+			result.add(sc);
+			return result;
 		    } else
 		    {
 			// wirft Exception, falls useJavaFiles und useJarFiles auf false stehen
@@ -136,61 +142,6 @@ public class CodeCollector
 	{
 	    throw new NullPointerException();
 	}
-    }
-
-    /**
-     * Java-Dateien werden in einen String eingelesen
-     * 
-     * @param sc    - String zum Einsammeln
-     * @param filer - FileReader zum Einlesen der Dateien
-     * @param buffr - BufferedReader zum Buffern der eingelesenen Dateien
-     * @return sc (eingelesener String)
-     */
-    private String collectJava(BufferedReader buffr, FileReader filer)
-    {
-	String sc = new String();
-	// Schleife, die paths-Einträge durchgeht
-	for (int i = 0; i < paths.size(); i++)
-	{
-	    // Dateien werden über Pfade eingelesen und gebuffert
-	    try
-	    {
-		// alle Java-Dateien werden eingelesen
-		if (paths.get(i).endsWith(".java"))
-		{
-		    filer = new FileReader(paths.get(i));
-		    buffr = new BufferedReader(filer);
-		    String currLine;
-
-		    while ((currLine = buffr.readLine()) != null)
-		    {
-			sc += currLine;
-			sc += "\n";
-		    }
-		}
-	    } catch (IOException e)
-	    {
-		e.printStackTrace();
-	    } finally
-	    {
-		// BufferedReader und FileReader werden geschlossen
-		try
-		{
-		    if (filer != null)
-		    {
-			filer.close();
-		    }
-		    if (buffr != null)
-		    {
-			buffr.close();
-		    }
-		} catch (IOException ex)
-		{
-		    ex.printStackTrace();
-		}
-	    }
-	}
-	return sc;
     }
 
     /**
@@ -274,7 +225,39 @@ public class CodeCollector
 	return sc;
     }
 
-    private String collectCppAndHpp(BufferedReader buffr, FileReader filer)
+    /**
+     * C++- Dateien werden eingelesen (erst .hpp, dann .cpp) und in eine ArrayList
+     * geschrieben
+     * 
+     * @param buffr
+     * @param filer
+     * @return ArrayList mit den Strings aus hpp- und cpp-Dateien
+     */
+    private ArrayList<String> collectCppAndHpp(BufferedReader buffr, FileReader filer)
+    {
+	ArrayList<String> result = new ArrayList<String>();
+	result.add(collectSimpleFiles(buffr, filer, ".hpp"));
+	result.add(collectSimpleFiles(buffr, filer, ".cpp"));
+	return result;
+    }
+
+//    private String collectCppAndHpp(BufferedReader buffr, FileReader filer)
+//    {
+//	String result;
+//	result = collectSimpleFiles( buffr,  filer, ".hpp") + collectSimpleFiles( buffr,  filer, ".cpp");
+//	return result;
+//    }
+
+    /**
+     * Quellcode-Dateien werden in einen String eingelesen
+     * 
+     * @param filer     - FileReader zum Einlesen der Dateien
+     * @param buffr     - BufferedReader zum Buffern der eingelesenen Dateien
+     * @param extension - Endung der Dateien, die eingesammelt werden sollen
+     * @return - String mit Dateiinhalt
+     */
+
+    private String collectSimpleFiles(BufferedReader buffr, FileReader filer, String extension)
     {
 	String sc = new String();
 	// Schleife, die paths-Einträge durchgeht
@@ -283,48 +266,8 @@ public class CodeCollector
 	    // Dateien werden über Pfade eingelesen und gebuffert
 	    try
 	    {
-		// alle Hpp-Dateien werden eingelesen
-		if (paths.get(i).endsWith(".hpp"))
-		{
-		    filer = new FileReader(paths.get(i));
-		    buffr = new BufferedReader(filer);
-		    String currLine;
-
-		    while ((currLine = buffr.readLine()) != null)
-		    {
-			sc += currLine;
-			sc += "\n";
-		    }
-		}
-	    } catch (IOException e)
-	    {
-		e.printStackTrace();
-	    } finally
-	    {
-		// BufferedReader und FileReader werden geschlossen
-		try
-		{
-		    if (filer != null)
-		    {
-			filer.close();
-		    }
-		    if (buffr != null)
-		    {
-			buffr.close();
-		    }
-		} catch (IOException ex)
-		{
-		    ex.printStackTrace();
-		}
-	    }
-	}
-	for (int i = 0; i < paths.size(); i++)
-	{
-	    // Dateien werden über Pfade eingelesen und gebuffert
-	    try
-	    {
-		// alle Cpp-Dateien werden eingelesen
-		if (paths.get(i).endsWith(".cpp"))
+		// alle extension-Dateien werden eingelesen
+		if (paths.get(i).endsWith(extension))
 		{
 		    filer = new FileReader(paths.get(i));
 		    buffr = new BufferedReader(filer);
