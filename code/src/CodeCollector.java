@@ -55,7 +55,7 @@ public class CodeCollector
     public String getSourceCode()
     {
 	String sc = new String();
-	BufferedReader buffr = null;
+	BufferedReader buffr = null;  
 	FileReader filer = null;
 	ZipFile zFile = null;
 	File file = null;
