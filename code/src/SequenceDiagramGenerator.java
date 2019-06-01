@@ -21,15 +21,15 @@ public class SequenceDiagramGenerator
     XmlHelperMethods xmlHM = new XmlHelperMethods();
     String dataClassDef = "/source/classdefinition/";
     String seqMethodDef = "/parsed/sequencediagram/methoddefinition";
-    //ArrayList<String> usedClasses = new ArrayList<String>();
-    //ArrayList<String> usedMethods = new ArrayList<String>();
+    // ArrayList<String> usedClasses = new ArrayList<String>();
+    // ArrayList<String> usedMethods = new ArrayList<String>();
 
     // Liste für bereits aufgerufene Methoden
     ArrayList<ArrayList<String>> calledMethodsList = new ArrayList<ArrayList<String>>();
-     
+
     // Liste mit allen Klassen und ihren zugeordneten Methoden
     ArrayList<ArrayList<String>> classesWithMethodsList = new ArrayList<ArrayList<String>>();
- 
+
     /**
      * Konstruktor
      */
@@ -62,7 +62,7 @@ public class SequenceDiagramGenerator
 	seqDiagramm.appendChild(root);
 	Element seq = seqDiagramm.createElement("sequencediagram");
 	root.appendChild(seq);
-	
+
 	createList(parsedData, classesWithMethodsList);
 	listClasses(parsedData, seqDiagramm, seq);
 
@@ -83,9 +83,9 @@ public class SequenceDiagramGenerator
 	seqDiagramm = deleteInstancesNotInMethodcalls(seqDiagramm);
 
 	addType(parsedData, seqDiagramm, seq, epClass);
-	
-	deleteUnusedMethods(seqDiagramm, classesWithMethodsList, calledMethodsList, epClass);
-	
+
+	deleteUnusedClassesAndMethods(seqDiagramm, epClass);
+
 	xmlHM.removeComments(root);
 	xmlHM.writeDocumentToConsole(seqDiagramm);
 
@@ -387,7 +387,6 @@ public class SequenceDiagramGenerator
     private void recursiveHandlelocalInstances(Document doc, Node currentNode, String instanceName,
 	    String instanceClass)
     {
-	// TODO
 	// lokale Instanz ist in späteren Siblings gültig
 	Node current = currentNode;
 	while (!(current.getNextSibling() == null))
@@ -442,9 +441,9 @@ public class SequenceDiagramGenerator
 
 	    String currentMethod = xmlHM.getList(seqMethodDefNode, "./name").item(0).getTextContent();
 	    String currentClass = xmlHM.getList(seqMethodDefNode, "./class").item(0).getTextContent();
-	 
+
 	    NodeList seqMethodCallList = xmlHM.getList(seqMethodDefNode, ".//methodcall");
-	    
+
 	    for (int n = 0; n < seqMethodCallList.getLength(); n++)
 	    {
 		Node seqMethodCallNode = seqMethodCallList.item(n);
@@ -474,7 +473,7 @@ public class SequenceDiagramGenerator
 		{
 		    calledInstance = instanceNode.getTextContent();
 		}
-		
+
 		/**
 		 * type - handled
 		 */
@@ -568,7 +567,7 @@ public class SequenceDiagramGenerator
 		} else
 		{
 		    // Funktion zur Prüfung verschachtelter Rekursion
-		     recursiveLoop(type, currentMethod, seqMethodDefList, m, typeNode);
+		    recursiveLoop(type, currentMethod, seqMethodDefList, m, typeNode);
 		}
 	    }
 	}
@@ -648,45 +647,85 @@ public class SequenceDiagramGenerator
 	}
     }
 
-    private void deleteUnusedMethods(Document Doc, ArrayList<ArrayList<String>> classesWithMethods,
-	    ArrayList<ArrayList<String>> calledMethods, String epClass) throws XPathExpressionException
+    private void deleteUnusedClassesAndMethods(Document Doc, String epClass) throws XPathExpressionException
+    {
+	deleteUnusedClasses(Doc, epClass);
+	deleteUnusedMethods(Doc);
+    }
+
+    private void deleteUnusedClasses(Document Doc, String epClass) throws XPathExpressionException
     {
 	/**
-	 * classesWithMethods: pro Eintrag in äußerer ArrayList: erster Eintrag
-	 * Klassenname, folgende sind die Methodennamen
-	 * 
-	 * calledMethods: pro Eintrag in äußerer ArrayList: List [0] -> Klassenname;
+	 * calledMethodsList: pro Eintrag in äußerer ArrayList: List [0] -> Klassenname;
 	 * List [1] -> Methodenname; List [2] -> Instanz (ggf)
 	 */
+	// ungenutzte Klassen löschen
 	// Liste aller genutzten Klassen erstellen
 	ArrayList<String> usedClasses = new ArrayList<String>();
 	usedClasses.add(epClass);
-	for (int i = 0; i < calledMethods.size(); i++)
+	for (int i = 0; i < calledMethodsList.size(); i++)
 	{
-	    if ((!usedClasses.contains(calledMethods.get(i).get(0))) && !calledMethods.get(i).get(0).equals(" "))
+	    String currentClassName = calledMethodsList.get(i).get(0);
+	    if ((!usedClasses.contains(currentClassName)) && !currentClassName.equals(" "))
 	    {
-		usedClasses.add(calledMethods.get(i).get(0));
+		usedClasses.add(currentClassName);
 	    }
 	}
-	
-	//System.out.println("calledMethods :" + calledMethods);
-	//System.out.println("usedClasses :" + usedClasses);
-	
-	//Liste der Klassen im xml-Doc
+
+	// System.out.println("calledMethods :" + calledMethods);
+	// System.out.println("usedClasses :" + usedClasses);
+
+	// Liste der Klassen im xml-Doc
 	NodeList classesinDoc = xmlHM.getList(Doc, "/parsed/sequencediagram/classes/entry");
-		
-	//alle classDefinitions, deren Methoden nicht im Sequenzdiagramm auftauchen, werden gelöscht
-	for (int j =0; j<classesinDoc.getLength(); j++) {
-	    Node currentNode = classesinDoc.item(j);
-	    String classname = currentNode.getTextContent();
-	    if (! usedClasses.contains(classname)) {
+
+	// alle classDefinitions, deren Methoden nicht im Sequenzdiagramm auftauchen,
+	// werden gelöscht
+	for (int j = 0; j < classesinDoc.getLength(); j++)
+	{
+	    Node currentClass = classesinDoc.item(j);
+	    String classname = currentClass.getTextContent();
+	    if (!usedClasses.contains(classname))
+	    {
 //		Doc.removeChild(classesinDoc.item(j));
-		currentNode.getParentNode().removeChild(currentNode);
+		currentClass.getParentNode().removeChild(currentClass);
 	    }
 	}
-	//TODO : delete unused methods 
-	
-	
+    }
+
+    private void deleteUnusedMethods(Document Doc) throws XPathExpressionException
+    {
+	// ungenutzte Methoden löschen
+	// alle im SeqDia vorkommenden Methoden
+	NodeList methodsinDoc = xmlHM.getList(Doc, "/parsed/sequencediagram/methoddefinition");
+	for (int k = 0; k < methodsinDoc.getLength(); k++)
+	{
+	    Node currentMethod = methodsinDoc.item(k);
+	    String methodName = xmlHM.getChildwithName(currentMethod, "name").getTextContent();
+	    String methodClass = xmlHM.getChildwithName(currentMethod, "class").getTextContent();
+	    if (!methodWasUsed(methodName, methodClass))
+	    {
+		currentMethod.getParentNode().removeChild(currentMethod);
+	    }
+	}
+    }
+
+    private boolean methodWasUsed(String methodName, String methodClass)
+    {
+	/**
+	 * calledMethodsList: pro Eintrag in äußerer ArrayList: List [0] -> Klassenname;
+	 * List [1] -> Methodenname; List [2] -> Instanz (ggf)
+	 */
+	for (int i = 0; i < calledMethodsList.size(); i++)
+	{
+	    String currentMethodName = calledMethodsList.get(i).get(1);
+	    String currentMethodClass = calledMethodsList.get(i).get(0);
+	    if (currentMethodName.equals(methodName) && currentMethodClass.equals(methodClass))
+	    {
+		return true;
+	    }
+	}
+
+	return false;
     }
 
 //    public void listArrayList(ArrayList<ArrayList<String>> list2)
