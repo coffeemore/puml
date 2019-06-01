@@ -322,6 +322,8 @@ public class SequenceDiagramGenerator
 	// in jeder Methoddefinition wird nach Methodcalls gesucht
 	for (int m = 0; m < seqMethodDefList.getLength(); m++)
 	{
+	    //int f = 0;
+	    //ArrayList<ArrayList<String>> recursiveList = new ArrayList<ArrayList<String>>();
 	    Node seqMethodDefNode = seqMethodDefList.item(m);
 	    if (seqMethodDefNode.getNodeType() == Node.ELEMENT_NODE)
 	    {
@@ -448,6 +450,10 @@ public class SequenceDiagramGenerator
 						type.setTextContent("recursive");
 						seqMethodCallEl.appendChild(type);
 						d++;
+						//recursiveList.add(f, new ArrayList<String>());
+					    	//recursiveList.get(f).add(calledClass);
+					    	//recursiveList.get(f).add(calledMethod);
+					   	//f++;
 					    }
 					}
 				    }
@@ -455,6 +461,27 @@ public class SequenceDiagramGenerator
 			    }
 			} else
 			{
+			//		    recursiveList.add(f, new ArrayList<String>());
+//		    recursiveList.get(f).add(calledClass);
+//		    recursiveList.get(f).add(calledMethod);
+//		   
+//		    // recursiveList.get(f).add(calledInstance);
+//		    f++;
+//
+//		    for (int i = 0; i < recursiveList.size(); i++)
+//		    {
+//			String recEl = recursiveList.get(i).get(1);
+//			String recCl = recursiveList.get(i).get(0);
+//			// String recIn = recursiveList.get(i).get(2);
+//			//System.out.println(currentMethod + " - " + currentClass);
+//			//System.out.println(recEl + " + " + recCl);
+//			if (currentMethod.equals(recEl) && currentClass.equals(recCl))
+//			{
+//			    type.setTextContent("recursive2");
+//			    xmlHM.getList(seqMethodCallNode, ".").item(i).appendChild(type);
+//			    //seqMethodCallList.item(i).appendChild(type);
+//			}
+//		    }
 			    // Funktion zur Prüfung verschachtelter Rekursion
 			    recursiveLoop(type, currentMethod, seqMethodDefList, m);
 			}

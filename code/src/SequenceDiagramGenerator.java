@@ -10,7 +10,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 
 /**
@@ -25,7 +24,7 @@ public class SequenceDiagramGenerator
     //ArrayList<String> usedClasses = new ArrayList<String>();
     //ArrayList<String> usedMethods = new ArrayList<String>();
 
-// Liste für bereits aufgerufene Methoden
+    // Liste für bereits aufgerufene Methoden
     ArrayList<ArrayList<String>> calledMethodsList = new ArrayList<ArrayList<String>>();
      
     // Liste mit allen Klassen und ihren zugeordneten Methoden
@@ -63,7 +62,8 @@ public class SequenceDiagramGenerator
 	seqDiagramm.appendChild(root);
 	Element seq = seqDiagramm.createElement("sequencediagram");
 	root.appendChild(seq);
-
+	
+	createList(parsedData, classesWithMethodsList);
 	listClasses(parsedData, seqDiagramm, seq);
 
 	Element entrypoint = seqDiagramm.createElement("entrypoint");
@@ -227,7 +227,6 @@ public class SequenceDiagramGenerator
 
 	    String cname = xmlHM.getChildwithName(cList.item(i), "name").getTextContent();
 	    instanceList.get(i).add(0, cname); // der Klassenname wird der InstanceList hinzugefügt
-
 	}
 
 	// alle Klassen werden durchgegangen
@@ -275,7 +274,6 @@ public class SequenceDiagramGenerator
 	    }
 	}
 	return instanceList;
-
     }
 
     /**
@@ -296,7 +294,6 @@ public class SequenceDiagramGenerator
 	    {
 		for (int j = 0; j < instanceList.get(i).size(); j++)
 		{
-
 		    if (instanceList.get(i).get(j).equals(iname))
 		    {
 			String cname = instanceList.get(i).get(0);
@@ -306,7 +303,6 @@ public class SequenceDiagramGenerator
 	    }
 	}
 	return " ";
-
     }
 
     /**
@@ -347,7 +343,6 @@ public class SequenceDiagramGenerator
 	{
 	    e.printStackTrace();
 	}
-
 	return doc;
     }
 
@@ -361,11 +356,9 @@ public class SequenceDiagramGenerator
      */
     public Document handleLocalInstances(Document doc) throws XPathExpressionException
     {
-
 	NodeList iList = xmlHM.getList(doc, "//instance");
 	for (int i = 0; i < iList.getLength(); i++)
 	{
-
 	    // Instanzen nicht direkt unterhalb v methodcalls -> lokale Instanzen
 	    if (!(iList.item(i).getParentNode().getNodeName().equals("methodcall")
 		    || iList.item(i).getParentNode().getNodeName().equals("classdefinition")))
@@ -376,10 +369,8 @@ public class SequenceDiagramGenerator
 		String instanceClass = xmlHM.getChildwithName(currentI, "class").getTextContent();
 
 		recursiveHandlelocalInstances(doc, currentI, instanceName, instanceClass);
-
 	    }
 	}
-
 	return doc;
     }
 
@@ -416,7 +407,6 @@ public class SequenceDiagramGenerator
 		    classTag.setTextContent(instanceClass);
 		    instanceNode.getParentNode().appendChild(classTag);
 		}
-
 	    }
 	    if (current.hasChildNodes() && !current.getNodeName().equals("methodcall"))
 	    {
@@ -428,7 +418,6 @@ public class SequenceDiagramGenerator
 	    }
 	    current = current.getNextSibling();
 	}
-
     }
 
     /**
@@ -443,38 +432,22 @@ public class SequenceDiagramGenerator
     private void addType(Document parsedData, Document seqDiagramm, Element seq, String epClass)
 	    throws XPathExpressionException
     {
-	/**
-	 * String dataClassDef = "/source/classdefinition/"; String seqMethodDef =
-	 * "/parsed/sequencediagram/methoddefinition";
-	 */
-	// Liste mit allen Klassen und ihren zugeordneten Methoden
-	ArrayList<ArrayList<String>> classesWithMethodsList = new ArrayList<ArrayList<String>>();
-	createList(parsedData, classesWithMethodsList);
-	// listArrayList(classesWithMethodsList);
-
-//	// Liste fÃ¼r bereits aufgerufene Methoden
-//	ArrayList<ArrayList<String>> calledMethodsList = new ArrayList<ArrayList<String>>();
-
 	// alle Methoddefinitions in SeqDiagram
 	NodeList seqMethodDefList = xmlHM.getList(seqDiagramm, seqMethodDef);
 
 	// in jeder Methoddefinition wird nach Methodcalls gesucht
 	for (int m = 0; m < seqMethodDefList.getLength(); m++)
 	{
-	    int f = 0;
-	    ArrayList<ArrayList<String>> recursiveList = new ArrayList<ArrayList<String>>();
-
 	    Node seqMethodDefNode = seqMethodDefList.item(m);
 
 	    String currentMethod = xmlHM.getList(seqMethodDefNode, "./name").item(0).getTextContent();
 	    String currentClass = xmlHM.getList(seqMethodDefNode, "./class").item(0).getTextContent();
-	    // Element seqMethodDefEl = (Element) seqMethodDefNode;
+	 
 	    NodeList seqMethodCallList = xmlHM.getList(seqMethodDefNode, ".//methodcall");
 	    
 	    for (int n = 0; n < seqMethodCallList.getLength(); n++)
 	    {
 		Node seqMethodCallNode = seqMethodCallList.item(n);
-		// System.out.println(seqMethodCallList.getLength());
 		Node classNode = xmlHM.getList(seqMethodCallNode, "class").item(0);
 		Node instanceNode = xmlHM.getList(seqMethodCallNode, "instance").item(0);
 		Node typeNode = xmlHM.getList(seqMethodCallNode, "type").item(0);
@@ -512,7 +485,6 @@ public class SequenceDiagramGenerator
 		// verglichen
 		for (int i = 0; i < calledMethodsList.size(); i++)
 		{
-
 		    String calledEl = calledMethodsList.get(i).get(1);
 		    String calledCl = calledMethodsList.get(i).get(0);
 		    String calledIn = calledMethodsList.get(i).get(2);
@@ -523,7 +495,6 @@ public class SequenceDiagramGenerator
 			seqMethodCallNode.appendChild(type);
 			a++;
 		    }
-
 		}
 		calledMethodsList.add(e, new ArrayList<String>());
 		calledMethodsList.get(e).add(calledClass);
@@ -569,11 +540,6 @@ public class SequenceDiagramGenerator
 		 * type - recursive
 		 */
 		int d = 0;
-
-//		System.out.println(currentMethod + " + " + currentClass);
-//		System.out.println(calledMethod + " + " + calledClass);
-		// String currentInstance = xmlHM.getList(seqMethodDefNode, "")
-		// System.out.println();
 		if (calledMethod.equals(currentMethod) && calledClass.equals(currentClass))
 		{
 		    // Test, ob instance-Tag oder class-Tag vorhanden
@@ -591,14 +557,9 @@ public class SequenceDiagramGenerator
 				    // verglichen
 				    if (calledMethod.equals(classesWithMethodsList.get(i).get(j)) && (d == 0))
 				    {
-					// System.out.println("Tag");
 					type.setTextContent("recursive");
 					seqMethodCallNode.appendChild(type);
 					d++;
-					recursiveList.add(f, new ArrayList<String>());
-					    recursiveList.get(f).add(calledClass);
-					    recursiveList.get(f).add(calledMethod);
-					    f++;
 				    }
 				}
 			    }
@@ -606,35 +567,6 @@ public class SequenceDiagramGenerator
 		    }
 		} else
 		{
-		   
-//		    recursiveList.add(f, new ArrayList<String>());
-//		    recursiveList.get(f).add(calledClass);
-//		    recursiveList.get(f).add(calledMethod);
-//		   
-//		    // recursiveList.get(f).add(calledInstance);
-//		    f++;
-//
-//		    for (int i = 0; i < recursiveList.size(); i++)
-//		    {
-//			String recEl = recursiveList.get(i).get(1);
-//			String recCl = recursiveList.get(i).get(0);
-//			// String recIn = recursiveList.get(i).get(2);
-//			//System.out.println(currentMethod + " - " + currentClass);
-//			//System.out.println(recEl + " + " + recCl);
-//			if (currentMethod.equals(recEl) && currentClass.equals(recCl))
-//			{
-//			    type.setTextContent("recursive2");
-//			    xmlHM.getList(seqMethodCallNode, ".").item(i).appendChild(type);
-//			    //seqMethodCallList.item(i).appendChild(type);
-//			}
-//		    }
-		    /**
-		     * calledMethodsList.add(e, new ArrayList<String>());
-		     * calledMethodsList.get(e).add(calledClass);
-		     * calledMethodsList.get(e).add(calledMethod);
-		     * calledMethodsList.get(e).add(calledInstance);
-		     */
-
 		    // Funktion zur Prüfung verschachtelter Rekursion
 		     recursiveLoop(type, currentMethod, seqMethodDefList, m, typeNode);
 		}
@@ -650,23 +582,18 @@ public class SequenceDiagramGenerator
      * @param seqMethodDefList - Methoddefinition-Liste
      * @param m                - Index der Stelle in der Methoddefinition-Liste
      * @throws XPathExpressionException
-     * @throws DOMException
      */
     private void recursiveLoop(Element type, String currentMethod, NodeList seqMethodDefList, int m, Node typeNode)
-	    throws DOMException, XPathExpressionException
+	    throws XPathExpressionException
     {
 	// die Methodcalls der aufgerufenen Methoden werden auf Rekursivität geprüft
 	if (m < seqMethodDefList.getLength())
 	{
 	    Node defNode = seqMethodDefList.item(m);
-	    // System.out.println("recursive Loop");
-	    // Element defEl = (Element) defNode;
 	    NodeList callList = xmlHM.getList(defNode, ".//methodcall");
 	    for (int j = 0; j < callList.getLength(); j++)
 	    {
 		Node callNode = callList.item(j);
-
-		// Element callEl = (Element) callNode;
 		String called = xmlHM.getList(callNode, "method").item(0).getTextContent();
 		// die aktuell behandelte Methode wird mit den Methoden der Methodcalls
 		// verglichen
@@ -674,7 +601,6 @@ public class SequenceDiagramGenerator
 		{
 		    if (typeNode == null || typeNode.getNodeName().equals("type"))
 		    {
-			//callNode.removeChild(typeNode);
 			type.setTextContent("recursive");
 			callNode.appendChild(type);
 		    }
@@ -718,9 +644,7 @@ public class SequenceDiagramGenerator
 		{
 		    classesWithMethodsList.get(i).add(tmpMethod);
 		}
-
 	    }
-
 	}
     }
 
@@ -745,8 +669,8 @@ public class SequenceDiagramGenerator
 	    }
 	}
 	
-	System.out.println("calledMethods :" + calledMethods);
-	System.out.println("usedClasses :" + usedClasses);
+	//System.out.println("calledMethods :" + calledMethods);
+	//System.out.println("usedClasses :" + usedClasses);
 	
 	//Liste der Klassen im xml-Doc
 	NodeList classesinDoc = xmlHM.getList(Doc, "/parsed/sequencediagram/classes/entry");
@@ -765,12 +689,11 @@ public class SequenceDiagramGenerator
 	
     }
 
-    
-    public void listArrayList(ArrayList<ArrayList<String>> list2)
-    {
-	for (int i = 0; i < list2.size(); i++)
-	{
-	    System.out.println(list2.get(i));
-	}
-    }
+//    public void listArrayList(ArrayList<ArrayList<String>> list2)
+//    {
+//	for (int i = 0; i < list2.size(); i++)
+//	{
+//	    System.out.println(list2.get(i));
+//	}
+//    }
 }
