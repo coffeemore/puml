@@ -12,8 +12,13 @@ public class Class1 extends Class3 implements If1, If2
     
     public Class1(Class4 iClass4, Class5 iClass5)
     {
-	this.iClass4 = iClass4; //Aggregationen zu Class4
-	this.iClass5 = iClass5; //Aggregationen zu Class5
+	this.iClass4 = iClass4; //Kompositionen zu Class4
+	this.iClass5 = iClass5; //Agregation zu Class5
+    }
+    public Class1(Class4 iClass4)
+    {
+	this.iClass4 = iClass4; //Kompositionen zu Class4
+	
     }
     
     public int method1(int param1, int param2)
