@@ -400,13 +400,13 @@ public class ParserJava implements ParserIf
 		    interfaceName = interfaceName.strip();
 		    System.out.println("@interfaceName: " + interfaceName);
 
-		    Element classDefinition = document.createElement("classdefinition");
-		    Element classNameEl = document.createElement("name");
+		    Element ifDefinition = document.createElement("interfacedefinition");
+		    Element ifNameEl = document.createElement("name");
 
 		    // Element classElement = document.createElement("class");
-		    classNameEl.appendChild(document.createTextNode(interfaceName));
-		    classDefinition.appendChild(classNameEl);
-		    curNode.appendChild(classDefinition);
+		    ifNameEl.appendChild(document.createTextNode(interfaceName));
+		    ifDefinition.appendChild(ifNameEl);
+		    curNode.appendChild(ifDefinition);
 		    curNode = (Element) curNode.getLastChild();
 
 		    //////// Temporär///////
@@ -435,46 +435,279 @@ public class ParserJava implements ParserIf
 		}
 		;
 		////////////
-		if (curNode.getNodeName().equals("classdefinition"))
-		{
+		if (curNode.getNodeName().equals("classdefinition")
+			|| curNode.getNodeName().equals("interfacedefinition"))// &&
+		// (sourcec.charAt(0)==';'||sourcec.charAt(0)=='{')
+		{// TODO: funktionen in funktionen haben nicht klassen als eltern
+
 		    String[] nameArray = new String[1];
 		    nameArray[0] = "(";
 
 		    TokenResult res1 = goToTokenWithName(sourcec, nameArray);
-		    String functionData = res1.getData();
+		    String functionData = res1.getData().strip();
+
 		    String[] prefixRBrace = functionData.split(" ");
-		    
-		    if (prefixRBrace.length>3 || prefixRBrace.length<=1 )
-		    {
-			System.out.println("Keine Funktion");
-		    }
+
 		    switch (prefixRBrace.length)
 		    {
 		    case 0:
 			System.out.println("nichts");
 			break;
-		    case 1:
+		    case 1:// Funktionsaufruf oder Schleifen/Anweisungen
 			switch (prefixRBrace[0])
 			{
 			case "if":
-			    
-			    break;
+//			    break;
 			case "for":
-			    
-			    break;
+
+//			    break;
 			case "while":
-			    
-			    break;
+			    Element alternativeNode = document.createElement("alternative");
+			    Element caseNode = document.createElement("case");
+			    Element conditionNode = document.createElement("condition");
+			    curNode.appendChild(alternativeNode);
+			    alternativeNode.appendChild(caseNode);
+			    caseNode.appendChild(conditionNode);
 
+			    String[] nameArray2 = new String[1];
+			    nameArray2[0] = ")";
+			    TokenResult res = goToTokenWithName(sourcec, nameArray);
+			    conditionNode.appendChild(document.createTextNode(prefixRBrace[0] + res.getData()));
+			    sourcec = res.getSourceCode();
+			    break;
+			case "switch":
+
+			    break;
 			default:
-			    System.out.println("Funktionsaufruf");
+			    System.out.println("condition");
 			    break;
-			}		
+			}
 			break;
+		    case 2:// Konstruktor oder else if
+			switch (prefixRBrace[0])
+			{
+			case "else":
 
+			    break;
+			case "new":// Objekterzeugung
+			    String compAgr = "agregation";
+			    if (curNode.getNodeName().equals("classdefinition"))
+			    {
+				compAgr = "composition";
+			    }
+			    curNode.getElementsByTagName("composition");
+			    Element classObject = document.createElement(compAgr);
+			    curNode.appendChild(classObject);
+
+			    Element classObjectEl = document.createElement("entry");
+			    classObjectEl.appendChild(document.createTextNode(prefixRBrace[1]));
+			    classObject.appendChild(classObjectEl);
+			    // curNode = (Element) curNode.getLastChild();
+			    sourcec = res1.getSourceCode();
+			    break;
+			case "private":// privater Konstruktor
+			case "public": // Konstruktor
+			    if (prefixRBrace[1].equals(curNode.getElementsByTagName("name").item(0).getTextContent()))
+			    {
+				System.out.println("Konstruktor");
+				sourcec = res1.getSourceCode();
+				sourcec = sourcec.substring(1);
+				String[] nameArray2 = new String[2];
+				nameArray2[0] = ")";
+				nameArray2[1] = ",";
+				TokenResult res2;
+				Element classComposition = document.createElement("composition");
+				curNode.appendChild(classComposition);
+				do
+				{
+
+				    res2 = goToTokenWithName(sourcec, nameArray2);
+				    String functionData2 = res2.getData().strip();
+
+				    String[] argumentConstructor = functionData2.split(" ");
+				    if (argumentConstructor.length == 2)
+				    {
+					Element classCompositionEl = document.createElement("entry");
+					classComposition.appendChild(classCompositionEl);
+					classCompositionEl.appendChild(document.createTextNode(argumentConstructor[0]));
+				    }
+				    sourcec = res2.getSourceCode();
+				    sourcec = sourcec.substring(1);
+				}
+				while (res2.getFoundToken() != 0);
+				// curNode = (Element) curNode.getLastChild();
+				curlBrace++;
+			    }
+
+			    break;
+			default:
+			    System.out.println("Konstruktor oder else if");
+			    break;
+			}
+			break;
+		    case 3:// Funktionsdeklaration
+
+			if ((prefixRBrace[0].equals("public") || prefixRBrace[0].equals("private"))
+				&& !prefixRBrace[1].equals("class"))
+			{
+			    Element methoddefinitionNode = document.createElement("methoddefinition");
+			    Element nameNode = document.createElement("name");
+			    nameNode.appendChild(document.createTextNode(prefixRBrace[2]));
+			    methoddefinitionNode.appendChild(nameNode);
+			    curNode.appendChild(methoddefinitionNode);
+			    // ...
+			    // curNode = (Element) curNode.getLastChild();
+			    sourcec = res1.getSourceCode();
+			    sourcec = sourcec.substring(1);
+			    String[] nameArray2 = new String[2];
+			    nameArray2[0] = ")";
+			    nameArray2[1] = ",";
+			    TokenResult res2;
+			    Element parametersNode = document.createElement("parameters");
+
+			    do
+			    {
+
+				res2 = goToTokenWithName(sourcec, nameArray2);
+				String functionData2 = res2.getData().strip();
+
+				String[] parameterFunction = functionData2.split(" ");
+				if (parameterFunction.length == 2)
+				{
+				    Element entryPNode = document.createElement("entry");
+				    Element typePNode = document.createElement("type");
+				    Element namePNode = document.createElement("name");
+				    typePNode.appendChild(document.createTextNode(parameterFunction[0]));
+				    namePNode.appendChild(document.createTextNode(parameterFunction[1]));
+				    entryPNode.appendChild(typePNode);
+				    entryPNode.appendChild(namePNode);
+				    parametersNode.appendChild(entryPNode);
+				}
+				sourcec = res2.getSourceCode();
+				sourcec = sourcec.substring(1);
+			    }
+			    while (res2.getFoundToken() != 0);
+			    if (parametersNode.hasChildNodes())
+				methoddefinitionNode.appendChild(parametersNode);
+			    if (!prefixRBrace[1].equals("void"))
+			    {
+				Element resultNode = document.createElement("result");
+				resultNode.appendChild(document.createTextNode(prefixRBrace[1]));
+				methoddefinitionNode.appendChild(resultNode);
+			    }
+//			    sourcec = res1.getSourceCode();
+//			    curNode = (Element) curNode.getLastChild();
+			}
+			break;
+		    case 4:
+			if ((prefixRBrace[0].equals("public") || prefixRBrace[0].equals("private"))
+				&& prefixRBrace[1].equals("static"))
+			{
+			    Element methoddefinitionNode = document.createElement("methoddefinition");
+			    Element nameNode = document.createElement("name");
+			    nameNode.appendChild(document.createTextNode(prefixRBrace[3]));
+			    methoddefinitionNode.appendChild(nameNode);
+			    curNode.appendChild(methoddefinitionNode);
+			    // ...
+			    // curNode = (Element) curNode.getLastChild();
+
+			    // Parameter der Funktion bestimmen
+			    sourcec = res1.getSourceCode();
+			    sourcec = sourcec.substring(1);
+			    String[] nameArray2 = new String[2];
+			    nameArray2[0] = ")";
+			    nameArray2[1] = ",";
+			    TokenResult res2;
+			    Element parametersNode = document.createElement("parameters");
+			    do
+			    {
+
+				res2 = goToTokenWithName(sourcec, nameArray2);
+				String functionData2 = res2.getData().strip();
+
+				String[] parameterFunction = functionData2.split(" ");
+				if (parameterFunction.length == 2)
+				{
+				    Element entryPNode = document.createElement("entry");
+				    Element typePNode = document.createElement("type");
+				    Element namePNode = document.createElement("name");
+				    typePNode.appendChild(document.createTextNode(parameterFunction[0]));
+				    namePNode.appendChild(document.createTextNode(parameterFunction[1]));
+				    entryPNode.appendChild(typePNode);
+				    entryPNode.appendChild(namePNode);
+				    parametersNode.appendChild(entryPNode);
+				}
+				sourcec = res2.getSourceCode();
+				sourcec = sourcec.substring(1);
+			    }
+			    while (res2.getFoundToken() != 0);
+
+			    if (parametersNode.hasChildNodes())
+				methoddefinitionNode.appendChild(parametersNode);
+			    if (!prefixRBrace[2].equals("void"))
+			    {
+				Element resultNode = document.createElement("result");
+				resultNode.appendChild(document.createTextNode(prefixRBrace[2]));
+				methoddefinitionNode.appendChild(resultNode);
+			    }
+//			    sourcec = res1.getSourceCode();
+//			    curNode = (Element) curNode.getLastChild();
+			}
+			break;
+		    default:
+			System.out.println("Keine Funktion");
+			break;
+		    }
+		}
+		if (curNode.getNodeName().equals("methoddefinition"))
+		{
+		    String[] nameArray = new String[1];
+		    nameArray[0] = "(";
+
+		    TokenResult res1 = goToTokenWithName(sourcec, nameArray);
+		    String functionData = res1.getData().strip();
+
+		    String[] prefixRBrace = functionData.split(" ");
+
+		    switch (prefixRBrace.length)
+		    {
+		    case 0:
+			System.out.println("nichts");
+			break;
+		    case 1:// Funktionsaufruf oder Schleifen/Anweisungen
+			switch (prefixRBrace[0])
+			{
+			case "if":
+//			    break;
+			case "for":
+
+//			    break;
+			case "while":
+			    Element alternativeNode = document.createElement("alternative");
+			    Element caseNode = document.createElement("case");
+			    Element conditionNode = document.createElement("condition");
+			    curNode.appendChild(alternativeNode);
+			    alternativeNode.appendChild(caseNode);
+			    caseNode.appendChild(conditionNode);
+
+			    String[] nameArray2 = new String[1];
+			    nameArray2[0] = ")";
+			    TokenResult res = goToTokenWithName(sourcec, nameArray);
+			    conditionNode.appendChild(document.createTextNode(prefixRBrace[0] + res.getData()));
+			    sourcec = res.getSourceCode();
+			    break;
+			case "switch":
+
+			    break;
+			default:
+			    System.out.println("condition");
+			    break;
+			}
+			break;
 		    default:
 			break;
 		    }
+		}
 //		    else
 //		    {
 //			String returnType = res2.getData();
@@ -519,9 +752,9 @@ public class ParserJava implements ParserIf
 //			    System.out.println("Konstruktor");
 //			}
 
-	//	    }
+//		    }
 
-		}
+//		}
 
 		////////////
 
@@ -637,7 +870,9 @@ public class ParserJava implements ParserIf
 		}
 	    }
 	}
-	catch (Exception e)
+	catch (
+
+	Exception e)
 	{
 	    // TODO: handle exception
 	}
@@ -696,4 +931,3 @@ public class ParserJava implements ParserIf
 	return document;
     }
 }
-
