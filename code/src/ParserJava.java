@@ -436,7 +436,8 @@ public class ParserJava implements ParserIf
 		;
 		////////////
 		if (curNode.getNodeName().equals("classdefinition")
-			|| curNode.getNodeName().equals("interfacedefinition"))// &&
+			|| curNode.getNodeName().equals("interfacedefinition")||curNode.getNodeName().equals("methoddefinition")
+			|| curNode.getNodeName().equals("constructor"))// &&
 		// (sourcec.charAt(0)==';'||sourcec.charAt(0)=='{')
 		{// TODO: funktionen in funktionen haben nicht klassen als eltern
 
@@ -445,7 +446,8 @@ public class ParserJava implements ParserIf
 
 		    TokenResult res1 = goToTokenWithName(sourcec, nameArray);
 		    String functionData = res1.getData().strip();
-
+		    functionData=functionData.replaceAll("\n", " ");
+		    functionData=functionData.replaceAll(" +", " ");
 		    String[] prefixRBrace = functionData.split(" ");
 
 		    switch (prefixRBrace.length)
@@ -490,20 +492,19 @@ public class ParserJava implements ParserIf
 
 			    break;
 			case "new":// Objekterzeugung
-			    String compAgr = "agregation";
-			    if (curNode.getNodeName().equals("classdefinition"))
-			    {
-				compAgr = "composition";
-			    }
-			    curNode.getElementsByTagName("composition");
-			    Element classObject = document.createElement(compAgr);
-			    curNode.appendChild(classObject);
-
-			    Element classObjectEl = document.createElement("entry");
-			    classObjectEl.appendChild(document.createTextNode(prefixRBrace[1]));
-			    classObject.appendChild(classObjectEl);
-			    // curNode = (Element) curNode.getLastChild();
-			    sourcec = res1.getSourceCode();
+//			    String compAgr = "agregation";
+//			    if (curNode.getNodeName().equals("classdefinition"))
+//			    {
+//				compAgr = "composition";
+//			    }
+//			    Element classObject = document.createElement(compAgr);
+//			    curNode.appendChild(classObject);
+//
+//			    Element classObjectEl = document.createElement("entry");
+//			    classObjectEl.appendChild(document.createTextNode(prefixRBrace[1]));
+//			    classObject.appendChild(classObjectEl);
+//			    // curNode = (Element) curNode.getLastChild();
+//			    sourcec = res1.getSourceCode();
 			    break;
 			case "private":// privater Konstruktor
 			case "public": // Konstruktor
@@ -537,6 +538,18 @@ public class ParserJava implements ParserIf
 				while (res2.getFoundToken() != 0);
 				// curNode = (Element) curNode.getLastChild();
 				curlBrace++;
+
+				sourcec = sourcec.trim();
+				if (sourcec.charAt(0) == '{')
+				{
+				    sourcec = sourcec.substring(1);
+				    curlBrace++;
+				    Element constNode = document.createElement("constructor");
+				    curNode.appendChild(constNode);
+				    curNode = (Element) curNode.getLastChild();
+
+				}
+
 			    }
 
 			    break;
@@ -594,9 +607,19 @@ public class ParserJava implements ParserIf
 				Element resultNode = document.createElement("result");
 				resultNode.appendChild(document.createTextNode(prefixRBrace[1]));
 				methoddefinitionNode.appendChild(resultNode);
+
+			    }
+			    sourcec = sourcec.trim();
+			    if (sourcec.charAt(0) == '{')
+			    {
+				sourcec = sourcec.substring(1);
+				curlBrace++;
+				curNode = (Element) curNode.getLastChild();
+
 			    }
 //			    sourcec = res1.getSourceCode();
 //			    curNode = (Element) curNode.getLastChild();
+
 			}
 			break;
 		    case 4:
@@ -650,64 +673,54 @@ public class ParserJava implements ParserIf
 				resultNode.appendChild(document.createTextNode(prefixRBrace[2]));
 				methoddefinitionNode.appendChild(resultNode);
 			    }
+			    sourcec = sourcec.trim();
+			    if (sourcec.charAt(0) == '{')
+			    {
+				sourcec = sourcec.substring(1);
+				curlBrace++;
+				curNode = (Element) curNode.getLastChild();
+
+			    }
+
 //			    sourcec = res1.getSourceCode();
 //			    curNode = (Element) curNode.getLastChild();
+			    break;
+			}
+			
+			if ((prefixRBrace[1].equals("=") || prefixRBrace[2].equals("new")))
+			{
+			    //Instance-knoten erstellen
+			    Element instanceNode = document.createElement("instance");
+			    curNode.appendChild(instanceNode);
+			    Element instanceNNode = document.createElement("name");
+			    instanceNode.appendChild(instanceNNode);
+			    instanceNNode.appendChild(document.createTextNode(prefixRBrace[0]));
+			    Element instanceCNode = document.createElement("class");
+			    instanceNode.appendChild(instanceCNode);
+			    instanceCNode.appendChild(document.createTextNode(prefixRBrace[3]));
+			    
+			    
+			    //Composition-knoten erstellen
+			    Element classObject = document.createElement("composition");
+			    curNode.appendChild(classObject);
+
+			    Element classObjectEl = document.createElement("entry");
+			    classObjectEl.appendChild(document.createTextNode(prefixRBrace[3]));
+			    classObject.appendChild(classObjectEl);
+			    // curNode = (Element) curNode.getLastChild();
+			    sourcec = res1.getSourceCode();
+			    
+			    
 			}
 			break;
+
 		    default:
 			System.out.println("Keine Funktion");
 			break;
 		    }
 		}
-		if (curNode.getNodeName().equals("methoddefinition"))
-		{
-		    String[] nameArray = new String[1];
-		    nameArray[0] = "(";
 
-		    TokenResult res1 = goToTokenWithName(sourcec, nameArray);
-		    String functionData = res1.getData().strip();
 
-		    String[] prefixRBrace = functionData.split(" ");
-
-		    switch (prefixRBrace.length)
-		    {
-		    case 0:
-			System.out.println("nichts");
-			break;
-		    case 1:// Funktionsaufruf oder Schleifen/Anweisungen
-			switch (prefixRBrace[0])
-			{
-			case "if":
-//			    break;
-			case "for":
-
-//			    break;
-			case "while":
-			    Element alternativeNode = document.createElement("alternative");
-			    Element caseNode = document.createElement("case");
-			    Element conditionNode = document.createElement("condition");
-			    curNode.appendChild(alternativeNode);
-			    alternativeNode.appendChild(caseNode);
-			    caseNode.appendChild(conditionNode);
-
-			    String[] nameArray2 = new String[1];
-			    nameArray2[0] = ")";
-			    TokenResult res = goToTokenWithName(sourcec, nameArray);
-			    conditionNode.appendChild(document.createTextNode(prefixRBrace[0] + res.getData()));
-			    sourcec = res.getSourceCode();
-			    break;
-			case "switch":
-
-			    break;
-			default:
-			    System.out.println("condition");
-			    break;
-			}
-			break;
-		    default:
-			break;
-		    }
-		}
 //		    else
 //		    {
 //			String returnType = res2.getData();
@@ -908,6 +921,7 @@ public class ParserJava implements ParserIf
     public void parse(String sourceCode)
     {
 	sourceCode.trim();
+	//sourceCode = sourceCode.replaceAll("=", " = ");
 	System.out.println(sourceCode);
 	try
 	{
