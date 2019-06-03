@@ -124,9 +124,12 @@ public class ParserCPP implements ParserIf
      * @return XMl-Dokument
      * @throws ParserConfigurationException
      */
-	private void buildTree(String sourceCode) 
+	private void buildTree(String sourceCodeHPP,String sourceCodeCPP) 
 	{
 		// TODO 
+		//Zunächst HPP-Dateien durchgehen
+		
+		
 		
 	}
 	
@@ -169,7 +172,7 @@ public class ParserCPP implements ParserIf
     		//Filtern nach Kommentar mit /* */
     		else if(sourceCode.charAt(i) == '/' && sourceCode.charAt(i + 1) == '*')
     		{
-    			i+=2;;
+    			i+=2;
     			while(!(sourceCode.charAt(i) == '*' && sourceCode.charAt(i + 1) == '/') && i < n)
     			{
     				i++;
