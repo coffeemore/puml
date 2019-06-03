@@ -1,4 +1,6 @@
 import java.io.StringWriter;
+import java.util.ArrayList;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -918,14 +920,14 @@ public class ParserJava implements ParserIf
      * 
      * @param sourceCode Vollst�ndiger Java-Quellcode
      */
-    public void parse(String sourceCode)
+    public void parse(ArrayList<String> sourceCode)
     {
 	sourceCode.trim();
 	//sourceCode = sourceCode.replaceAll("=", " = ");
 	System.out.println(sourceCode);
 	try
 	{
-	    buildTree(sourceCode);
+	    buildTree(sourceCode.get(0));
 	}
 	catch (ParserConfigurationException e)
 	{

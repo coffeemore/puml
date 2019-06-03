@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
@@ -136,7 +138,7 @@ public class ParserCPP implements ParserIf
      * Liest den �bergebenen Quellcode ein und parsed die Informationen daraus
      * @param sourceCode Vollstaendiger Java-Quellcode
      */
-    public void parse(String sourceCode)
+    public void parse(ArrayList<String> sourceCode)
     {
     	//(automatisches)Entfernen von führenden oder folgenden Leerzeichen
 		sourceCode.trim();
