@@ -26,7 +26,7 @@ import javax.xml.transform.Source;
 		DefaultComparisonFormatter formatter = new DefaultComparisonFormatter();
 		//ComparisonListener listener = new ComparisonListener();
 		NodeMatcher nmatcher = new DefaultNodeMatcher();
-		DocumentBuilderFactory docbuild = null;
+		DocumentBuilderFactory docbuild = null; //?
 		Diff diff = DiffBuilder.compare(source).withTest(target)
 				.checkForSimilar().checkForIdentical() // [1]
 		        .ignoreComments()

@@ -4,8 +4,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 
-import ParserJava.TokenResult;
-
 public class ParserCPP implements ParserIf 
 {
 	private Document document;
@@ -15,7 +13,7 @@ public class ParserCPP implements ParserIf
      */
     public ParserCPP()
     {
-
+    	
     }
     
 	//Getter- und Settermethoden 
@@ -128,22 +126,23 @@ public class ParserCPP implements ParserIf
      * @return XMl-Dokument
      * @throws ParserConfigurationException
      */
-	private void buildTree(String sourceCode) 
+	private void buildTree(String sourceCodeHPP,String sourceCodeCPP) 
 	{
 		// TODO 
+		//Zunächst HPP-Dateien durchgehen
+		
+		
 		
 	}
 	
 	/**
-     * Liest den �bergebenen Quellcode ein und parsed die Informationen daraus
+     * Liest den uebergebenen Quellcode ein und parsed die Informationen daraus
      * @param sourceCode Vollstaendiger Java-Quellcode
      */
     public void parse(ArrayList<String> sourceCode)
     {
-    	//(automatisches)Entfernen von führenden oder folgenden Leerzeichen
-		sourceCode.trim();
-		System.out.println(sourceCode);
-		try
+  
+		/*try
 		{
 		    buildTree(sourceCode);
 		}
@@ -153,9 +152,51 @@ public class ParserCPP implements ParserIf
 			//Eintrag in den Logger
 			PUMLgenerator.logger.getLog().warning("ParserConfigurationException: Aufbau des Build-Trees");
 		    e.printStackTrace();
-		}
+		}*/
     }
 
+	//Methode zum Entfernen von Kommentaren und Strings für komplikationsfreies Parsen
+    public String deleteComStr(String sourceCode)
+    {
+       	String cSC = ""; //commentlessSourceCode
+    	for(int i = 0, n = sourceCode.length(); i < n; i++)
+    	{
+    		//Filtern nach Kommentar mit //
+    		if(sourceCode.charAt(i) == '/' && sourceCode.charAt(i + 1) == '/')
+    		{ 
+    			i++;
+    			while(sourceCode.charAt(i) != '\n' && i < n)
+    			{
+    				i++;
+    			}
+    			cSC += "\n";	//um Zeilenumbruch nicht auszulassen. Alternative: i--;
+    		}
+    		//Filtern nach Kommentar mit /* */
+    		else if(sourceCode.charAt(i) == '/' && sourceCode.charAt(i + 1) == '*')
+    		{
+    			i+=2;
+    			while(!(sourceCode.charAt(i) == '*' && sourceCode.charAt(i + 1) == '/') && i < n)
+    			{
+    				i++;
+    			}
+    			i++;
+    		}
+    		//Filtern nach Strings
+    		else if(sourceCode.charAt(i) == '"')
+    		{
+    			i++;
+    			while(sourceCode.charAt(i) != '"' && i < n)
+    			{
+    				i++;
+    			}
+    		}
+    		else
+    		{
+    			cSC += sourceCode.charAt(i);
+    		}
+    	}		
+    	return cSC;
+    }
 	@Override 
 	 /**
     * Liefert die Ergebnisse des Parsens zurueck
