@@ -1,8 +1,11 @@
 import java.util.ArrayList;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class ParserCPP implements ParserIf 
 {
@@ -131,8 +134,43 @@ public class ParserCPP implements ParserIf
 		// TODO 
 		//Zunächst HPP-Dateien durchgehen
 		
-		
-		
+		DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder documentBuilder;
+		try {
+			documentBuilder = documentFactory.newDocumentBuilder();
+			Document document = documentBuilder.newDocument();
+			
+			Element root = document.createElement("source");
+			document.appendChild(root);
+			
+			Element classdefinition = document.createElement("classdefinition");
+			root.appendChild(classdefinition);
+			
+			Element name = document.createElement("name");
+			classdefinition.appendChild(name);
+			
+			Element implement = document.createElement("implements");
+			classdefinition.appendChild(implement);
+			
+			Element extend = document.createElement("extends");
+			classdefinition.appendChild(extend);
+			
+			Element instance = document.createElement("instance");
+			classdefinition.appendChild(instance);
+			
+			Element compositions = document.createElement("compositions");
+			classdefinition.appendChild(compositions);
+			
+			Element aggregation = document.createElement("aggregation");
+			classdefinition.appendChild(aggregation);
+			
+			Element interfacedefinition = document.createElement("interfacedefinition");
+			classdefinition.appendChild(interfacedefinition);
+			
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
