@@ -1,6 +1,13 @@
+import java.util.ArrayList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+
 
 public class ParserCPP implements ParserIf 
 {
@@ -45,8 +52,8 @@ public class ParserCPP implements ParserIf
 		    this.sourceCode = sourceCode;
 		}
 		
-	 public TokenResult goToTokenWithName(String source, String[] name)
-	 {
+	    public TokenResult goToTokenWithName(String source, String[] name)
+	    {
 		//Variable wird genutzt um zB Namen zu speichern
 		String part = ""; 
 		boolean found = false;
@@ -124,11 +131,71 @@ public class ParserCPP implements ParserIf
      * @return XMl-Dokument
      * @throws ParserConfigurationException
      */
-	private void buildTree(String sourceCodeHPP,String sourceCodeCPP) 
+	private void buildTree(ArrayList<String> code ) 
 	{
+		//
+		String sourceCodeHPP = deleteComStr(code.get(0));
+		String sourceCodeCPP = deleteComStr(code.get(1));
+		String compString;		
+		
+		// Erstellen des Dokuments
+		DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
+		document = documentBuilder.newDocument();
+		//BOOL zur Abfrage ob Teilstring verarbeitet wurde (ansonsten ein Schritt weiter)
+		boolean done = false;
+		
+		// Start-Knoten setzen
+		Element curNode;
+		// root Element
+		Element root = document.createElement("source");
+		curNode = root;
+		document.appendChild(root);
+		
+		//KLAMMERSETZUNG
+		int curlBrace = 0, roundBrace = 0;
+		
 		// TODO 
 		//Zunächst HPP-Dateien durchgehen
+		while (!sourceCodeHPP.isEmpty())
+	    {
+			compString= "include";
+			//
+			if(sourceCodeHPP.substring(0, compString.length()).equals(compString)) 
+			{
+				sourceCodeHPP = sourceCodeHPP.substring(compString.length());
+				sourceCodeHPP = sourceCodeHPP.trim();
+				
+			    TokenResult res;
+			    sourceCodeHPP = sourceCodeHPP.substring(compString.length());
+			    sourceCodeHPP = sourceCodeHPP.trim();
+			    String[] nameArray = new String[1];
+			    nameArray[0] = ";";
+			    res = goToTokenWithName(sourceCodeHPP, nameArray);
+			    sourceCodeHPP = res.getSourceCode();
+			    done = true;
+			}
+			//
+			else if()
+			{
+				
+			}
+			//
+			else if()
+			
+				
+			if (!done)
+			{
+			    sourcec = sourcec.substring(1);
+			}
+			
+	    }
 		
+		
+	}
+	
+	private void SearchInCode(String subject, String sourceCodeCPP) 
+	{
 		
 		
 	}
@@ -206,3 +273,35 @@ public class ParserCPP implements ParserIf
 	}
 
 }
+
+
+
+//BSP
+/*
+ * compString = "class ";
+		if (sourcec.substring(0, compString.length()).equals(compString))
+		{
+		    sourcec = sourcec.substring(compString.length());
+		    sourcec = sourcec.trim();
+		    String[] nameArray = new String[3];
+		    nameArray[0] = "{";
+		    nameArray[1] = "extends";
+		    nameArray[2] = "implements";
+		    TokenResult res = goToTokenWithName(sourcec, nameArray);
+		    sourcec = res.getSourceCode();
+		    if (res.getFoundToken() == 0)
+		    {
+			sourcec = sourcec.substring(1);
+			curlBrace++;
+		    }
+		    String classNameStr = res.getData();
+		    classNameStr = classNameStr.strip();
+		    System.out.println("@className: " + classNameStr);
+
+		    Element classDefinition = document.createElement("classdefinition");
+		    Element classNameEl = document.createElement("name");
+		    classNameEl.appendChild(document.createTextNode(classNameStr));
+		    classDefinition.appendChild(classNameEl);
+		    curNode.appendChild(classDefinition);
+		    curNode = (Element) curNode.getLastChild();*/
+ */
