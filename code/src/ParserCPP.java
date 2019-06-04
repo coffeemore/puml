@@ -52,48 +52,7 @@ public class ParserCPP implements ParserIf
 		    this.sourceCode = sourceCode;
 		}
 		
-	    public TokenResult goToTokenWithName(String source, String[] name)
-	    {
-		//Variable wird genutzt um zB Namen zu speichern
-		String part = ""; 
-		boolean found = false;
-		int foundNameIndex = -1;
-		//Erstes/Erste Zeichen werden auf die uebertragenen Tokens ueberprueft
-		for (int i = 0; i < name.length; i++)
-		{
-		    if (source.substring(0, name[i].length()).equals(name[i]))
-		    {
-			found = true;
-			foundNameIndex = i;
-			//source = source.substring(name[i].length());
-		    }
-		}
-		while (!found && !source.isEmpty())
-		{
-			//erstes Zeichen wird in Part geschrieben
-		    part = part + source.substring(0, 1); 
-		    //erstes Zeichen wird aus dem Sourcecode entfernt
-		    source = source.substring(1); 
-		   
-		    if (source.isEmpty())
-		    {
-		    	break;
-		    }
-		   
-		    for (int i = 0; i < name.length; i++)
-		    {
-				if (source.substring(0, name[i].length()).equals(name[i]))
-				{
-				    found = true;
-				    foundNameIndex = i;
-				}
-		    }
-		}
-		
-		source = source.trim();
-		 //Rueckgabe welches Token gefunden wurde und des Inhalts zwischen den Tokens (zB einen Klassen-Namen)
-		return new TokenResult(foundNameIndex, part, source);
-	 }
+	    
 	
 		//Getter- und Settermethoden
 		public int getFoundToken() 
@@ -122,6 +81,49 @@ public class ParserCPP implements ParserIf
 		}
     }
 	
+	public TokenResult goToTokenWithName(String source, String[] name)
+    {
+	//Variable wird genutzt um zB Namen zu speichern
+	String part = ""; 
+	boolean found = false;
+	int foundNameIndex = -1;
+	//Erstes/Erste Zeichen werden auf die uebertragenen Tokens ueberprueft
+	for (int i = 0; i < name.length; i++)
+	{
+	    if (source.substring(0, name[i].length()).equals(name[i]))
+	    {
+		found = true;
+		foundNameIndex = i;
+		//source = source.substring(name[i].length());
+	    }
+	}
+	while (!found && !source.isEmpty())
+	{
+		//erstes Zeichen wird in Part geschrieben
+	    part = part + source.substring(0, 1); 
+	    //erstes Zeichen wird aus dem Sourcecode entfernt
+	    source = source.substring(1); 
+	   
+	    if (source.isEmpty())
+	    {
+	    	break;
+	    }
+	   
+	    for (int i = 0; i < name.length; i++)
+	    {
+			if (source.substring(0, name[i].length()).equals(name[i]))
+			{
+			    found = true;
+			    foundNameIndex = i;
+			}
+	    }
+	}
+	
+	source = source.trim();
+	 //Rueckgabe welches Token gefunden wurde und des Inhalts zwischen den Tokens (zB einen Klassen-Namen)
+	return new TokenResult(foundNameIndex, part, source);
+ }
+	
 	//Here is where the magic happens:
 	
 	 /**
@@ -131,7 +133,7 @@ public class ParserCPP implements ParserIf
      * @return XMl-Dokument
      * @throws ParserConfigurationException
      */
-	private void buildTree(String sourceCodeHPP,String sourceCodeCPP) 
+	private void buildTree( ArrayList<String> code) 
 	{
 		//
 		String sourceCodeHPP = deleteComStr(code.get(0));
@@ -175,18 +177,10 @@ public class ParserCPP implements ParserIf
 			    sourceCodeHPP = res.getSourceCode();
 			    done = true;
 			}
-			//
-			else if()
-			{
-				
-			}
-			//
-			else if()
 			
-				
 			if (!done)
 			{
-			    sourcec = sourcec.substring(1);
+				sourceCodeHPP = sourceCodeHPP.substring(1);
 			}
 			
 	    }
@@ -304,4 +298,3 @@ public class ParserCPP implements ParserIf
 		    classDefinition.appendChild(classNameEl);
 		    curNode.appendChild(classDefinition);
 		    curNode = (Element) curNode.getLastChild();*/
- */
