@@ -10,6 +10,7 @@ import org.w3c.dom.Element;
 public class ParserCPP implements ParserIf 
 {
 	private Document document;
+	private XmlHelperMethods xmlHelper = new XmlHelperMethods();
 	
 	 /**
      * leerer Konstruktor
@@ -129,26 +130,37 @@ public class ParserCPP implements ParserIf
      * @return XMl-Dokument
      * @throws ParserConfigurationException
      */
-	private void buildTree(String sourceCodeHPP,String sourceCodeCPP) 
+	private void buildTree(String sourceCodeHPP,String sourceCodeCPP) throws ParserConfigurationException 
 	{
 		// TODO 
 		//Zunächst HPP-Dateien durchgehen
-		
 		DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder documentBuilder;
-		try {
-			documentBuilder = documentFactory.newDocumentBuilder();
-			Document document = documentBuilder.newDocument();
-			
-			Element root = document.createElement("source");
-			document.appendChild(root);
-			
-			Element classdefinition = document.createElement("classdefinition");
+		documentBuilder = documentFactory.newDocumentBuilder();
+		Document document = documentBuilder.newDocument();
+		
+		Element root = document.createElement("source");
+		document.appendChild(root);
+	
+	    String keyword = "class ";
+	    //Suche nach dem Index vom Wort "class" im HPP-Code
+	    int index = sourceCodeHPP.indexOf(keyword);
+	    
+	    while (index >=0){
+	        //Index vom Ende des Klassennamens erfassen welches mit Leerzeichen oder Zeilenumbruich endet
+	        int b = Math.min(sourceCodeHPP.indexOf(" ", index + keyword.length()),
+	        		sourceCodeHPP.indexOf("\n", index + keyword.length()));
+	        
+	        //Ausgabe des Folgewortes von "class"
+	        System.out.println(sourceCodeHPP.substring(index + keyword.length(), b));
+	        
+	        Element classdefinition = document.createElement("classdefinition");
 			root.appendChild(classdefinition);
 			
 			Element name = document.createElement("name");
-			classdefinition.appendChild(name);
-			
+			classdefinition.appendChild(name);	
+			name.appendChild(document.createTextNode(sourceCodeHPP.substring(index + keyword.length(), b)));
+	        
 			Element implement = document.createElement("implements");
 			classdefinition.appendChild(implement);
 			
@@ -167,10 +179,10 @@ public class ParserCPP implements ParserIf
 			Element interfacedefinition = document.createElement("interfacedefinition");
 			classdefinition.appendChild(interfacedefinition);
 			
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		    //Suche nach dem nächsten Index vom Wort "class" im HPP-Code
+	        index = sourceCodeHPP.indexOf(keyword, index + keyword.length());
+	    }		
+		xmlHelper.writeDocumentToConsole(document);
 	}
 	
 	/**
@@ -179,10 +191,17 @@ public class ParserCPP implements ParserIf
      */
     public void parse(ArrayList<String> sourceCode)
     {
-  
-		/*try
+    	sourceCode.set(0, deleteComStr(sourceCode.get(0)));
+    	sourceCode.set(1, deleteComStr(sourceCode.get(1)));
+    	
+    	//Ausgabe eingelesener HPP-Dateien
+    	System.out.println(sourceCode.get(0));
+    	//Ausgabe eingelesener CPP-Dateien
+    	System.out.println(sourceCode.get(1));
+    	
+		try
 		{
-		    buildTree(sourceCode);
+			buildTree(sourceCode.get(0), sourceCode.get(1));
 		}
 		catch (ParserConfigurationException e)
 		{
@@ -190,7 +209,8 @@ public class ParserCPP implements ParserIf
 			//Eintrag in den Logger
 			PUMLgenerator.logger.getLog().warning("ParserConfigurationException: Aufbau des Build-Trees");
 		    e.printStackTrace();
-		}*/
+		}
+	
     }
 
 	//Methode zum Entfernen von Kommentaren und Strings für komplikationsfreies Parsen
