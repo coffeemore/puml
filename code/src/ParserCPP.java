@@ -131,7 +131,7 @@ public class ParserCPP implements ParserIf
      * @return XMl-Dokument
      * @throws ParserConfigurationException
      */
-	private void buildTree(ArrayList<String> code ) 
+	private void buildTree(String sourceCodeHPP,String sourceCodeCPP) 
 	{
 		//
 		String sourceCodeHPP = deleteComStr(code.get(0));
@@ -204,7 +204,7 @@ public class ParserCPP implements ParserIf
      * Liest den uebergebenen Quellcode ein und parsed die Informationen daraus
      * @param sourceCode Vollstaendiger Java-Quellcode
      */
-    public void parse(String sourceCode)
+    public void parse(ArrayList<String> sourceCode)
     {
   
 		/*try

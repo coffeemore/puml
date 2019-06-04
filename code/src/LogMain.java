@@ -72,15 +72,14 @@ public class LogMain  {
 		con.setLevel(Level.ALL);
 		log.addHandler(xml);
 		log.addHandler(con);
-		//File xmlf = new File (path);
-		//deleteEmptyLog(xmlf);
+		File xmlf = new File (path);
+		deleteEmptyLog(xmlf);
 	}
 
-	/*public void deleteEmptyLog(File xmlf){
+	public void deleteEmptyLog(File xmlf){
 		try {
 			if(isEmpty(xmlf)) {
 				xmlf.deleteOnExit();
-				System.out.println("Leere Logdatei gelöscht");
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -103,7 +102,7 @@ public class LogMain  {
 			}
 		}
 		return false;
-	}*/
+	}
 	public String home; //Zur Speicherung des jeweiligen home directories des Systems
 	private static final Logger log = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	public Logger getLog() {
