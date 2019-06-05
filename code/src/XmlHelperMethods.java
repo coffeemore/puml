@@ -1,7 +1,9 @@
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Iterator;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,6 +26,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import org.xmlunit.builder.DiffBuilder;
+import org.xmlunit.diff.DefaultComparisonFormatter;
+import org.xmlunit.diff.DefaultNodeMatcher;
+import org.xmlunit.diff.Diff;
+import org.xmlunit.diff.Difference;
+import org.xmlunit.diff.ElementSelectors;
 /**
  * 
  * @author Klasse fuer Unterstuetzungsfunktionen zur XML Handhabung
@@ -65,9 +73,9 @@ public class XmlHelperMethods
      * @author mariangeissler - Funktion kann ggf. wieder geloescht werden
      * @return Document
      */
-    public Document getDocumentFrom(String filename)
+    public Document getDocumentFrom(String filepath)
     {
-	File file = new File(filename);
+	File file = new File(filepath);
 	try
 	{
 	    DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
@@ -240,4 +248,34 @@ public class XmlHelperMethods
 	}
 	return false;
     }
+    
+    public boolean compareXML(Document doc1, Document doc2)
+	{
+		DefaultComparisonFormatter formatter = new DefaultComparisonFormatter();
+		DefaultNodeMatcher nodeMatcher = new DefaultNodeMatcher(ElementSelectors.byNameAndText);
+		Diff d = DiffBuilder.compare(doc1).withTest(doc2)
+				 .checkForSimilar()//.checkForIdentical()
+				 .withNodeMatcher(nodeMatcher)
+				 .ignoreWhitespace()
+				 .normalizeWhitespace()
+				 .withComparisonFormatter(formatter)
+				 .ignoreComments()
+				 .ignoreElementContentWhitespace()
+				 .build();
+		Iterable<Difference> diffList = d.getDifferences();
+	    Iterator<Difference> iterator = diffList.iterator();
+	    while(iterator.hasNext()) 
+	    {
+	        Difference next = iterator.next();
+	        System.out.println("Difference: " + next);
+		}
+	    if (iterator.hasNext()) 
+	    {
+	    	return false;
+	    }
+	    else 
+	    {
+	    	return true;
+	    }
+	}
 }
