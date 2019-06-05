@@ -37,91 +37,50 @@
 				</entry>
 			</parameters>
 			<result>int</result>
-			<something> Funktion || Schleife || Abfrage </something>
-			<something>
-				Funktion || Schleife || Abfrage
-				<something> Funktion || Schleife || Abfrage </something>
-			</something>
+			<alternative>
+				<case>
+					<condition>if(a!=b)</condition>
+				</case>
+				<case>
+					<condition>else</condition>
+					<loop>
+						<condition>for(int i=0; i!=100; i++)</condition>
+					</loop>
+				</case>
+			</alternative>
 		</methoddefinition>
 		<methoddefinition>
 			<name>method2</name>
-			<something>
-				Funktion || Schleife || Abfrage
+			<alternative>
+				<case>
+					<condition>switch(i)</condition>
+				</case>
 				<something>
-					Funktion || Schleife || Abfrage
-					<something> Funktion || Schleife || Abfrage </something>
+					int j=10;
+					while(j!=0)
+					{
+					meth
+					<loop>
+						<condition>while(j!=0)</condition>
+					</loop>
 				</something>
 				<something>
-					Funktion || Schleife || Abfrage
-					<something> Funktion || Schleife || Abfrage </something>
+					int j=10;
+					do
+					{
+					method3();
+					<loop>
+						<condition>do/while(j!=0)</condition>
+					</loop>
 				</something>
-				<something> Funktion || Schleife || Abfrage </something>
-			</something>
-		</methoddefinition>
-		<methoddefinition>
-			<name>method3</name>
-			<something> Funktion || Schleife || Abfrage </something>
-			<something> Funktion || Schleife || Abfrage </something>
-		</methoddefinition>
-		<methoddefinition>
-			<name>method4</name>
-			<something> Funktion || Schleife || Abfrage </something>
+				<something>
+					Class2 classInstance3 = new Class2();
+					<instance>
+						<name>classInstance3</name>
+						<class>Class2</class>
+					</instance>
+				</something>
+			</alternative>
 		</methoddefinition>
 	</classdefinition>
-	<classdefinition>
-		<name>Class2</name>
-		<composition />
-		<agregation />
-		<methoddefinition>
-			<name>call1</name>
-		</methoddefinition>
-		<methoddefinition>
-			<name>call2</name>
-		</methoddefinition>
-	</classdefinition>
-	<classdefinition>
-		<name>Class3</name>
-		<composition />
-		<agregation />
-		<methoddefinition>
-			<name>call1</name>
-		</methoddefinition>
-	</classdefinition>
-	<classdefinition>
-		<name>Class4</name>
-		<composition />
-		<agregation />
-	</classdefinition>
-	<classdefinition>
-		<name>Class5</name>
-		<composition />
-		<agregation />
-	</classdefinition>
-	<interfacedefinition>
-		<name>If1</name>
-		<composition />
-		<agregation />
-		<methoddefinition>
-			<name>method1</name>
-			<parameters>
-				<entry>
-					<type>int</type>
-					<name>param1</name>
-				</entry>
-				<entry>
-					<type>int</type>
-					<name>param2</name>
-				</entry>
-			</parameters>
-			<result>int</result>
-		</methoddefinition>
-	</interfacedefinition>
-	<interfacedefinition>
-		<name>If2</name>
-		<composition />
-		<agregation />
-		<methoddefinition>
-			<name>method2</name>
-		</methoddefinition>
-	</interfacedefinition>
 </source>
