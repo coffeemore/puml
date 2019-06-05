@@ -234,3 +234,62 @@
     }
 
 */
+
+//	    else if (list.item(i).getNodeName() == "class")
+//	    {
+//
+//	    }
+//	    else if (list.item(i).getNodeName() == "instance") // hier abfangen, wenn nichts direkt definiert, ebene
+//							       // tiefer!!!
+//	    {
+//		// Hier Einfügen
+//		if (list.item(i).getFirstChild().getNodeName() != "#text") // Test
+//		{
+//		    System.out.println(i + ": " + list.item(i).getNodeName() + " - " + list.item(i).getTextContent());
+//		}
+//
+//	    }
+//	    else if (list.item(i).getNodeName() == "method")
+//	    {
+//		// Hier Einfügen
+////		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getLocalName());
+//	    }
+//	    else if (list.item(i).getNodeName() == "type")
+//	    {
+//		// Hier Einfügen
+////		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getLocalName());
+//	    }
+//	    else if (list.item(i).getNodeName() == "case")
+//	    {
+//		if (!inAlt)
+//		{
+//		    pumlCode += "alt ";
+//		    inAlt = true;
+//		}
+//		else
+//		{
+//		    pumlCode += "else ";
+//		}
+//		// Hier Einfügen
+//
+////		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getTextContent());
+//		helperMethodCall(list.item(i).getChildNodes(), pumlCode, inAlt); // rekursiver Aufruf tieferer Ebene
+//	    }
+//	    else if (list.item(i).getNodeName() == "loop")
+//	    {
+//		// Hier Einfügen
+////		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getTextContent());
+//		helperMethodCall(list.item(i).getChildNodes(), pumlCode, inAlt); // rekursiver Aufruf tieferer Ebene
+//	    }
+//	    else if (list.item(i).getNodeName() == "methodcall")
+//	    {
+//		// Hier Einfügen
+////		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getLocalName());
+//		helperMethodCall(list.item(i).getChildNodes(), pumlCode, inAlt); // rekursiver Aufruf tieferer Ebene
+//	    }
+//	    else if (list.item(i).getNodeName() == "condition") // case
+//	    {
+//		pumlCode += list.item(i).getTextContent() + "\n";
+//		// Hier Einfügen
+////		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getLocalName());
+//	    }

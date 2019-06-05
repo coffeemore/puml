@@ -7,21 +7,22 @@
 			<entry>Class2</entry>
 			<entry>Class3</entry>
 		</classes>
-		
+
 		<entrypoint>
 			<class>Class1</class>
 			<method>method1</method>
 		</entrypoint>
 
 		<methoddefinition>
+			<class>Class1</class>
 			<name>method1</name>
 			<alternative>	<!-- if-Entscheidung (beliebig verschachtelbar, abhängig vom Quellocode) -->
 				<case>
 					<condition>if(a!=b)</condition>
 					<methodcall>
-						<class>Class2</class>
 						<instance>classInstance1</instance>	<!-- Beim Aufruf von Methoden einer Instanz -->
 						<method>call1</method>
+						<class>Class2</class>
 					</methodcall>
 				</case>
 				<case>
@@ -35,19 +36,20 @@
 					</loop>
 				</case>
 			</alternative>
-			<methodcall>	
-				<method>method2</method> <!-- Aufruf bei methoden innerhalb der Klasse-->
+			<methodcall>
+				<method>method2</method> <!-- Aufruf bei methoden innerhalb der Klasse -->
 			</methodcall>
 		</methoddefinition>
-		
+
 		<methoddefinition>
+			<class>Class1</class>
 			<name>method2</name>
 			<alternative>
 				<case>
 					<condition>switch(i)/case 0</condition>
 					<loop>		<!-- Kopfgesteuerte Schleife (beliebig verschachtelbar, abhängig vom Quellocode) -->
 						<condition>while(j!=0)</condition>
-						<methodcall>	
+						<methodcall>
 							<method>method3</method>
 						</methodcall>
 					</loop>
@@ -56,7 +58,7 @@
 					<condition>switch(i)/case 1</condition>
 					<loop>		<!-- Fußesteuerte Schleife (beliebig verschachtelbar, abhängig vom Quellocode) -->
 						<condition>do/while(j!=0)</condition>
-						<methodcall>	
+						<methodcall>
 							<method>method3</method>
 							<type>handled</type>
 						</methodcall>
@@ -64,36 +66,42 @@
 				</case>
 				<case>
 					<condition>switch(i)/default</condition>
-					
+
 					<methodcall>
 						<instance>classInstance1</instance>	<!-- Aufruf sollte auf instanz von class3 ausgeführt werden -->
+						<class>Class3</class>
 						<method>call1</method>
 					</methodcall>
 					<methodcall>
 						<instance>classInstance1</instance>	<!-- Klasseninstanz -->
+						<class>Class2</class>
 						<method>call1</method>
 						<validity>class</validity>	<!-- Wird am this-Zeiger festgememacht -->
 					</methodcall>
 					<methodcall>
 						<instance>classInstance2</instance>	<!-- Klasseninstanz -->
+						<class>Class2</class>
 						<method>call1</method>
 					</methodcall>
 					<methodcall>
 						<instance>classInstance3</instance>	<!-- Lokale Instanz -->
+						<class>Class2</class>
 						<method>call1</method>
 					</methodcall>
 					<methodcall>
 						<instance>classInstance4</instance>	<!-- Instanz existiert nicht -->
+						<class></class>
 						<method>callX</method>
 						<type>unknown</type>
 					</methodcall>
 				</case>
 			</alternative>
 		</methoddefinition>
-		
+
 		<methoddefinition>
+			<class>Class1</class>
 			<name>method3</name>
-			<alternative>	
+			<alternative>
 				<case>
 					<condition>if(a!=b)</condition>
 					<methodcall>
@@ -102,7 +110,7 @@
 					</methodcall>
 				</case>
 			</alternative>
-			<alternative>	
+			<alternative>
 				<case>
 					<condition>if(b!=c)</condition>
 					<methodcall>
@@ -111,9 +119,11 @@
 				</case>
 			</alternative>
 		</methoddefinition>
+
 		<methoddefinition>
+			<class>Class1</class>
 			<name>method4</name>
-			<alternative>	
+			<alternative>
 				<case>
 					<condition>if(d!=e)</condition>
 					<methodcall>
@@ -123,7 +133,21 @@
 				</case>
 			</alternative>
 		</methoddefinition>
-	
-	</sequencediagram>
 
+		<methoddefinition>
+			<class>Class2</class>
+			<name>call1</name>
+		</methoddefinition>
+
+		<methoddefinition>
+			<class>Class2</class>
+			<name>call2</name>
+		</methoddefinition>
+
+		<methoddefinition>
+			<class>Class3</class>
+			<name>call1</name>
+		</methoddefinition>
+
+	</sequencediagram>
 </parsed>
