@@ -28,7 +28,7 @@ class SequenceDiagramGeneratorTest
     {
 
 	classUnderTest = new SequenceDiagramGenerator();
-	xmlFile1 = new File("//home//developer//puml-master//code//testfolder//xmlSpecifications//parsedData.xml");
+	xmlFile1 = new File("../code/testfolder/xmlSpecifications/parsedData.xml");
 	DocumentBuilderFactory dbFactory1 = DocumentBuilderFactory.newInstance();
 	DocumentBuilder dBuilder1 = dbFactory1.newDocumentBuilder();
 	parsedData = dBuilder1.parse(xmlFile1);
