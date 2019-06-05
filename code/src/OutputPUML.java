@@ -26,7 +26,6 @@ import net.sourceforge.plantuml.SourceStringReader;
 public class OutputPUML
 {
     public NodeList list = null;
-    //LogMain logger = new LogMain();
     PUMLgenerator puml = new PUMLgenerator();
     XmlHelperMethods helper = new XmlHelperMethods();
     
@@ -49,7 +48,6 @@ public class OutputPUML
 
     public String getPUML(Document diagramData) throws XPathExpressionException
     {
-    	//PUMLgenerator.logger.getLog().warning("XML-Diagramm fehlerhaft");
 		XPathFactory xPathfactory = XPathFactory.newInstance();
 		XPath xpath = xPathfactory.newXPath();
 		XPathExpression expr = xpath.compile("/parsed/*"); // Startpunkt parsed Knoten
