@@ -222,21 +222,21 @@ public class Console extends PUMLgenerator
 			}
 			if (choice.contains("k")) //Klasse ohne Ausgabepfad
 			{
-				System.out.println(choice);
-				while (choice.contains("k") || !(choice.contains("a") || choice.contains("p")))
+				System.out.println("Auswahl: "+choice);
+				while (!(choice.contains("a") || choice.contains("p")))
 				{
 					System.out.println("Ausgabe in [a]rbeitsverzeichnis oder [p]fad angeben?");
 					choice = scanner.next();
 				}
-				System.out.println("Ausgabepfad fuer UML-Diagramm und -Code angeben");
-				outPath = scanner.next();
-				//createClassDiagram(null,false);
 				if (choice.contains("a"))
 				{
 					createClassDiag(null,true,false,"./outPUML_Code_defaultlocation");
 				}
 				else
 				{
+
+					System.out.println("Ausgabepfad fuer UML-Diagramm und -Code angeben");
+					outPath = scanner.next();
 					createClassDiag(null,true,true,outPath);
 				}
 			}
@@ -338,7 +338,7 @@ public class Console extends PUMLgenerator
     	}
 	}
 	/**
-	 * Interaktive Methode zum Erstellen des SQDiagramms
+	 * Methode zum Erstellen des SQDiagramms. Interactive oder ueber direkten Aufruf
 	 * @param cmd
 	 * @param existingOutpath
 	 */
