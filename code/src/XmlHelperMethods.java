@@ -249,6 +249,15 @@ public class XmlHelperMethods
 	return false;
     }
     
+    
+    /**
+     * Funktion zum Vergleichen von XML Dateien über XMLUnit
+     * 
+     * @param doc1 - Source Doc
+     * @param doc2   - Zu testendes Doc
+     * @return - boolean; true, wenn XML gleich, sonst false
+     */
+    
     public boolean compareXML(Document doc1, Document doc2)
 	{
 		DefaultComparisonFormatter formatter = new DefaultComparisonFormatter();
