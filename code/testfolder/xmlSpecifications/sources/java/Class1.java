@@ -5,19 +5,19 @@ package xmlSpecifications;
 public class Class1 extends Class3 implements If1, If2 
 {
     Class2 classInstance1 = new Class2();	//Komposition zu Class2
-    Class2 classInstance2 = new Class2();
+    Class2 classInstance2 = new Class2();	//Komposition zu Class2
     
     Class4 iClass4;
     Class5 iClass5;
     
     public Class1(Class4 iClass4, Class5 iClass5)
     {
-	this.iClass4 = iClass4; //Kompositionen zu Class4
+	this.iClass4 = iClass4; //Agregation zu Class4
 	this.iClass5 = iClass5; //Agregation zu Class5
     }
     public Class1(Class4 iClass4)
     {
-	this.iClass4 = iClass4; //Kompositionen zu Class4
+	this.iClass4 = iClass4; //Agregation zu Class4
 	
     }
     
