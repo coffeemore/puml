@@ -133,13 +133,14 @@ public class ParserCPP implements ParserIf
      * @return XMl-Dokument
      * @throws ParserConfigurationException
      */
-	private void buildTree( ArrayList<String> code) 
+	private void buildTree( ArrayList<String> code) throws ParserConfigurationException 
 	{
-		//
+		////JANS ZEUG////
+		
 		String sourceCodeHPP = deleteComStr(code.get(0));
 		String sourceCodeCPP = deleteComStr(code.get(1));
 		String compString;		
-		
+		/*
 		// Erstellen des Dokuments
 		DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
@@ -185,9 +186,10 @@ public class ParserCPP implements ParserIf
 			}
 			
 	    }
+	    */
 
 	//JOHANNS ZEUG:
-	DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder documentBuilder;
 		documentBuilder = documentFactory.newDocumentBuilder();
 		Document document = documentBuilder.newDocument();
@@ -199,8 +201,9 @@ public class ParserCPP implements ParserIf
 	    //Suche nach dem Index vom Wort "class" im HPP-Code
 	    int index = sourceCodeHPP.indexOf(keyword);
 	    
-	    while (index >=0){
-	        //Index vom Ende des Klassennamens erfassen welches mit Leerzeichen oder Zeilenumbruich endet
+	    while (index >=0)
+	    {
+	        //Index vom Ende des Klassennamens erfassen welches mit Leerzeichen oder Zeilenumbruch endet
 	        int b = Math.min(sourceCodeHPP.indexOf(" ", index + keyword.length()),
 	        		sourceCodeHPP.indexOf("\n", index + keyword.length()));
 	        
@@ -238,8 +241,6 @@ public class ParserCPP implements ParserIf
 		xmlHelper.writeDocumentToConsole(document);
 	}
 		
-		
-	}
 	
 	private void SearchInCode(String subject, String sourceCodeCPP) 
 	{
@@ -262,16 +263,14 @@ public class ParserCPP implements ParserIf
     	//Ausgabe eingelesener CPP-Dateien
     	System.out.println(sourceCode.get(1));
     	
-		try
+		try 
 		{
-			buildTree(sourceCode.get(0), sourceCode.get(1));
-		}
-		catch (ParserConfigurationException e)
+			buildTree(sourceCode);
+		} 
+		catch (ParserConfigurationException e) 
 		{
-			//Wird später noch geworfen
-			//Eintrag in den Logger
-			PUMLgenerator.logger.getLog().warning("ParserConfigurationException: Aufbau des Build-Trees");
-		    e.printStackTrace();
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	
     }
