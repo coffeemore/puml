@@ -418,3 +418,230 @@
 	return result;
     }
      */
+	 
+	 
+//////////////////////////////////////////////////Alter Code aus neuem Parser/////////////////////////////////////////////////////////////
+
+//		compString = "(";
+//		if (sourcec.substring(0, compString.length()).equals(compString))
+//		{
+//		    sourcec = sourcec.substring(1);
+//		    roundBrace++;
+//		    
+//		}
+//		;
+//		compString = ")";
+//		if (sourcec.substring(0, compString.length()).equals(compString))
+//		{
+//		    sourcec = sourcec.substring(1);
+//		    roundBrace--;
+//		   
+//		}
+//		;
+//		compString = "if";
+//		if (sourcec.substring(0, compString.length()).equals(compString))
+//		{
+//		    
+//		    int countb = roundBrace;
+//		    String conditionText="if";
+//		    sourcec = sourcec.substring(compString.length());
+//		    sourcec = sourcec.trim();
+//		    
+//		    String[] nameArray = new String[2];
+//		    nameArray[0] = "(";
+//		    nameArray[1] = ")";
+//		    do
+//		    {
+//			TokenResult res = goToTokenWithName(sourcec, nameArray);
+//			sourcec = res.getSourceCode();
+//			if(res.getFoundToken() == 0) countb++; else countb--;
+//			conditionText+=res.getData();
+//			
+//		    }
+//		    while (countb != roundBrace);
+//		    
+//		    Element somethingWCB = document.createElement("alternative");
+//		    Element caseEl = document.createElement("case");
+//		    Element conditionEl = document.createElement("condition"); //WCB - with curly brace
+//		    
+//		    somethingWCB.appendChild(caseEl);
+//		    caseEl.appendChild(conditionEl);
+//		    conditionEl.appendChild(document.createTextNode(conditionText));
+//		    
+//		    curNode.appendChild(somethingWCB);
+//		    curNode = (Element) curNode.getLastChild();
+//		    done = true;
+//		}
+//		;
+//		compString = "while";
+//		if (sourcec.substring(0, compString.length()).equals(compString))
+//		{
+//		    
+//		    int countb = roundBrace;
+//		    String conditionText="while";
+//		    sourcec = sourcec.substring(compString.length());
+//		    sourcec = sourcec.trim();
+//		    
+//		    String[] nameArray = new String[2];
+//		    nameArray[0] = "(";
+//		    nameArray[1] = ")";
+//		    do
+//		    {
+//			TokenResult res = goToTokenWithName(sourcec, nameArray);
+//			sourcec = res.getSourceCode();
+//			if(res.getFoundToken() == 0) countb++; else countb--;
+//			conditionText+=res.getData();
+//			
+//		    }
+//		    while (countb != roundBrace);
+//		    
+//		    Element somethingWCB = document.createElement("alternative");
+//		    Element caseEl = document.createElement("case");
+//		    Element conditionEl = document.createElement("condition"); //WCB - with curly brace
+//		    
+//		    somethingWCB.appendChild(caseEl);
+//		    caseEl.appendChild(conditionEl);
+//		    conditionEl.appendChild(document.createTextNode(conditionText));
+//		    
+//		    curNode.appendChild(somethingWCB);
+//		    curNode = (Element) curNode.getLastChild();
+//		    done = true;
+//		}
+//		;
+
+
+//		    else
+//		    {
+//			String returnType = res2.getData();
+//			functionData = functionData.substring(returnType.length());
+//			functionData.trim();
+//			nameArray[0] = "(";
+//			TokenResult res3 = goToTokenWithName(functionData, nameArray);
+//
+//			String methodName = res3.getData();
+//			String[] methodNamePart = methodName.split(" ");
+//			
+//			if (methodName.isEmpty())
+//			{
+//			    System.out.println("Funktionsaufruf");
+//			} 
+//			else if (methodNamePart.length==2)
+//			{
+//			    System.out.println("Funktionsdeklaration");
+//
+//			    nameArray[0] = "{";
+//
+//			    TokenResult res4 = goToTokenWithName(sourcec, nameArray);
+//			    sourcec = res4.getSourceCode();
+//			    sourcec = sourcec.substring(1);
+//
+//			    curlBrace++;
+//			    Element methodDefinition = document.createElement("methoddefinition"); // WCB - with curly
+//												   // brace
+//			    Element methodNameNode = document.createElement("name");
+//			    Element resultNameNode = document.createElement("result");
+//			    methodNameNode.appendChild(document.createTextNode(methodNamePart[1]));
+//			    resultNameNode.appendChild(document.createTextNode(methodNamePart[0]));
+//
+//			    methodDefinition.appendChild(methodNameNode);
+//			    methodDefinition.appendChild(resultNameNode);
+//
+//			    curNode.appendChild(methodDefinition);
+//			    curNode = (Element) curNode.getLastChild();
+//			}else if (methodNamePart.length==1)
+//			{
+//			    
+//			    System.out.println("Konstruktor");
+//			}
+
+//		    }
+
+//		}
+
+
+//			    String compAgr = "agregation";
+//			    if (curNode.getNodeName().equals("classdefinition"))
+//			    {
+//				compAgr = "composition";
+//			    }
+//			    Element classObject = document.createElement(compAgr);
+//			    curNode.appendChild(classObject);
+//
+//			    Element classObjectEl = document.createElement("entry");
+//			    classObjectEl.appendChild(document.createTextNode(prefixRBrace[1]));
+//			    classObject.appendChild(classObjectEl);
+//			    // curNode = (Element) curNode.getLastChild();
+//			    sourcec = res1.getSourceCode();
+
+
+
+//    public void findToken(String source)
+//    {
+//	String[][] TokenArray = new String[10][10];
+//
+//	TokenArray[0][0] = "\"";
+//	TokenArray[0][1] = "\"";
+//	TokenArray[0][2] = "\\\"";
+//
+//	TokenArray[1][0] = "//";
+//	TokenArray[1][1] = "\n";
+//
+//	TokenArray[2][0] = "/*";
+//	TokenArray[2][1] = "*/";
+//
+//	TokenArray[3][0] = "import ";
+//	TokenArray[3][1] = ";";
+//
+//	TokenArray[4][0] = "class ";
+//	TokenArray[4][1] = "extends";
+//	TokenArray[4][2] = "implements";
+//	TokenArray[4][3] = "{";
+//
+//	TokenArray[5][0] = "interface ";
+//	TokenArray[5][1] = "{";
+//	TokenArray[5][2] = "extends";
+//
+//	source = source.trim();
+//
+//	while (!source.isEmpty())
+//	{
+//
+//	    boolean done = false;
+//	    source = source.trim();
+//	    for (int i = 0; i < TokenArray.length; i++)
+//	    {
+//
+//		if (source.substring(0, TokenArray[i][0].length()).equals(TokenArray[i][0]))
+//		{
+//
+//		    source = source.substring(TokenArray[i][0].length());
+//		    source = source.trim();
+//		    TokenResult res;
+//		    do
+//		    {
+//			res = goToTokenWithName(source, TokenArray[i]);
+//
+//			if (res.getFoundToken() != 1)
+//			{
+//			    source = source.substring(1);
+//			}
+//		    }
+//		    while (res.getFoundToken() == 1);
+//		    source = source.substring(1); // Entfernen des ersten Zeichens
+//		    done = true;
+//
+//		}
+//	    }
+//
+//	    if (!done)
+//	    {
+//		source = source.substring(1);
+//	    }
+//	}
+//
+//    }
+
+
+
+
+

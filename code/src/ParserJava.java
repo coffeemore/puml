@@ -102,72 +102,6 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 
 	}
 
-//    public void findToken(String source)
-//    {
-//	String[][] TokenArray = new String[10][10];
-//
-//	TokenArray[0][0] = "\"";
-//	TokenArray[0][1] = "\"";
-//	TokenArray[0][2] = "\\\"";
-//
-//	TokenArray[1][0] = "//";
-//	TokenArray[1][1] = "\n";
-//
-//	TokenArray[2][0] = "/*";
-//	TokenArray[2][1] = "*/";
-//
-//	TokenArray[3][0] = "import ";
-//	TokenArray[3][1] = ";";
-//
-//	TokenArray[4][0] = "class ";
-//	TokenArray[4][1] = "extends";
-//	TokenArray[4][2] = "implements";
-//	TokenArray[4][3] = "{";
-//
-//	TokenArray[5][0] = "interface ";
-//	TokenArray[5][1] = "{";
-//	TokenArray[5][2] = "extends";
-//
-//	source = source.trim();
-//
-//	while (!source.isEmpty())
-//	{
-//
-//	    boolean done = false;
-//	    source = source.trim();
-//	    for (int i = 0; i < TokenArray.length; i++)
-//	    {
-//
-//		if (source.substring(0, TokenArray[i][0].length()).equals(TokenArray[i][0]))
-//		{
-//
-//		    source = source.substring(TokenArray[i][0].length());
-//		    source = source.trim();
-//		    TokenResult res;
-//		    do
-//		    {
-//			res = goToTokenWithName(source, TokenArray[i]);
-//
-//			if (res.getFoundToken() != 1)
-//			{
-//			    source = source.substring(1);
-//			}
-//		    }
-//		    while (res.getFoundToken() == 1);
-//		    source = source.substring(1); // Entfernen des ersten Zeichens
-//		    done = true;
-//
-//		}
-//	    }
-//
-//	    if (!done)
-//	    {
-//		source = source.substring(1);
-//	    }
-//	}
-//
-//    }
-
 	/**
 	 * Entfernt Kommentare aus uebergebenem String
 	 * 
@@ -187,6 +121,17 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 		Element root = document.createElement("source");
 		curNode = root;
 		int curlBrace = 0, roundBrace = 0;
+
+		String[] switchCaseCondition = new String[10];
+		for (int i = 0; i < switchCaseCondition.length; i++) {
+			switchCaseCondition[i] = "";
+		}
+
+		boolean[] switchCaseOn = new boolean[10];
+		for (int i = 0; i < switchCaseOn.length; i++) {
+			switchCaseOn[i] = false;
+		}
+		int curSwitch = 0;
 
 		document.appendChild(root);
 		// System.out.println(sourcec);
@@ -574,19 +519,21 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 								// break;
 							case "switch":
 								Element switchAlternativeNode = document.createElement("alternative");
-								Element switchCaseNode = document.createElement("case");
-								Element switchConditionNode = document.createElement("condition");
 
 								curNode.appendChild(switchAlternativeNode);
-								switchAlternativeNode.appendChild(switchCaseNode);
-								switchCaseNode.appendChild(switchConditionNode);
 
 								sourcec = res1.getSourceCode();
+
 								String[] switchNameArray = new String[1];
 								switchNameArray[0] = ")";
 								TokenResult switchRes = goToTokenWithName(sourcec, switchNameArray);
-								switchConditionNode.appendChild(
-										document.createTextNode(prefixRBrace[0] + switchRes.getData() + ")"));
+
+								if (switchCaseOn[curSwitch]) {
+									curSwitch++;
+								}
+								switchCaseOn[curSwitch] = true;
+
+								switchCaseCondition[curSwitch] = (prefixRBrace[0] + switchRes.getData() + ")");
 								sourcec = switchRes.getSourceCode();
 
 								sourcec = sourcec.substring(1);
@@ -595,6 +542,9 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 									sourcec = sourcec.substring(1);
 									curlBrace++;
 									curNode = (Element) curNode.getLastChild();
+
+								} else {
+									System.out.println("Fehler bei switch");
 								}
 								done = true;
 								continue;
@@ -610,20 +560,9 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 							case "else":
 
 								break;
+
 							case "new":// Objekterzeugung
-//			    String compAgr = "agregation";
-//			    if (curNode.getNodeName().equals("classdefinition"))
-//			    {
-//				compAgr = "composition";
-//			    }
-//			    Element classObject = document.createElement(compAgr);
-//			    curNode.appendChild(classObject);
-//
-//			    Element classObjectEl = document.createElement("entry");
-//			    classObjectEl.appendChild(document.createTextNode(prefixRBrace[1]));
-//			    classObject.appendChild(classObjectEl);
-//			    // curNode = (Element) curNode.getLastChild();
-//			    sourcec = res1.getSourceCode();
+
 								break;
 							case "private":// privater Konstruktor
 							case "public": // Konstruktor
@@ -816,7 +755,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 								break;
 							}
 
-							if ((prefixRBrace[1].equals("=") || prefixRBrace[2].equals("new"))) {
+							if ((prefixRBrace[1].equals("=") || prefixRBrace[2].equals("new"))
+									&& curNode.getNodeName().equals("classdefinition")) {
 								// Instance-knoten erstellen
 								Element instanceNode = document.createElement("instance");
 								curNode.appendChild(instanceNode);
@@ -862,58 +802,92 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 					}
 				}
 
-//		    else
-//		    {
-//			String returnType = res2.getData();
-//			functionData = functionData.substring(returnType.length());
-//			functionData.trim();
-//			nameArray[0] = "(";
-//			TokenResult res3 = goToTokenWithName(functionData, nameArray);
-//
-//			String methodName = res3.getData();
-//			String[] methodNamePart = methodName.split(" ");
-//			
-//			if (methodName.isEmpty())
-//			{
-//			    System.out.println("Funktionsaufruf");
-//			} 
-//			else if (methodNamePart.length==2)
-//			{
-//			    System.out.println("Funktionsdeklaration");
-//
-//			    nameArray[0] = "{";
-//
-//			    TokenResult res4 = goToTokenWithName(sourcec, nameArray);
-//			    sourcec = res4.getSourceCode();
-//			    sourcec = sourcec.substring(1);
-//
-//			    curlBrace++;
-//			    Element methodDefinition = document.createElement("methoddefinition"); // WCB - with curly
-//												   // brace
-//			    Element methodNameNode = document.createElement("name");
-//			    Element resultNameNode = document.createElement("result");
-//			    methodNameNode.appendChild(document.createTextNode(methodNamePart[1]));
-//			    resultNameNode.appendChild(document.createTextNode(methodNamePart[0]));
-//
-//			    methodDefinition.appendChild(methodNameNode);
-//			    methodDefinition.appendChild(resultNameNode);
-//
-//			    curNode.appendChild(methodDefinition);
-//			    curNode = (Element) curNode.getLastChild();
-//			}else if (methodNamePart.length==1)
-//			{
-//			    
-//			    System.out.println("Konstruktor");
-//			}
-
-//		    }
-
-//		}
-
 				////////////
 
 				// Temporäre Lösung
+				// TODO: switch case
+				compString = "case";
+				if (switchCaseOn[curSwitch]) {
+					if (sourcec.substring(0, compString.length()).equals(compString)) {
 
+						while (!(curNode.getNodeName().equals("alternative")
+								|| curNode.getNodeName().equals("source"))) {
+							if (curNode.getNodeName().equals("alternative")) {
+								System.out.println("Fehler bei case");
+								break;
+							}
+							curNode = (Element) curNode.getParentNode();
+						}
+
+						sourcec = sourcec.substring(compString.length());
+						sourcec.trim();
+
+						Element switchCaseNode = document.createElement("case");
+						Element switchConditionNode = document.createElement("condition");
+
+						curNode.appendChild(switchCaseNode);
+						switchCaseNode.appendChild(switchConditionNode);
+						String[] caseNameArray = new String[1];
+						caseNameArray[0] = ":";
+						TokenResult caseRes = goToTokenWithName(sourcec, caseNameArray);
+
+						switchConditionNode.appendChild(document.createTextNode(
+								switchCaseCondition[curSwitch] + "/" + compString + " " + caseRes.getData()));
+						sourcec = caseRes.getSourceCode();
+
+						curNode = (Element) curNode.getLastChild();
+
+						done = true;
+						continue;
+
+					}
+
+				}
+
+				compString = "default";
+				if (switchCaseOn[curSwitch]) {
+					if (sourcec.substring(0, compString.length()).equals(compString)) {
+
+						while (!(curNode.getNodeName().equals("alternative")
+								|| curNode.getNodeName().equals("source"))) {
+							if (curNode.getNodeName().equals("alternative")) {
+								System.out.println("Fehler bei case");
+								break;
+							}
+							curNode = (Element) curNode.getParentNode();
+						}
+
+						sourcec = sourcec.substring(compString.length());
+						sourcec.trim();
+
+						Element switchCaseNode = document.createElement("case");
+						Element switchConditionNode = document.createElement("condition");
+
+						curNode.appendChild(switchCaseNode);
+						switchCaseNode.appendChild(switchConditionNode);
+
+						switchConditionNode
+								.appendChild(document.createTextNode(switchCaseCondition[curSwitch] + "/" + "default"));
+
+						if (sourcec.substring(0, 1).equals(":")) {
+							sourcec = sourcec.substring(1);
+						} else {
+							System.out.println("Fehler bei default");
+						}
+						curNode = (Element) curNode.getLastChild();
+
+						done = true;
+						continue;
+
+					}
+
+				}
+				// TODO: entfernen
+				/////// nur zum debuggen
+				if (sourcec.substring(0, 5).equals("break")) {
+					System.out.println("break gefunden");
+				}
+				///////
 				compString = "else";
 				if (sourcec.substring(0, compString.length()).equals(compString)) {
 					sourcec = sourcec.substring(compString.length());
@@ -1011,102 +985,22 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 					sourcec = sourcec.substring(1);
 					curlBrace--;
 					curNode = (Element) curNode.getParentNode();
+					sourcec = sourcec.trim();
 					if (curNode.getFirstChild().getTextContent().equals("else")) {
-						sourcec = sourcec.substring(1);
-						curlBrace--;
 						curNode = (Element) curNode.getParentNode();
-
+					} else if (curNode.getFirstChild().getTextContent().substring(0, 6).equals("switch")) {
+						curNode = (Element) curNode.getParentNode();
+					} else if (!(sourcec.substring(0, 4).equals("else"))) {
+						if (curNode.getFirstChild().getTextContent().substring(0, 2).equals("if")) {
+							curNode = (Element) curNode.getParentNode();
+						}
 					}
+
 					done = true;
 					continue;
 				}
 				;
-//		compString = "(";
-//		if (sourcec.substring(0, compString.length()).equals(compString))
-//		{
-//		    sourcec = sourcec.substring(1);
-//		    roundBrace++;
-//		    
-//		}
-//		;
-//		compString = ")";
-//		if (sourcec.substring(0, compString.length()).equals(compString))
-//		{
-//		    sourcec = sourcec.substring(1);
-//		    roundBrace--;
-//		   
-//		}
-//		;
-//		compString = "if";
-//		if (sourcec.substring(0, compString.length()).equals(compString))
-//		{
-//		    
-//		    int countb = roundBrace;
-//		    String conditionText="if";
-//		    sourcec = sourcec.substring(compString.length());
-//		    sourcec = sourcec.trim();
-//		    
-//		    String[] nameArray = new String[2];
-//		    nameArray[0] = "(";
-//		    nameArray[1] = ")";
-//		    do
-//		    {
-//			TokenResult res = goToTokenWithName(sourcec, nameArray);
-//			sourcec = res.getSourceCode();
-//			if(res.getFoundToken() == 0) countb++; else countb--;
-//			conditionText+=res.getData();
-//			
-//		    }
-//		    while (countb != roundBrace);
-//		    
-//		    Element somethingWCB = document.createElement("alternative");
-//		    Element caseEl = document.createElement("case");
-//		    Element conditionEl = document.createElement("condition"); //WCB - with curly brace
-//		    
-//		    somethingWCB.appendChild(caseEl);
-//		    caseEl.appendChild(conditionEl);
-//		    conditionEl.appendChild(document.createTextNode(conditionText));
-//		    
-//		    curNode.appendChild(somethingWCB);
-//		    curNode = (Element) curNode.getLastChild();
-//		    done = true;
-//		}
-//		;
-//		compString = "while";
-//		if (sourcec.substring(0, compString.length()).equals(compString))
-//		{
-//		    
-//		    int countb = roundBrace;
-//		    String conditionText="while";
-//		    sourcec = sourcec.substring(compString.length());
-//		    sourcec = sourcec.trim();
-//		    
-//		    String[] nameArray = new String[2];
-//		    nameArray[0] = "(";
-//		    nameArray[1] = ")";
-//		    do
-//		    {
-//			TokenResult res = goToTokenWithName(sourcec, nameArray);
-//			sourcec = res.getSourceCode();
-//			if(res.getFoundToken() == 0) countb++; else countb--;
-//			conditionText+=res.getData();
-//			
-//		    }
-//		    while (countb != roundBrace);
-//		    
-//		    Element somethingWCB = document.createElement("alternative");
-//		    Element caseEl = document.createElement("case");
-//		    Element conditionEl = document.createElement("condition"); //WCB - with curly brace
-//		    
-//		    somethingWCB.appendChild(caseEl);
-//		    caseEl.appendChild(conditionEl);
-//		    conditionEl.appendChild(document.createTextNode(conditionText));
-//		    
-//		    curNode.appendChild(somethingWCB);
-//		    curNode = (Element) curNode.getLastChild();
-//		    done = true;
-//		}
-//		;
+
 				if (!done) {
 					sourcec = sourcec.substring(1);
 				}
@@ -1138,7 +1032,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 	/**
 	 * Liest den �bergebenen Quellcode ein und parsed die Informationen daraus
 	 * 
-	 * @param sourceCode Vollst�ndiger Java-Quellcode
+	 * @param sourceCode Vollstaendiger Java-Quellcode
 	 */
 	public void parse(ArrayList<String> sourceCode) {
 		sourceCode.get(0).trim();
