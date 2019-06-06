@@ -185,8 +185,16 @@ public class XmlHelperMethods
      */
     public NodeList getList(Node doc, String path) throws XPathExpressionException 
     {
-        	XPathExpression expr = this.xpath.compile(path);
-        	NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+    	// XPath to find empty text nodes.
+    	XPathExpression xpathExp = xPathfactory.newXPath().compile("//text()[normalize-space(.) = '']");  
+    	NodeList emptyTextNodes = (NodeList) xpathExp.evaluate(doc, XPathConstants.NODESET);
+    	// Remove each empty text node from document.
+    	for (int i = 0; i < emptyTextNodes.getLength(); i++) {
+    	  Node emptyTextNode = emptyTextNodes.item(i);
+    	  emptyTextNode.getParentNode().removeChild(emptyTextNode);
+    	}
+    	XPathExpression expr = this.xpath.compile(path);
+    	NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 
 	return list;
     }
