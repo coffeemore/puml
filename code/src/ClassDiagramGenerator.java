@@ -139,7 +139,7 @@ public class ClassDiagramGenerator
 				}
 			}
 			//Ausgabe Konsole
-			xmlHelper.writeDocumentToConsole(document);
+			//xmlHelper.writeDocumentToConsole(document);
 	    	return document;
 		}
     	catch (ParserConfigurationException e)
