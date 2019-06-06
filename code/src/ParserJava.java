@@ -517,7 +517,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 								}
 
 								// break;
-							//TODO: den switch case wegen verschachtelten switch caases überarbeiten
+								// TODO: den switch case wegen verschachtelten switch caases überarbeiten
 							case "switch":
 								Element switchAlternativeNode = document.createElement("alternative");
 
@@ -552,26 +552,49 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 
 							// break;
 							default:
-								//TODO: muss noch erweitert werden für method(method()) und Objet.method1().method2()
+								// TODO: muss noch erweitert werden für method(method()) und
+								// Objet.method1().method2()
 								System.out.println("Funktionsaufruf");
 								if (prefixRBrace[0].contains(".")) {
+
 									String[] methodArray = prefixRBrace[0].split("\\.");
-									
+
 									Element methodCallNode = document.createElement("methodcall");
 									Element methodInstanceNode = document.createElement("instance");
 									Element methodNode = document.createElement("method");
 
 									curNode.appendChild(methodCallNode);
 									methodCallNode.appendChild(methodNode);
-									methodCallNode.appendChild(methodInstanceNode);
-									
-									methodNode.appendChild(document.createTextNode(methodArray[0]));
-									methodInstanceNode.appendChild(document.createTextNode(methodArray[1]));
-									sourcec = res1.getSourceCode();
-									
-									
+
+									if (methodArray[0].equals("this")) {
+										if (prefixRBrace[0].split("\\.").length >= 3) {
+
+											methodCallNode.appendChild(methodInstanceNode);
+
+											Element validNode = document.createElement("validity");
+											validNode.appendChild(document.createTextNode("class"));
+											methodCallNode.appendChild(validNode);
+
+											methodNode.appendChild(document.createTextNode(methodArray[2]));
+											methodInstanceNode.appendChild(document.createTextNode(methodArray[1]));
+											sourcec = res1.getSourceCode();
+										} else {
+
+											prefixRBrace[0] = prefixRBrace[0].substring(5);
+											methodNode.appendChild(document.createTextNode(prefixRBrace[0]));
+											sourcec = res1.getSourceCode();
+										}
+
+									} else {
+
+										methodCallNode.appendChild(methodInstanceNode);
+										methodNode.appendChild(document.createTextNode(methodArray[1]));
+										methodInstanceNode.appendChild(document.createTextNode(methodArray[0]));
+										sourcec = res1.getSourceCode();
+									}
 
 								} else {
+
 									Element methodCallNode = document.createElement("methodcall");
 									Element methodNode = document.createElement("method");
 
@@ -587,13 +610,13 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 							break;
 						case 2:// Konstruktor oder else if
 							switch (prefixRBrace[0]) {
-							case "else":
-
-								break;
-
-							case "new":// Objekterzeugung
-
-								break;
+//							case "else":
+//
+//								break;
+//
+//							case "new":// Objekterzeugung
+//
+//								break;
 							case "private":// privater Konstruktor
 							case "public": // Konstruktor
 								if (prefixRBrace[1]
@@ -785,9 +808,10 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 								break;
 							}
 
-							if ((prefixRBrace[1].equals("=") || prefixRBrace[2].equals("new"))
-									&& curNode.getNodeName().equals("classdefinition")) {
+							if ((prefixRBrace[1].equals("=") || prefixRBrace[2].equals("new"))) {
 								// Instance-knoten erstellen
+								
+								boolean doneClass = false;
 								Element instanceNode = document.createElement("instance");
 								curNode.appendChild(instanceNode);
 								Element instanceNNode = document.createElement("name");
@@ -796,23 +820,31 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 								Element instanceCNode = document.createElement("class");
 								instanceNode.appendChild(instanceCNode);
 								instanceCNode.appendChild(document.createTextNode(prefixRBrace[3]));
+								Element goToClassNode = curNode;
+								do {
+									if (goToClassNode.getNodeName().equals("classdefinition")) {
+										doneClass= true;
+										Element classObject = (Element) getChildwithName(goToClassNode, "composition");
 
-								Element classObject = (Element) getChildwithName(curNode, "composition");
+										boolean inAgregation = false;
+										for (int i = 0; i < goToClassNode.getElementsByTagName("entry").getLength(); i++) {
+											if (goToClassNode.getElementsByTagName("entry").item(i).getTextContent()
+													.equals(prefixRBrace[3]))
+												inAgregation = true;
+											;
+										}
 
-								boolean inAgregation = false;
-								for (int i = 0; i < curNode.getElementsByTagName("entry").getLength(); i++) {
-									if (curNode.getElementsByTagName("entry").item(i).getTextContent()
-											.equals(prefixRBrace[3]))
-										inAgregation = true;
-									;
-								}
+										if (inAgregation == false) {
+											Element classObjectEl = document.createElement("entry");
+											classObjectEl.appendChild(document.createTextNode(prefixRBrace[3]));
+											classObject.appendChild(classObjectEl);
+											// curNode = (Element) curNode.getLastChild();
+										}
+									}
+									goToClassNode= (Element) goToClassNode.getParentNode();
+									
+								}while(!doneClass);
 
-								if (inAgregation == false) {
-									Element classObjectEl = document.createElement("entry");
-									classObjectEl.appendChild(document.createTextNode(prefixRBrace[3]));
-									classObject.appendChild(classObjectEl);
-									// curNode = (Element) curNode.getLastChild();
-								}
 
 								String[] newNameArray = new String[1];
 								newNameArray[0] = ")";
@@ -1018,7 +1050,13 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 					sourcec = sourcec.trim();
 					if (curNode.getFirstChild().getTextContent().equals("else")) {
 						curNode = (Element) curNode.getParentNode();
-					} else if (curNode.getFirstChild().getTextContent().substring(0, 6).equals("switch")) {
+					} else if (curNode.getNodeName().equals("alternative") && curNode.getFirstChild().getFirstChild()
+							.getTextContent().substring(0, 6).equals("switch")) {
+						switchCaseCondition[curSwitch] = "";
+						switchCaseOn[curSwitch] = false;
+						if (curSwitch != 0) {
+							curSwitch--;
+						}
 						curNode = (Element) curNode.getParentNode();
 					} else if (!(sourcec.substring(0, 4).equals("else"))) {
 						if (curNode.getFirstChild().getTextContent().substring(0, 2).equals("if")) {

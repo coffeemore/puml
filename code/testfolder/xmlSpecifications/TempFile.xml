@@ -41,8 +41,8 @@
 				<case>
 					<condition>if(a!=b)</condition>
 					<methodcall>
-						<method>classInstance1</method>
-						<instance>call1</instance>
+						<method>call1</method>
+						<instance>classInstance1</instance>
 					</methodcall>
 				</case>
 				<case>
@@ -50,15 +50,14 @@
 					<loop>
 						<condition>for(int i=0; i!=100; i++)</condition>
 						<methodcall>
-							<method>Class2</method>
-							<instance>call2</instance>
+							<method>call2</method>
+							<instance>Class2</instance>
 						</methodcall>
 					</loop>
 				</case>
 			</alternative>
 			<methodcall>
-				<method>this</method>
-				<instance>method2</instance>
+				<method>method2</method>
 			</methodcall>
 		</methoddefinition>
 		<methoddefinition>
@@ -98,31 +97,34 @@
 					<condition>switch(i)/default</condition>
 					<something>
 						Class2 classInstance3 = new Class2();
+						<instance>
+							<name>classInstance3</name>
+							<class>Class2</class>
+						</instance>
+						<instance>
+							<name>classInstance1</name>
+							<class>Class3</class>
+						</instance>
 						<methodcall>
-							<method>Class2</method>
-						</methodcall>
-						<methodcall>
-							<method>Class3</method>
-						</methodcall>
-						<methodcall>
-							<method>classInstance1</method>
-							<instance>call1</instance>
-						</methodcall>
-						<methodcall>
-							<method>this</method>
+							<method>call1</method>
 							<instance>classInstance1</instance>
 						</methodcall>
 						<methodcall>
-							<method>classInstance2</method>
-							<instance>call1</instance>
+							<method>call1</method>
+							<instance>classInstance1</instance>
+							<validity>class</validity>
 						</methodcall>
 						<methodcall>
-							<method>classInstance3</method>
-							<instance>call1</instance>
+							<method>call1</method>
+							<instance>classInstance2</instance>
 						</methodcall>
 						<methodcall>
-							<method>classInstance4</method>
-							<instance>callX</instance>
+							<method>call1</method>
+							<instance>classInstance3</instance>
+						</methodcall>
+						<methodcall>
+							<method>callX</method>
+							<instance>classInstance4</instance>
 						</methodcall>
 					</something>
 				</case>
