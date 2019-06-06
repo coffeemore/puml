@@ -6,12 +6,7 @@ import java.util.Scanner;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -31,7 +26,6 @@ import org.xml.sax.SAXException;
  */
 public class Console extends PUMLgenerator
 {
-
     /**
      * Konstruktor
      */
@@ -110,7 +104,7 @@ public class Console extends PUMLgenerator
 		    	codeCollector.paths.add(cmd.getOptionValues("i")[i]);
 		    	System.out.println(codeCollector.paths.get(i));
 		    }
-			PUMLgenerator.parser.parse(codeCollector.getSourceCode()); // Parser berbeitet Daten welche ihm übergeben werden 
+		    PUMLgenerator.parser.parse(codeCollector.getSourceCode()); // Parser berbeitet Daten welche ihm übergeben werden 
 			if (cmd.hasOption("s"))
 			{
 				showAllClassesMethods();
@@ -162,7 +156,7 @@ public class Console extends PUMLgenerator
 		System.out.println("Es fehlt ein zu bearbeitender Pfad.");
 	    }
 	}
-	catch (UnrecognizedOptionException uoe) // Falls Parameter unbekannt, Hilfe ausgeben
+	catch (UnrecognizedOptionException uoe ) // Falls Parameter unbekannt, Hilfe ausgeben
 	{
 	    System.out.println("Paramter: " + uoe.getOption() + " unknown.");
 	    HelpFormatter formatter = new HelpFormatter();
@@ -307,8 +301,15 @@ public class Console extends PUMLgenerator
 		}
 		if (!givenOutPath) //Falls kein Ausgabeordner definiert, in Arbeitsverzeichnis schreiben
     	{
-    		try
-		    {
+    		try //(codeCollector.paths.add(cmd.getOptionValues("i")[i])
+		    {   
+    			/*
+    			//PUML code erstellen
+    			outputPUML.savePUMLtoFile(outputPUML.getPUML(classDiagramGenerator.createDiagram(getTestDoc())),"./outPUML_Code_defaultlocation");
+    			//Diagramm erzeugen aus String
+    			outputPUML.createPUMLfromString("./outPUML_Graph_defaultlocation", outputPUML.getPUML(classDiagramGenerator.createDiagram(getTestDoc())));
+    			//TODO
+    			 * */
     			//PUML code erstellen
     			outputPUML.savePUMLtoFile(outputPUML.getPUML(classDiagramGenerator.createDiagram(parser.getParsingResult())),"./outPUML_Code_defaultlocation");
     			//Diagramm erzeugen aus String
@@ -359,17 +360,21 @@ public class Console extends PUMLgenerator
 		{
 			//Doc Initialisierung und filtern der Elemente aus xml -> Klasse und Methode
 	    	Document parserDoc = PUMLgenerator.parser.getParsingResult();
+	    	/*
 			XPathFactory xPathfactory = XPathFactory.newInstance();
 			XPath xpath = xPathfactory.newXPath();
 			XPathExpression expr = xpath.compile("/parsed/*"); // Startpunkt parsed Knoten
-			NodeList classNodeList = (NodeList) expr.evaluate(parserDoc, XPathConstants.NODESET);
+			NodeList classNodeList = (NodeList) expr.evaluate(parserDoc, XPathConstants.NODESET);*/
 			
-			classNodeList = xmlHelper.getList(parserDoc, "/source/classdefinition/name");
+			NodeList classNodeList = xmlHelper.getList(parserDoc, "/source/classdefinition/name");
 			System.out.println("Anzahl Klassen: "+ classNodeList.getLength() + "\n");
 			
+			/*
+			NodeList methodeNodeList = xmlHelper.getList(classNodeList.item(i), "../methoddefinition/name");
 			NodeList methodeNodeList = (NodeList) expr.evaluate(parserDoc, XPathConstants.NODESET);
-			
-			methodeNodeList = xmlHelper.getList(parserDoc, "/source/classdefinition/methoddefinition/name");
+			*/
+			//Initialisiere NodeList fuer methoden der Klasse
+			NodeList methodeNodeList = xmlHelper.getList(parserDoc, "/source/classdefinition/methoddefinition/name");
 			System.out.println("Anzahl Methoden: "+ methodeNodeList.getLength() + "\n");
 			
 	    	if (!existingOutpath) //Falls kein Ausgabeordner definiert, in Arbeitsverzeichnis schreiben
@@ -414,7 +419,7 @@ public class Console extends PUMLgenerator
 		try {
 		DocumentBuilderFactory docBuildFact = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuild = docBuildFact.newDocumentBuilder();
-		Document doc = docBuild.parse(new File("/Users/mariangeissler/Entwickler/eclipse-workspace/puml/code/testfolder/xmlSpecifications/parsedData.xml"));
+		Document doc = docBuild.parse(new File("/home/mariangeissler/puml/code/testfolder/xmlSpecifications/parsedData.xml"));
 		return doc;
 		}
 		catch (ParserConfigurationException | SAXException | IOException e)
