@@ -9,13 +9,14 @@
 			<entry>If1</entry>
 			<entry>If2</entry>
 		</implements>
-		<composition>
+		<compositions>
 			<entry>Class2</entry>
-		</composition>
-		<agregation>
+			<entry>Class3</entry>
+		</compositions>
+		<aggregations>
 			<entry>Class4</entry>
 			<entry>Class5</entry>
-		</agregation>
+		</aggregations>
 		<instance>
 			<name>classInstance1</name>
 			<class>Class2</class>
@@ -163,8 +164,8 @@
 	</classdefinition>
 	<classdefinition>
 		<name>Class2</name>
-		<composition />
-		<agregation />
+		<compositions />
+		<aggregations />
 		<methoddefinition>
 			<name>call1</name>
 		</methoddefinition>
@@ -174,21 +175,21 @@
 	</classdefinition>
 	<classdefinition>
 		<name>Class3</name>
-		<composition />
-		<agregation />
+		<compositions />
+		<aggregations />
 		<methoddefinition>
 			<name>call1</name>
 		</methoddefinition>
 	</classdefinition>
 	<classdefinition>
 		<name>Class4</name>
-		<composition />
-		<agregation />
+		<compositions />
+		<aggregations />
 	</classdefinition>
 	<classdefinition>
 		<name>Class5</name>
-		<composition />
-		<agregation />
+		<compositions />
+		<aggregations />
 	</classdefinition>
 	<interfacedefinition>
 		<name>If1</name>

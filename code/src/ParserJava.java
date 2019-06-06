@@ -299,9 +299,9 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 						// compString.length()).equals(compString)));
 
 					}
-					Element compNode = document.createElement("composition");
+					Element compNode = document.createElement("compositions");
 					curNode.appendChild(compNode);
-					Element agrNode = document.createElement("agregation");
+					Element agrNode = document.createElement("aggregations");
 					curNode.appendChild(agrNode);
 
 					done = true;
@@ -413,6 +413,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 								sourcec = ifRes.getSourceCode();
 								sourcec = sourcec.substring(1);
 								sourcec = sourcec.trim();
+								//TODO: if ohne geschweifte Klammern
 								if (sourcec.charAt(0) == '{') {
 									sourcec = sourcec.substring(1);
 									curlBrace++;
@@ -441,6 +442,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 								sourcec = forRes.getSourceCode();
 								sourcec = sourcec.substring(1);
 								sourcec = sourcec.trim();
+								//TODO: for ohne geschweifte Klammern
 								if (sourcec.charAt(0) == '{') {
 									sourcec = sourcec.substring(1);
 									curlBrace++;
@@ -517,7 +519,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 								}
 
 								// break;
-								// TODO: den switch case wegen verschachtelten switch caases überarbeiten
+								// TODO: den switch case wegen verschachtelten switch cases überarbeiten
 							case "switch":
 								Element switchAlternativeNode = document.createElement("alternative");
 
@@ -631,7 +633,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 
 									// Composition-knoten erstellen
 
-									Element classObject = (Element) getChildwithName(curNode, "agregation");
+									Element classObject = (Element) getChildwithName(curNode, "aggregations");
 
 									do {
 
@@ -641,9 +643,12 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 										String[] argumentConstructor = functionData2.split(" ");
 										if (argumentConstructor.length == 2) {
 											boolean inAgregation = false;
-											for (int i = 0; i < curNode.getElementsByTagName("entry")
+											
+											
+											
+											for (int i = 0; i < classObject.getElementsByTagName("entry")
 													.getLength(); i++) {
-												if (curNode.getElementsByTagName("entry").item(i).getTextContent()
+												if (classObject.getElementsByTagName("entry").item(i).getTextContent()
 														.equals(argumentConstructor[0]))
 													inAgregation = true;
 												;
@@ -812,6 +817,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 								// Instance-knoten erstellen
 								
 								boolean doneClass = false;
+								
 								Element instanceNode = document.createElement("instance");
 								curNode.appendChild(instanceNode);
 								Element instanceNNode = document.createElement("name");
@@ -824,13 +830,25 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 								do {
 									if (goToClassNode.getNodeName().equals("classdefinition")) {
 										doneClass= true;
-										Element classObject = (Element) getChildwithName(goToClassNode, "composition");
+										Element classObject = (Element) getChildwithName(goToClassNode, "compositions");
+										Element classAgr = (Element) getChildwithName(goToClassNode, "aggregations");
 
 										boolean inAgregation = false;
-										for (int i = 0; i < goToClassNode.getElementsByTagName("entry").getLength(); i++) {
-											if (goToClassNode.getElementsByTagName("entry").item(i).getTextContent()
-													.equals(prefixRBrace[3]))
+										
+										for (int i = 0; i < classObject.getElementsByTagName("entry").getLength(); i++) {
+											if (classObject.getElementsByTagName("entry").item(i).getTextContent()
+													.equals(prefixRBrace[3])) {
+												
 												inAgregation = true;
+											}
+											;
+										}
+										
+										for (int i = 0; i < classAgr.getElementsByTagName("entry").getLength(); i++) {
+											if (classAgr.getElementsByTagName("entry").item(i).getTextContent()
+													.equals(prefixRBrace[3])) {
+												inAgregation = true;
+											}
 											;
 										}
 
