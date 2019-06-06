@@ -1,7 +1,6 @@
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -32,48 +31,29 @@ class SequenceDiagramGeneratorTest
 	DocumentBuilderFactory dbFactory1 = DocumentBuilderFactory.newInstance();
 	DocumentBuilder dBuilder1 = dbFactory1.newDocumentBuilder();
 	parsedData = dBuilder1.parse(xmlFile1);
-
-	// classUnderTest.createDiagram(parsedData,"Class1","method1");
-	// classUnderTest.listAllNodes(classUnderTest.root1);
     }
 
-    //@Test
+    // @Test
     void testCreateDiagram() throws ParserConfigurationException, SAXException, IOException, XPathExpressionException
     {
 	SetUp();
-	assertAll(() ->
-	{
-
+	assertAll(
+	() -> {
 	    Document test = classUnderTest.createDiagram(parsedData, "Class1", "method1");
-
 	    String testen = xmlHM.removeWhitespace(test);
 
 	    xmlFile2 = new File("../code/testfolder/xmlSpecifications/SeqDiagram.xml");
 	    DocumentBuilderFactory dbFactory2 = DocumentBuilderFactory.newInstance();
 	    DocumentBuilder dBuilder2 = dbFactory2.newDocumentBuilder();
 	    Document seqDiagram = dBuilder2.parse(xmlFile2);
+	    
 	    Element root = seqDiagram.getDocumentElement();
-	    // System.out.println(root.getTagName());
 	    xmlHM.removeComments(root);
 	    String vergleich = xmlHM.removeWhitespace(seqDiagram);
 
 	    assertEquals(vergleich, testen);
-	});
-
-//	File xmlFile;
-//	XmlHelperMethods xmlH = new XmlHelperMethods();
-//	
-//	xmlFile = new File("//home//developer//workspace//puml//code//testfolder//xmlSpecifications//parsedData.xml");
-//	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-//	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-//	Document parsedData = dBuilder.parse(xmlFile);
-
-//	Document seqDia = classUnderTest.createDiagram(parsedData, "class1","method1");
-	// seqgen.listAllNodes(seqDia.getDocumentElement());
-	// seqgen.listAllNodes(parsedData.getDocumentElement());
-//	xmlH.writeDocumentToConsole(xmlH.deleteComments(parsedData));
-	// xmlH.listChildnodeswithName(parsedData, "instance");
-
+	}
+	);
     }
 
     @Test
@@ -81,23 +61,18 @@ class SequenceDiagramGeneratorTest
 	    IOException
     {
 	SetUp();
-	assertAll(() ->
-	{
+	assertAll(
+	() ->{
 	    Document test = classUnderTest.createDiagram(parsedData, "Class1", "method1");
 
 	    xmlFile2 = new File("../code/testfolder/xmlSpecifications/SeqDiagram.xml");
 	    DocumentBuilderFactory dbFactory2 = DocumentBuilderFactory.newInstance();
 	    DocumentBuilder dBuilder2 = dbFactory2.newDocumentBuilder();
 	    Document seqDiagram = dBuilder2.parse(xmlFile2);
+	    
 	    boolean s = xmlHM.compareXML(seqDiagram, test);
-	    assertEquals(true, s);
-	});
+	    assertTrue(s);
+	}
+	);
     }
-
-//  @Test
-//  void testSequenceDiagramGenerator()
-//  {
-//	fail("Not yet implemented");
-//  }
-
 }
