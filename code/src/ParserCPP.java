@@ -137,8 +137,9 @@ public class ParserCPP implements ParserIf
 	{
 		////JANS ZEUG////
 		
-		String sourceCodeHPP = deleteComStr(code.get(0));
-		String sourceCodeCPP = deleteComStr(code.get(1));
+		
+		String sourceCodeHPP = code.get(0);
+		String sourceCodeCPP = code.get(1);
 		String compString;		
 		/*
 		// Erstellen des Dokuments
@@ -188,7 +189,7 @@ public class ParserCPP implements ParserIf
 	    }
 	    */
 
-	//JOHANNS ZEUG:
+		//JOHANNS ZEUG:
 		DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder documentBuilder;
 		documentBuilder = documentFactory.newDocumentBuilder();
@@ -197,15 +198,17 @@ public class ParserCPP implements ParserIf
 		Element root = document.createElement("source");
 		document.appendChild(root);
 	
-	    String keyword = "class ";
-	    //Suche nach dem Index vom Wort "class" im HPP-Code
+		
+		/////////////////////////////////////////////////////////////////////////////////////////
+		//Suche nach dem Index vom Wort "class" im HPP-Code
+		String keyword = "class ";
 	    int index = sourceCodeHPP.indexOf(keyword);
 	    
 	    while (index >=0)
 	    {
 	        //Index vom Ende des Klassennamens erfassen welches mit Leerzeichen oder Zeilenumbruch endet
 	        int b = Math.min(sourceCodeHPP.indexOf(" ", index + keyword.length()),
-	        		sourceCodeHPP.indexOf("\n", index + keyword.length()));
+	        				 sourceCodeHPP.indexOf("\n", index + keyword.length()));
 	        
 	        //Ausgabe des Folgewortes von "class"
 	        System.out.println(sourceCodeHPP.substring(index + keyword.length(), b));
@@ -237,10 +240,46 @@ public class ParserCPP implements ParserIf
 			
 		    //Suche nach dem nächsten Index vom Wort "class" im HPP-Code
 	        index = sourceCodeHPP.indexOf(keyword, index + keyword.length());
-	    }		
+	    }
+	    
+	    System.out.println("ÖÖ"+sourceCodeHPP+"ÖÖ");
+	    isInterface("Class2",sourceCodeHPP);
+	    /////////////////////////////////////////////////////////////////////////////////////////
 		xmlHelper.writeDocumentToConsole(document);
 	}
+	
+	//Test ob eine übergebene Klasse im übergebenem Quellcode ein Interface ist
+	//Dabei wird davon ausgegangen, dass Interfaces nicht in folgender Struktur deklariert sind: "class Class1 : public Class3, public If1, public If2"
+	//!!Probleme wenn virtual am Anfng des Methoden-Namens
+	private boolean isInterface(String name,String sourceCodeHPP)
+	{
+		sourceCodeHPP= sourceCodeHPP.replaceAll("\n", "");
+		sourceCodeHPP= sourceCodeHPP.replaceAll("\t", "");
+		sourceCodeHPP= sourceCodeHPP.replaceAll(" ", "");
 		
+		name= "class"+name;
+		System.out.println("\n *"+name+"*\n");
+		boolean interFace = true;
+		String keyword = name;
+		System.out.println("ÄÄ"+ sourceCodeHPP+"ÄÄ");
+	    int index = sourceCodeHPP.indexOf(keyword);
+	    String tmp = "";
+	    System.out.println(keyword);
+	    System.out.println(index);
+	    System.out.println(sourceCodeHPP.indexOf(keyword));
+	    System.out.println(sourceCodeHPP.substring(index)+"\n");
+	    for( int i=0; index+i+1<=sourceCodeHPP.length()&& index+i >=0  && !(sourceCodeHPP.substring(index+i).equals("}")); i++)
+	    {
+	    	tmp = tmp + sourceCodeHPP.substring(index+i,index+1+i);
+	    	System.out.println("*+*" );
+	    }
+	    tmp = tmp.replaceAll("public:", "");
+	    tmp = tmp.replaceAll("protected:", "");
+	    tmp = tmp.replaceAll("private:", "");
+	    System.out.println(tmp);
+	    System.out.println("burger".substring(0, 1));
+		return interFace;
+	}
 	
 	private void SearchInCode(String subject, String sourceCodeCPP) 
 	{
@@ -255,8 +294,11 @@ public class ParserCPP implements ParserIf
      */
     public void parse(ArrayList<String> sourceCode)
     {
-    	sourceCode.set(0, deleteComStr(sourceCode.get(0)));
-    	sourceCode.set(1, deleteComStr(sourceCode.get(1)));
+    	//sourceCode.set(0, deleteComStr(sourceCode.get(0)));
+    	//sourceCode.set(1, deleteComStr(sourceCode.get(1)));
+    	sourceCode.set(0,sourceCode.get(0));
+    	sourceCode.set(1,sourceCode.get(1));
+    	
     	
     	//Ausgabe eingelesener HPP-Dateien
     	System.out.println(sourceCode.get(0));
