@@ -110,7 +110,7 @@ public class Console extends PUMLgenerator
 		    	codeCollector.paths.add(cmd.getOptionValues("i")[i]);
 		    	System.out.println(codeCollector.paths.get(i));
 		    }
-			PUMLgenerator.parser.parse(codeCollector.getSourceCode().get(0)); // Parser berbeitet Daten welche ihm übergeben werden 
+			PUMLgenerator.parser.parse(codeCollector.getSourceCode()); // Parser berbeitet Daten welche ihm übergeben werden 
 			if (cmd.hasOption("s"))
 			{
 				showAllClassesMethods();
@@ -181,6 +181,7 @@ public class Console extends PUMLgenerator
 		{
 			//Document parserDoc = (); //Test
 			Document parserDoc = PUMLgenerator.parser.getParsingResult();
+			xmlHelper.writeDocumentToConsole(parserDoc);
 			//Initialisiere Nodelist fuer Klassennamen
 			NodeList classNodeList = xmlHelper.getList(parserDoc, "/source/classdefinition/name");
 			System.out.println("\nAnzahl Klassen total: " + classNodeList.getLength() + "\n");
