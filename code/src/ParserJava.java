@@ -517,6 +517,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 								}
 
 								// break;
+							//TODO: den switch case wegen verschachtelten switch caases überarbeiten
 							case "switch":
 								Element switchAlternativeNode = document.createElement("alternative");
 
@@ -551,7 +552,36 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 
 							// break;
 							default:
+								//TODO: muss noch erweitert werden für method(method()) und Objet.method1().method2()
 								System.out.println("Funktionsaufruf");
+								if (prefixRBrace[0].contains(".")) {
+									String[] methodArray = prefixRBrace[0].split("\\.");
+									
+									Element methodCallNode = document.createElement("methodcall");
+									Element methodInstanceNode = document.createElement("instance");
+									Element methodNode = document.createElement("method");
+
+									curNode.appendChild(methodCallNode);
+									methodCallNode.appendChild(methodNode);
+									methodCallNode.appendChild(methodInstanceNode);
+									
+									methodNode.appendChild(document.createTextNode(methodArray[0]));
+									methodInstanceNode.appendChild(document.createTextNode(methodArray[1]));
+									sourcec = res1.getSourceCode();
+									
+									
+
+								} else {
+									Element methodCallNode = document.createElement("methodcall");
+									Element methodNode = document.createElement("method");
+
+									curNode.appendChild(methodCallNode);
+									methodCallNode.appendChild(methodNode);
+
+									methodNode.appendChild(document.createTextNode(prefixRBrace[0]));
+									sourcec = res1.getSourceCode();
+
+								}
 								break;
 							}
 							break;

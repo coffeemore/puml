@@ -40,14 +40,26 @@
 			<alternative>
 				<case>
 					<condition>if(a!=b)</condition>
+					<methodcall>
+						<method>classInstance1</method>
+						<instance>call1</instance>
+					</methodcall>
 				</case>
 				<case>
 					<condition>else</condition>
 					<loop>
 						<condition>for(int i=0; i!=100; i++)</condition>
+						<methodcall>
+							<method>Class2</method>
+							<instance>call2</instance>
+						</methodcall>
 					</loop>
 				</case>
 			</alternative>
+			<methodcall>
+				<method>this</method>
+				<instance>method2</instance>
+			</methodcall>
 		</methoddefinition>
 		<methoddefinition>
 			<name>method2</name>
@@ -61,6 +73,9 @@
 						meth
 						<loop>
 							<condition>while(j!=0)</condition>
+							<methodcall>
+								<method>method3</method>
+							</methodcall>
 						</loop>
 					</something>
 				</case>
@@ -73,6 +88,9 @@
 						method3();
 						<loop>
 							<condition>do/while(j!=0)</condition>
+							<methodcall>
+								<method>method3</method>
+							</methodcall>
 						</loop>
 					</something>
 				</case>
@@ -80,6 +98,32 @@
 					<condition>switch(i)/default</condition>
 					<something>
 						Class2 classInstance3 = new Class2();
+						<methodcall>
+							<method>Class2</method>
+						</methodcall>
+						<methodcall>
+							<method>Class3</method>
+						</methodcall>
+						<methodcall>
+							<method>classInstance1</method>
+							<instance>call1</instance>
+						</methodcall>
+						<methodcall>
+							<method>this</method>
+							<instance>classInstance1</instance>
+						</methodcall>
+						<methodcall>
+							<method>classInstance2</method>
+							<instance>call1</instance>
+						</methodcall>
+						<methodcall>
+							<method>classInstance3</method>
+							<instance>call1</instance>
+						</methodcall>
+						<methodcall>
+							<method>classInstance4</method>
+							<instance>callX</instance>
+						</methodcall>
 					</something>
 				</case>
 			</alternative>
@@ -89,11 +133,17 @@
 			<alternative>
 				<case>
 					<condition>if(a!=b)</condition>
+					<methodcall>
+						<method>method3</method>
+					</methodcall>
 				</case>
 			</alternative>
 			<alternative>
 				<case>
 					<condition>if(b!=c)</condition>
+					<methodcall>
+						<method>method4</method>
+					</methodcall>
 				</case>
 			</alternative>
 		</methoddefinition>
@@ -102,6 +152,9 @@
 			<alternative>
 				<case>
 					<condition>if(d!=e)</condition>
+					<methodcall>
+						<method>method3</method>
+					</methodcall>
 				</case>
 			</alternative>
 		</methoddefinition>
