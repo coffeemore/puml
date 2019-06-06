@@ -95,7 +95,7 @@ public class GUI_Swing
 
 	private ArrayList<String> paths;
 	private int lastPathsLength;
-	private String srcCode;
+	private ArrayList<String> srcCode;
 	private String classPumlCode;
 	private String seqPumlCode;
 	private String epClass;

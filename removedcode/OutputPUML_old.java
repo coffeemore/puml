@@ -103,6 +103,8 @@
     */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//---------------- erster Ansatz für Iteration durch gesamted Dokument ohne Verschachtelung in verschiedene Methoden ----------------
+
 /*
 
 //    	    for (int i = 0; i < list.getLength(); i++) //13 iterations MÜSSEN PER IF ABGEFRAGT WERDEN, DA SCHLIEẞENDE KNOTEN AUCH ANGEZEIGT WERDEN
@@ -164,7 +166,7 @@
 //   
 
 
-
+//---------------- zweiter Ansatz für Iteration durch gesamted Dokument als Verschachtelung in einer externen Methode ----------------
  public String helperMethodCall(NodeList list, String pumlCode, int i, String entry)
     {
 	boolean alt = false; // wenn case geöffnet ist, sodass danach else
@@ -235,6 +237,8 @@
 
 */
 
+//---------------- Ansatz für Iteration durch Cases ----------------
+
 //	    else if (list.item(i).getNodeName() == "class")
 //	    {
 //
@@ -293,3 +297,31 @@
 //		// Hier Einfügen
 ////		System.out.println(i + ": " + list.item(i).getNodeName()+ " - " + list.item(i).getLocalName());
 //	    }
+
+
+//---------------- Ansatz für Methodenkopf der helperMethodCall Methode----------------
+
+	 /*
+	 String pumlCode = "";
+	    String templistPath = listPath + "/name"; //an position name in der Methoddefinition
+		list = XmlHelperMethods.getList(diagramData, listPath).item(0).getChildNodes();
+		for (int a = 0; a < list.getLength(); a++)
+		{
+		    if (list.item(a).getNodeName() == "name")
+		    {
+			System.out.println("-- " + list.item(a).getNodeName());
+			pumlCode += "activate " + startClass + "\n";
+		    }
+		}
+		templistPath = listPath + "/alternative";
+		list = XmlHelperMethods.getList(diagramData, templistPath);
+		for (int a = 0; a < list.getLength(); a++)
+		{
+		    if (list.item(a).getNodeName() != "#text")
+		    {
+			pumlCode += helperCaseCall(diagramData, templistPath, startClass, false);
+		    }
+		}
+
+	return pumlCode;
+	*/
