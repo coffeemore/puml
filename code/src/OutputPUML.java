@@ -29,6 +29,7 @@ public class OutputPUML
     public NodeList list = null;
     PUMLgenerator puml = new PUMLgenerator();
     XmlHelperMethods helper = new XmlHelperMethods();
+    boolean firstMethodCall = true;
     
 
     /**
@@ -166,6 +167,13 @@ public class OutputPUML
 	 NodeList methodNameList = helper.getList(methodefNode, "name");
 	 String methodName =  methodNameList.item(0).getTextContent();
 	 Node nextNode = methodNameList.item(0);
+	 
+	 //Abfrage ob die Methode das erste Mal aufgerufen wird
+	 if (!firstMethodCall)
+	 {
+	     pumlCode = startClass + " -> " + startClass + ": " + methodName + "\n";
+	 }
+	 firstMethodCall = false;
 	 try
 	{
 		 while(nextNode.getNodeName() != null) //Versuch
@@ -179,7 +187,7 @@ public class OutputPUML
 		     if(nextNode.getNodeName()=="alternative")
 		     {
 			 pumlCode += helperAlternativeCall(nextNode, startClass);
-			 nextNode = nextNode.getNextSibling();
+			 //nextNode = nextNode.getNextSibling();
 			    
 		     }
 		     if(nextNode.getNodeName() == "methodcall")
@@ -298,7 +306,7 @@ public class OutputPUML
 	// TODO: handle exception
 	}
 	
-	inst = (inst != "") ? "(" + inst + ")" : inst;
+	inst = (inst != "") ? " (" + inst + ")" : inst;
 	
 	/*
 	 * Abfragen anhand der gespeicherten Daten über die Strings werden behandelt
@@ -312,14 +320,14 @@ public class OutputPUML
 	 * 	unknown/handled/recursive:
 	 * 		Wird gemäß der Vorgaben in den pumlCode geschrieben	 
 	 */
-	if (toClass != "" && method != "")
+	if (!toClass.equals("") && !method.equals(""))
 	{
-		pumlCode += startClass + " -> " + toClass + ": " + method + " " + inst + "\n";
+		pumlCode += startClass + " -> " + toClass + ": " + method + inst + "\n";
 		pumlCode += "activate " + toClass + "\n";
 		pumlCode += toClass + " --> " + startClass + "\n";
 		pumlCode += "deactivate " + toClass + "\n";
 	}
-	else if(toClass == "" && !type.equals("unknown") && !type.equals("recursive") && !type.equals("handled"))
+	else if(toClass.equals("") && !type.equals("unknown") && !type.equals("recursive") && !type.equals("handled"))
 	{
 	    try {
 	    NodeList callList = helper.getList(methodCallNode, "//methoddefinition[name=\"" + method + "\"]");
@@ -333,20 +341,20 @@ public class OutputPUML
 	}
 	else if(type.equals("unknown"))
 	{
-	    pumlCode += startClass + " ->x]" + toClass + ": " + method + " " + inst + "\n";
+	    pumlCode += startClass + " ->x]" + toClass + ": " + method + inst + "\n";
 
 	}
 	else if(type.equals("recursive"))
 	{
-	    pumlCode += startClass + " ->o " + startClass + ": " + method + " " + inst + "\n";
-	    pumlCode += "activate " + toClass + "\n";
-	    pumlCode += "deactivate " + toClass + "\n";
+	    pumlCode += startClass + " ->o " + startClass + ": " + method + inst + "\n";
+	    pumlCode += "activate " + startClass + "\n";
+	    pumlCode += "deactivate " + startClass + "\n";
 	}
 	else if(type.equals("handled"))
 	{
-	    pumlCode += startClass + " [#0000FF] ->> " + startClass + ": " + method + " " + inst + "\n";
-	    pumlCode += "activate " + toClass + "\n";
-	    pumlCode += "deactivate " + toClass + "\n";
+	    pumlCode += startClass + " [#0000FF]->> " + startClass + ": " + method + inst + "\n";
+	    pumlCode += "activate " + startClass + "\n";
+	    pumlCode += "deactivate " + startClass + "\n";
 	}
 	
 	return pumlCode;
@@ -359,7 +367,10 @@ public class OutputPUML
 	NodeList loopList = helper.getList(loopNode, "condition");
 	Node nextNode = loopList.item(0);
 	
-	
+	try
+	{
+	    while (nextNode.getNodeName() != null)
+	    {
 	if(nextNode.getNodeName()=="condition")
 	{
 	    pumlCode += nextNode.getTextContent() + "\n";
@@ -368,6 +379,14 @@ public class OutputPUML
 	{
 	    nextNode = nextNode.getFirstChild();
 	    pumlCode += helperMethodCallHandler(startClass, nextNode);
+	}
+	    nextNode = nextNode.getNextSibling();
+	    }
+	
+	}
+	catch(Exception e)
+	{
+	    
 	}
 	
 	pumlCode += "end\n";

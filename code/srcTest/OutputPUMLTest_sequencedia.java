@@ -25,7 +25,7 @@ class OutputPUMLTest_sequencedia
     void testGetPUML() throws XPathExpressionException, ParserConfigurationException, SAXException, IOException
     {
 		// GetPuml testen
-		String actual = "";
+		String actual = new OutputPUML().getPUML(getDoc());
 		String expected =
 				"@startuml\n" + 
 				"participant Class1\n" + 
@@ -46,7 +46,7 @@ class OutputPUMLTest_sequencedia
 				"deactivate Class2\n" + 
 				"end\n" + 
 				"end\n" + 
-				"\n" + 
+//				"\n" + 
 				"Class1 -> Class1: method2\n" + 
 				"activate Class1\n" + 
 				"alt switch(i)/case 0\n" + 
