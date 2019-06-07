@@ -382,9 +382,9 @@ public class Console extends PUMLgenerator
 	    		try
 	    		{
 	    			//Code Erzeugen
-					outputPUML.savePUMLtoFile(outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), classNodeList.item(entryClass).getTextContent(), classNodeList.item(entryMethode).getTextContent())),"./outPUML_Code_defaultlocation");
+					outputPUML.savePUMLtoFile(outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), classNodeList.item(entryClass).getTextContent(), methodeNodeList.item(entryMethode).getTextContent())),"./outPUML_Code_defaultlocation");
 					//Diagramm erzeugen
-					outputPUML.createPUMLfromString("./outPUML_Graph_defaultlocation", outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), classNodeList.item(entryClass).getTextContent(), classNodeList.item(entryMethode).getTextContent())));
+					outputPUML.createPUMLfromString("./outPUML_Graph_defaultlocation", outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), classNodeList.item(entryClass).getTextContent(), methodeNodeList.item(entryMethode).getTextContent())));
 	    		}
 	    		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException | SAXException e)
 	    		{
@@ -397,9 +397,9 @@ public class Console extends PUMLgenerator
 	    		try
 	    		{
 	    			//Code Erzeugen
-					outputPUML.savePUMLtoFile(outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), classNodeList.item(entryClass).getTextContent(), classNodeList.item(entryMethode).getTextContent())), actualOutputPath);
+					outputPUML.savePUMLtoFile(outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), classNodeList.item(entryClass).getTextContent(), methodeNodeList.item(entryMethode).getTextContent())), actualOutputPath);
 					//Diagramm erzeugen
-					outputPUML.createPUMLfromString(actualOutputPath, outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), classNodeList.item(entryClass).getTextContent(), classNodeList.item(entryMethode).getTextContent())));
+					outputPUML.createPUMLfromString(actualOutputPath, outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), classNodeList.item(entryClass).getTextContent(), methodeNodeList.item(entryMethode).getTextContent())));
 				}
 	    		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException | SAXException e)
 	    		{
