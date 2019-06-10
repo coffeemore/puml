@@ -71,8 +71,25 @@ public class XmlHelperMethods
      * @param        true = Unterknoten werden nicht gelöscht; false = Unterknoten
      *               werden mit gelöscht
      */
-    public void delNode(Element nodeName, boolean keepChildNodes)
+    // TODO
+
+    public void delNode(Node nodeName, boolean keepChildNodes)
     {
+	Node parent = nodeName.getParentNode();
+	if (keepChildNodes)
+	{
+	    NodeList childNodes = nodeName.getChildNodes();
+	    for (int i = 0; i < childNodes.getLength(); i++)
+	    {
+		parent.appendChild(childNodes.item(i).cloneNode(true));
+		
+	    }
+	    parent.removeChild(nodeName);
+
+	} else
+	{
+	    parent.removeChild(nodeName);
+	}
     }
 
     /**
