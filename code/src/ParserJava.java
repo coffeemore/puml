@@ -826,13 +826,10 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				while (res2.getFoundToken() != 0);
 				if (parametersNode.hasChildNodes())
 				    methoddefinitionNode.appendChild(parametersNode);
-				if (!prefixRBrace[1].equals("void"))
-				{
 				    Element resultNode = document.createElement("result");
 				    resultNode.appendChild(document.createTextNode(prefixRBrace[1]));
 				    methoddefinitionNode.appendChild(resultNode);
 
-				}
 				sourcec = sourcec.trim();
 
 				if (sourcec.substring(0, 6).equals("throws"))
@@ -1198,9 +1195,9 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		{
 		    sourcec = sourcec.substring(1);
 		    curlBrace++;
-		    Element somethingWCB = document.createElement("something"); // WCB - with curly brace
+		    Element frameNode = document.createElement("frame"); // WCB - with curly brace
 		    //somethingWCB.appendChild(document.createTextNode(sourcec.substring(0, 50)));
-		    curNode.appendChild(somethingWCB);
+		    curNode.appendChild(frameNode);
 		    curNode = (Element) curNode.getLastChild();
 		    done = true;
 		    continue;
