@@ -84,10 +84,10 @@ public class SequenceDiagramGenerator
 	addType(parsedData, seqDiagram, seq, epClass);
 
 	deleteUnusedClassesAndMethods(seqDiagram, epClass);
-
+	
 	xmlHM.removeComments(root);
 	seqDiagram = xmlHM.removeWhitespace(seqDiagram);
-	xmlHM.writeDocumentToConsole(seqDiagram);
+	//xmlHM.writeDocumentToConsole(seqDiagram);
 	xmlHM.writeToFile(seqDiagram);
 
 	return seqDiagram;

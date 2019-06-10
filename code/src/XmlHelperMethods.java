@@ -132,23 +132,22 @@ public class XmlHelperMethods
 	}
     }
 
+    /**
+     * Erstellt eine XML-Datei
+     * 
+     * @param doc - Dokument, das in eine XML-Datei geschrieben werden soll
+     * @throws IOException
+     * @throws TransformerException
+     */
     public void writeToFile(Document doc) throws IOException, TransformerException
     {
-	File file = new File("../code/testfolder/xmlSpecifications/TestFile.xml");
+	File file = new File("../code/testfolder/tempData/TestFile.xml");
 	file.createNewFile();
-	
+
 	TransformerFactory tFactory = TransformerFactory.newInstance();
 	Transformer transformer = tFactory.newTransformer();
 	transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-	
-	StringWriter sw = new StringWriter();
-	TransformerFactory tf = TransformerFactory.newInstance();
-	Transformer transformer1 = tf.newTransformer();
-	transformer1.setOutputProperty(OutputKeys.INDENT, "yes");
-	transformer1.transform(new DOMSource(doc), new StreamResult(sw));
-	String s = sw.toString();
-	String m = s.replaceAll("\\s+\\n", "\n");
-	
+
 	DOMSource source = new DOMSource(doc);
 	StreamResult result = new StreamResult(file);
 	transformer.transform(source, result);
@@ -207,16 +206,17 @@ public class XmlHelperMethods
     }
 
     /**
-     * entfernt unnötigen Whitespace in einem Dokument und gibt es als String zurück
+     * Entfernt unnötigen Whitespace in einem Dokument
      * 
      * @param seq - Dokument, in dem unnötiger Whitespace entfernt werden soll
-     * @return - String ohne unnötigen Whitespace
+     * @return - Dokument ohne unnötigen Whitespace
      * @throws TransformerException
-     * @throws IOException 
-     * @throws SAXException 
-     * @throws ParserConfigurationException 
+     * @throws IOException
+     * @throws SAXException
+     * @throws ParserConfigurationException
      */
-    public Document removeWhitespace(Document seq) throws TransformerException, SAXException, IOException, ParserConfigurationException
+    public Document removeWhitespace(Document seq)
+	    throws TransformerException, SAXException, IOException, ParserConfigurationException
     {
 	StringWriter sw = new StringWriter();
 	TransformerFactory tf = TransformerFactory.newInstance();
@@ -226,9 +226,9 @@ public class XmlHelperMethods
 	String s = sw.toString();
 	String m = s.replaceAll("\\s+\\n", "\n");
 	DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-        seq = docBuilder.parse(new InputSource(new StringReader(m)));
-	
+	DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+	seq = docBuilder.parse(new InputSource(new StringReader(m)));
+
 	return seq;
     }
 
