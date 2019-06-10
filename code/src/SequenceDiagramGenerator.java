@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Element;
@@ -46,10 +47,11 @@ public class SequenceDiagramGenerator
      * @throws IOException
      * @throws SAXException
      * @throws XPathExpressionException
+     * @throws TransformerException 
      */
 
     public Document createDiagram(Document parsedData, String epClass, String epMethod)
-	    throws ParserConfigurationException, SAXException, IOException, XPathExpressionException
+	    throws ParserConfigurationException, SAXException, IOException, XPathExpressionException, TransformerException
     {
 	// neues Dokument, das seqDiagramm Informationen enthalten wird
 	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -84,7 +86,9 @@ public class SequenceDiagramGenerator
 	deleteUnusedClassesAndMethods(seqDiagram, epClass);
 
 	xmlHM.removeComments(root);
+	seqDiagram = xmlHM.removeWhitespace(seqDiagram);
 	xmlHM.writeDocumentToConsole(seqDiagram);
+	xmlHM.writeToFile(seqDiagram);
 
 	return seqDiagram;
     }

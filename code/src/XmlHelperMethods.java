@@ -2,6 +2,8 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Iterator;
 
@@ -25,6 +27,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.diff.DefaultComparisonFormatter;
@@ -32,6 +35,7 @@ import org.xmlunit.diff.DefaultNodeMatcher;
 import org.xmlunit.diff.Diff;
 import org.xmlunit.diff.Difference;
 import org.xmlunit.diff.ElementSelectors;
+
 /**
  * 
  * @author Klasse fuer Unterstuetzungsfunktionen zur XML Handhabung
@@ -49,16 +53,20 @@ public class XmlHelperMethods
 	this.xPathfactory = XPathFactory.newInstance();
 	this.xpath = xPathfactory.newXPath();
     }
+
     /**
      * Konvertiert xml Datei in String
+     * 
      * @param xmlDoc lesende Datei
      */
     public String xmlDocToString(Document xmlDoc)
     {
 	return new String();
     }
+
     /**
      * loescht einzelnen Knoten aus xml Datei
+     * 
      * @param Knoten eines Elements
      * @param        true = Unterknoten werden nicht gelöscht; false = Unterknoten
      *               werden mit gelöscht
@@ -66,6 +74,7 @@ public class XmlHelperMethods
     public void delNode(Element nodeName, boolean keepChildNodes)
     {
     }
+
     /**
      * Hilfsmethode zum Laden eines XML-Documents fuer diverse Zwecke
      * 
@@ -92,6 +101,7 @@ public class XmlHelperMethods
 	}
 	return null;
     }
+
     /**
      * Hilfsmethode zum Ausgeben eines XML-Documents in der Console
      * 
@@ -122,6 +132,28 @@ public class XmlHelperMethods
 	}
     }
 
+    public void writeToFile(Document doc) throws IOException, TransformerException
+    {
+	File file = new File("../code/testfolder/xmlSpecifications/TestFile.xml");
+	file.createNewFile();
+	
+	TransformerFactory tFactory = TransformerFactory.newInstance();
+	Transformer transformer = tFactory.newTransformer();
+	transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+	
+	StringWriter sw = new StringWriter();
+	TransformerFactory tf = TransformerFactory.newInstance();
+	Transformer transformer1 = tf.newTransformer();
+	transformer1.setOutputProperty(OutputKeys.INDENT, "yes");
+	transformer1.transform(new DOMSource(doc), new StreamResult(sw));
+	String s = sw.toString();
+	String m = s.replaceAll("\\s+\\n", "\n");
+	
+	DOMSource source = new DOMSource(doc);
+	StreamResult result = new StreamResult(file);
+	transformer.transform(source, result);
+    }
+
     /**
      * Gibt den Unterbaum des übergebenen Knotens auf der Konsole aus
      * 
@@ -149,6 +181,11 @@ public class XmlHelperMethods
 	}
     }
 
+    /**
+     * Entfernt Kommentare unterhalb eines angegebenen Knotens
+     * 
+     * @param root - Knoten, unter dem Kommentare entfernt werden sollen
+     */
     public void removeComments(Element root)
     {
 	if (root.hasChildNodes())
@@ -157,7 +194,6 @@ public class XmlHelperMethods
 	    for (int i = 0; i < list.getLength(); i++)
 	    {
 		Node node = list.item(i);
-
 		if (node.getNodeType() == Node.ELEMENT_NODE)
 		{
 		    Element e = (Element) node;
@@ -170,7 +206,17 @@ public class XmlHelperMethods
 	}
     }
 
-    public String removeWhitespace(Document seq) throws TransformerException
+    /**
+     * entfernt unnötigen Whitespace in einem Dokument und gibt es als String zurück
+     * 
+     * @param seq - Dokument, in dem unnötiger Whitespace entfernt werden soll
+     * @return - String ohne unnötigen Whitespace
+     * @throws TransformerException
+     * @throws IOException 
+     * @throws SAXException 
+     * @throws ParserConfigurationException 
+     */
+    public Document removeWhitespace(Document seq) throws TransformerException, SAXException, IOException, ParserConfigurationException
     {
 	StringWriter sw = new StringWriter();
 	TransformerFactory tf = TransformerFactory.newInstance();
@@ -179,7 +225,11 @@ public class XmlHelperMethods
 	transformer.transform(new DOMSource(seq), new StreamResult(sw));
 	String s = sw.toString();
 	String m = s.replaceAll("\\s+\\n", "\n");
-	return m;
+	DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+        seq = docBuilder.parse(new InputSource(new StringReader(m)));
+	
+	return seq;
     }
 
     /**
@@ -191,18 +241,19 @@ public class XmlHelperMethods
      * @return - NodeList aller gefundenen Knoten
      * @throws XPathExpressionException
      */
-    public NodeList getList(Node doc, String path) throws XPathExpressionException 
+    public NodeList getList(Node doc, String path) throws XPathExpressionException
     {
-    	/*// XPath to find empty text nodes.
-    	XPathExpression xpathExp = xPathfactory.newXPath().compile("//text()[normalize-space(.) = '']");  
-    	NodeList emptyTextNodes = (NodeList) xpathExp.evaluate(doc, XPathConstants.NODESET);
-    	// Remove each empty text node from document.
-    	for (int i = 0; i < emptyTextNodes.getLength(); i++) {
-    	  Node emptyTextNode = emptyTextNodes.item(i);
-    	  emptyTextNode.getParentNode().removeChild(emptyTextNode);
-    	}*/
-    	XPathExpression expr = this.xpath.compile(path);
-    	NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+	/*
+	 * // XPath to find empty text nodes. XPathExpression xpathExp =
+	 * xPathfactory.newXPath().compile("//text()[normalize-space(.) = '']");
+	 * NodeList emptyTextNodes = (NodeList) xpathExp.evaluate(doc,
+	 * XPathConstants.NODESET); // Remove each empty text node from document. for
+	 * (int i = 0; i < emptyTextNodes.getLength(); i++) { Node emptyTextNode =
+	 * emptyTextNodes.item(i);
+	 * emptyTextNode.getParentNode().removeChild(emptyTextNode); }
+	 */
+	XPathExpression expr = this.xpath.compile(path);
+	NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 
 	return list;
     }
@@ -248,43 +299,35 @@ public class XmlHelperMethods
 	}
 	return false;
     }
-    
-    
+
     /**
      * Funktion zum Vergleichen von XML Dateien über XMLUnit
      * 
      * @param doc1 - Source Doc
-     * @param doc2   - Zu testendes Doc
+     * @param doc2 - Zu testendes Doc
      * @return - boolean; true, wenn XML gleich, sonst false
      */
-    
+
     public boolean compareXML(Document doc1, Document doc2)
+    {
+	DefaultComparisonFormatter formatter = new DefaultComparisonFormatter();
+	DefaultNodeMatcher nodeMatcher = new DefaultNodeMatcher(ElementSelectors.byNameAndText);
+	Diff d = DiffBuilder.compare(doc1).withTest(doc2).checkForSimilar()// .checkForIdentical()
+		.withNodeMatcher(nodeMatcher).ignoreWhitespace().normalizeWhitespace()
+		.withComparisonFormatter(formatter).ignoreComments().ignoreElementContentWhitespace().build();
+	Iterable<Difference> diffList = d.getDifferences();
+	Iterator<Difference> iterator = diffList.iterator();
+	while (iterator.hasNext())
 	{
-		DefaultComparisonFormatter formatter = new DefaultComparisonFormatter();
-		DefaultNodeMatcher nodeMatcher = new DefaultNodeMatcher(ElementSelectors.byNameAndText);
-		Diff d = DiffBuilder.compare(doc1).withTest(doc2)
-				 .checkForSimilar()//.checkForIdentical()
-				 .withNodeMatcher(nodeMatcher)
-				 .ignoreWhitespace()
-				 .normalizeWhitespace()
-				 .withComparisonFormatter(formatter)
-				 .ignoreComments()
-				 .ignoreElementContentWhitespace()
-				 .build();
-		Iterable<Difference> diffList = d.getDifferences();
-	    Iterator<Difference> iterator = diffList.iterator();
-	    while(iterator.hasNext()) 
-	    {
-	        Difference next = iterator.next();
-	        System.out.println("Difference: " + next);
-		}
-	    if (iterator.hasNext()) 
-	    {
-	    	return false;
-	    }
-	    else 
-	    {
-	    	return true;
-	    }
+	    Difference next = iterator.next();
+	    System.out.println("Difference: " + next);
 	}
+	if (iterator.hasNext())
+	{
+	    return false;
+	} else
+	{
+	    return true;
+	}
+    }
 }
