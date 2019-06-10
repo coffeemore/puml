@@ -4,24 +4,24 @@ package xmlSpecifications;
 
 public class Class1 extends Class3 implements If1, If2 
 {
-    Class2 classInstance1 = new Class2();	//Komposition zu Class2
-    Class2 classInstance2 = new Class2();	//Komposition zu Class2
+    private Class2 classInstance1 = new Class2();	//Komposition zu Class2
+    protected Class2 classInstance2 = new Class2();	//Komposition zu Class2
     
-    Class4 iClass4;
+    public Class4 iClass4;
     Class5 iClass5;
+    
+    private int var1;
+    protected double var2;
+    public short var3;
+    byte var4;
     
     public Class1(Class4 iClass4, Class5 iClass5)
     {
 	this.iClass4 = iClass4; //Agregation zu Class4
 	this.iClass5 = iClass5; //Agregation zu Class5
     }
-    public Class1(Class4 iClass4)
-    {
-	this.iClass4 = iClass4; //Agregation zu Class4
-	
-    }
     
-    public int method1(int param1, int param2)
+    private int method1(int param1, int param2)
     {
 	int a = 0;
 	int b = 1;
@@ -41,7 +41,7 @@ public class Class1 extends Class3 implements If1, If2
 	return 1;
     }
     
-    public void method2()
+    protected void method2()
     {
 	int i=0;
 	switch(i)
@@ -98,7 +98,7 @@ public class Class1 extends Class3 implements If1, If2
 	}
     }
     
-    public void method4()
+    void method4()
     {
 	int d = 0;
 	int e = 1;
