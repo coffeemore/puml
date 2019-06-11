@@ -46,8 +46,8 @@ class SequenceDiagramGeneratorTest
 	    DocumentBuilderFactory dbFactory2 = DocumentBuilderFactory.newInstance();
 	    DocumentBuilder dBuilder2 = dbFactory2.newDocumentBuilder();
 	    Document seqDiagram = dBuilder2.parse(xmlFile2);
-	    
-	    boolean s = xmlHM.compareXML(seqDiagram, test);
+	    boolean s = false;
+	    s = xmlHM.compareXML(seqDiagram, test);
 	    assertTrue(s);
 	}
 	);
