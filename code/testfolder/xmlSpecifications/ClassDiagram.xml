@@ -3,15 +3,151 @@
 <parsed>
 	<classdiagramm>
 		<classes>
-			<entry>Class1</entry>
-			<entry>Class2</entry>
-			<entry>Class3</entry>
-			<entry>Class4</entry>
-			<entry>Class5</entry>
+			<entry>
+				<name>Class1</name>
+				<instance> <!-- Klassen-Instanzen können aus der parsedData kopiert werden -->
+					<access>private</access>
+					<name>classInstance1</name>
+					<class>Class2</class>
+				</instance>
+				<instance>
+					<access>protected</access>
+					<name>classInstance2</name>
+					<class>Class2</class>
+				</instance>
+				<instance>
+					<access>public</access>
+					<name>iClass4</name>
+					<class>Class4</class>
+				</instance>
+				<instance>
+					<access>ppublic</access>
+					<name>iClass5</name>
+					<class>Class5</class>
+				</instance>
+				<var> <!-- Klassen-Variablen können aus der parsedData kopiert werden -->
+					<access>private</access>
+					<type>int</type>
+					<name>var1</name>
+				</var>
+				<var>
+					<access>protected</access>
+					<type>double</type>
+					<name>var2</name>
+				</var>
+				<var>
+					<access>public</access>
+					<type>short</type>
+					<name>var3</name>
+				</var>
+				<var>
+					<access>ppublic</access>
+					<type>byte</type>
+					<name>var4</name>
+				</var>
+				<!-- Die methoddefinitions können aus der parsedData kopiert werden, 
+					da aber nur access, name, parameters und result relevant sind, sollten alle 
+					anderen Knoten gelöscht werden -->
+				<methoddefinition>
+					<access>public</access>
+					<name>Class1</name>
+					<parameters> <!-- Parameterliste der Methode -->
+						<entry>
+							<type>Class4</type>
+							<name>iClass4</name>
+						</entry>
+						<entry>
+							<type>Class5</type>
+							<name>iClass5</name>
+						</entry>
+					</parameters>
+				</methoddefinition>
+				<methoddefinition>
+					<access>private</access>
+					<name>method1</name>
+					<parameters> <!-- Parameterliste der Methode -->
+						<entry>
+							<type>int</type>
+							<name>param1</name>
+						</entry>
+						<entry>
+							<type>int</type>
+							<name>param2</name>
+						</entry>
+					</parameters>
+					<result>int</result> <!-- Rückgabewert der Methode -->
+				</methoddefinition>
+				<methoddefinition>
+					<access>protected</access>
+					<name>method2</name>
+					<result>void</result>
+				</methoddefinition>
+				<methoddefinition>
+					<access>public</access>
+					<name>method3</name>
+					<result>void</result>
+				</methoddefinition>
+				<methoddefinition>
+					<access>ppublic</access>
+					<name>method4</name>
+					<result>void</result>
+				</methoddefinition>
+			</entry>
+			<entry>
+				<name>Class2</name>
+				<methoddefinition>
+					<access>public</access>
+					<name>call1</name>
+					<result>void</result>
+				</methoddefinition>
+				<methoddefinition>
+					<access>public</access>
+					<name>call2</name>
+					<type>static</type>
+				</methoddefinition>
+			</entry>
+			<entry>
+				<name>Class3</name>
+				<methoddefinition>
+					<access>public</access>
+					<name>call1</name>
+					<result>void</result>
+				</methoddefinition>
+			</entry>
+			<entry>
+				<name>Class4</name>
+			</entry>
+			<entry>
+				<name>Class5</name>
+			</entry>
 		</classes>
 		<interfaces>
-			<entry>If1</entry>
-			<entry>If2</entry>
+			<entry>
+				<name>If1</name>
+				<methoddefinition>
+					<access>public</access>
+					<name>method1</name>
+					<parameters>
+						<entry>
+							<type>int</type>
+							<name>param1</name>
+						</entry>
+						<entry>
+							<type>int</type>
+							<name>param2</name>
+						</entry>
+					</parameters>
+					<result>int</result>
+				</methoddefinition>
+			</entry>
+			<entry>
+				<name>If2</name>
+				<methoddefinition>
+					<access>public</access>
+					<name>method2</name>
+					<result>void</result>
+				</methoddefinition>
+			</entry>
 		</interfaces>
 		<classrelations>
 			<!-- Die from-to-Beziehungen sind hier immer in Pfeilrichtung angegeben, 

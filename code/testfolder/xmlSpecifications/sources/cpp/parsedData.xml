@@ -11,7 +11,7 @@
 			<entry>Class3</entry>
 		</extends>
 		<instance> <!-- Klassen-Instanzen -->
-			<access>private</access> <!-- Mögliche werte: private, protected, public und ppublic (Paketsichtbar 
+			<access>private</access> <!-- Mögliche werte: private, protected, public (private
 				wenn keine explizite Angabe) -->
 			<name>classInstance1</name>
 			<class>Class2</class>
@@ -27,12 +27,18 @@
 			<class>Class4</class>
 		</instance>
 		<instance>
-			<access>ppublic</access>
+			<access>private</access>
 			<name>iClass5</name>
 			<class>Class5</class>
 		</instance>
-		<!-- Klassen-Variablen (Variablen sind immer von den Basisdatentypen: boolean, 
-			char, byte, short, int, long, float oder double, alles andere sind Instanzen) -->
+		<!-- Klassen-Variablen (Variablen sind immer von den Basisdatentypen: 
+		bool,
+		char, signed char, unsigned char, int8_t, uint8_t, wchar_t,
+		short, signed short, unsigned short, int16_t, uint16_t,
+		int, signed int, unsigned int, int32_t, uint32_t,
+		long, signed long, unsigned long, int64_t, uint64_t,
+		float, double, long double
+		alle anderen Typen sind instanzen) -->
 		<var>
 			<access>private</access>
 			<type>int</type>
@@ -49,7 +55,7 @@
 			<name>var3</name>
 		</var>
 		<var>
-			<access>ppublic</access>
+			<access>private</access>
 			<type>byte</type>
 			<name>var4</name>
 		</var>
@@ -200,7 +206,7 @@
 			</alternative>
 		</methoddefinition>
 		<methoddefinition>
-			<access>ppublic</access>
+			<access>private</access>
 			<name>method4</name>
 			<result>void</result>
 			<alternative>

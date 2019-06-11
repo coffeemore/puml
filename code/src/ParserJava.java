@@ -615,7 +615,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			    // break;
 			    default:
 				// TODO: muss noch erweitert werden für method(method()) und
-				// Objet.method1().method2()
+				// Object.method1().method2()
 				System.out.println("Funktionsaufruf");
 				if (prefixRBrace[0].contains("."))
 				{
@@ -691,9 +691,11 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 //								break;
 			    case "private":// privater Konstruktor
 			    case "public": // Konstruktor
+
 				if (prefixRBrace[1]
 					.equals(curNode.getElementsByTagName("name").item(0).getTextContent()))
 				{
+
 				    System.out.println("Konstruktor");
 				    sourcec = res1.getSourceCode();
 				    sourcec = sourcec.substring(1);
@@ -736,7 +738,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 						    if (classAggr.getElementsByTagName("entry").item(i).getTextContent()
 							    .equals(argumentConstructor[0]))
 							inAggregations = true;
-						    
+
 						}
 						if (inAggregations == false)
 						{
@@ -776,9 +778,14 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			    }
 			    break;
 			case 3:// Funktionsdeklaration
+			   
+			    String[] nameArrayFD = new String[1];
+			    nameArrayFD[0] = "{";
+			    TokenResult resFD = goToTokenWithName(sourcec, nameArrayFD);
+			    String functionDataFD = resFD.getData().strip();
 
 			    if ((prefixRBrace[0].equals("public") || prefixRBrace[0].equals("private"))
-				    && !prefixRBrace[1].equals("class"))
+				    && !prefixRBrace[1].equals("class") && !functionDataFD.contains(";"))
 			    {
 				Element methoddefinitionNode = document.createElement("methoddefinition");
 				Element nameNode = document.createElement("name");
@@ -819,13 +826,10 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				while (res2.getFoundToken() != 0);
 				if (parametersNode.hasChildNodes())
 				    methoddefinitionNode.appendChild(parametersNode);
-				if (!prefixRBrace[1].equals("void"))
-				{
 				    Element resultNode = document.createElement("result");
 				    resultNode.appendChild(document.createTextNode(prefixRBrace[1]));
 				    methoddefinitionNode.appendChild(resultNode);
 
-				}
 				sourcec = sourcec.trim();
 
 				if (sourcec.substring(0, 6).equals("throws"))
@@ -987,7 +991,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			    break;
 
 			default:
-			    System.out.println("Keine Funktion");
+			    // System.out.println("Keine Funktion");
 			    break;
 			}
 		    }
@@ -1151,31 +1155,38 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		compString = "do";
 		if (sourcec.substring(0, compString.length()).equals(compString))
 		{
-
-		    Element doWhileLoopNode = document.createElement("loop");
-		    Element doWhileConditionNode = document.createElement("condition");
-
-		    doWhileLoopNode.appendChild(doWhileConditionNode);
-
-		    sourcec = sourcec.substring(2);
-
-		    doWhileConditionNode.appendChild(document.createTextNode("do"));
-		    curNode.appendChild(doWhileLoopNode);
-
-		    sourcec = sourcec.trim();
-		    if (sourcec.charAt(0) == '{')
+		    String[] nameArray = new String[1];
+		    nameArray[0] = "{";
+		    TokenResult res = goToTokenWithName(sourcec, nameArray);
+		    String afterDo = res.getData().substring(2);
+		    if (afterDo.trim().length() == 0)
 		    {
-			sourcec = sourcec.substring(1);
-			curlBrace++;
-			curNode = (Element) curNode.getLastChild();
-		    }
-		    else
-		    {
-			System.out.println("Fehler bei DoWhile");
-		    }
 
-		    done = true;
-		    continue;
+			Element doWhileLoopNode = document.createElement("loop");
+			Element doWhileConditionNode = document.createElement("condition");
+
+			doWhileLoopNode.appendChild(doWhileConditionNode);
+
+			sourcec = sourcec.substring(2);
+
+			doWhileConditionNode.appendChild(document.createTextNode("do"));
+			curNode.appendChild(doWhileLoopNode);
+
+			sourcec = sourcec.trim();
+			if (sourcec.charAt(0) == '{')
+			{
+			    sourcec = sourcec.substring(1);
+			    curlBrace++;
+			    curNode = (Element) curNode.getLastChild();
+			}
+			else
+			{
+			    System.out.println("Fehler bei DoWhile");
+			}
+
+			done = true;
+			continue;
+		    }
 		}
 		;
 
@@ -1184,9 +1195,9 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		{
 		    sourcec = sourcec.substring(1);
 		    curlBrace++;
-		    Element somethingWCB = document.createElement("something"); // WCB - with curly brace
-		    somethingWCB.appendChild(document.createTextNode(sourcec.substring(0, 50)));
-		    curNode.appendChild(somethingWCB);
+		    Element frameNode = document.createElement("frame"); // WCB - with curly brace
+		    //somethingWCB.appendChild(document.createTextNode(sourcec.substring(0, 50)));
+		    curNode.appendChild(frameNode);
 		    curNode = (Element) curNode.getLastChild();
 		    done = true;
 		    continue;
