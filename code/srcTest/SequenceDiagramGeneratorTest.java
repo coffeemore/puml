@@ -11,7 +11,6 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 class SequenceDiagramGeneratorTest
@@ -33,28 +32,6 @@ class SequenceDiagramGeneratorTest
 	parsedData = dBuilder1.parse(xmlFile1);
     }
 
-    // @Test
-    void testCreateDiagram() throws ParserConfigurationException, SAXException, IOException, XPathExpressionException
-    {
-	SetUp();
-	assertAll(
-	() -> {
-	    Document test = classUnderTest.createDiagram(parsedData, "Class1", "method1");
-	    String testen = xmlHM.removeWhitespace(test);
-
-	    xmlFile2 = new File("../code/testfolder/xmlSpecifications/SeqDiagram.xml");
-	    DocumentBuilderFactory dbFactory2 = DocumentBuilderFactory.newInstance();
-	    DocumentBuilder dBuilder2 = dbFactory2.newDocumentBuilder();
-	    Document seqDiagram = dBuilder2.parse(xmlFile2);
-	    
-	    Element root = seqDiagram.getDocumentElement();
-	    xmlHM.removeComments(root);
-	    String vergleich = xmlHM.removeWhitespace(seqDiagram);
-
-	    assertEquals(vergleich, testen);
-	}
-	);
-    }
 
     @Test
     void test1() throws TransformerException, XPathExpressionException, ParserConfigurationException, SAXException,
