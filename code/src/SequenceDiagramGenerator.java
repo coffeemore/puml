@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Element;
@@ -46,10 +47,12 @@ public class SequenceDiagramGenerator
      * @throws IOException
      * @throws SAXException
      * @throws XPathExpressionException
+     * @throws TransformerException
      */
 
     public Document createDiagram(Document parsedData, String epClass, String epMethod)
-	    throws ParserConfigurationException, SAXException, IOException, XPathExpressionException
+	    throws ParserConfigurationException, SAXException, IOException, XPathExpressionException,
+	    TransformerException
     {
 	// neues Dokument, das seqDiagramm Informationen enthalten wird
 	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -74,6 +77,7 @@ public class SequenceDiagramGenerator
 	entrypoint.appendChild(epMethod1);
 
 	listMethoddef(parsedData, seqDiagram, seq);
+	deleteFrame(seqDiagram);
 
 	addClassesToInstances(parsedData, seqDiagram);
 
@@ -84,7 +88,9 @@ public class SequenceDiagramGenerator
 	deleteUnusedClassesAndMethods(seqDiagram, epClass);
 
 	xmlHM.removeComments(root);
-	xmlHM.writeDocumentToConsole(seqDiagram);
+	seqDiagram = xmlHM.removeWhitespace(seqDiagram);
+	// xmlHM.writeDocumentToConsole(seqDiagram);
+	xmlHM.writeToFile(seqDiagram);
 
 	return seqDiagram;
     }
@@ -141,20 +147,33 @@ public class SequenceDiagramGenerator
 	    classTag.setTextContent(cName);
 	    seqMethodNode.insertBefore(classTag, seqMethodNode.getFirstChild());
 
-	    // vorhandene Parameters- oder Result-Tags werden gesucht und entfernt
+	    // vorhandene Parameters-, Access- oder Result-Tags werden gesucht und entfernt
 	    Node node = list.item(i);
 	    NodeList childs = node.getChildNodes();
 	    for (int j = 0; j < childs.getLength(); j++)
 	    {
 		Node child = childs.item(j);
-		if ((child.getNodeName().equals("parameters") || child.getNodeName().equals("result")))
+		if ((child.getNodeName().equals("parameters") || child.getNodeName().equals("result")
+			|| child.getNodeName().equals("access")))
 		{
 		    node.removeChild(child);
 		}
 	    }
 	}
     }
-
+    
+    public void deleteFrame(Document seqDiagram) throws XPathExpressionException {
+	NodeList list = xmlHM.getList(seqDiagram, seqMethodDef+"//frame");
+	for(int i = 0; i < list.getLength(); i++) {
+	    Node parent = list.item(i).getParentNode();
+	    NodeList childs = xmlHM.getList(list.item(i), "child::*");
+	    for(int j = 0; j < childs.getLength(); j++) {
+		parent.appendChild(childs.item(j));
+	    }
+	    parent.removeChild(list.item(i));
+	}
+    }
+    
     /**
      * Instanz: von welcher Klasse? im methodcall ein Tag instanz -> Klassentag +
      * -name muss reingenommen werden -> Instanzenliste anlegen
