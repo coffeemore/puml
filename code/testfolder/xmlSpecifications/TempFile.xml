@@ -67,10 +67,6 @@
 				<case>
 					<condition>switch(i)/case 0</condition>
 					<something>
-						int j=10;
-						while(j!=0)
-						{
-						meth
 						<loop>
 							<condition>while(j!=0)</condition>
 							<methodcall>
@@ -82,10 +78,6 @@
 				<case>
 					<condition>switch(i)/case 1</condition>
 					<something>
-						int j=10;
-						do
-						{
-						method3();
 						<loop>
 							<condition>do/while(j!=0)</condition>
 							<methodcall>
@@ -97,7 +89,6 @@
 				<case>
 					<condition>switch(i)/default</condition>
 					<something>
-						Class2 classInstance3 = new Class2();
 						<instance>
 							<name>classInstance3</name>
 							<class>Class2</class>
@@ -193,29 +184,18 @@
 	</classdefinition>
 	<interfacedefinition>
 		<name>If1</name>
-		<composition />
-		<agregation />
-		<methoddefinition>
-			<name>method1</name>
-			<parameters>
-				<entry>
-					<type>int</type>
-					<name>param1</name>
-				</entry>
-				<entry>
-					<type>int</type>
-					<name>param2</name>
-				</entry>
-			</parameters>
-			<result>int</result>
-		</methoddefinition>
+		<compositions />
+		<aggregations />
+		<methodcall>
+			<method>method1</method>
+		</methodcall>
 	</interfacedefinition>
 	<interfacedefinition>
 		<name>If2</name>
-		<composition />
-		<agregation />
-		<methoddefinition>
-			<name>method2</name>
-		</methoddefinition>
+		<compositions />
+		<aggregations />
+		<methodcall>
+			<method>method2</method>
+		</methodcall>
 	</interfacedefinition>
 </source>

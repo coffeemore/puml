@@ -26,6 +26,11 @@ import org.xml.sax.SAXException;
  */
 public class Console extends PUMLgenerator
 {
+	//Initialisierung des Ausgabeortes, default: "./"
+	private String outputLocation = "./";
+	private String entryClass = new String();
+    private String  entryMethode = new String();
+	
     /**
      * Konstruktor
      */
@@ -66,9 +71,15 @@ public class Console extends PUMLgenerator
 		.longOpt("o").argName("filepath").hasArg().desc("Angabe des Pfades fuer den Zielordner.").build();
 	options.addOption(output);
 	
-	//Erstelle SeqenceDiagramm
+	/*//Erstelle SeqenceDiagramm
 	Option seqDiag = Option.builder()
 			.longOpt("cs").argName("Klasse, Methode").hasArgs().type(Integer.class).valueSeparator(',').numberOfArgs(2).desc("Erzeugt ein Sequenzdiagramm.").build();
+	options.addOption(seqDiag);*/
+	
+	//Erstelle SeqenceDiagramm
+	Option seqDiag = Option.builder() 
+		.longOpt("cs").argName("Klasse, Methode").hasArg().valueSeparator(',').numberOfArgs(2).desc("Erzeugt ein Sequenzdiagramm.")
+		.build();
 	options.addOption(seqDiag);
 	
 	// Angabe der zu verarbeitenden Dateien
@@ -99,61 +110,63 @@ public class Console extends PUMLgenerator
 	    }
 	    if (cmd.hasOption("i")) // Verarbeitung vieler zu verarbeitenden Pfade
 	    {
-		    for (int i = 0; i < cmd.getOptionValues("i").length; i++) // Pfade in Collector Liste schreiben
-		    {
-		    	codeCollector.paths.add(cmd.getOptionValues("i")[i]);
-		    	System.out.println(codeCollector.paths.get(i));
-		    }
-		    PUMLgenerator.parser.parse(codeCollector.getSourceCode()); // Parser berbeitet Daten welche ihm übergeben werden 
-			if (cmd.hasOption("s"))
+			System.out.print("option -o Wert: "+ cmd.getOptionValue("o")+ "\n");
+			//Lesen der Pfade
+			for (String k : cmd.getOptionValues("i"))
+			{
+		       	if (!k.equals(""))
+		    	{
+		    		System.out.println("Lese: "+ codeCollector.paths.add(k));
+		    	}
+			}
+			// Parser verarbeitet Daten
+		    PUMLgenerator.parser.parse(codeCollector.getSourceCode()); 
+		    
+			if (cmd.hasOption("s")) //Alle Klassen Methoden auflisten
 			{
 				showAllClassesMethods();
 			}
 			if (cmd.hasOption("o")) // Pruefe ob Zielordner gegeben
 			{
-				if (cmd.hasOption("int"))
+				outputLocation = cmd.getOptionValue("o");
+				if (cmd.hasOption("int")) //Starte Dialog zur Abfrage
 				{
-					System.out.println("Interaktiver Modus");
-					interactiveMode(true);
+					interactiveMode();
 				}
-				else
+				if (cmd.hasOption("cc")) //Gewuenschtes Diagramm
 				{
-					if (cmd.hasOption("cc")) //Gewuenschtes Diagramm
-					{
-						//createClassDiagram(cmd, true);
-						createClassDiag(cmd,false,true,"");
-					}
-					if (cmd.hasOption("cs"))
-					{
-						int entryClass = Integer.parseInt(cmd.getOptionValues("cs")[0]);
-			    		int entryMethode = Integer.parseInt(cmd.getOptionValues("cs")[1]);
-						createInteractiveSQDiagram(cmd,entryClass,entryMethode,true,cmd.getOptionValue("o"),true);
-					}
+					createClassDiag(outputLocation);
+				}
+				if (cmd.hasOption("cs"))
+				{
+					System.out.print("Entry " + cmd.getOptionValues("cs")[0] + " und " + cmd.getOptionValues("cs")[1] +"\n");
+					entryClass = cmd.getOptionValues("cs")[0];
+					entryMethode = cmd.getOptionValues("cs")[1];
+		    		createSQDiagram(entryClass, entryMethode, outputLocation);
 				}
 			}
 			else 
 			{
-				if (cmd.hasOption("int"))
+				if (cmd.hasOption("int")) //Starte Dialog zur Abfrage
 				{
-					System.out.println("Interaktiver Modus");
-					interactiveMode(false);
+					interactiveMode();
 				}
 				if (cmd.hasOption("cc")) //Gewuenschtes Diagramm
 				{
-					//createClassDiagram(cmd, false);
-					createClassDiag(cmd,false,false,"./outPUML_Code_defaultlocation");
+					createClassDiag(outputLocation);
 				}
 				if (cmd.hasOption("cs"))
 				{
-					int entryClass = Integer.parseInt(cmd.getOptionValues("cs")[0]);
-		    		int entryMethode = Integer.parseInt(cmd.getOptionValues("cs")[1]);
-					createInteractiveSQDiagram(cmd,entryClass,entryMethode,false,"",false);
+					System.out.print("Entry " + cmd.getOptionValues("cs")[0] + " und " + cmd.getOptionValues("cs")[1] +"\n");
+					entryClass = cmd.getOptionValues("cs")[0];
+					entryMethode = cmd.getOptionValues("cs")[1];
+					createSQDiagram(entryClass,entryMethode,outputLocation);
 				}
 			}
 		}
 	    else if (!cmd.hasOption("i"))
 	    {
-		System.out.println("Es fehlt ein zu bearbeitender Pfad.");
+	    	System.out.println("Es fehlt ein zu bearbeitender Pfad.");
 	    }
 	}
 	catch (UnrecognizedOptionException uoe ) // Falls Parameter unbekannt, Hilfe ausgeben
@@ -164,10 +177,98 @@ public class Console extends PUMLgenerator
 	}
 
     }
-    
+    /**
+     * Interaktiv Dialog
+     */
+    private void interactiveMode()
+    {
+    	Scanner scanner = new Scanner(System.in);
+		String choice = new String();
+		
+    	System.out.println("Interaktiver Modus");
+    	
+    	//Ausgabeort festlegen
+    	while (!(choice.contains("a") || choice.contains("p"))) 
+		{
+			System.out.println("Zeil-Datei in [a]rbeitsverzeichnis oder [p]fad speichern?");
+			choice = scanner.next();
+		}
+    	if (choice.contains("p")) //Pfad einlesen
+		{
+			System.out.println("Ausgabepfad fuer UML-Diagramm und -Code angeben");
+			outputLocation = scanner.next();
+		}
+    	//Diagrammauswahl treffen
+    	while (!(choice.contains("s") || choice.contains("k")))
+		{
+			System.out.println("Erzeuge [s]equenzdiagramm oder [k]lassendiagramm");
+			choice = scanner.next();
+		}
+		if (choice.contains("s")) //SQ
+		{
+			System.out.println("Auswahl: "+choice);
+			
+			while ((entryClass.isEmpty() || entryMethode.isEmpty()))
+			{
+				showAllClassesMethods();
+				System.out.println("Waehle Klasse als Einstiegspunkt fuer SQDiagramm");
+				entryClass = scanner.next();
+				System.out.println("Waehle Methode als Einstiegspunkt fuer SQDiagramm");
+				entryMethode = scanner.next();
+			}
+			System.out.println("Gewaehlte Klasse: " + entryClass + " und Methode: " + entryMethode);
+			createSQDiagram(entryClass, entryMethode ,outputLocation);
+		}
+		else //ClassDiag
+		{
+			createClassDiag(outputLocation);
+		}
+		scanner.close();
+    }
+    /**
+	 * Methode zum Erzeugen eines Klassendiagramms aus Interactivem Modus und Cmd-Standard-Nutzung
+	 * @param outPath Ausgabepunkt, beachte Klassenvariable
+	 */
+	private void createClassDiag(String outPath)
+	{
+		try 
+	    {  
+			//PUML code erstellen
+			outputPUML.savePUMLtoFile(outputPUML.getPUML(classDiagramGenerator.createDiagram(parser.getParsingResult())), outPath + "outPUML_Code");
+			//Diagramm erzeugen aus String
+			outputPUML.createPUMLfromString(outPath + "outPUML_Graph", outputPUML.getPUML(classDiagramGenerator.createDiagram(parser.getParsingResult())));
+	    }
+	    catch (IOException | XPathExpressionException e)
+	    {
+	    	System.out.println("Kommandozeile: Verarbeitung Klassendiagramm fehlgeschlagen");
+	    	e.printStackTrace();
+	    }
+	}
+	
+    /**
+     * Erstellen eines Sequenzdiagramms mit Angabe der Einsiegspunkte
+     * @param entryClass Ausgewaehlte Klasse
+     * @param entryMethode Ausgewaehlte Methode
+     * @param outPath Ausgabepunkt, beachte Klassenvariable
+     */
+    private void createSQDiagram(String entryClass, String entryMethode, String outPath)
+    {
+    	try
+		{
+			//Code Erzeugen
+			outputPUML.savePUMLtoFile(outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), entryClass,entryMethode)), outPath + "outPUML_Code");
+			//Diagramm erzeugen
+			outputPUML.createPUMLfromString(outPath + "outPUML_Graph", outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), entryClass, entryMethode)));
+		}
+		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException | SAXException e)
+		{
+			System.out.println("Kommandozeile: Verarbeitung SQ ohne output-Pfad fehlgeschlagen");
+			e.printStackTrace();
+		}
+    }
     /**
      * Ausgabe aller Klassen und Methoden im Konsolendialog
-     * 
+     *
      */
 	private void showAllClassesMethods()
     {
@@ -202,7 +303,7 @@ public class Console extends PUMLgenerator
 	/**
 	 * Interaktiv Dialog
 	 * @param outPathGiven
-	 */
+	 
 	private void interactiveMode(Boolean outPathGiven)
 	{
 		Scanner scanner = new Scanner(System.in);
@@ -280,14 +381,14 @@ public class Console extends PUMLgenerator
 			}
 		}
 		scanner.close();
-	}
+	}*/
 	/**
 	 * Methode zum Erzeugen eines Klassendiagramms aus Interactivem Modus und Cmd-Standard-Nutzung
 	 * @param cmd Kommandozeilenparameter des Ausgabeortes 
 	 * @param useString Schaltet den Uebergebenen String als Ausgabepfad bei "true" frei
 	 * @param givenOutPath false, wenn kein Ausgabeort verfuegbar, true, wenn vorhanden
 	 * @param outPath Ausgabeort als Zeichenkette
-	 */
+	 
 	private void createClassDiag(CommandLine cmd, Boolean useString ,Boolean givenOutPath, String outPath)
 	{
 		String actualOutputPath = new String();
@@ -303,13 +404,6 @@ public class Console extends PUMLgenerator
     	{
     		try //(codeCollector.paths.add(cmd.getOptionValues("i")[i])
 		    {   
-    			/*
-    			//PUML code erstellen
-    			outputPUML.savePUMLtoFile(outputPUML.getPUML(classDiagramGenerator.createDiagram(getTestDoc())),"./outPUML_Code_defaultlocation");
-    			//Diagramm erzeugen aus String
-    			outputPUML.createPUMLfromString("./outPUML_Graph_defaultlocation", outputPUML.getPUML(classDiagramGenerator.createDiagram(getTestDoc())));
-    			//TODO
-    			 * */
     			//PUML code erstellen
     			outputPUML.savePUMLtoFile(outputPUML.getPUML(classDiagramGenerator.createDiagram(parser.getParsingResult())),"./outPUML_Code_defaultlocation");
     			//Diagramm erzeugen aus String
@@ -338,12 +432,12 @@ public class Console extends PUMLgenerator
 		    	System.out.println(
 			    "Zielordner:" + cmd.getOptionValue("o") + "\nQuelle: " + codeCollector.getSourceCode());
     	}
-	}
+	}*/
+	
 	/**
 	 * Methode zum Erstellen des SQDiagramms. Interactive oder ueber direkten Aufruf
 	 * @param cmd
 	 * @param existingOutpath
-	 */
 	private void createInteractiveSQDiagram(CommandLine cmd,int entryClass, int entryMethode, Boolean useString, String outPath, Boolean existingOutpath)
     {
 		String actualOutputPath = new String();
@@ -360,19 +454,18 @@ public class Console extends PUMLgenerator
 		{
 			//Doc Initialisierung und filtern der Elemente aus xml -> Klasse und Methode
 	    	Document parserDoc = PUMLgenerator.parser.getParsingResult();
-	    	/*
 			XPathFactory xPathfactory = XPathFactory.newInstance();
 			XPath xpath = xPathfactory.newXPath();
 			XPathExpression expr = xpath.compile("/parsed/*"); // Startpunkt parsed Knoten
-			NodeList classNodeList = (NodeList) expr.evaluate(parserDoc, XPathConstants.NODESET);*/
+			NodeList classNodeList = (NodeList) expr.evaluate(parserDoc, XPathConstants.NODESET);
 			
 			NodeList classNodeList = xmlHelper.getList(parserDoc, "/source/classdefinition/name");
 			System.out.println("Anzahl Klassen: "+ classNodeList.getLength() + "\n");
 			
-			/*
+		
 			NodeList methodeNodeList = xmlHelper.getList(classNodeList.item(i), "../methoddefinition/name");
 			NodeList methodeNodeList = (NodeList) expr.evaluate(parserDoc, XPathConstants.NODESET);
-			*/
+			
 			//Initialisiere NodeList fuer methoden der Klasse
 			NodeList methodeNodeList = xmlHelper.getList(parserDoc, "/source/classdefinition/methoddefinition/name");
 			System.out.println("Anzahl Methoden: "+ methodeNodeList.getLength() + "\n");
@@ -413,7 +506,7 @@ public class Console extends PUMLgenerator
 			e1.printStackTrace();
 		}
     }
-	
+	*/
 	public Document getTestDoc()
 	{
 		try {
