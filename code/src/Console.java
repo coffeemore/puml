@@ -6,6 +6,7 @@ import java.util.Scanner;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -30,6 +31,7 @@ public class Console extends PUMLgenerator
 	private String outputLocation = "./";
 	private String entryClass = new String();
     private String  entryMethode = new String();
+    private Scanner scanner = new Scanner(System.in);
 	
     /**
      * Konstruktor
@@ -167,7 +169,6 @@ public class Console extends PUMLgenerator
      */
     private void interactiveMode()
     {
-    	Scanner scanner = new Scanner(System.in);
 		String choice = new String();
 		
     	System.out.println("Interaktiver Modus");
@@ -176,35 +177,36 @@ public class Console extends PUMLgenerator
     	while (!(choice.contains("a") || choice.contains("p"))) 
 		{
 			System.out.println("Zeil-Datei in [a]rbeitsverzeichnis oder [p]fad speichern?");
-			choice = scanner.next();
+			choice = scanner.nextLine();
 		}
     	if (choice.contains("p")) //Pfad einlesen
 		{
 			System.out.println("Ausgabepfad fuer UML-Diagramm und -Code angeben");
-			outputLocation = scanner.next();
+			outputLocation = scanner.nextLine();
 		}
     	//Diagrammauswahl treffen
     	while (!(choice.contains("s") || choice.contains("k")))
 		{
 			System.out.println("Erzeuge [s]equenzdiagramm oder [k]lassendiagramm");
-			choice = scanner.next();
+			choice = scanner.nextLine();
 		}
+    	System.out.println("Auswahl: "+ choice);
+    	//Waehle Klassen aus
+		setClassesI();
 		if (choice.contains("s")) //SQ
 		{
-			System.out.println("Auswahl: "+ choice);
-			
 			while ((entryClass.isEmpty() || entryMethode.isEmpty()))
 			{
 				showAllClassesMethods();
-				setClassesI();
 				System.out.println("Waehle Klasse als Einstiegspunkt fuer SQDiagramm:");
-				entryClass = scanner.next();
+				entryClass = scanner.nextLine();
 				if (Character.isLowerCase(entryClass.toCharArray()[0]))
 				{
 					System.out.println("Der Klassenname : '"+ entryClass + "' wurde klein geschrieben. Uebereinstimmung mit Quelltext ueberpruefen!\n");
 				}
+				
 				System.out.println("Waehle Methode als Einstiegspunkt fuer SQDiagramm:");
-				entryMethode = scanner.next();
+				entryMethode = scanner.nextLine();
 				if (Character.isUpperCase(entryMethode.toCharArray()[0]))
 				{
 					System.out.println("Der Methodenname : '"+ entryMethode + "' wurde gross geschrieben. Uebereinstimmung mit Quelltext ueberpruefen!\n");
@@ -217,7 +219,7 @@ public class Console extends PUMLgenerator
 		{
 			createClassDiag(outputLocation);
 		}
-		scanner.close();
+		System.out.println("Ende Interaktiver Modus");
     }
     
     /**
@@ -263,7 +265,7 @@ public class Console extends PUMLgenerator
 								entryClass,
 								entryMethode)));
 		}
-		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException | SAXException e)
+		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException | SAXException | TransformerException e)
 		{
 			System.out.println("Kommandozeile: Verarbeitung SQ ohne output-Pfad fehlgeschlagen");
 			e.printStackTrace();
@@ -305,24 +307,32 @@ public class Console extends PUMLgenerator
 		}
     }
 	
+	/**
+	 * Auswahl der Klassen im interaktiven Dialog
+	 * Sideeffect: Aendert Parser Result
+	 * 
+	 */
 	private void setClassesI()
     {
-		Scanner scanner = new Scanner(System.in);
 		String choice = new String();
 		try
 		{
 			Document parserDoc = PUMLgenerator.parser.getParsingResult();
 			//Initialisiere Nodelist fuer Klassennamen
 			NodeList classNodeList = xmlHelper.getList(parserDoc, "/source/classdefinition/name");
-			
+			//Alle Klassen Anzeigen
 			System.out.println("\nAnzahl Klassen total: " + classNodeList.getLength() + "\n");
-			//Ausgabe fuer jede Klasse
+			for (int i = 0; i < classNodeList.getLength(); i++)
+			{
+				System.out.println("Klasse " + i + ": " + classNodeList.item(i).getTextContent());
+			}
+			//Abfragen ob Klasse mit verarbeitet werden soll
 			for (int i = 0; i < classNodeList.getLength(); i++)
 			{
 				while(!(choice.contains("y") || choice.contains("n")))
 				{
-				System.out.println("Klasse "+ i + ": '"+ classNodeList.item(i).getTextContent() + "' zu Diagram hinzufuegen? (y/n) \n");
-				choice = scanner.next();
+				System.out.println("\nKlasse "+ i + ": '"+ classNodeList.item(i).getTextContent() + "' zu Diagram hinzufuegen? (y/n)");
+				choice = scanner.nextLine();
 				}
 				if (choice.contains("y"))
 				{
@@ -330,11 +340,11 @@ public class Console extends PUMLgenerator
 				}
 				else if (choice.contains("n"))
 				{
+					xmlHelper.delNode(classNodeList.item(i).getParentNode(), false);
 					System.out.println("Klasse: '"+ classNodeList.item(i).getTextContent() + "' wird nicht beruecksichtigt." );
 				}
 				choice = "";
 			}
-			scanner.close();
 		}
 		catch (XPathExpressionException e)
 		{
