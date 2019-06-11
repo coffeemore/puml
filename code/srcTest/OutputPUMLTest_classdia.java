@@ -19,10 +19,10 @@ class OutputPUMLTest_classdia
 		Document doc = docBuild.parse(new File("testfolder/xmlSpecifications/ClassDiagram.xml"));
 		return doc;
 	}
+	
     @Test
     void testGetPUML() throws XPathExpressionException, ParserConfigurationException, SAXException, IOException
     {
-    
 		// GetPuml testen
 		String actual = "";
 		actual = new OutputPUML().getPUML(getDoc());
