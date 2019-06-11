@@ -109,13 +109,17 @@ public class Console extends PUMLgenerator
 		    }
 		    if (cmd.hasOption("i")) // Verarbeitung vieler zu verarbeitenden Pfade
 		    {
-				System.out.print("option -o Wert: "+ cmd.getOptionValue("o")+ "\n");
+		    	//Print Ausgabeort, wenn vorhanden
+		    	if (cmd.getOptionValue("o") != null)
+		    	{
+					System.out.print("PUML-Ausgabe unter : "+ cmd.getOptionValue("o")+ "\n");
+		    	}
 				//Lesen der Pfade
 				for (String k : cmd.getOptionValues("i"))
 				{
 			       	if (!k.equals(""))
 			    	{
-			    		System.out.println("Lese: "+ codeCollector.paths.add(k));
+			    		System.out.println("Lese: "+ k + "\nadded: "+codeCollector.paths.add(k));
 			    	}
 				}
 				// Parser verarbeitet Daten
@@ -187,15 +191,24 @@ public class Console extends PUMLgenerator
 		}
 		if (choice.contains("s")) //SQ
 		{
-			System.out.println("Auswahl: "+choice);
+			System.out.println("Auswahl: "+ choice);
 			
 			while ((entryClass.isEmpty() || entryMethode.isEmpty()))
 			{
 				showAllClassesMethods();
-				System.out.println("Waehle Klasse als Einstiegspunkt fuer SQDiagramm");
+				setClassesI();
+				System.out.println("Waehle Klasse als Einstiegspunkt fuer SQDiagramm:");
 				entryClass = scanner.next();
-				System.out.println("Waehle Methode als Einstiegspunkt fuer SQDiagramm");
+				if (Character.isLowerCase(entryClass.toCharArray()[0]))
+				{
+					System.out.println("Der Klassenname : '"+ entryClass + "' wurde klein geschrieben. Uebereinstimmung mit Quelltext ueberpruefen!\n");
+				}
+				System.out.println("Waehle Methode als Einstiegspunkt fuer SQDiagramm:");
 				entryMethode = scanner.next();
+				if (Character.isUpperCase(entryMethode.toCharArray()[0]))
+				{
+					System.out.println("Der Methodenname : '"+ entryMethode + "' wurde gross geschrieben. Uebereinstimmung mit Quelltext ueberpruefen!\n");
+				}
 			}
 			System.out.println("Gewaehlte Klasse: " + entryClass + " und Methode: " + entryMethode);
 			createSQDiagram(entryClass, entryMethode ,outputLocation);
@@ -216,9 +229,12 @@ public class Console extends PUMLgenerator
 		try 
 	    {  
 			//PUML code erstellen
-			outputPUML.savePUMLtoFile(outputPUML.getPUML(classDiagramGenerator.createDiagram(parser.getParsingResult())), outPath + "outPUML_Code");
+			outputPUML.savePUMLtoFile(outputPUML.getPUML(
+					classDiagramGenerator.createDiagram(parser.getParsingResult())), outPath + "outPUML_Code");
 			//Diagramm erzeugen aus String
-			outputPUML.createPUMLfromString(outPath + "outPUML_Graph", outputPUML.getPUML(classDiagramGenerator.createDiagram(parser.getParsingResult())));
+			outputPUML.createPUMLfromString(
+					outPath + "outPUML_Graph", outputPUML.getPUML(
+							classDiagramGenerator.createDiagram(parser.getParsingResult())));
 	    }
 	    catch (IOException | XPathExpressionException e)
 	    {
@@ -238,9 +254,14 @@ public class Console extends PUMLgenerator
     	try
 		{
 			//Code Erzeugen
-			outputPUML.savePUMLtoFile(outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), entryClass,entryMethode)), outPath + "outPUML_Code");
+			outputPUML.savePUMLtoFile(outputPUML.getPUML(
+					seqDiagramGenerator.createDiagram(parser.getParsingResult(), entryClass, entryMethode)), outPath + "outPUML_Code");
 			//Diagramm erzeugen
-			outputPUML.createPUMLfromString(outPath + "outPUML_Graph", outputPUML.getPUML(seqDiagramGenerator.createDiagram(parser.getParsingResult(), entryClass, entryMethode)));
+			outputPUML.createPUMLfromString(
+					outPath + "outPUML_Graph", outputPUML.getPUML(seqDiagramGenerator.createDiagram(
+							parser.getParsingResult(),
+								entryClass,
+								entryMethode)));
 		}
 		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException | SAXException e)
 		{
@@ -259,7 +280,6 @@ public class Console extends PUMLgenerator
 		{
 			//Document parserDoc = (); //Test
 			Document parserDoc = PUMLgenerator.parser.getParsingResult();
-			xmlHelper.writeDocumentToConsole(parserDoc);
 			//Initialisiere Nodelist fuer Klassennamen
 			NodeList classNodeList = xmlHelper.getList(parserDoc, "/source/classdefinition/name");
 			System.out.println("\nAnzahl Klassen total: " + classNodeList.getLength() + "\n");
@@ -281,9 +301,47 @@ public class Console extends PUMLgenerator
 		catch (XPathExpressionException e)
 		{
 			e.printStackTrace();
+			System.out.println("Kommandozeile: Verarbeitung showAllClassesMethods fehlgeschlagen.");
 		}
     }
 	
+	private void setClassesI()
+    {
+		Scanner scanner = new Scanner(System.in);
+		String choice = new String();
+		try
+		{
+			Document parserDoc = PUMLgenerator.parser.getParsingResult();
+			//Initialisiere Nodelist fuer Klassennamen
+			NodeList classNodeList = xmlHelper.getList(parserDoc, "/source/classdefinition/name");
+			
+			System.out.println("\nAnzahl Klassen total: " + classNodeList.getLength() + "\n");
+			//Ausgabe fuer jede Klasse
+			for (int i = 0; i < classNodeList.getLength(); i++)
+			{
+				while(!(choice.contains("y") || choice.contains("n")))
+				{
+				System.out.println("Klasse "+ i + ": '"+ classNodeList.item(i).getTextContent() + "' zu Diagram hinzufuegen? (y/n) \n");
+				choice = scanner.next();
+				}
+				if (choice.contains("y"))
+				{
+					System.out.println("Klasse: '"+ classNodeList.item(i).getTextContent() + "' hinzugefuegt." );
+				}
+				else if (choice.contains("n"))
+				{
+					System.out.println("Klasse: '"+ classNodeList.item(i).getTextContent() + "' wird nicht beruecksichtigt." );
+				}
+				choice = "";
+			}
+			scanner.close();
+		}
+		catch (XPathExpressionException e)
+		{
+			e.printStackTrace();
+			System.out.println("Kommandozeile: Verarbeitung setAllClasses fehlgeschlagen.");
+		}
+    }
 	public Document getTestDoc()
 	{
 		try {
