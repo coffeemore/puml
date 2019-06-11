@@ -148,6 +148,7 @@ public class SequenceDiagramGenerator
 	    seqMethodNode.insertBefore(classTag, seqMethodNode.getFirstChild());
 
 	    // vorhandene Parameters-, Access- oder Result-Tags werden gesucht und entfernt
+	    
 	    Node node = list.item(i);
 	    NodeList childs = node.getChildNodes();
 	    for (int j = 0; j < childs.getLength(); j++)
@@ -165,12 +166,13 @@ public class SequenceDiagramGenerator
     public void deleteFrame(Document seqDiagram) throws XPathExpressionException {
 	NodeList list = xmlHM.getList(seqDiagram, seqMethodDef+"//frame");
 	for(int i = 0; i < list.getLength(); i++) {
-	    Node parent = list.item(i).getParentNode();
-	    NodeList childs = xmlHM.getList(list.item(i), "child::*");
-	    for(int j = 0; j < childs.getLength(); j++) {
-		parent.appendChild(childs.item(j));
-	    }
-	    parent.removeChild(list.item(i));
+	    xmlHM.delNode(list.item(i), true);
+//	    Node parent = list.item(i).getParentNode();
+//	    NodeList childs = xmlHM.getList(list.item(i), "child::*");
+//	    for(int j = 0; j < childs.getLength(); j++) {
+//		parent.appendChild(childs.item(j));
+//	    }
+//	    parent.removeChild(list.item(i));
 	}
     }
     
