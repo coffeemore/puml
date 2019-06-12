@@ -371,16 +371,16 @@ public class OutputPUML
 	{
 	    while (nextNode.getNodeName() != null)
 	    {
-	if(nextNode.getNodeName()=="condition")
-	{
-	    pumlCode += nextNode.getTextContent() + "\n";
-	    nextNode = nextNode.getNextSibling();
-	}if(nextNode.getNodeName() == "methodcall")
-	{
-	    nextNode = nextNode.getFirstChild();
-	    pumlCode += helperMethodCallHandler(startClass, nextNode);
-	}
-	    nextNode = nextNode.getNextSibling();
+        	if(nextNode.getNodeName()=="condition")
+        	{
+        	    pumlCode += nextNode.getTextContent() + "\n";
+        	    //nextNode = nextNode.getNextSibling();
+        	}if(nextNode.getNodeName() == "methodcall")
+        	{
+        	    nextNode = nextNode.getFirstChild();
+        	    pumlCode += helperMethodCallHandler(startClass, nextNode);
+        	}
+        	nextNode = nextNode.getNextSibling();
 	    }
 	
 	}
