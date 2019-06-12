@@ -3,6 +3,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,7 +25,7 @@ public class ClassDiagramGenerator
      */	
     public ClassDiagramGenerator()
     {
-    	//createDiagram(xmlHelper.getDocumentFrom("testfolder/xmlSpecifications/parsedData.xml"));
+    	createDiagram(xmlHelper.getDocumentFrom("testfolder/xmlSpecifications/parsedData.xml"));
     }
 
 	/**
@@ -76,10 +77,21 @@ public class ClassDiagramGenerator
 				Node classdefinitionNode = classList.item(i);
 				Element entry = document.createElement("entry");
 				classes.appendChild(entry);
+				Element name = document.createElement("Name");
 				Element elClassdef = (Element) classdefinitionNode;
-				//Erzeugt "Entry"-tag mit Classennamen als Texteintrag
-				entry.appendChild(document.createTextNode(
-						elClassdef.getElementsByTagName("name").item(0).getTextContent()));				
+				entry.appendChild(name);
+				//Erzeugt "name"-tag mit Classennamen als Texteintrag
+				name.appendChild(document.createTextNode(
+						elClassdef.getElementsByTagName("name").item(0).getTextContent()));
+				
+				//Kopieren der "instance"-Knoten von parsedData zu document
+				NodeList instanceList = xmlHelper.getList(elClassdef, "./instance");
+				for(int j = 0; instanceList.getLength() > j; j++)
+				{			
+					Node copiedNode = document.importNode(instanceList.item(j), true);
+				    entry.appendChild(copiedNode);
+				}
+								
 				//StringArray um in einer Schleife nach Vererbungen, Kompositionen, Aggregationen und Implementierungen zu suchen
 				String[] excoagim = {"extends", "compositions", "aggregations", "implements"};
 				for(int k = 0; k < 4; k++)
@@ -104,7 +116,7 @@ public class ClassDiagramGenerator
 								//Erzeugt "Entry"-tag mit "from" und "to"-tag in extensions mit ausgelesenem Inhalt aus parsedData
 								extensions.appendChild(nextEntry);
 								from.appendChild(document.createTextNode(
-										elClassdef.getElementsByTagName("name").item(i).getTextContent()));
+										elClassdef.getElementsByTagName("name").item(0).getTextContent()));
 								to.appendChild(document.createTextNode(
 										element.getElementsByTagName("entry").item(j).getTextContent()));
 								break;
@@ -139,11 +151,15 @@ public class ClassDiagramGenerator
 				}
 			}
 			//Ausgabe Konsole
-			//xmlHelper.writeDocumentToConsole(document);
+			xmlHelper.writeDocumentToConsole(document);
 	    	return document;
 		}
     	catch (ParserConfigurationException e)
     	{
+			e.printStackTrace();
+		}
+    	catch (XPathExpressionException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
