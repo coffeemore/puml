@@ -342,13 +342,8 @@ public class Console extends PUMLgenerator
 				}
 				else if (choice == 'n')
 				{
-					xmlHelper.writeDocumentToConsole(parserDoc);
-					//TODO Welche der beiden Methoden ist korrekt
-					xmlHelper.delNode(classNodeList.item(i), false);
-					//xmlHelper.delNode(classNodeList.item(i).getParentNode(), false);
-					//TODO end
+					xmlHelper.delNode(classNodeList.item(i).getParentNode(), false);
 					System.out.println("Klasse: '"+ classNodeList.item(i).getTextContent() + "' wird nicht beruecksichtigt." );
-					xmlHelper.writeDocumentToConsole(parserDoc);
 				}
 				choice = '\0';
 			}
