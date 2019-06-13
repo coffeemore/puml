@@ -174,9 +174,10 @@ public class Console extends PUMLgenerator
     	System.out.println("Interaktiver Modus");
     	
     	//Ausgabeort festlegen
-    	while (!(choice.contains("a") || choice.contains("p"))) 
+    	//Nicht wenn outputlocation ueber "-o" gegeben
+    	while ((outputLocation.contentEquals("./")) && (!(choice.contains("a") || choice.contains("p")))) 
 		{
-			System.out.println("Zeil-Datei in [a]rbeitsverzeichnis oder [p]fad speichern?");
+			System.out.println("Ziel-Datei in [a]rbeitsverzeichnis oder [p]fad speichern?");
 			choice = scanner.nextLine();
 		}
     	if (choice.contains("p")) //Pfad einlesen
@@ -340,8 +341,13 @@ public class Console extends PUMLgenerator
 				}
 				else if (choice.contains("n"))
 				{
-					xmlHelper.delNode(classNodeList.item(i).getParentNode(), false);
+					xmlHelper.writeDocumentToConsole(parserDoc);
+					//TODO Welche der beiden Methoden ist korrekt
+					xmlHelper.delNode(classNodeList.item(i), false);
+					//xmlHelper.delNode(classNodeList.item(i).getParentNode(), false);
+					//TODO end
 					System.out.println("Klasse: '"+ classNodeList.item(i).getTextContent() + "' wird nicht beruecksichtigt." );
+					xmlHelper.writeDocumentToConsole(parserDoc);
 				}
 				choice = "";
 			}
