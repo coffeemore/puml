@@ -1,8 +1,6 @@
 import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
 import java.io.IOException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import org.junit.jupiter.api.Test;
@@ -13,19 +11,17 @@ import net.sourceforge.plantuml.FileUtils;
 
 class OutputPUMLTest_sequencedia
 {
-	public Document getDoc() throws ParserConfigurationException, SAXException, IOException {
-		DocumentBuilderFactory docBuildFact = DocumentBuilderFactory.newInstance();
-		DocumentBuilder docBuild = docBuildFact.newDocumentBuilder();
-		Document doc = docBuild.parse(new File("testfolder/xmlSpecifications/SeqDiagram.xml"));
-		return doc;
-	}
+    XmlHelperMethods xmlHM = new XmlHelperMethods();
+
+    Document doc = xmlHM.getDocumentFrom("testfolder/xmlSpecifications/ClassDiagram.xml");
+	
 	public OutputPUML output = new OutputPUML();
 	
     @Test
     void testGetPUML() throws XPathExpressionException, ParserConfigurationException, SAXException, IOException
     {
 		// GetPuml testen
-		String actual = new OutputPUML().getPUML(getDoc());
+		String actual = new OutputPUML().getPUML(doc);
 		String expected =
 				"@startuml\n" + 
 				"participant Class1\n" + 
@@ -94,7 +90,7 @@ class OutputPUMLTest_sequencedia
 				"deactivate Class1\n" + 
 				"deactivate Class1\n" + 
 				"@enduml";
-		actual = new OutputPUML().getPUML(getDoc());
+		actual = new OutputPUML().getPUML(doc);
 		assertEquals(expected, actual);
 		//System.out.println("Hier is der Code: \n" + actual + "oder so" + expected);
     }
@@ -108,7 +104,7 @@ class OutputPUMLTest_sequencedia
 		// savePumltoFile testen
 		// TODO Aendern der Filepaths bevor Test (je nach System), expectedFile
 		// platzieren
-		output.savePUMLtoFile(output.getPUML(getDoc()), "testfolder/xmlSpecifications/actualSeqFile.txt");
+		output.savePUMLtoFile(output.getPUML(doc), "testfolder/xmlSpecifications/actualSeqFile.txt");
 		File actual = new File("testfolder/xmlSpecifications/actualSeqFile.txt");
 		assertEquals(FileUtils.readFile(actual), FileUtils.readFile(expected));
     }
@@ -129,7 +125,7 @@ class OutputPUMLTest_sequencedia
 	// TODO Aendern der Filepaths bevor Test (je nach System)
 	File expected = new File("testfolder/xmlSpecifications/SeqDiagram.png");
 	try {
-		output.createPUMLfromString("testfolder/xmlSpecifications/SeqD_fromString.png", output.getPUML(getDoc()));
+		output.createPUMLfromString("testfolder/xmlSpecifications/SeqD_fromString.png", output.getPUML(doc));
 	} catch (XPathExpressionException | IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
