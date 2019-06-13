@@ -169,45 +169,43 @@ public class Console extends PUMLgenerator
      */
     private void interactiveMode()
     {
-		String choice = new String();
+		char choice = '\0';
 		
     	System.out.println("Interaktiver Modus");
     	
     	//Ausgabeort festlegen
     	//Nicht wenn outputlocation ueber "-o" gegeben
-    	while ((outputLocation.contentEquals("./")) && (!(choice.contains("a") || choice.contains("p")))) 
+    	while ((outputLocation.contentEquals("./")) && (!(choice == 'a') || choice == 'p')) 
 		{
 			System.out.println("Ziel-Datei in [a]rbeitsverzeichnis oder [p]fad speichern?");
-			choice = scanner.nextLine();
+			choice = scanner.next().charAt(0);
 		}
-    	if (choice.contains("p")) //Pfad einlesen
+    	if (choice == 'p') //Pfad einlesen
 		{
 			System.out.println("Ausgabepfad fuer UML-Diagramm und -Code angeben");
 			outputLocation = scanner.nextLine();
 		}
     	//Diagrammauswahl treffen
-    	while (!(choice.contains("s") || choice.contains("k")))
+    	while (!(choice == 's' || choice == 'k'))
 		{
 			System.out.println("Erzeuge [s]equenzdiagramm oder [k]lassendiagramm");
-			choice = scanner.nextLine();
+			choice = scanner.next().charAt(0);
 		}
     	System.out.println("Auswahl: "+ choice);
-    	//Waehle Klassen aus
-		setClassesI();
-		if (choice.contains("s")) //SQ
+		if (choice == 's') //SQ
 		{
 			while ((entryClass.isEmpty() || entryMethode.isEmpty()))
 			{
 				showAllClassesMethods();
 				System.out.println("Waehle Klasse als Einstiegspunkt fuer SQDiagramm:");
-				entryClass = scanner.nextLine();
+				entryClass = scanner.next();
 				if (Character.isLowerCase(entryClass.toCharArray()[0]))
 				{
 					System.out.println("Der Klassenname : '"+ entryClass + "' wurde klein geschrieben. Uebereinstimmung mit Quelltext ueberpruefen!\n");
 				}
 				
 				System.out.println("Waehle Methode als Einstiegspunkt fuer SQDiagramm:");
-				entryMethode = scanner.nextLine();
+				entryMethode = scanner.next();
 				if (Character.isUpperCase(entryMethode.toCharArray()[0]))
 				{
 					System.out.println("Der Methodenname : '"+ entryMethode + "' wurde gross geschrieben. Uebereinstimmung mit Quelltext ueberpruefen!\n");
@@ -218,6 +216,8 @@ public class Console extends PUMLgenerator
 		}
 		else //ClassDiag
 		{
+			//Waehle Klassen aus und erzeuge das Klassen-Diagramm
+			setClassesI();
 			createClassDiag(outputLocation);
 		}
 		System.out.println("Ende Interaktiver Modus");
@@ -288,6 +288,7 @@ public class Console extends PUMLgenerator
 			System.out.println("\nAnzahl Klassen total: " + classNodeList.getLength() + "\n");
 			//Ausgabe fuer jede Klasse
 			for (int i = 0; i < classNodeList.getLength(); i++)
+				
 			{
 				System.out.println("Klasse "+ i + ": "+ classNodeList.item(i).getTextContent());
 				
@@ -315,7 +316,7 @@ public class Console extends PUMLgenerator
 	 */
 	private void setClassesI()
     {
-		String choice = new String();
+		char choice = '\0';
 		try
 		{
 			Document parserDoc = PUMLgenerator.parser.getParsingResult();
@@ -330,16 +331,16 @@ public class Console extends PUMLgenerator
 			//Abfragen ob Klasse mit verarbeitet werden soll
 			for (int i = 0; i < classNodeList.getLength(); i++)
 			{
-				while(!(choice.contains("y") || choice.contains("n")))
+				while(!(choice == 'y' || choice == 'n'))
 				{
 				System.out.println("\nKlasse "+ i + ": '"+ classNodeList.item(i).getTextContent() + "' zu Diagram hinzufuegen? (y/n)");
-				choice = scanner.nextLine();
+				choice = scanner.next().charAt(0);
 				}
-				if (choice.contains("y"))
+				if (choice == 'y')
 				{
 					System.out.println("Klasse: '"+ classNodeList.item(i).getTextContent() + "' hinzugefuegt." );
 				}
-				else if (choice.contains("n"))
+				else if (choice == 'n')
 				{
 					xmlHelper.writeDocumentToConsole(parserDoc);
 					//TODO Welche der beiden Methoden ist korrekt
@@ -349,7 +350,7 @@ public class Console extends PUMLgenerator
 					System.out.println("Klasse: '"+ classNodeList.item(i).getTextContent() + "' wird nicht beruecksichtigt." );
 					xmlHelper.writeDocumentToConsole(parserDoc);
 				}
-				choice = "";
+				choice = '\0';
 			}
 		}
 		catch (XPathExpressionException e)
