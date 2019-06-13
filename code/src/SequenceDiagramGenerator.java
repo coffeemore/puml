@@ -85,11 +85,12 @@ public class SequenceDiagramGenerator
 
 	addType(parsedData, seqDiagram, seq, epClass);
 
-	deleteUnusedClassesAndMethods(seqDiagram, epClass);
 
+	deleteUnusedClassesAndMethods(seqDiagram, epClass);
+	
 	xmlHM.removeComments(root);
 	seqDiagram = xmlHM.removeWhitespace(seqDiagram);
-	// xmlHM.writeDocumentToConsole(seqDiagram);
+
 	xmlHM.writeToFile(seqDiagram);
 
 	return seqDiagram;
@@ -383,8 +384,7 @@ public class SequenceDiagramGenerator
      * @param instanceClass - Name der Klasse der lokalen Instanz
      */
 
-    private void recursiveHandlelocalInstances(Document doc, Node currentNode, String instanceName,
-	    String instanceClass)
+    private void recursiveHandlelocalInstances(Document doc, Node currentNode, String instanceName, String instanceClass)
     {
 	// lokale Instanz ist in späteren Siblings gültig
 	Node current = currentNode;
@@ -682,7 +682,7 @@ public class SequenceDiagramGenerator
 	    }
 	}
     }
-
+    
     private void deleteUnusedMethods(Document Doc) throws XPathExpressionException
     {
 	// ungenutzte Methoden löschen
