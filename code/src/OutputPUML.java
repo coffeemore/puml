@@ -28,6 +28,7 @@ public class OutputPUML
     public NodeList list = null;
     PUMLgenerator puml = new PUMLgenerator();
     XmlHelperMethods helper = new XmlHelperMethods();
+    boolean firstMethodCall = true;
     
 
     /**
@@ -56,19 +57,236 @@ public class OutputPUML
 		String pumlCode = "@startuml\n";
 		if (compare == "classdiagramm")
 		{
-			list = helper.getList(list.item(0), "classes/entry");
+			boolean gotInstances = false;
+			list = helper.getList(list.item(0), "classes/entry/name");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-				    pumlCode += "class " + list.item(a).getTextContent() + "\n";
+				    pumlCode += "class " + list.item(a).getTextContent();
+				    NodeList instanceList = helper.getList(list.item(a).getParentNode(), "instance");
+				    NodeList varList = helper.getList(list.item(a).getParentNode(), "var");
+				    NodeList methodList = helper.getList(list.item(a).getParentNode(), "methoddefinition");
+				    if ((instanceList.getLength() > 0) || (varList.getLength()>0) || (methodList.getLength()>0)) 
+				    {
+				    	pumlCode += "{\n";
+				    	gotInstances = true;
+				    }
+				    else 
+				    {
+				    	pumlCode += "\n";
+				    }
+				    
+				    //INSTANCES
+				    for (int b=0; b<instanceList.getLength(); b++)
+				    {
+				    	NodeList tempList = helper.getList(instanceList.item(b), "access");
+				    	//System.out.println(tempList.item(0).getTextContent());
+					    if (tempList.item(0).getTextContent().equals("private")) 
+					    {
+					    	pumlCode += "-";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("public")) 
+					    {
+					    	pumlCode += "+";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("protected")) 
+					    {
+					    	pumlCode += "#";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("pprivate")) 
+					    {
+					    	pumlCode += "~";
+					    }
+					    tempList = helper.getList(instanceList.item(b), "class");
+					    pumlCode += tempList.item(0).getTextContent()+" ";
+					    tempList = helper.getList(instanceList.item(b), "name");
+					    pumlCode += tempList.item(0).getTextContent()+"\n";
+				    }
+				    
+				    //VAR
+				    for (int b=0; b<varList.getLength(); b++) 
+				    {
+				    	NodeList tempList = helper.getList(varList.item(b), "access");
+					    if (tempList.item(0).getTextContent().equals("private")) 
+					    {
+					    	pumlCode += "-";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("public")) 
+					    {
+					    	pumlCode += "+";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("protected")) 
+					    {
+					    	pumlCode += "#";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("pprivate")) 
+					    {
+					    	pumlCode += "~";
+					    }
+					    tempList = helper.getList(varList.item(b), "type");
+					    pumlCode += tempList.item(0).getTextContent()+" ";
+					    tempList = helper.getList(varList.item(b), "name");
+					    pumlCode += tempList.item(0).getTextContent()+"\n";
+				    }
+
+				    //METHODDEFINITION
+				    for (int b=0; b<methodList.getLength(); b++) 
+				    {
+				    	NodeList tempList = helper.getList(methodList.item(b), "access");
+					    if (tempList.item(0).getTextContent().equals("private")) 
+					    {
+					    	pumlCode += "-";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("public")) 
+					    {
+					    	pumlCode += "+";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("protected")) 
+					    {
+					    	pumlCode += "#";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("pprivate")) 
+					    {
+					    	pumlCode += "~";
+					    }
+					    tempList = helper.getList(methodList.item(b), "type");
+					    if(tempList.getLength()>=1) 
+					    {
+					    	pumlCode += "{"+tempList.item(0).getTextContent()+"}" +" ";
+					    }
+					    tempList = helper.getList(methodList.item(b), "result");
+					    if(tempList.getLength()>=1) 
+					    {
+					    	pumlCode += tempList.item(0).getTextContent()+" ";
+					    }
+					    tempList = helper.getList(methodList.item(b), "name");
+					    pumlCode += tempList.item(0).getTextContent()+"(";
+					    NodeList paramList = helper.getList(methodList.item(b), "parameters/entry");
+					    for(int c=0; c<paramList.getLength(); c++)
+					    {
+					    	NodeList tList = helper.getList(paramList.item(c), "type");
+					    	pumlCode+=tList.item(0).getTextContent()+" ";
+					    	tList = helper.getList(paramList.item(c), "name");
+					    	pumlCode+=tList.item(0).getTextContent();
+					    	if(c < 1) 
+					    	{
+					    		pumlCode += ", ";
+					    	}
+					    }
+					    pumlCode += ")\n";
+				    }
+				    if(gotInstances) 
+				    {
+				    	pumlCode+="}\n";
+				    	gotInstances=false;
+				    }
 		    }
-		    list = helper.getList(list.item(0).getParentNode().getParentNode(), "interfaces/entry");
+		    
+		    //TODO Kann Interface vars haben? (nein: vars teil löschen, ja: weiter fragen, gotInstances-Part?
+		    list = helper.getList(list.item(0).getParentNode().getParentNode().getParentNode(), "interfaces/entry/name");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-			    pumlCode += "interface " + list.item(a).getTextContent() + "\n";
+				    pumlCode += "interface " + list.item(a).getTextContent() + "{\n";
+				    NodeList instanceList = helper.getList(list.item(a).getParentNode(), "instance");
+				    for (int b=0; b<instanceList.getLength(); b++)
+				    {
+				    	NodeList tempList = helper.getList(instanceList.item(b), "access");
+					    if (tempList.item(0).getTextContent().equals("private")) 
+					    {
+					    	pumlCode += "-";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("public")) 
+					    {
+					    	pumlCode += "+";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("protected")) 
+					    {
+					    	pumlCode += "#";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("pprivate")) 
+					    {
+					    	pumlCode += "~";
+					    }
+					    tempList = helper.getList(instanceList.item(b), "class");
+					    pumlCode += tempList.item(0).getTextContent()+" ";
+					    tempList = helper.getList(instanceList.item(b), "name");
+					    pumlCode += tempList.item(0).getTextContent()+"\n";
+				    }
+				    NodeList varList = helper.getList(list.item(a).getParentNode(), "var");
+				    for (int b=0; b<varList.getLength(); b++) 
+				    {
+				    	NodeList tempList = helper.getList(varList.item(b), "access");
+					    if (tempList.item(0).getTextContent().equals("private")) 
+					    {
+					    	pumlCode += "-";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("public")) 
+					    {
+					    	pumlCode += "+";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("protected")) 
+					    {
+					    	pumlCode += "#";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("pprivate")) 
+					    {
+					    	pumlCode += "~";
+					    }
+					    tempList = helper.getList(varList.item(b), "type");
+					    pumlCode += tempList.item(0).getTextContent()+" ";
+					    tempList = helper.getList(varList.item(b), "name");
+					    pumlCode += tempList.item(0).getTextContent()+"\n";
+				    }
+				    NodeList methodList = helper.getList(list.item(a).getParentNode(), "methoddefinition");
+				    for (int b=0; b<methodList.getLength(); b++) 
+				    {
+				    	NodeList tempList = helper.getList(methodList.item(b), "access");
+					    if (tempList.item(0).getTextContent().equals("private")) 
+					    {
+					    	pumlCode += "-";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("public")) 
+					    {
+					    	pumlCode += "+";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("protected")) 
+					    {
+					    	pumlCode += "#";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("pprivate")) 
+					    {
+					    	pumlCode += "~";
+					    }
+					    tempList = helper.getList(methodList.item(b), "type");
+					    if(tempList.getLength()>=1) 
+					    {
+					    	pumlCode += "{"+tempList.item(0).getTextContent()+"}" +" ";
+					    }
+					    tempList = helper.getList(methodList.item(b), "result");
+					    if(tempList.getLength()>=1) 
+					    {
+					    	pumlCode += tempList.item(0).getTextContent()+" ";
+					    }
+					    tempList = helper.getList(methodList.item(b), "name");
+					    pumlCode += tempList.item(0).getTextContent()+"(";
+					    NodeList paramList = helper.getList(methodList.item(b), "parameters/entry");
+					    for(int c=0; c<paramList.getLength(); c++)
+					    {
+					    	NodeList tList = helper.getList(paramList.item(c), "type");
+					    	pumlCode+=tList.item(0).getTextContent()+" ";
+					    	tList = helper.getList(paramList.item(c), "name");
+					    	pumlCode+=tList.item(0).getTextContent();
+					    	if(c < 1) 
+					    	{
+					    		pumlCode += ", ";
+					    	}
+					    }
+					    pumlCode += ")\n";
+				    }
+				    pumlCode+="}\n";
 		    }
-	
+
 		    // EXTENSIONS
-		    list = helper.getList(list.item(0).getParentNode().getParentNode(), "classrelations/extensions/entry");
+		    list = helper.getList(list.item(0).getParentNode().getParentNode().getParentNode(), "classrelations/extensions/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
 		    	NodeList tempList;
@@ -116,9 +334,7 @@ public class OutputPUML
 		{
 	
 		    String tempStartClass = "";
-		    String tempEndClass = "";
 		    String tempStartMethod = "";
-		    String tempActiveMethod = "";
 		    list = helper.getList(diagramData, "/parsed/sequencediagram/classes/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
@@ -147,19 +363,8 @@ public class OutputPUML
 		    }
 		    // Einsetzen : [name=" + tempStartMethod + "]
 		    list = helper.getList(diagramData, "/parsed/sequencediagram/methoddefinition[name=\"" + tempStartMethod + "\"]"); //an Position der entry Methoddefinition
-		    pumlCode += helperMethodCall(list.item(0), tempStartClass);
-/*		   
-		    for (int a = 0; a < list.getLength(); a++)
-		    {
-			if (list.item(a).getNodeName() != "#text")
-			{
-			    System.out.println("get in there" + num);
-			    //ruft die helperMethod mit der entry Methoddefinition auf
-			    pumlCode += helperMethodCall(diagramData, "/parsed/sequencediagram/methoddefinition[" + num + "]", tempStartClass) + "\n";
-			    pumlCode += "deactivate " + tempStartClass + "\n";
-			}
-		    }
-*/
+		    pumlCode += helperMethodCall(list.item(0), tempStartClass); //TODO Versuch
+
 		}
 		else
 		{
@@ -176,46 +381,47 @@ public class OutputPUML
 	 String pumlCode = "";
 	 NodeList methodNameList = helper.getList(methodefNode, "name");
 	 String methodName =  methodNameList.item(0).getTextContent();
-	 System.out.println(methodName);
-	 Node nextNode = methodefNode.getNextSibling();
-	 System.out.println(nextNode.getNextSibling().getNodeName()); //TODO fortfahren
-	 if(nextNode.getNodeName()=="name")
+	 Node nextNode = methodNameList.item(0);
+	 
+	 //Abfrage ob die Methode das erste Mal aufgerufen wird
+	 if (!firstMethodCall)
 	 {
-	     nextNode = nextNode.getNextSibling();
+	     pumlCode = startClass + " -> " + startClass + ": " + methodName + "\n";
 	 }
+	 firstMethodCall = false;
+	 try
+	{
+		 while(nextNode.getNodeName() != null) //Versuch
+		 {
+		     if(nextNode.getNodeName()=="name")
+		     {
+			 nextNode = helper.getList(nextNode,"following-sibling::*").item(0);
+		     }
+		     pumlCode += "activate " + startClass + "\n";
+			 
+		     if(nextNode.getNodeName()=="alternative")
+		     {
+			 pumlCode += helperAlternativeCall(nextNode, startClass);
+			 //nextNode = nextNode.getNextSibling();
+			    
+		     }
+		     if(nextNode.getNodeName() == "methodcall")
+		     {
+			 Node methodNode = helper.getList(nextNode, "child::*").item(0);
+			 pumlCode += helperMethodCallHandler(startClass, methodNode);
+		     }
+		     nextNode = helper.getList(nextNode,"following-sibling::*").item(0);
+		 }   
+	}
+	catch (Exception e)
+	{
+	    // TODO: handle exception
+	}
 	 
-	 pumlCode += "activate " + startClass + "\n";
-	 
-	 if(nextNode.getNodeName()=="alternative")
-	 {
-	     pumlCode += helperAlternativeCall(nextNode, startClass);
-	    
-	 }
-	 
-	 /*
-	 String pumlCode = "";
-	    String templistPath = listPath + "/name"; //an position name in der Methoddefinition
-		list = XmlHelperMethods.getList(diagramData, listPath).item(0).getChildNodes();
-		for (int a = 0; a < list.getLength(); a++)
-		{
-		    if (list.item(a).getNodeName() == "name")
-		    {
-			System.out.println("-- " + list.item(a).getNodeName());
-			pumlCode += "activate " + startClass + "\n";
-		    }
-		}
-		templistPath = listPath + "/alternative";
-		list = XmlHelperMethods.getList(diagramData, templistPath);
-		for (int a = 0; a < list.getLength(); a++)
-		{
-		    if (list.item(a).getNodeName() != "#text")
-		    {
-			pumlCode += helperCaseCall(diagramData, templistPath, startClass, false);
-		    }
-		}
 
-	return pumlCode;
-	*/
+	 
+	 
+	 pumlCode += "deactivate " + startClass + "\n";
 	 return pumlCode;
     }
     
@@ -230,45 +436,174 @@ public class OutputPUML
 	    String caseName = helper.getList(cases.item(i), "condition").item(0).getTextContent();
 	    if(first)
 	    {
-		pumlCode += "alt " + caseName;
+		pumlCode += "alt " + caseName + "\n";
 		first = false;
 	    }
 	    else
 	    {
-		pumlCode += "else " + caseName;
+		pumlCode += "else " + caseName + "\n";
 	    }
-	    Node nextNode = cases.item(i).getFirstChild();
-	    if(nextNode.getNodeName()=="conditition")
-	    {
-		nextNode = nextNode.getNextSibling();
-	    }
-	    if(nextNode.getNodeName() == "methodcall")
-	    {
-		if(nextNode.getFirstChild().getNodeName() == "method")
+	    Node nextNode = helper.getList(cases.item(i), "child::*").item(0);
+    	    try
+    	    {
+        	    while (nextNode.getNodeName() != null)
+        	    {        		
+                	    if(nextNode.getNodeName()=="condition")
+                	    {
+                		//nextNode = nextNode.getNextSibling();
+                	    }
+                	    if(nextNode.getNodeName() == "methodcall")
+                	    {
+                		Node aufrufNode = helper.getList(nextNode, "child::*").item(0);
+                		pumlCode += helperMethodCallHandler(startClass, aufrufNode);
+                	    }
+                	    if(nextNode.getNodeName()== "loop")
+                	    {
+                		pumlCode += helperLoopCall(nextNode, startClass);
+                		//TODO Weiterführend ???
+                	    }
+                	    nextNode = helper.getList(nextNode,"following-sibling::*").item(0);
+                		
+        	    }
+	    	}
+		catch (Exception e)
 		{
-		    helperMethodCall(nextNode, startClass);
+		// TODO: handle exception
 		}
-		else if(nextNode.getFirstChild().getNodeName() == "class")
-		{
-		    NodeList methodCalls = helper.getList(nextNode, "class");
-		}
-		
+    	    
+	    
+	}
+	pumlCode += "end\n";
+	
+	
+	return pumlCode;
+    }
+
+    private String helperMethodCallHandler(String startClass, Node methodCallNode)
+    {
+	String pumlCode ="";
+	String inst ="";
+	String method ="";
+	String toClass ="";
+	String type ="";
+	Node nextNode = methodCallNode;
+	try
+	{
+        	while (nextNode.getNodeName() != null)
+        	{
+        	    if (nextNode.getNodeName() == "instance")
+        	    {
+        		inst = nextNode.getTextContent();
+        
+        	    }
+        	    else if(nextNode.getNodeName() == "class")
+        	    {
+        		toClass = nextNode.getTextContent();
+        
+        	    }
+        	    else if(nextNode.getNodeName() == "method")
+        	    {
+        		method = nextNode.getTextContent();
+        
+        	    }
+        	    else if(nextNode.getNodeName() == "type")
+        	    {
+        		
+        		type = nextNode.getTextContent();
+        	    }
+        	    
+        	    nextNode = helper.getList(nextNode,"following-sibling::*").item(0);
+        	}
+	}
+	catch (Exception e)
+	{
+	// TODO: handle exception
+	}
+	
+	inst = (inst != "") ? " (" + inst + ")" : inst;
+	
+	/*
+	 * Abfragen anhand der gespeicherten Daten über die Strings werden behandelt
+	 * 1.Fall
+	 * 	Klasse und Methode sind beschrieben:
+	 * 		Strings werden geschrieben
+	 * 2.Fall
+	 * 	Klasse ist nicht beschrieben, und kein unknown, recursive oder handled als type
+	 * 		helperMethodCall wird aufgerufen
+	 * 3.Fall/4.Fall/5.Fall 
+	 * 	unknown/handled/recursive:
+	 * 		Wird gemäß der Vorgaben in den pumlCode geschrieben	 
+	 */
+	if (!toClass.equals("") && !method.equals(""))
+	{
+		pumlCode += startClass + " -> " + toClass + ": " + method + inst + "\n";
+		pumlCode += "activate " + toClass + "\n";
+		pumlCode += toClass + " --> " + startClass + "\n";
+		pumlCode += "deactivate " + toClass + "\n";
+	}
+	else if(toClass.equals("") && !type.equals("unknown") && !type.equals("recursive") && !type.equals("handled"))
+	{
+	    try {
+	    NodeList callList = helper.getList(methodCallNode, "//methoddefinition[name=\"" + method + "\"]");
+	    pumlCode += startClass + " -> " + startClass + ": " + method + "\n";
+	    pumlCode = helperMethodCall(callList.item(0), startClass);
+	    }
+	    catch(Exception e)
+	    {
 		
 	    }
-	}	
+	}
+	else if(type.equals("unknown"))
+	{
+	    pumlCode += startClass + " ->x]" + toClass + ": " + method + inst + "\n";
+
+	}
+	else if(type.equals("recursive"))
+	{
+	    pumlCode += startClass + " ->o " + startClass + ": " + method + inst + "\n";
+	    pumlCode += "activate " + startClass + "\n";
+	    pumlCode += "deactivate " + startClass + "\n";
+	}
+	else if(type.equals("handled"))
+	{
+	    pumlCode += startClass + " [#0000FF]->> " + startClass + ": " + method + inst + "\n";
+	    pumlCode += "activate " + startClass + "\n";
+	    pumlCode += "deactivate " + startClass + "\n";
+	}
+	
 	return pumlCode;
     }
     
     //for loops
-    private String helperLoopCall(Document diagramData, String listPath, String startClass) throws XPathExpressionException
+    private String helperLoopCall(Node loopNode, String startClass) throws XPathExpressionException
     {
-	String pumlCode = "";
-	listPath += "/case"; //an position name in der Methoddefinition
-	list = helper.getList(diagramData, listPath);
-	for(int i = 0; i < list.getLength(); i++)
+	String pumlCode = "loop ";
+	NodeList loopList = helper.getList(loopNode, "condition");
+	Node nextNode = loopList.item(0);
+	
+	try
 	{
-	    System.out.println("-- " + i);
+	    while (nextNode.getNodeName() != null)
+	    {
+        	if(nextNode.getNodeName()=="condition")
+        	{
+        	    pumlCode += nextNode.getTextContent() + "\n";
+        	    //nextNode = nextNode.getNextSibling();
+        	}if(nextNode.getNodeName() == "methodcall")
+        	{
+        	    nextNode = helper.getList(nextNode, "child::*").item(0);
+        	    pumlCode += helperMethodCallHandler(startClass, nextNode);
+        	}
+        	nextNode = helper.getList(nextNode,"following-sibling::*").item(0);
+	    }
+	
 	}
+	catch(Exception e)
+	{
+	    
+	}
+	
+	pumlCode += "end\n";
 	return pumlCode;
     }
     /**

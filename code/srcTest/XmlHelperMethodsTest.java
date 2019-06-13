@@ -7,6 +7,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 class XmlHelperMethodsTest
@@ -14,7 +15,7 @@ class XmlHelperMethodsTest
     XmlHelperMethods xmlHM = new XmlHelperMethods();
     Document testDoc;
 
-    void SetUpdelNode() throws ParserConfigurationException
+    void SetUptestDoc() throws ParserConfigurationException
     {
 	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 	DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -40,13 +41,17 @@ class XmlHelperMethodsTest
     @Test
     void delNode() throws ParserConfigurationException
     {
-	assertAll(() ->
+	assertAll(
+		
+		//Test: delNode mit keepChildNodes; testNode wird gelöscht
+		() ->
 	{
 	    boolean status = true;
-	    SetUpdelNode();
+	    SetUptestDoc();
+	    Node testPNode = testDoc.getElementsByTagName("testNode").item(0);
 	    xmlHM.writeDocumentToConsole(testDoc);
 	    System.out.println("delNode, keepChildNodes");
-	    xmlHM.delNode(testDoc.getElementsByTagName("testNode").item(0), true);
+	    xmlHM.delNode(testPNode, true);
 
 	    xmlHM.writeDocumentToConsole(testDoc);
 
@@ -69,13 +74,15 @@ class XmlHelperMethodsTest
 		}
 	    }
 	    assertTrue(status);
-
-	}, () ->
+	}, 
+	//Test: delNode ohne keepChildNodes; testNode wird gelöscht
+	() ->
 	{
 	    boolean status = true;
-	    SetUpdelNode();
+	    SetUptestDoc();
+	    Node testPNode = testDoc.getElementsByTagName("testNode").item(0);
 	    System.out.println("delNode, !keepChildNodes");
-	    xmlHM.delNode(testDoc.getElementsByTagName("testNode").item(0), false);
+	    xmlHM.delNode(testPNode, false);
 	    xmlHM.writeDocumentToConsole(testDoc);
 	    Element rootN = testDoc.getDocumentElement();
 	    if (!rootN.getTagName().equals("root"))
@@ -88,7 +95,38 @@ class XmlHelperMethodsTest
 	    }
 	    assertTrue(status);
 	}
+	);
+    }
 
+    // Test für hasChildwithName und getChildwithName
+    @Test
+    void childwithName() throws ParserConfigurationException
+    {
+	SetUptestDoc();
+	Node testPNode = testDoc.getElementsByTagName("testNode").item(0);
+	assertAll(
+		// Test für has ChildwithName -true
+		() ->
+		{
+		    boolean s = xmlHM.hasChildwithName(testPNode, "ChildNode3");
+		    System.out.println(s);
+		    assertTrue(s);
+		},
+		// Test für has ChildwithName - false
+		() ->
+		{
+		    boolean s = xmlHM.hasChildwithName(testPNode, "ChildNode8");
+		    System.out.println(s);
+		    assertFalse(s);
+		}, 
+		//Test für getChildwithName
+		() -> 
+		{
+		  Node erwErg = testDoc.getElementsByTagName("ChildNode2").item(0);
+		  Node aktErg = xmlHM.getChildwithName(testPNode, "ChildNode2");
+		  boolean s =erwErg.isSameNode(aktErg);
+		  assertTrue (s);
+		}
 	);
     }
 
