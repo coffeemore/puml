@@ -332,7 +332,6 @@ public class XmlHelperMethods
 	    Difference next = iterator.next();
 	    System.out.println("Difference: " + next);
 	}
-	iterator=diffList.iterator();
 	if (iterator.hasNext())
 	{
 	    return false;

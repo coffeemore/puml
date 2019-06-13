@@ -91,7 +91,6 @@ class XmlHelperMethodsTest
 
 	);
 	
-	
     }
     @Test
     void hasChildwithName() {
