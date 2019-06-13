@@ -87,9 +87,58 @@ public class ClassDiagramGenerator
 				//Kopieren der "instance"-Knoten von parsedData zu document
 				NodeList instanceList = xmlHelper.getList(elClassdef, "./instance");
 				for(int j = 0; instanceList.getLength() > j; j++)
-				{			
-					Node copiedNode = document.importNode(instanceList.item(j), true);
-				    entry.appendChild(copiedNode);
+				{
+				    entry.appendChild(document.importNode(instanceList.item(j), true));
+				}
+				
+				//Kopieren der "var"-Knoten von parsedData zu document
+				NodeList varList = xmlHelper.getList(elClassdef, "./var");
+				for(int j = 0; varList.getLength() > j; j++)
+				{
+				    entry.appendChild(document.importNode(varList.item(j), true));
+				}
+				
+				/*
+				//löschen übrflüssiger Knoten im "methoddefinition"-Knoten
+				NodeList delList = xmlHelper.getList(elClassdef, "./methoddefinition/alternative");
+				for(int j = 0; delList.getLength() > j; j++)
+				{
+					Element elementremove = (Element) delList.item(j);
+			        elementremove.getParentNode().removeChild(elementremove);
+				}*/
+
+				//Kopieren der "methoddefinition"-Knoten von parsedData zu document
+				NodeList methoddefList = xmlHelper.getList(elClassdef, "./methoddefinition");
+				for(int j = 0; methoddefList.getLength() > j; j++)
+				{
+					//Löschen irrelevanter Knoten im "methoddefinition"-Knoten
+					NodeList children = methoddefList.item(j).getChildNodes();
+					Node current = null;
+					int count = children.getLength();
+					for (int k = 0; k < count; k++)
+						{
+							current = children.item(k);
+							//System.out.println(j + "  " + current);
+							if(current != null) {
+								if (current.getNodeType() == Node.ELEMENT_NODE)
+								{
+									String currentNode = current.getNodeName();
+									
+									if(!(currentNode.equals("access") ||
+										currentNode.equals("name") ||
+										currentNode.equals("parameters") ||
+										currentNode.equals("result")))
+									{
+										Element elementremove = (Element) current;
+										elementremove.getParentNode().removeChild(elementremove);
+										System.out.println("Unterknoten " + currentNode + " wird nicht übernommen.");
+									}
+								}
+							}
+						}
+
+					Node methoddefnode = document.importNode(methoddefList.item(j), true);
+				    entry.appendChild(methoddefnode);
 				}
 								
 				//StringArray um in einer Schleife nach Vererbungen, Kompositionen, Aggregationen und Implementierungen zu suchen
@@ -151,6 +200,7 @@ public class ClassDiagramGenerator
 				}
 			}
 			//Ausgabe Konsole
+			document.normalize();
 			xmlHelper.writeDocumentToConsole(document);
 	    	return document;
 		}
