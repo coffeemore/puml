@@ -77,6 +77,36 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 	}
 
     }
+    //nimmt Methode und gibt Inhalt zwischen runden Klammern wieder
+    public TokenResult rBraceContent(String sourcec)
+    {
+	String[] nameArray = new String[2];
+	nameArray[0] = ")";
+	nameArray[1] = "(";
+	int rBrace = 0;
+	String resData = "";
+	TokenResult res;
+	do
+	{
+	    res = goToTokenWithName(sourcec, nameArray);
+
+	    resData += res.getData();
+	    if (res.getFoundToken() == 0)
+	    {
+		resData += ")";
+		rBrace--;
+	    }
+	    else
+	    {
+		resData += "(";
+		rBrace++;
+	    }
+	    sourcec = res.getSourceCode().substring(1);
+	}
+	while (rBrace != 0);
+
+	return new TokenResult(0, resData, sourcec);
+    }
 
     public TokenResult goToTokenWithName(String source, String[] name)
     {
@@ -451,11 +481,11 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				ifCaseNode.appendChild(ifConditionNode);
 
 				sourcec = res1.getSourceCode();
-				String[] ifNameArray = new String[1];
-				ifNameArray[0] = ")";
-				TokenResult ifRes = goToTokenWithName(sourcec, ifNameArray);
-				ifConditionNode
-					.appendChild(document.createTextNode(prefixRBrace[0] + ifRes.getData() + ")"));
+
+				TokenResult ifRes = rBraceContent(sourcec);
+
+				ifConditionNode.appendChild(document.createTextNode(prefixRBrace[0] + ifRes.getData()));
+				
 				sourcec = ifRes.getSourceCode();
 				sourcec = sourcec.substring(1);
 				sourcec = sourcec.trim();
@@ -480,15 +510,15 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				forLoopNode.appendChild(forConditionNode);
 
 				sourcec = res1.getSourceCode();
-				String[] forNameArray = new String[1];
-				forNameArray[0] = ")";
-				TokenResult forRes = goToTokenWithName(sourcec, forNameArray);
-				forConditionNode
-					.appendChild(document.createTextNode(prefixRBrace[0] + forRes.getData() + ")"));
+				TokenResult forRes = rBraceContent(sourcec);
+				
+				forConditionNode.appendChild(document.createTextNode(prefixRBrace[0] + forRes.getData()));
 				curNode.appendChild(forLoopNode);
+				
 				sourcec = forRes.getSourceCode();
 				sourcec = sourcec.substring(1);
 				sourcec = sourcec.trim();
+
 				// TODO: for ohne geschweifte Klammern
 				if (sourcec.charAt(0) == '{')
 				{
@@ -507,11 +537,11 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				    {
 
 					sourcec = res1.getSourceCode();
-					String[] dowhileNameArray = new String[1];
-					dowhileNameArray[0] = ")";
-					TokenResult whileRes = goToTokenWithName(sourcec, dowhileNameArray);
+										
+					TokenResult whileRes = rBraceContent(sourcec);
+					
 					curNode.getLastChild().getFirstChild()
-						.setTextContent("do/" + prefixRBrace[0] + whileRes.getData() + ")");
+						.setTextContent("do/" + prefixRBrace[0] + whileRes.getData());
 
 					sourcec = whileRes.getSourceCode();
 					sourcec = sourcec.substring(1);
@@ -528,11 +558,9 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 					whileLoopNode.appendChild(whileConditionNode);
 
 					sourcec = res1.getSourceCode();
-					String[] whileNameArray = new String[1];
-					whileNameArray[0] = ")";
-					TokenResult whileRes = goToTokenWithName(sourcec, whileNameArray);
+					TokenResult whileRes = rBraceContent(sourcec);
 					whileConditionNode.appendChild(
-						document.createTextNode(prefixRBrace[0] + whileRes.getData() + ")"));
+						document.createTextNode(prefixRBrace[0] + whileRes.getData()));
 					curNode.appendChild(whileLoopNode);
 					sourcec = whileRes.getSourceCode();
 					sourcec = sourcec.substring(1);
@@ -555,11 +583,9 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				    whileLoopNode.appendChild(whileConditionNode);
 
 				    sourcec = res1.getSourceCode();
-				    String[] whileNameArray = new String[1];
-				    whileNameArray[0] = ")";
-				    TokenResult whileRes = goToTokenWithName(sourcec, whileNameArray);
+				    TokenResult whileRes = rBraceContent(sourcec);
 				    whileConditionNode.appendChild(
-					    document.createTextNode(prefixRBrace[0] + whileRes.getData() + ")"));
+					    document.createTextNode(prefixRBrace[0] + whileRes.getData()));
 				    curNode.appendChild(whileLoopNode);
 				    sourcec = whileRes.getSourceCode();
 				    sourcec = sourcec.substring(1);
@@ -778,7 +804,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			    }
 			    break;
 			case 3:// Funktionsdeklaration
-			   
+
 			    String[] nameArrayFD = new String[1];
 			    nameArrayFD[0] = "{";
 			    TokenResult resFD = goToTokenWithName(sourcec, nameArrayFD);
@@ -826,9 +852,9 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				while (res2.getFoundToken() != 0);
 				if (parametersNode.hasChildNodes())
 				    methoddefinitionNode.appendChild(parametersNode);
-				    Element resultNode = document.createElement("result");
-				    resultNode.appendChild(document.createTextNode(prefixRBrace[1]));
-				    methoddefinitionNode.appendChild(resultNode);
+				Element resultNode = document.createElement("result");
+				resultNode.appendChild(document.createTextNode(prefixRBrace[1]));
+				methoddefinitionNode.appendChild(resultNode);
 
 				sourcec = sourcec.trim();
 
@@ -1196,7 +1222,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		    sourcec = sourcec.substring(1);
 		    curlBrace++;
 		    Element frameNode = document.createElement("frame"); // WCB - with curly brace
-		    //somethingWCB.appendChild(document.createTextNode(sourcec.substring(0, 50)));
+		    // somethingWCB.appendChild(document.createTextNode(sourcec.substring(0, 50)));
 		    curNode.appendChild(frameNode);
 		    curNode = (Element) curNode.getLastChild();
 		    done = true;
@@ -1283,7 +1309,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
     {
 	sourceCode.get(0).trim();
 	// sourceCode = sourceCode.replaceAll("=", " = ");
-	System.out.println(sourceCode);
+	//System.out.println(sourceCode);
 	try
 	{
 	    buildTree(sourceCode.get(0));

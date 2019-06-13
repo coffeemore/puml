@@ -21,7 +21,7 @@
 					<class>Class4</class>
 				</instance>
 				<instance>
-					<access>ppublic</access>
+					<access>pprivate</access>
 					<name>iClass5</name>
 					<class>Class5</class>
 				</instance>
@@ -41,7 +41,7 @@
 					<name>var3</name>
 				</var>
 				<var>
-					<access>ppublic</access>
+					<access>pprivate</access>
 					<type>byte</type>
 					<name>var4</name>
 				</var>
@@ -88,7 +88,7 @@
 					<result>void</result>
 				</methoddefinition>
 				<methoddefinition>
-					<access>ppublic</access>
+					<access>pprivate</access>
 					<name>method4</name>
 					<result>void</result>
 				</methoddefinition>
@@ -104,6 +104,7 @@
 					<access>public</access>
 					<name>call2</name>
 					<type>static</type>
+					<result>void</result>
 				</methoddefinition>
 			</entry>
 			<entry>
