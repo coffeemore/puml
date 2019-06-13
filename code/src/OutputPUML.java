@@ -4,7 +4,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 import java.util.List;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -17,8 +16,8 @@ import org.w3c.dom.NodeList;
 import net.sourceforge.plantuml.GeneratedImage;
 import net.sourceforge.plantuml.SourceFileReader;
 import net.sourceforge.plantuml.SourceStringReader;
-// replaced -- "getNextSibling();" -- with -- "helper.getList(nextNode,"following-sibling::*").item(0);"
-// replaced -- "getFirstChild();" -- with -- "helper.getList(nextNode, "child::*").item(0);"
+
+
 /**
  * 
  * @author developer Klasse welche die Ausgabe des plantUML-Codes und die
@@ -58,19 +57,236 @@ public class OutputPUML
 		String pumlCode = "@startuml\n";
 		if (compare == "classdiagramm")
 		{
-			list = helper.getList(list.item(0), "classes/entry");
+			boolean gotInstances = false;
+			list = helper.getList(list.item(0), "classes/entry/name");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-				    pumlCode += "class " + list.item(a).getTextContent() + "\n";
+				    pumlCode += "class " + list.item(a).getTextContent();
+				    NodeList instanceList = helper.getList(list.item(a).getParentNode(), "instance");
+				    NodeList varList = helper.getList(list.item(a).getParentNode(), "var");
+				    NodeList methodList = helper.getList(list.item(a).getParentNode(), "methoddefinition");
+				    if ((instanceList.getLength() > 0) || (varList.getLength()>0) || (methodList.getLength()>0)) 
+				    {
+				    	pumlCode += "{\n";
+				    	gotInstances = true;
+				    }
+				    else 
+				    {
+				    	pumlCode += "\n";
+				    }
+				    
+				    //INSTANCES
+				    for (int b=0; b<instanceList.getLength(); b++)
+				    {
+				    	NodeList tempList = helper.getList(instanceList.item(b), "access");
+				    	//System.out.println(tempList.item(0).getTextContent());
+					    if (tempList.item(0).getTextContent().equals("private")) 
+					    {
+					    	pumlCode += "-";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("public")) 
+					    {
+					    	pumlCode += "+";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("protected")) 
+					    {
+					    	pumlCode += "#";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("pprivate")) 
+					    {
+					    	pumlCode += "~";
+					    }
+					    tempList = helper.getList(instanceList.item(b), "class");
+					    pumlCode += tempList.item(0).getTextContent()+" ";
+					    tempList = helper.getList(instanceList.item(b), "name");
+					    pumlCode += tempList.item(0).getTextContent()+"\n";
+				    }
+				    
+				    //VAR
+				    for (int b=0; b<varList.getLength(); b++) 
+				    {
+				    	NodeList tempList = helper.getList(varList.item(b), "access");
+					    if (tempList.item(0).getTextContent().equals("private")) 
+					    {
+					    	pumlCode += "-";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("public")) 
+					    {
+					    	pumlCode += "+";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("protected")) 
+					    {
+					    	pumlCode += "#";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("pprivate")) 
+					    {
+					    	pumlCode += "~";
+					    }
+					    tempList = helper.getList(varList.item(b), "type");
+					    pumlCode += tempList.item(0).getTextContent()+" ";
+					    tempList = helper.getList(varList.item(b), "name");
+					    pumlCode += tempList.item(0).getTextContent()+"\n";
+				    }
+
+				    //METHODDEFINITION
+				    for (int b=0; b<methodList.getLength(); b++) 
+				    {
+				    	NodeList tempList = helper.getList(methodList.item(b), "access");
+					    if (tempList.item(0).getTextContent().equals("private")) 
+					    {
+					    	pumlCode += "-";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("public")) 
+					    {
+					    	pumlCode += "+";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("protected")) 
+					    {
+					    	pumlCode += "#";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("pprivate")) 
+					    {
+					    	pumlCode += "~";
+					    }
+					    tempList = helper.getList(methodList.item(b), "type");
+					    if(tempList.getLength()>=1) 
+					    {
+					    	pumlCode += "{"+tempList.item(0).getTextContent()+"}" +" ";
+					    }
+					    tempList = helper.getList(methodList.item(b), "result");
+					    if(tempList.getLength()>=1) 
+					    {
+					    	pumlCode += tempList.item(0).getTextContent()+" ";
+					    }
+					    tempList = helper.getList(methodList.item(b), "name");
+					    pumlCode += tempList.item(0).getTextContent()+"(";
+					    NodeList paramList = helper.getList(methodList.item(b), "parameters/entry");
+					    for(int c=0; c<paramList.getLength(); c++)
+					    {
+					    	NodeList tList = helper.getList(paramList.item(c), "type");
+					    	pumlCode+=tList.item(0).getTextContent()+" ";
+					    	tList = helper.getList(paramList.item(c), "name");
+					    	pumlCode+=tList.item(0).getTextContent();
+					    	if(c < 1) 
+					    	{
+					    		pumlCode += ", ";
+					    	}
+					    }
+					    pumlCode += ")\n";
+				    }
+				    if(gotInstances) 
+				    {
+				    	pumlCode+="}\n";
+				    	gotInstances=false;
+				    }
 		    }
-		    list = helper.getList(list.item(0).getParentNode().getParentNode(), "interfaces/entry");
+		    
+		    //TODO Kann Interface vars haben? (nein: vars teil löschen, ja: weiter fragen, gotInstances-Part?
+		    list = helper.getList(list.item(0).getParentNode().getParentNode().getParentNode(), "interfaces/entry/name");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-			    pumlCode += "interface " + list.item(a).getTextContent() + "\n";
+				    pumlCode += "interface " + list.item(a).getTextContent() + "{\n";
+				    NodeList instanceList = helper.getList(list.item(a).getParentNode(), "instance");
+				    for (int b=0; b<instanceList.getLength(); b++)
+				    {
+				    	NodeList tempList = helper.getList(instanceList.item(b), "access");
+					    if (tempList.item(0).getTextContent().equals("private")) 
+					    {
+					    	pumlCode += "-";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("public")) 
+					    {
+					    	pumlCode += "+";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("protected")) 
+					    {
+					    	pumlCode += "#";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("pprivate")) 
+					    {
+					    	pumlCode += "~";
+					    }
+					    tempList = helper.getList(instanceList.item(b), "class");
+					    pumlCode += tempList.item(0).getTextContent()+" ";
+					    tempList = helper.getList(instanceList.item(b), "name");
+					    pumlCode += tempList.item(0).getTextContent()+"\n";
+				    }
+				    NodeList varList = helper.getList(list.item(a).getParentNode(), "var");
+				    for (int b=0; b<varList.getLength(); b++) 
+				    {
+				    	NodeList tempList = helper.getList(varList.item(b), "access");
+					    if (tempList.item(0).getTextContent().equals("private")) 
+					    {
+					    	pumlCode += "-";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("public")) 
+					    {
+					    	pumlCode += "+";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("protected")) 
+					    {
+					    	pumlCode += "#";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("pprivate")) 
+					    {
+					    	pumlCode += "~";
+					    }
+					    tempList = helper.getList(varList.item(b), "type");
+					    pumlCode += tempList.item(0).getTextContent()+" ";
+					    tempList = helper.getList(varList.item(b), "name");
+					    pumlCode += tempList.item(0).getTextContent()+"\n";
+				    }
+				    NodeList methodList = helper.getList(list.item(a).getParentNode(), "methoddefinition");
+				    for (int b=0; b<methodList.getLength(); b++) 
+				    {
+				    	NodeList tempList = helper.getList(methodList.item(b), "access");
+					    if (tempList.item(0).getTextContent().equals("private")) 
+					    {
+					    	pumlCode += "-";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("public")) 
+					    {
+					    	pumlCode += "+";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("protected")) 
+					    {
+					    	pumlCode += "#";
+					    }
+					    else if (tempList.item(0).getTextContent().equals("pprivate")) 
+					    {
+					    	pumlCode += "~";
+					    }
+					    tempList = helper.getList(methodList.item(b), "type");
+					    if(tempList.getLength()>=1) 
+					    {
+					    	pumlCode += "{"+tempList.item(0).getTextContent()+"}" +" ";
+					    }
+					    tempList = helper.getList(methodList.item(b), "result");
+					    if(tempList.getLength()>=1) 
+					    {
+					    	pumlCode += tempList.item(0).getTextContent()+" ";
+					    }
+					    tempList = helper.getList(methodList.item(b), "name");
+					    pumlCode += tempList.item(0).getTextContent()+"(";
+					    NodeList paramList = helper.getList(methodList.item(b), "parameters/entry");
+					    for(int c=0; c<paramList.getLength(); c++)
+					    {
+					    	NodeList tList = helper.getList(paramList.item(c), "type");
+					    	pumlCode+=tList.item(0).getTextContent()+" ";
+					    	tList = helper.getList(paramList.item(c), "name");
+					    	pumlCode+=tList.item(0).getTextContent();
+					    	if(c < 1) 
+					    	{
+					    		pumlCode += ", ";
+					    	}
+					    }
+					    pumlCode += ")\n";
+				    }
+				    pumlCode+="}\n";
 		    }
-	
+
 		    // EXTENSIONS
-		    list = helper.getList(list.item(0).getParentNode().getParentNode(), "classrelations/extensions/entry");
+		    list = helper.getList(list.item(0).getParentNode().getParentNode().getParentNode(), "classrelations/extensions/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
 		    	NodeList tempList;
@@ -156,7 +372,6 @@ public class OutputPUML
 		}
 		// return "Error with Loop";
 		pumlCode += "@enduml";
-		
 		return pumlCode;
 	    }
 
@@ -218,7 +433,6 @@ public class OutputPUML
 	boolean first = true;
 	for(int i=0; i<cases.getLength(); i++)
 	{
-	    
 	    String caseName = helper.getList(cases.item(i), "condition").item(0).getTextContent();
 	    if(first)
 	    {

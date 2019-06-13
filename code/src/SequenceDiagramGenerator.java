@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Element;
@@ -21,8 +22,6 @@ public class SequenceDiagramGenerator
     XmlHelperMethods xmlHM = new XmlHelperMethods();
     String dataClassDef = "/source/classdefinition/";
     String seqMethodDef = "/parsed/sequencediagram/methoddefinition";
-    // ArrayList<String> usedClasses = new ArrayList<String>();
-    // ArrayList<String> usedMethods = new ArrayList<String>();
 
     // Liste für bereits aufgerufene Methoden
     ArrayList<ArrayList<String>> calledMethodsList = new ArrayList<ArrayList<String>>();
@@ -48,61 +47,65 @@ public class SequenceDiagramGenerator
      * @throws IOException
      * @throws SAXException
      * @throws XPathExpressionException
+     * @throws TransformerException
      */
 
     public Document createDiagram(Document parsedData, String epClass, String epMethod)
-	    throws ParserConfigurationException, SAXException, IOException, XPathExpressionException
+	    throws ParserConfigurationException, SAXException, IOException, XPathExpressionException,
+	    TransformerException
     {
 	// neues Dokument, das seqDiagramm Informationen enthalten wird
 	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 	DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-	Document seqDiagramm = docBuilder.newDocument();
+	Document seqDiagram = docBuilder.newDocument();
 
-	Element root = seqDiagramm.createElement("parsed");
-	seqDiagramm.appendChild(root);
-	Element seq = seqDiagramm.createElement("sequencediagram");
+	Element root = seqDiagram.createElement("parsed");
+	seqDiagram.appendChild(root);
+	Element seq = seqDiagram.createElement("sequencediagram");
 	root.appendChild(seq);
 
 	createList(parsedData, classesWithMethodsList);
-	listClasses(parsedData, seqDiagramm, seq);
+	listClasses(parsedData, seqDiagram, seq);
 
-	Element entrypoint = seqDiagramm.createElement("entrypoint");
+	Element entrypoint = seqDiagram.createElement("entrypoint");
 	seq.appendChild(entrypoint);
-	Element epClass1 = seqDiagramm.createElement("class");
+	Element epClass1 = seqDiagram.createElement("class");
 	epClass1.setTextContent(epClass);
 	entrypoint.appendChild(epClass1);
-	Element epMethod1 = seqDiagramm.createElement("method");
+	Element epMethod1 = seqDiagram.createElement("method");
 	epMethod1.setTextContent(epMethod);
 	entrypoint.appendChild(epMethod1);
 
-//	parsedData = deleteInstancesNotInMethodcalls(parsedData);
-	listMethoddef(parsedData, seqDiagramm, seq);
+	listMethoddef(parsedData, seqDiagram, seq);
+	deleteFrame(seqDiagram);
 
-	addClassesToInstances(parsedData, seqDiagramm);
+	addClassesToInstances(parsedData, seqDiagram);
 
-	seqDiagramm = deleteInstancesNotInMethodcalls(seqDiagramm);
+	seqDiagram = deleteInstancesNotInMethodcalls(seqDiagram);
 
-	addType(parsedData, seqDiagramm, seq, epClass);
+	addType(parsedData, seqDiagram, seq, epClass);
 
-	deleteUnusedClassesAndMethods(seqDiagramm, epClass);
+	deleteUnusedClassesAndMethods(seqDiagram, epClass);
 
 	xmlHM.removeComments(root);
-	xmlHM.writeDocumentToConsole(seqDiagramm);
+	seqDiagram = xmlHM.removeWhitespace(seqDiagram);
+	// xmlHM.writeDocumentToConsole(seqDiagram);
+	xmlHM.writeToFile(seqDiagram);
 
-	return seqDiagramm;
+	return seqDiagram;
     }
 
     /**
      * Die Klassen werden aus parsedData übernommen und in seqDiagramm aufgelistet
      * 
-     * @param parsedData  - xml Eingabe Dokument
-     * @param seqDiagramm - Document für OutputPuml
-     * @param seq         - Kindelement von root
+     * @param parsedData - xml Eingabe Dokument
+     * @param seqDiagram - Document für OutputPuml
+     * @param seq        - Kindelement von root
      * @throws XPathExpressionException
      */
-    private void listClasses(Document parsedData, Document seqDiagramm, Element seq) throws XPathExpressionException
+    private void listClasses(Document parsedData, Document seqDiagram, Element seq) throws XPathExpressionException
     {
-	Element classes = seqDiagramm.createElement("classes");
+	Element classes = seqDiagram.createElement("classes");
 	seq.appendChild(classes);
 	// alle Klassen aus parsedData werden in eine Liste geschrieben
 	NodeList cList = xmlHM.getList(parsedData, dataClassDef + "name");
@@ -110,7 +113,7 @@ public class SequenceDiagramGenerator
 	{
 	    // in Tag <name> gespeicherter Text wird als Klassenname übernommen
 	    String cName = cList.item(i).getTextContent();
-	    Element entry = seqDiagramm.createElement("entry");
+	    Element entry = seqDiagram.createElement("entry");
 	    entry.setTextContent(cName);
 	    classes.appendChild(entry);
 	}
@@ -120,23 +123,23 @@ public class SequenceDiagramGenerator
      * Die Methode kopiert aus parsedData alle Methoddefinitions von Klassen in
      * seqDiagramm
      * 
-     * @param parsedData  - xml Eingabe Dokument
-     * @param seqDiagramm - Document für OutputPuml
-     * @param seq         - Kindelement von root
+     * @param parsedData - xml Eingabe Dokument
+     * @param seqDiagram - Document für OutputPuml
+     * @param seq        - Kindelement von root
      * @throws XPathExpressionException
      */
-    private void listMethoddef(Document parsedData, Document seqDiagramm, Element seq) throws XPathExpressionException
+    private void listMethoddef(Document parsedData, Document seqDiagram, Element seq) throws XPathExpressionException
     {
 	// alle Methoden aus parsedData werden in die Liste geschrieben
 	NodeList mList = xmlHM.getList(parsedData, dataClassDef + "methoddefinition");
 
 	for (int i = 0; i < mList.getLength(); i++)
 	{
-	    // jede Methode wird in das Dokument seqDiagramm importiert
-	    seq.appendChild(seqDiagramm.importNode(mList.item(i), true));
+	    // jede Methode wird in das Dokument seqDiagram importiert
+	    seq.appendChild(seqDiagram.importNode(mList.item(i), true));
 
-	    Element classTag = seqDiagramm.createElement("class");
-	    NodeList list = xmlHM.getList(seqDiagramm, seqMethodDef);
+	    Element classTag = seqDiagram.createElement("class");
+	    NodeList list = xmlHM.getList(seqDiagram, seqMethodDef);
 
 	    // zu jeder Methode wird ihre Klasse mittels Class-Tag eingefügt
 	    Node seqMethodNode = list.item(i);
@@ -144,20 +147,35 @@ public class SequenceDiagramGenerator
 	    classTag.setTextContent(cName);
 	    seqMethodNode.insertBefore(classTag, seqMethodNode.getFirstChild());
 
-	    // vorhandene Parameters- oder Result-Tags werden gesucht und entfernt
+	    // vorhandene Parameters-, Access- oder Result-Tags werden gesucht und entfernt
+	    
 	    Node node = list.item(i);
 	    NodeList childs = node.getChildNodes();
 	    for (int j = 0; j < childs.getLength(); j++)
 	    {
 		Node child = childs.item(j);
-		if ((child.getNodeName().equals("parameters") || child.getNodeName().equals("result")))
+		if ((child.getNodeName().equals("parameters") || child.getNodeName().equals("result")
+			|| child.getNodeName().equals("access")))
 		{
 		    node.removeChild(child);
 		}
 	    }
 	}
     }
-
+    
+    public void deleteFrame(Document seqDiagram) throws XPathExpressionException {
+	NodeList list = xmlHM.getList(seqDiagram, seqMethodDef+"//frame");
+	for(int i = 0; i < list.getLength(); i++) {
+	    xmlHM.delNode(list.item(i), true);
+//	    Node parent = list.item(i).getParentNode();
+//	    NodeList childs = xmlHM.getList(list.item(i), "child::*");
+//	    for(int j = 0; j < childs.getLength(); j++) {
+//		parent.appendChild(childs.item(j));
+//	    }
+//	    parent.removeChild(list.item(i));
+	}
+    }
+    
     /**
      * Instanz: von welcher Klasse? im methodcall ein Tag instanz -> Klassentag +
      * -name muss reingenommen werden -> Instanzenliste anlegen
@@ -165,20 +183,19 @@ public class SequenceDiagramGenerator
      * Funktion fügt im seqDiagramm innerhalb der methodcalls das passende class-Tag
      * hinzu, sofern ein instance-Tag existiert
      * 
-     * param: parsedData - Quell-Dokument seqDiagramm - das generierte Dokument, in
+     * param: parsedData - Quell-Dokument seqDiagram - das generierte Dokument, in
      * dem die Instanzen eingefügt werden sollen
      * 
      * @throws XPathExpressionException
      */
 
-    private void addClassesToInstances(Document parsedData, Document seqDiagramm) throws XPathExpressionException
+    private void addClassesToInstances(Document parsedData, Document seqDiagram) throws XPathExpressionException
     {
-	seqDiagramm = handleLocalInstances(seqDiagramm);
+	seqDiagram = handleLocalInstances(seqDiagram);
 
 	ArrayList<ArrayList<String>> instanceList = createInstanceList(parsedData);
 
-//	NodeList methodcalls = seqDiagramm.getElementsByTagName("methodcall");
-	NodeList methodcalls = xmlHM.getList(seqDiagramm, "//methodcall");
+	NodeList methodcalls = xmlHM.getList(seqDiagram, "//methodcall");
 	for (int i = 0; i < methodcalls.getLength(); i++)
 	{
 	    NodeList mchildnodes = methodcalls.item(i).getChildNodes();
@@ -192,7 +209,7 @@ public class SequenceDiagramGenerator
 			// wenn Instanz in InstanzenListe vorhanden
 			String cname = findClassofInstance(instanceList, iname);
 
-			Node classTag = seqDiagramm.createElement("class");
+			Node classTag = seqDiagram.createElement("class");
 			classTag.setTextContent(cname);
 			methodcalls.item(i).appendChild(classTag);
 		    }
@@ -211,13 +228,8 @@ public class SequenceDiagramGenerator
      */
     private ArrayList<ArrayList<String>> createInstanceList(Document parsedData) throws XPathExpressionException
     {
-
-	ArrayList<ArrayList<String>> instanceList = new ArrayList<ArrayList<String>>(); // Liste mit den Klassen und
-											// ihren Instanzen
-	// für jede Classdefinition in parsed Data eine Liste, darin auch die Instanzen
-	// dieser Klasse vermerken
-
-//	NodeList cList = parsedData.getElementsByTagName("classdefinition");
+	// Liste mit den Klassen und ihren Instanzen
+	ArrayList<ArrayList<String>> instanceList = new ArrayList<ArrayList<String>>();
 	NodeList cList = xmlHM.getList(parsedData, "source/classdefinition");
 
 	// alle Klassen werden durchgegangen
@@ -226,21 +238,20 @@ public class SequenceDiagramGenerator
 	    instanceList.add(i, new ArrayList<String>());
 
 	    String cname = xmlHM.getChildwithName(cList.item(i), "name").getTextContent();
-	    instanceList.get(i).add(0, cname); // der Klassenname wird der InstanceList hinzugefügt
+	    // der Klassenname wird der InstanceList hinzugefügt
+	    instanceList.get(i).add(0, cname);
 	}
 
 	// alle Klassen werden durchgegangen
 	for (int i = 0; i < cList.getLength(); i++)
 	{
-	    NodeList cuList = cList.item(i).getChildNodes();// Liste aller Unterknoten v. Classdefinition
+	    // Liste aller Unterknoten v. Classdefinition
+	    NodeList cuList = cList.item(i).getChildNodes();
 	    // alle Unterknoten der Klassen werden durchgegangen
 	    for (int j = 0; j < cuList.getLength(); j++)
 	    {
 		if (cuList.item(j).getNodeName().equals("instance"))
 		{
-		    // iname = Instanzenname
-		    // cname = Klassenname
-
 		    String iname = new String();
 		    String cname = new String();
 		    iname = xmlHM.getChildwithName(cuList.item(j), "name").getTextContent();
@@ -278,8 +289,8 @@ public class SequenceDiagramGenerator
 
     /**
      * Die Funktion geht die Instanzenliste durch und gibt den Klassennamen zu dem
-     * übergebenen Instanzennamen zurück. Existiert keine Instnz mit dem Namen, wird
-     * " " zurückgegeben
+     * übergebenen Instanzennamen zurück. Existiert keine Instanz mit dem Namen,
+     * wird " " zurückgegeben
      * 
      * @param instanceList - InstanzenListe
      * @param iname        - Name der Instanz, deren Klasse gesucht wird
@@ -315,28 +326,15 @@ public class SequenceDiagramGenerator
      */
     public Document deleteInstancesNotInMethodcalls(Document doc)
     {
-	// mList = Liste der Methoddefinitions
 	try
 	{
 	    NodeList iList = xmlHM.getList(doc, "//instance");
 	    for (int i = 0; i < iList.getLength(); i++)
 	    {
-//		System.out.println("Klasseninstanz gefunden: ");
-//		if (xmlHM.hasChildwithName(iList.item(i), "name"))
-//		{
-//		    System.out.println(xmlHM.getChildwithName(iList.item(i), "name").getTextContent());
-//		}
-//		System.out.println("Parent Node:");
-//		System.out.println(iList.item(i).getParentNode().getNodeName());
-//		if (iList.item(i).getParentNode().equals(null))
-//		{
-//		    System.out.println("kein ParentNode");
-//		}
 		if (!(iList.item(i).getParentNode().getNodeName().equals("methodcall")
 			|| iList.item(i).getParentNode().getNodeName().equals("classdefinition")))
 		{
 		    iList.item(i).getParentNode().removeChild(iList.item(i));
-//		    System.out.println("Instanz-Knoten entfernt");
 		}
 	    }
 	} catch (Exception e)
@@ -359,11 +357,12 @@ public class SequenceDiagramGenerator
 	NodeList iList = xmlHM.getList(doc, "//instance");
 	for (int i = 0; i < iList.getLength(); i++)
 	{
-	    // Instanzen nicht direkt unterhalb v methodcalls -> lokale Instanzen
+	    // Instanzen nicht direkt unterhalb von methodcalls -> lokale Instanzen
 	    if (!(iList.item(i).getParentNode().getNodeName().equals("methodcall")
 		    || iList.item(i).getParentNode().getNodeName().equals("classdefinition")))
 	    {
-		Node currentI = iList.item(i); // currentI ist ein instance-Knoten
+		// currentI ist ein instance-Knoten
+		Node currentI = iList.item(i);
 
 		String instanceName = xmlHM.getChildwithName(currentI, "name").getTextContent();
 		String instanceClass = xmlHM.getChildwithName(currentI, "class").getTextContent();
@@ -422,17 +421,17 @@ public class SequenceDiagramGenerator
     /**
      * Die Methodcalls werden mit Type-Tags versehen
      * 
-     * @param parsedData  - xml Eingabe Dokument
-     * @param seqDiagramm - Document für OutputPuml
-     * @param seq         - Kindelement von root
-     * @param epClass     - übergebener Entrypoint
+     * @param parsedData - xml Eingabe Dokument
+     * @param seqDiagram - Document für OutputPuml
+     * @param seq        - Kindelement von root
+     * @param epClass    - übergebener Entrypoint
      * @throws XPathExpressionException
      */
-    private void addType(Document parsedData, Document seqDiagramm, Element seq, String epClass)
+    private void addType(Document parsedData, Document seqDiagram, Element seq, String epClass)
 	    throws XPathExpressionException
     {
 	// alle Methoddefinitions in SeqDiagram
-	NodeList seqMethodDefList = xmlHM.getList(seqDiagramm, seqMethodDef);
+	NodeList seqMethodDefList = xmlHM.getList(seqDiagram, seqMethodDef);
 
 	// in jeder Methoddefinition wird nach Methodcalls gesucht
 	for (int m = 0; m < seqMethodDefList.getLength(); m++)
@@ -477,7 +476,7 @@ public class SequenceDiagramGenerator
 		/**
 		 * type - handled
 		 */
-		Element type = seqDiagramm.createElement("type");
+		Element type = seqDiagram.createElement("type");
 		int a = 0;
 		int e = 0;
 		// alle bisher aufgerufenen Methoden werden mit der aktuell aufgerufenen
@@ -580,6 +579,7 @@ public class SequenceDiagramGenerator
      * @param currentMethod    - aktuell aufgerufene Methode
      * @param seqMethodDefList - Methoddefinition-Liste
      * @param m                - Index der Stelle in der Methoddefinition-Liste
+     * @param typeNode         - type-Tag von aktueller Methode
      * @throws XPathExpressionException
      */
     private void recursiveLoop(Element type, String currentMethod, NodeList seqMethodDefList, int m, Node typeNode)
@@ -655,10 +655,6 @@ public class SequenceDiagramGenerator
 
     private void deleteUnusedClasses(Document Doc, String epClass) throws XPathExpressionException
     {
-	/**
-	 * calledMethodsList: pro Eintrag in äußerer ArrayList: List [0] -> Klassenname;
-	 * List [1] -> Methodenname; List [2] -> Instanz (ggf)
-	 */
 	// ungenutzte Klassen löschen
 	// Liste aller genutzten Klassen erstellen
 	ArrayList<String> usedClasses = new ArrayList<String>();
@@ -671,10 +667,6 @@ public class SequenceDiagramGenerator
 		usedClasses.add(currentClassName);
 	    }
 	}
-
-	// System.out.println("calledMethods :" + calledMethods);
-	// System.out.println("usedClasses :" + usedClasses);
-
 	// Liste der Klassen im xml-Doc
 	NodeList classesinDoc = xmlHM.getList(Doc, "/parsed/sequencediagram/classes/entry");
 
@@ -686,7 +678,6 @@ public class SequenceDiagramGenerator
 	    String classname = currentClass.getTextContent();
 	    if (!usedClasses.contains(classname))
 	    {
-//		Doc.removeChild(classesinDoc.item(j));
 		currentClass.getParentNode().removeChild(currentClass);
 	    }
 	}
@@ -695,7 +686,7 @@ public class SequenceDiagramGenerator
     private void deleteUnusedMethods(Document Doc) throws XPathExpressionException
     {
 	// ungenutzte Methoden löschen
-	// alle im SeqDia vorkommenden Methoden
+	// alle im SeqDiagram vorkommenden Methoden
 	NodeList methodsinDoc = xmlHM.getList(Doc, "/parsed/sequencediagram/methoddefinition");
 	for (int k = 0; k < methodsinDoc.getLength(); k++)
 	{
@@ -711,10 +702,6 @@ public class SequenceDiagramGenerator
 
     private boolean methodWasUsed(String methodName, String methodClass)
     {
-	/**
-	 * calledMethodsList: pro Eintrag in äußerer ArrayList: List [0] -> Klassenname;
-	 * List [1] -> Methodenname; List [2] -> Instanz (ggf)
-	 */
 	for (int i = 0; i < calledMethodsList.size(); i++)
 	{
 	    String currentMethodName = calledMethodsList.get(i).get(1);
@@ -724,15 +711,6 @@ public class SequenceDiagramGenerator
 		return true;
 	    }
 	}
-
 	return false;
     }
-
-//    public void listArrayList(ArrayList<ArrayList<String>> list2)
-//    {
-//	for (int i = 0; i < list2.size(); i++)
-//	{
-//	    System.out.println(list2.get(i));
-//	}
-//    }
 }

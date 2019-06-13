@@ -9,13 +9,14 @@
 			<entry>If1</entry>
 			<entry>If2</entry>
 		</implements>
-		<composition>
+		<compositions>
 			<entry>Class2</entry>
-		</composition>
-		<agregation>
+			<entry>Class3</entry>
+		</compositions>
+		<aggregations>
 			<entry>Class4</entry>
 			<entry>Class5</entry>
-		</agregation>
+		</aggregations>
 		<instance>
 			<name>classInstance1</name>
 			<class>Class2</class>
@@ -40,14 +41,25 @@
 			<alternative>
 				<case>
 					<condition>if(a!=b)</condition>
+					<methodcall>
+						<method>call1</method>
+						<instance>classInstance1</instance>
+					</methodcall>
 				</case>
 				<case>
 					<condition>else</condition>
 					<loop>
 						<condition>for(int i=0; i!=100; i++)</condition>
+						<methodcall>
+							<method>call2</method>
+							<instance>Class2</instance>
+						</methodcall>
 					</loop>
 				</case>
 			</alternative>
+			<methodcall>
+				<method>method2</method>
+			</methodcall>
 		</methoddefinition>
 		<methoddefinition>
 			<name>method2</name>
@@ -55,31 +67,57 @@
 				<case>
 					<condition>switch(i)/case 0</condition>
 					<something>
-						int j=10;
-						while(j!=0)
-						{
-						meth
 						<loop>
 							<condition>while(j!=0)</condition>
+							<methodcall>
+								<method>method3</method>
+							</methodcall>
 						</loop>
 					</something>
 				</case>
 				<case>
 					<condition>switch(i)/case 1</condition>
 					<something>
-						int j=10;
-						do
-						{
-						method3();
 						<loop>
 							<condition>do/while(j!=0)</condition>
+							<methodcall>
+								<method>method3</method>
+							</methodcall>
 						</loop>
 					</something>
 				</case>
 				<case>
 					<condition>switch(i)/default</condition>
 					<something>
-						Class2 classInstance3 = new Class2();
+						<instance>
+							<name>classInstance3</name>
+							<class>Class2</class>
+						</instance>
+						<instance>
+							<name>classInstance1</name>
+							<class>Class3</class>
+						</instance>
+						<methodcall>
+							<method>call1</method>
+							<instance>classInstance1</instance>
+						</methodcall>
+						<methodcall>
+							<method>call1</method>
+							<instance>classInstance1</instance>
+							<validity>class</validity>
+						</methodcall>
+						<methodcall>
+							<method>call1</method>
+							<instance>classInstance2</instance>
+						</methodcall>
+						<methodcall>
+							<method>call1</method>
+							<instance>classInstance3</instance>
+						</methodcall>
+						<methodcall>
+							<method>callX</method>
+							<instance>classInstance4</instance>
+						</methodcall>
 					</something>
 				</case>
 			</alternative>
@@ -89,11 +127,17 @@
 			<alternative>
 				<case>
 					<condition>if(a!=b)</condition>
+					<methodcall>
+						<method>method3</method>
+					</methodcall>
 				</case>
 			</alternative>
 			<alternative>
 				<case>
 					<condition>if(b!=c)</condition>
+					<methodcall>
+						<method>method4</method>
+					</methodcall>
 				</case>
 			</alternative>
 		</methoddefinition>
@@ -102,14 +146,17 @@
 			<alternative>
 				<case>
 					<condition>if(d!=e)</condition>
+					<methodcall>
+						<method>method3</method>
+					</methodcall>
 				</case>
 			</alternative>
 		</methoddefinition>
 	</classdefinition>
 	<classdefinition>
 		<name>Class2</name>
-		<composition />
-		<agregation />
+		<compositions />
+		<aggregations />
 		<methoddefinition>
 			<name>call1</name>
 		</methoddefinition>
@@ -119,47 +166,36 @@
 	</classdefinition>
 	<classdefinition>
 		<name>Class3</name>
-		<composition />
-		<agregation />
+		<compositions />
+		<aggregations />
 		<methoddefinition>
 			<name>call1</name>
 		</methoddefinition>
 	</classdefinition>
 	<classdefinition>
 		<name>Class4</name>
-		<composition />
-		<agregation />
+		<compositions />
+		<aggregations />
 	</classdefinition>
 	<classdefinition>
 		<name>Class5</name>
-		<composition />
-		<agregation />
+		<compositions />
+		<aggregations />
 	</classdefinition>
 	<interfacedefinition>
 		<name>If1</name>
-		<composition />
-		<agregation />
-		<methoddefinition>
-			<name>method1</name>
-			<parameters>
-				<entry>
-					<type>int</type>
-					<name>param1</name>
-				</entry>
-				<entry>
-					<type>int</type>
-					<name>param2</name>
-				</entry>
-			</parameters>
-			<result>int</result>
-		</methoddefinition>
+		<compositions />
+		<aggregations />
+		<methodcall>
+			<method>method1</method>
+		</methodcall>
 	</interfacedefinition>
 	<interfacedefinition>
 		<name>If2</name>
-		<composition />
-		<agregation />
-		<methoddefinition>
-			<name>method2</name>
-		</methoddefinition>
+		<compositions />
+		<aggregations />
+		<methodcall>
+			<method>method2</method>
+		</methodcall>
 	</interfacedefinition>
 </source>

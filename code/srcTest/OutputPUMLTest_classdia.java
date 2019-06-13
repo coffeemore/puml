@@ -19,31 +19,54 @@ class OutputPUMLTest_classdia
 		Document doc = docBuild.parse(new File("testfolder/xmlSpecifications/ClassDiagram.xml"));
 		return doc;
 	}
+	
     @Test
     void testGetPUML() throws XPathExpressionException, ParserConfigurationException, SAXException, IOException
     {
-    
 		// GetPuml testen
 		String actual = "";
 		actual = new OutputPUML().getPUML(getDoc());
 		String expected = "@startuml\n" + 
-				"class Class1\n" + 
-				"class Class2\n" + 
-				"class Class3\n" + 
+				"class Class1{\n" + 
+				"-Class2 classInstance1\n" + 
+				"#Class2 classInstance2\n" + 
+				"+Class4 iClass4\n" + 
+				"~Class5 iClass5\n" + 
+				"-int var1\n" + 
+				"#double var2\n" + 
+				"+short var3\n" + 
+				"~byte var4\n" + 
+				"+Class1(Class4 iClass4, Class5 iClass5)\n" + 
+				"-int method1(int param1, int param2)\n" + 
+				"#void method2()\n" + 
+				"+void method3()\n" + 
+				"~void method4()\n" + 
+				"}\n" + 
+				"class Class2{\n" + 
+				"+void call1()\n" + 
+				"+{static} void call2()\n" + 
+				"}\n" + 
+				"class Class3{\n" + 
+				"+void call1()\n" + 
+				"}\n" + 
 				"class Class4\n" + 
 				"class Class5\n" + 
-				"interface If1\n" + 
-				"interface If2\n" + 
-				"Class3 <|-- Class1\n" +
+				"interface If1{\n" + 
+				"+int method1(int param1, int param2)\n" + 
+				"}\n" + 
+				"interface If2{\n" + 
+				"+void method2()\n" + 
+				"}\n" + 
+				"Class3 <|-- Class1\n" + 
 				"If1 <|-- Class1\n" + 
-				"If2 <|-- Class1\n" +  
+				"If2 <|-- Class1\n" + 
 				"Class1 *-- Class2\n" + 
 				"Class1 *-- Class3\n" + 
 				"Class1 o-- Class4\n" + 
 				"Class1 o-- Class5\n" + 
 				"@enduml";
 		assertEquals(expected, actual);
-		//System.out.println("Hier is der Code: \n" + actual + "oder so" + expected);
+		System.out.println("Hier is der Code: \n" + actual + "oder so" + expected);
     }
     
     @Test

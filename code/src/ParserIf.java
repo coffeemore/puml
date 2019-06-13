@@ -13,8 +13,4 @@ public interface ParserIf
     public void parse(ArrayList<String> sourceCode);
     
     public Document getParsingResult();
-    /**
-     * Alte Deklaration
-    public ParsingResult getParsingResult();
-    */
 }
