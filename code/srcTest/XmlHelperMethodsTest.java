@@ -7,7 +7,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 class XmlHelperMethodsTest
@@ -91,6 +90,48 @@ class XmlHelperMethodsTest
 	}
 
 	);
+    }
+
+    @Test
+    void writeToFile()
+    {
+
+    }
+
+    @Test
+    void listAllNodes()
+    {
+
+    }
+
+    @Test
+    void removeComments()
+    {
+
+    }
+
+    @Test
+    void removeWhitespace()
+    {
+
+    }
+
+    @Test
+    void getList()
+    {
+
+    }
+
+    @Test
+    void getChildwithName()
+    {
+
+    }
+
+    @Test
+    void hasChildwithName()
+    {
+
     }
 
 }
