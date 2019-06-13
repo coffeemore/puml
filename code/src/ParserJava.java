@@ -1,6 +1,12 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.logging.FileHandler;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
@@ -13,6 +19,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 
+
+
 /**
  * 
  * @author Klasse, die den Parser f�r Java implementiert
@@ -20,12 +28,18 @@ import org.w3c.dom.Element;
 public class ParserJava extends XmlHelperMethods implements ParserIf {
 	Document document;
 
+	LogMain logger = new LogMain();
+
+	
 	/**
 	 * Konstruktor
 	 */
 	public ParserJava() {
+		
+		this.logger.getLog().info("Test123");
 
 	}
+
 
 	class TokenResult {
 
@@ -193,12 +207,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 				// Entfernen von Zeilen-Kommentaren
 				compString = "//";
 				
-				/////Nur zum debuggen////////////
-				compString = "// TODO: switch case";
-				if (sourcec.substring(0, compString.length()).equals(compString)) {
-					System.out.println("Debugger hier platzieren");
-				}
-				/////////////////////	
+
 				
 				if (sourcec.substring(0, compString.length()).equals(compString)) {
 					TokenResult res;
@@ -212,6 +221,12 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 					continue;
 				}
 				;
+				/////Nur zum debuggen////////////
+				compString = "r = tf.newTransformer()";
+				if (sourcec.substring(0, compString.length()).equals(compString)) {
+					System.out.println("Debugger hier platzieren");
+				}
+				/////////////////////	
 
 				// Entfernen von Block-Kommentaren
 				compString = "/*";
@@ -1135,10 +1150,9 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 				if (!done) {
 					sourcec = sourcec.substring(1);
 				}
-			} catch (Exception e) {
-				Throwable StringIndexOutOfBoundsException = null;
-				// TODO: handle exception
-				if (e.getCause() == StringIndexOutOfBoundsException) {
+			} catch (StringIndexOutOfBoundsException e) {
+	
+					System.out.println(e.getCause());
 					boolean sourceEnd = true;
 					if (sourcec.length() <= 10) {
 						for (int i = 0; i < sourcec.length(); i++) {
@@ -1154,12 +1168,24 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 						sourcec = "";
 					}
 					System.out.println("Source erweitert");
+				
 
-				} else {
-					System.out.println("Fehler in der While: " + e.toString());
-					System.out.println("Bei Position: " + sourcec.substring(0, 10));
-				}
+			} catch (java.lang.ClassCastException e) {
+				System.out.println("Fehler in der While: " + e.toString());
+				System.out.println("Bei Position: " + sourcec.substring(0, 10));
+				
+				String[] excNameArray = new String[1];
+				excNameArray[0] = ";";
+				TokenResult excRes = goToTokenWithName(sourcec, excNameArray);
+				
+				sourcec = excRes.getSourceCode();
+				
 
+				
+			}catch (Exception e) {
+				System.out.println("Fehler in der While: " + e.toString());
+				System.out.println("Bei Position: " + sourcec.substring(0, 10));
+				
 			}
 		}
 		TransformerFactory tf = TransformerFactory.newInstance();
@@ -1172,6 +1198,34 @@ public class ParserJava extends XmlHelperMethods implements ParserIf {
 
 			String xmlString = writer.getBuffer().toString();
 			System.out.println(xmlString); // Print to console or logs
+			
+			
+			String home; 
+			home=System.getProperty("user.home");
+			File pumlDir = new File(home+"/tempLogger");
+			
+			String path = home+"/tempLogger/" + "_PUMLlog.xml";
+
+			if (!pumlDir.exists()) {
+
+			    try{
+			        pumlDir.mkdir();
+			    } 
+			    catch(SecurityException se){
+			        //handle it
+			    }        
+			}
+			File tempLogger = new File(path);
+		    try {
+				FileWriter fileWriter = new FileWriter(tempLogger);
+				PrintWriter printWriter = new PrintWriter(fileWriter);
+				printWriter.print(xmlString);
+				printWriter.close();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		} catch (TransformerException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
