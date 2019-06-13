@@ -25,7 +25,7 @@ public class ClassDiagramGenerator
      */	
     public ClassDiagramGenerator()
     {
-    	createDiagram(xmlHelper.getDocumentFrom("testfolder/xmlSpecifications/parsedData.xml"));
+    	//createDiagram(xmlHelper.getDocumentFrom("testfolder/xmlSpecifications/parsedData.xml"));
     }
 
 	/**
