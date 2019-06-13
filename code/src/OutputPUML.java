@@ -17,8 +17,8 @@ import org.w3c.dom.NodeList;
 import net.sourceforge.plantuml.GeneratedImage;
 import net.sourceforge.plantuml.SourceFileReader;
 import net.sourceforge.plantuml.SourceStringReader;
-
-
+// replaced -- "getNextSibling();" -- with -- "helper.getList(nextNode,"following-sibling::*").item(0);"
+// replaced -- "getFirstChild();" -- with -- "helper.getList(nextNode, "child::*").item(0);"
 /**
  * 
  * @author developer Klasse welche die Ausgabe des plantUML-Codes und die
@@ -180,7 +180,7 @@ public class OutputPUML
 		 {
 		     if(nextNode.getNodeName()=="name")
 		     {
-			 nextNode = nextNode.getNextSibling();
+			 nextNode = helper.getList(nextNode,"following-sibling::*").item(0);
 		     }
 		     pumlCode += "activate " + startClass + "\n";
 			 
@@ -192,10 +192,10 @@ public class OutputPUML
 		     }
 		     if(nextNode.getNodeName() == "methodcall")
 		     {
-			 Node methodNode = nextNode.getFirstChild();
+			 Node methodNode = helper.getList(nextNode, "child::*").item(0);
 			 pumlCode += helperMethodCallHandler(startClass, methodNode);
 		     }
-		     nextNode = nextNode.getNextSibling();
+		     nextNode = helper.getList(nextNode,"following-sibling::*").item(0);
 		 }   
 	}
 	catch (Exception e)
@@ -229,7 +229,7 @@ public class OutputPUML
 	    {
 		pumlCode += "else " + caseName + "\n";
 	    }
-	    Node nextNode = cases.item(i).getFirstChild();
+	    Node nextNode = helper.getList(cases.item(i), "child::*").item(0);
     	    try
     	    {
         	    while (nextNode.getNodeName() != null)
@@ -240,7 +240,7 @@ public class OutputPUML
                 	    }
                 	    if(nextNode.getNodeName() == "methodcall")
                 	    {
-                		Node aufrufNode = nextNode.getFirstChild();
+                		Node aufrufNode = helper.getList(nextNode, "child::*").item(0);
                 		pumlCode += helperMethodCallHandler(startClass, aufrufNode);
                 	    }
                 	    if(nextNode.getNodeName()== "loop")
@@ -248,7 +248,7 @@ public class OutputPUML
                 		pumlCode += helperLoopCall(nextNode, startClass);
                 		//TODO Weiterführend ???
                 	    }
-                	    nextNode = nextNode.getNextSibling();
+                	    nextNode = helper.getList(nextNode,"following-sibling::*").item(0);
                 		
         	    }
 	    	}
@@ -298,7 +298,7 @@ public class OutputPUML
         		type = nextNode.getTextContent();
         	    }
         	    
-        	    nextNode = nextNode.getNextSibling();
+        	    nextNode = helper.getList(nextNode,"following-sibling::*").item(0);
         	}
 	}
 	catch (Exception e)
@@ -377,10 +377,10 @@ public class OutputPUML
         	    //nextNode = nextNode.getNextSibling();
         	}if(nextNode.getNodeName() == "methodcall")
         	{
-        	    nextNode = nextNode.getFirstChild();
+        	    nextNode = helper.getList(nextNode, "child::*").item(0);
         	    pumlCode += helperMethodCallHandler(startClass, nextNode);
         	}
-        	nextNode = nextNode.getNextSibling();
+        	nextNode = helper.getList(nextNode,"following-sibling::*").item(0);
 	    }
 	
 	}
