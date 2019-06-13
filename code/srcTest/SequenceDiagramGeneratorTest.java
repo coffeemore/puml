@@ -3,8 +3,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
 import java.io.IOException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
@@ -26,14 +24,8 @@ class SequenceDiagramGeneratorTest
     @BeforeEach
     public void SetUp() throws ParserConfigurationException, SAXException, IOException, XPathExpressionException
     {
-
-
 	classUnderTest = new SequenceDiagramGenerator();
-	xmlFile1 = new File("..//code//testfolder//xmlSpecifications//parsedData.xml");
-
-	DocumentBuilderFactory dbFactory1 = DocumentBuilderFactory.newInstance();
-	DocumentBuilder dBuilder1 = dbFactory1.newDocumentBuilder();
-	parsedData = dBuilder1.parse(xmlFile1);
+	parsedData = xmlHM.getDocumentFrom("..//code//testfolder//xmlSpecifications//parsedData.xml");
 
     }
 
@@ -41,27 +33,18 @@ class SequenceDiagramGeneratorTest
     void test1() throws TransformerException, XPathExpressionException, ParserConfigurationException, SAXException,
 	    IOException
     {
-
 	assertAll(() ->
 	{
 
 	    Document test = classUnderTest.createDiagram(parsedData, "Class1", "method1");
-
-	    xmlFile2 = new File("..//code//testfolder//xmlSpecifications//SeqDiagram.xml");
-	    DocumentBuilderFactory dbFactory2 = DocumentBuilderFactory.newInstance();
-	    DocumentBuilder dBuilder2 = dbFactory2.newDocumentBuilder();
-	    Document seqDiagram = dBuilder2.parse(xmlFile2);
+	    Document seqDiagram = xmlHM.getDocumentFrom("..//code//testfolder//xmlSpecifications//SeqDiagram.xml");
 	    boolean s = false;
 	    s = xmlHM.compareXML(seqDiagram, test);
 	    assertTrue(s);
 	}, () ->
 	{
 	    Document test = classUnderTest.createDiagram(parsedData, "Class2", "method1");
-
-	    xmlFile2 = new File("..//code//testfolder//xmlSpecifications//SeqDiagram.xml");
-	    DocumentBuilderFactory dbFactory2 = DocumentBuilderFactory.newInstance();
-	    DocumentBuilder dBuilder2 = dbFactory2.newDocumentBuilder();
-	    Document seqDiagram = dBuilder2.parse(xmlFile2);
+	    Document seqDiagram = xmlHM.getDocumentFrom("..//code//testfolder//xmlSpecifications//SeqDiagram.xml");
 	    boolean s = false;
 	    s = xmlHM.compareXML(seqDiagram, test);
 	    assertFalse(s);
