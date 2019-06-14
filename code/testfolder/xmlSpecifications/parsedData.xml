@@ -11,7 +11,7 @@
 			<entry>Class3</entry>
 		</extends>
 		<instance> <!-- Klassen-Instanzen -->
-			<access>private</access> <!-- Mögliche werte: private, protected, public und ppublic (Paketsichtbar 
+			<access>private</access> <!-- Mögliche werte: private, protected, public und pprivate (Paketsichtbar 
 				wenn keine explizite Angabe) -->
 			<name>classInstance1</name>
 			<class>Class2</class>
@@ -27,7 +27,7 @@
 			<class>Class4</class>
 		</instance>
 		<instance>
-			<access>ppublic</access>
+			<access>pprivate</access>
 			<name>iClass5</name>
 			<class>Class5</class>
 		</instance>
@@ -49,7 +49,7 @@
 			<name>var3</name>
 		</var>
 		<var>
-			<access>ppublic</access>
+			<access>pprivate</access>
 			<type>byte</type>
 			<name>var4</name>
 		</var>
@@ -200,7 +200,7 @@
 			</alternative>
 		</methoddefinition>
 		<methoddefinition>
-			<access>ppublic</access>
+			<access>pprivate</access>
 			<name>method4</name>
 			<result>void</result>
 			<alternative>
