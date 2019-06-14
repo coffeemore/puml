@@ -75,9 +75,9 @@ public class SequenceDiagramGenerator
 	Element epMethod1 = seqDiagram.createElement("method");
 	epMethod1.setTextContent(epMethod);
 	entrypoint.appendChild(epMethod1);
-	
+
 	addEpClass(epClass, epMethod);
-	
+
 	listMethoddef(parsedData, seqDiagram, seq);
 	deleteFrame(seqDiagram);
 
@@ -87,12 +87,11 @@ public class SequenceDiagramGenerator
 
 	addType(parsedData, seqDiagram, seq, epClass);
 
-
 	deleteUnusedClassesAndMethods(seqDiagram, epClass);
-	
+
 	xmlHM.removeComments(root);
 	seqDiagram = xmlHM.removeWhitespace(seqDiagram);
-	 xmlHM.writeToFile(seqDiagram); 
+	xmlHM.writeToFile(seqDiagram);
 
 	return seqDiagram;
     }
@@ -142,7 +141,7 @@ public class SequenceDiagramGenerator
 
 	    Element classTag = seqDiagram.createElement("class");
 	    NodeList list = xmlHM.getList(seqDiagram, seqMethodDef);
-	    
+
 	    // zu jeder Methode wird ihre Klasse mittels Class-Tag eingefügt
 	    Node seqMethodNode = list.item(i);
 	    String cName = xmlHM.getList(mList.item(i), "../name").item(0).getTextContent();
@@ -163,10 +162,12 @@ public class SequenceDiagramGenerator
 	    }
 	}
     }
-    
-    public void deleteFrame(Document seqDiagram) throws XPathExpressionException {
-	NodeList list = xmlHM.getList(seqDiagram, seqMethodDef+"//frame");
-	for(int i = 0; i < list.getLength(); i++) {
+
+    public void deleteFrame(Document seqDiagram) throws XPathExpressionException
+    {
+	NodeList list = xmlHM.getList(seqDiagram, seqMethodDef + "//frame");
+	for (int i = 0; i < list.getLength(); i++)
+	{
 	    xmlHM.delNode(list.item(i), true);
 //	    Node parent = list.item(i).getParentNode();
 //	    NodeList childs = xmlHM.getList(list.item(i), "child::*");
@@ -176,7 +177,7 @@ public class SequenceDiagramGenerator
 //	    parent.removeChild(list.item(i));
 	}
     }
-    
+
     /**
      * Instanz: von welcher Klasse? im methodcall ein Tag instanz -> Klassentag +
      * -name muss reingenommen werden -> Instanzenliste anlegen
@@ -384,7 +385,8 @@ public class SequenceDiagramGenerator
      * @param instanceClass - Name der Klasse der lokalen Instanz
      */
 
-    private void recursiveHandlelocalInstances(Document doc, Node currentNode, String instanceName, String instanceClass)
+    private void recursiveHandlelocalInstances(Document doc, Node currentNode, String instanceName,
+	    String instanceClass)
     {
 	// lokale Instanz ist in späteren Siblings gültig
 	Node current = currentNode;
@@ -417,14 +419,15 @@ public class SequenceDiagramGenerator
 	    current = current.getNextSibling();
 	}
     }
-    
-    private void addEpClass(String epClass, String epMethod){
+
+    private void addEpClass(String epClass, String epMethod)
+    {
 	calledMethodsList.add(0, new ArrayList<String>());
 	calledMethodsList.get(0).add(epClass);
 	calledMethodsList.get(0).add(epMethod);
 	calledMethodsList.get(0).add(" ");
     }
-    
+
     /**
      * Die Methodcalls werden mit Type-Tags versehen
      * 
@@ -457,7 +460,6 @@ public class SequenceDiagramGenerator
 		Node instanceNode = xmlHM.getList(seqMethodCallNode, "instance").item(0);
 		Node typeNode = xmlHM.getList(seqMethodCallNode, "type").item(0);
 
-		// Element seqMethodCallEl = (Element) seqMethodCallNode;
 		// aktuell aufgerufene Methode
 		String calledMethod = xmlHM.getList(seqMethodCallNode, "method").item(0).getTextContent();
 		String calledClass;
@@ -493,12 +495,24 @@ public class SequenceDiagramGenerator
 		    String calledEl = calledMethodsList.get(i).get(1);
 		    String calledCl = calledMethodsList.get(i).get(0);
 		    String calledIn = calledMethodsList.get(i).get(2);
+		    /**
+		     * wir befinden uns in den methodcalls einer methoddef wenn die im methodcall
+		     * aufgerufene Methode keine anderen Methoden aufruft, muss der handled-tag
+		     * nicht gesetzt werden
+		     * 
+		     */
 		    if (calledMethod.equals(calledEl) && calledClass.equals(calledCl) && calledInstance.equals(calledIn)
 			    && a == 0 && (typeNode == null))
 		    {
-			type.setTextContent("handled");
-			seqMethodCallNode.appendChild(type);
-			a++;
+			boolean test = existingMethodcalls(seqDiagram, calledMethod,
+				xmlHM.getList(seqMethodCallNode, "method").item(0));
+			if (test)
+			{
+			    type.setTextContent("handled");
+			    seqMethodCallNode.appendChild(type);
+			    a++;
+			}
+
 		    }
 		}
 		calledMethodsList.add(e, new ArrayList<String>());
@@ -577,6 +591,27 @@ public class SequenceDiagramGenerator
 		}
 	    }
 	}
+    }
+
+    private boolean existingMethodcalls(Document seqDiagram, String calledMethod, Node cMethod)
+	    throws XPathExpressionException
+    {
+	NodeList list = xmlHM.getList(seqDiagram, seqMethodDef);
+	for (int i = 0; i < list.getLength(); i++)
+	{
+	    Node node = xmlHM.getChildwithName(list.item(i), "name");
+	    String name = node.getTextContent();
+
+	    if (name.equals(calledMethod))
+	    {
+		NodeList list2 = xmlHM.getList(node.getParentNode(), ".//methodcall");
+		if (list2.getLength() == 0)
+		{
+		    return false;
+		}
+	    }
+	}
+	return true;
     }
 
     /**
@@ -689,7 +724,7 @@ public class SequenceDiagramGenerator
 	    }
 	}
     }
-    
+
     private void deleteUnusedMethods(Document Doc) throws XPathExpressionException
     {
 	// ungenutzte Methoden löschen
@@ -721,11 +756,11 @@ public class SequenceDiagramGenerator
 	return false;
     }
 
-public void listArrayList(ArrayList<ArrayList<String>> list2)
-{
+    public void listArrayList(ArrayList<ArrayList<String>> list2)
+    {
 	for (int i = 0; i < list2.size(); i++)
 	{
 	    System.out.println(list2.get(i));
 	}
-}
+    }
 }
