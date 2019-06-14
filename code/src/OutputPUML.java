@@ -630,6 +630,7 @@ public class OutputPUML
      * @param sourcePath	Pfad an der die plantUML-Code-Datei liegt
      * @param destPath		Ordnerpfad, !!nicht Dateiname!!, an dem die png-Datei gespeichert wird, Name der PNG=Name der Textdatei
      * @throws IOException
+     * !VERALTET!
      */
     public void createPUMLfromFile(String sourcePath, String destPath) throws IOException //
     {
