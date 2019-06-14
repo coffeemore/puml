@@ -1,8 +1,6 @@
 
 import java.io.IOException;
 import java.util.ArrayList;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
@@ -55,9 +53,7 @@ public class SequenceDiagramGenerator
 	    TransformerException
     {
 	// neues Dokument, das seqDiagramm Informationen enthalten wird
-	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-	DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-	Document seqDiagram = docBuilder.newDocument();
+	Document seqDiagram = xmlHM.createDocument();
 
 	Element root = seqDiagram.createElement("parsed");
 	seqDiagram.appendChild(root);
@@ -75,7 +71,9 @@ public class SequenceDiagramGenerator
 	Element epMethod1 = seqDiagram.createElement("method");
 	epMethod1.setTextContent(epMethod);
 	entrypoint.appendChild(epMethod1);
-
+	
+	addEpClass(epClass, epMethod);
+	
 	listMethoddef(parsedData, seqDiagram, seq);
 	deleteFrame(seqDiagram);
 
@@ -85,12 +83,12 @@ public class SequenceDiagramGenerator
 
 	addType(parsedData, seqDiagram, seq, epClass);
 
-	deleteUnusedClassesAndMethods(seqDiagram, epClass);
 
+	deleteUnusedClassesAndMethods(seqDiagram, epClass);
+	
 	xmlHM.removeComments(root);
 	seqDiagram = xmlHM.removeWhitespace(seqDiagram);
-	// xmlHM.writeDocumentToConsole(seqDiagram);
-	xmlHM.writeToFile(seqDiagram);
+	 xmlHM.writeToFile(seqDiagram); 
 
 	return seqDiagram;
     }
@@ -140,7 +138,7 @@ public class SequenceDiagramGenerator
 
 	    Element classTag = seqDiagram.createElement("class");
 	    NodeList list = xmlHM.getList(seqDiagram, seqMethodDef);
-
+	    
 	    // zu jeder Methode wird ihre Klasse mittels Class-Tag eingefügt
 	    Node seqMethodNode = list.item(i);
 	    String cName = xmlHM.getList(mList.item(i), "../name").item(0).getTextContent();
@@ -148,14 +146,13 @@ public class SequenceDiagramGenerator
 	    seqMethodNode.insertBefore(classTag, seqMethodNode.getFirstChild());
 
 	    // vorhandene Parameters-, Access- oder Result-Tags werden gesucht und entfernt
-	    
 	    Node node = list.item(i);
 	    NodeList childs = node.getChildNodes();
 	    for (int j = 0; j < childs.getLength(); j++)
 	    {
 		Node child = childs.item(j);
-		if ((child.getNodeName().equals("parameters") || child.getNodeName().equals("result")
-			|| child.getNodeName().equals("access")))
+		if (child.getNodeName().equals("parameters") || child.getNodeName().equals("result")
+			|| child.getNodeName().equals("access") || child.getNodeName().equals("type"))
 		{
 		    node.removeChild(child);
 		}
@@ -383,8 +380,7 @@ public class SequenceDiagramGenerator
      * @param instanceClass - Name der Klasse der lokalen Instanz
      */
 
-    private void recursiveHandlelocalInstances(Document doc, Node currentNode, String instanceName,
-	    String instanceClass)
+    private void recursiveHandlelocalInstances(Document doc, Node currentNode, String instanceName, String instanceClass)
     {
 	// lokale Instanz ist in späteren Siblings gültig
 	Node current = currentNode;
@@ -417,7 +413,14 @@ public class SequenceDiagramGenerator
 	    current = current.getNextSibling();
 	}
     }
-
+    
+    private void addEpClass(String epClass, String epMethod){
+	calledMethodsList.add(0, new ArrayList<String>());
+	calledMethodsList.get(0).add(epClass);
+	calledMethodsList.get(0).add(epMethod);
+	calledMethodsList.get(0).add(" ");
+    }
+    
     /**
      * Die Methodcalls werden mit Type-Tags versehen
      * 
@@ -478,7 +481,7 @@ public class SequenceDiagramGenerator
 		 */
 		Element type = seqDiagram.createElement("type");
 		int a = 0;
-		int e = 0;
+		int e = 1;
 		// alle bisher aufgerufenen Methoden werden mit der aktuell aufgerufenen
 		// verglichen
 		for (int i = 0; i < calledMethodsList.size(); i++)
@@ -682,7 +685,7 @@ public class SequenceDiagramGenerator
 	    }
 	}
     }
-
+    
     private void deleteUnusedMethods(Document Doc) throws XPathExpressionException
     {
 	// ungenutzte Methoden löschen
@@ -713,4 +716,12 @@ public class SequenceDiagramGenerator
 	}
 	return false;
     }
+
+public void listArrayList(ArrayList<ArrayList<String>> list2)
+{
+	for (int i = 0; i < list2.size(); i++)
+	{
+	    System.out.println(list2.get(i));
+	}
+}
 }
