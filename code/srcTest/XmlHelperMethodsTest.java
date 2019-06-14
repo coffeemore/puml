@@ -1,7 +1,5 @@
 import static org.junit.jupiter.api.Assertions.*;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.jupiter.api.Test;
@@ -17,9 +15,7 @@ class XmlHelperMethodsTest
 
     void SetUptestDoc() throws ParserConfigurationException
     {
-	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-	DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-	testDoc = docBuilder.newDocument();
+	testDoc = xmlHM.createDocument();
 
 	Element root = testDoc.createElement("root");
 	testDoc.appendChild(root);

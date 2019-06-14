@@ -1,10 +1,5 @@
-
-import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
@@ -32,7 +27,7 @@ public class Console extends PUMLgenerator
 	private String entryClass = new String();
     private String  entryMethode = new String();
     private Scanner scanner = new Scanner(System.in);
-	
+ 
     /**
      * Konstruktor
      */
@@ -353,19 +348,5 @@ public class Console extends PUMLgenerator
 			e.printStackTrace();
 			System.out.println("Kommandozeile: Verarbeitung setAllClasses fehlgeschlagen.");
 		}
-    }
-	public Document getTestDoc()
-	{
-		try {
-		DocumentBuilderFactory docBuildFact = DocumentBuilderFactory.newInstance();
-		DocumentBuilder docBuild = docBuildFact.newDocumentBuilder();
-		Document doc = docBuild.parse(new File("/home/mariangeissler/puml/code/testfolder/xmlSpecifications/parsedData.xml"));
-		return doc;
-		}
-		catch (ParserConfigurationException | SAXException | IOException e)
-		{
-			e.printStackTrace();
-		}
-		return null;
-	}
+    }	
 }

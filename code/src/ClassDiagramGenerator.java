@@ -1,6 +1,3 @@
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -36,11 +33,10 @@ public class ClassDiagramGenerator
      */
     public Document createDiagram(Document parsedData)
     {
-    	DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+    	XmlHelperMethods xmlHM = new XmlHelperMethods();
     	try 
     	{
-			DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
-			Document document = documentBuilder.newDocument();
+			Document document = xmlHM.getDocumentFrom("testfolder/xmlSpecifications/ClassDiagram.xml");
 					
 			//Wurzel root namens "parsed" wird unter document angelegt
 			Element root = document.createElement("parsed");

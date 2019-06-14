@@ -1,8 +1,6 @@
 
 import java.io.IOException;
 import java.util.ArrayList;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
@@ -55,9 +53,7 @@ public class SequenceDiagramGenerator
 	    TransformerException
     {
 	// neues Dokument, das seqDiagramm Informationen enthalten wird
-	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-	DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-	Document seqDiagram = docBuilder.newDocument();
+	Document seqDiagram = xmlHM.createDocument();
 
 	Element root = seqDiagram.createElement("parsed");
 	seqDiagram.appendChild(root);
