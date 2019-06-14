@@ -1,3 +1,5 @@
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -36,7 +38,11 @@ public class ClassDiagramGenerator
     	XmlHelperMethods xmlHM = new XmlHelperMethods();
     	try 
     	{
-			Document document = xmlHM.getDocumentFrom("testfolder/xmlSpecifications/ClassDiagram.xml");
+    		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document document = builder.newDocument();
+
+			//Document document = xmlHM.getDocumentFrom("testfolder/xmlSpecifications/ClassDiagram.xml");
 					
 			//Wurzel root namens "parsed" wird unter document angelegt
 			Element root = document.createElement("parsed");
@@ -127,7 +133,7 @@ public class ClassDiagramGenerator
 									{
 										Element elementremove = (Element) current;
 										elementremove.getParentNode().removeChild(elementremove);
-										System.out.println("Unterknoten " + currentNode + " wird nicht übernommen.");
+										//System.out.println("Unterknoten " + currentNode + " wird nicht übernommen.");
 									}
 								}
 							}
@@ -186,17 +192,44 @@ public class ClassDiagramGenerator
 								to.appendChild(document.createTextNode(
 										element.getElementsByTagName("entry").item(j).getTextContent()));
 
-								Element veryNextEntry = document.createElement("entry");
+								/*Element veryNextEntry = document.createElement("entry");
 								interfaces.appendChild(veryNextEntry);
 								veryNextEntry.appendChild(document.createTextNode(
-										element.getElementsByTagName("entry").item(j).getTextContent()));
+										element.getElementsByTagName("entry").item(j).getTextContent()));*/
 							}
 						}
 					}
 				}
 			}
+			
+			//Kopieren der InterfacedefinitionInformationen
+			NodeList instanceList = parsedData.getElementsByTagName("interfacedefinition");
+			for(int i = 0; instanceList.getLength() > i; i++)
+			{
+				Element entry = document.createElement("entry");
+				
+				//Ausschlließliches Kopieren der Unterknoten von interfacedefinition und Einfügen in "entry"-Tag
+				NodeList children = instanceList.item(i).getChildNodes();
+				Node current = null;
+				int count = children.getLength();
+				for (int k = 0; k < count; k++)
+					{
+						current = children.item(k);
+						if(current != null) {
+							if (current.getNodeType() == Node.ELEMENT_NODE)
+							{
+								interfaces.appendChild(entry);
+							    entry.appendChild(document.importNode(current, true));
+							}
+						}
+					}
+				//interfaces.appendChild(entry);
+			    //entry.appendChild(document.importNode(instanceList.item(i), true));
+			}
+			
 			//Ausgabe Konsole
-			document.normalize();
+			//document.normalize();
+			xmlHelper.removeComments(root);
 			xmlHelper.writeDocumentToConsole(document);
 	    	return document;
 		}
