@@ -1,7 +1,5 @@
 import java.util.ArrayList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
@@ -190,10 +188,8 @@ public class ParserCPP implements ParserIf
 	    */
 
 		//JOHANNS ZEUG:
-		DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder documentBuilder;
-		documentBuilder = documentFactory.newDocumentBuilder();
-		Document document = documentBuilder.newDocument();
+		Document document = xmlHelper.createDocument();
+		
 		
 		Element root = document.createElement("source");
 		document.appendChild(root);

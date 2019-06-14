@@ -1,8 +1,5 @@
-
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Iterator;
@@ -53,16 +50,20 @@ public class XmlHelperMethods
 	this.xPathfactory = XPathFactory.newInstance();
 	this.xpath = xPathfactory.newXPath();
     }
+
     /**
      * Konvertiert xml Datei in String
+     * 
      * @param xmlDoc lesende Datei
      */
     public String xmlDocToString(Document xmlDoc)
     {
 	return new String();
     }
+
     /**
      * loescht einzelnen Knoten aus xml Datei
+     * 
      * @param Knoten eines Elements
      * @param        true = Unterknoten werden nicht gelöscht; false = Unterknoten
      *               werden mit gelöscht
@@ -76,7 +77,7 @@ public class XmlHelperMethods
 	    for (int i = 0; i < childNodes.getLength(); i++)
 	    {
 		parent.appendChild(childNodes.item(i).cloneNode(true));
-		
+
 	    }
 	    parent.removeChild(nodeName);
 
@@ -85,6 +86,7 @@ public class XmlHelperMethods
 	    parent.removeChild(nodeName);
 	}
     }
+
     /**
      * Hilfsmethode zum Laden eines XML-Documents fuer diverse Zwecke
      * 
@@ -111,6 +113,29 @@ public class XmlHelperMethods
 	}
 	return null;
     }
+
+    /**
+     * Hilfsmethode zum Erstellen eines XML-Documents 
+     * 
+     * @return Document
+     */
+    public Document createDocument()
+    {
+	    DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	    DocumentBuilder docBuilder;
+	    try
+	    {
+		docBuilder = docFactory.newDocumentBuilder();
+	    
+	    Document document = docBuilder.newDocument();
+	    return document;
+	    } catch (ParserConfigurationException e)
+	    {
+		e.printStackTrace();
+	    }
+	return null;
+    }
+
     /**
      * Hilfsmethode zum Ausgeben eines XML-Documents in der Console
      * 
@@ -332,7 +357,6 @@ public class XmlHelperMethods
 	    Difference next = iterator.next();
 	    System.out.println("Difference: " + next);
 	}
-	iterator=diffList.iterator();
 	if (iterator.hasNext())
 	{
 	    return false;
