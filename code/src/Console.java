@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -15,6 +17,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
 
 /**
  * 
@@ -205,6 +208,12 @@ public class Console extends PUMLgenerator
 				{
 					System.out.println("Der Methodenname : '"+ entryMethode + "' wurde gross geschrieben. Uebereinstimmung mit Quelltext ueberpruefen!\n");
 				}
+				if (!validateUserInput(entryClass, entryMethode))
+				{
+					System.out.println("Klasse/Methode nicht gefunden. Evtl. Schreibweise pruefen.");
+					entryClass = "";
+					entryMethode = "";
+				}
 			}
 			System.out.println("Gewaehlte Klasse: " + entryClass + " und Methode: " + entryMethode);
 			createSQDiagram(entryClass, entryMethode ,outputLocation);
@@ -267,7 +276,56 @@ public class Console extends PUMLgenerator
 			e.printStackTrace();
 		}
     }
-    
+    /**
+     * Funktion zum Testen auf vorhandene Klassen, bei Nutzereingabe
+     * @param userEntryClass Eingabe des Einstiegspunktes "Klasse"
+     * @param userEntryMethode Eingabe des Einstiegspunktes "Methode"
+     * @return
+     */
+    private boolean validateUserInput(String userEntryClass, String userEntryMethode)
+    {
+		try
+		{
+	    	Document parserDoc = PUMLgenerator.parser.getParsingResult();
+			NodeList classNodeList;
+			NodeList methodeNodeList;
+			classNodeList = xmlHelper.getList(parserDoc, "/source/classdefinition/name");
+	    	List<String> possibleClasses = new ArrayList<String>();
+	    	List<String> possibleMethodes = new ArrayList<String>();
+	    	
+			for (int i = 0; i < classNodeList.getLength(); i++)
+			{
+				possibleClasses.add(classNodeList.item(i).getTextContent());
+				methodeNodeList = xmlHelper.getList(classNodeList.item(i), "../methoddefinition/name");
+				for (int j = 0; j <methodeNodeList.getLength(); j++)
+				{
+					possibleMethodes.add(methodeNodeList.item(j).getTextContent());
+				}
+			}
+			boolean classUser = false;
+			for (String c : possibleClasses)
+			{
+				if(c.contains(userEntryClass))
+				{
+					classUser = true;
+				}
+			}
+			for (String m : possibleMethodes)
+			{
+				if( classUser && m.contains(userEntryMethode))
+				{
+					return true;
+				}
+			}
+	    	return false;
+		}
+		catch (XPathExpressionException e)
+		{
+			System.out.println("Fehler beim Initialisieren der Klassen-Nodeliste in validateClass.");
+			e.printStackTrace();
+		}
+		return false;
+    }
     /**
      * Ausgabe aller Klassen und Methoden im Konsolendialog
      *
