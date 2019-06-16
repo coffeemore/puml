@@ -183,15 +183,31 @@ Ein Logger hat verschiedene Level in denen geloggt werden kann:
 \item finest	- Am Feinsten
 \end{itemize}
 Um nun an einer bestimmten Stelle etwas zu loggen, macht man folgenden Aufruf: \\ \\
-logger.getLog().[Level]("[Ausgabe]")\\
+PUMLgenerator.logger.getLog().[Level]("[Ausgabe]")\\
 
-Hierbei wird die in der Hauptklasse definierte Instanz "logger" in Verbindung mit dem Getter getLog() aufgerufen, danach der Level des Logs definiert und am Ende der Ausgabestring eingegeben.\\
+Hierbei wird die in der Hauptklasse (PUMLgenerator) definierte Instanz "logger" in Verbindung mit dem Getter getLog() aufgerufen, danach der Level des Logs definiert und am Ende der Ausgabestring eingegeben.\\
 Beispiel:\\
-logger.getLog().info("Dies ist eine Information")\\
+PUMLgenerator.logger.getLog().info("Dies ist eine Information")\\
 \\
 Zum Start des PUML Programmes wird eine Logdatei mit exakter Uhrzeit/Datum als Präfix erstellt.
-Jeder Logeintrag wird im home directory im Ordner PUMLlog des jeweiligen Systems gespeichert. Zu jedem Logeintrag gibt es das genaue Datum inkl. Uhrzeit sowie die Informationen in welcher Klasse und in welcher Methode es geloggt wurde.
-Des Weiteren werden auch Logausgaben mit den gleichen Eigenschaften (Uhrzeit, Klassenname, ...) über die Console realisiert.
+Jeder Logeintrag wird im Ordner puml/code/testfolder/tempData/PUMLlog gespeichert, da tempData über .gitignore ausgeschlossen wird. Zu jedem Logeintrag gibt es das genaue Datum inkl. Uhrzeit sowie die Informationen in welcher Klasse und in welcher Methode es geloggt wurde.
+Des Weiteren werden auch Logausgaben mit den gleichen Eigenschaften (Uhrzeit, Klassenname, ...) über die Console realisiert.\\\\
+\textbf{LogMX}\\
+Die Logdatei wird in einem XML-Format gespeichert. Um dieses komfortabel auslesen zu können, kann man sich mit Hilfe von
+\href{https://logmx.com/download}{LogMX}, einem plattformunabhängigem LogViewer, die Logdatei anschauen und Filtern (nach Klassen, Methoden, Uhrzeit, ...). \\
+LogMX kann auf diverse Arten implementiert werden.\\\\
+\emph{Linux}\\
+Für Linux Distributionen gibt es ein entpackbares Archiv, welches nach dem Download entweder direkt als Anwendung gestartet werden kann. Hierzu muss einfach die logmx.sh ausgeführt werden. Beim Start muss als erstes angegeben werden, wo die Datei zu finden ist und danach ob nur eine Logdatei oder mehrere Logdateien in einem Verzeichnis geöffnet werden sollen. Als nächstes muss das Log Format angegeben werden. Das Log Format für alle PUML-Logs ist Java logging. Final muss nun nur noch Java XML format ausgewählt und der Pfad zur Datei eingegeben werden. Danach kann die Datei gelesen werden.\\\\
+Um die Dateien direkt über Eclipse zu öffnen muss man einmalig ein paar Einstellungen vornehmen.\\
+Unter
+\begin{center}
+\rightarrow Window\rightarrow Preferences\rightarrow General\rightarrow Content Types
+\end{center}
+\\kann man in der Liste Text auswählen und ausklappen. Wenn man jetzt XML markiert (kein ausklappen nötig; gemeint ist nicht XML(Illformed)) kann man in untersten Fenster unter Associated Editors über "Add" einen neuen Editor hinzufügen. Dazu wählt man die logmx.sh Datei aus dem entpackten Ordner aus und speichert die Einstellungen. Wenn man nun via Rechtsklick eine Logdatei in Eclipse auswählt kann man unter "Open With" nun logmx auswählen.\\\\
+\emph{Windows}
+\\
+Für Windows gibt es drei Download-Varianten. Man kann zwei .exe-Installer (mit und ohne Java) herunterladen oder ein gepacktes Archiv, welches ebenfalls eine .exe-Datei enthält. Wie in der Linux-Variante kann man auch hier das Programm allein starten oder auch direkt aus Eclipse heraus. Die Schritte sind bei der Implementierung exakt die selben, wie unter \textit{"Linux"} beschrieben, nur das hier nicht die logmx.sh, sondern die LogMX.exe/LogMX-64.exe ausgewählt werden muss (entweder im Archivordner oder im Installationspfad).
+Da LogMX einen Java Path benötigt, muss dieser noch in der Datei startup.conf ergänzt werden.
 \nsecend %{Logger}
 \nsecend %{Code}
 
