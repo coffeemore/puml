@@ -58,6 +58,8 @@ public class OutputPUML
 		if (compare == "classdiagramm")
 		{
 			boolean gotInstances = false;
+			
+			//CLASSES
 			list = helper.getList(list.item(0), "classes/entry/name");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
@@ -181,6 +183,7 @@ public class OutputPUML
 				    }
 		    }
 		    
+		    //INTERFACES
 		    //TODO Kann Interface vars haben? (nein: vars teil löschen, ja: weiter fragen, gotInstances-Part?
 		    list = helper.getList(list.item(0).getParentNode().getParentNode().getParentNode(), "interfaces/entry/name");
 		    for (int a = 0; a < list.getLength(); a++)
@@ -628,6 +631,7 @@ public class OutputPUML
      * @param sourcePath	Pfad an der die plantUML-Code-Datei liegt
      * @param destPath		Ordnerpfad, !!nicht Dateiname!!, an dem die png-Datei gespeichert wird, Name der PNG=Name der Textdatei
      * @throws IOException
+     * !VERALTET!
      */
     public void createPUMLfromFile(String sourcePath, String destPath) throws IOException //
     {
