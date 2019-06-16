@@ -562,8 +562,8 @@ public class OutputPUML
 	else if(type.equals("recursive"))
 	{
 	    pumlCode += startClass + " ->o " + startClass + ": " + method + inst + "\n";
-	    pumlCode += "activate " + startClass + "\n";
-	    pumlCode += "deactivate " + startClass + "\n";
+	    //pumlCode += "activate " + startClass + "\n";
+	    //pumlCode += "deactivate " + startClass + "\n";
 	}
 	else if(type.equals("handled"))
 	{
