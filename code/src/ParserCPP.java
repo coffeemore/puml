@@ -193,54 +193,111 @@ public class ParserCPP implements ParserIf
 		    //Suche nach dem nächsten Index vom Wort "class" im HPP-Code
 	        index = sourceCodeHPP.indexOf(keyword, index + keyword.length());
 	    }
-	    System.out.println("\n #################### BEGINN JANS TEST ####################\n");
-	    System.out.println("\n ORIGINAL SOURCECODE \n"+sourceCodeHPP+"\n ENDE \n");
+	    	// System.out.println("\n #################### BEGINN JANS TEST ####################\n");
+	    	//System.out.println("\n ORIGINAL SOURCECODE \n"+sourceCodeHPP+"\n ENDE \n");
 	    //isInterface("Class2",sourceCodeHPP);
-	    isInterface("If2",sourceCodeHPP);
+	    System.out.println("IF2 >>"+isInterface("If2",sourceCodeHPP));
+	    System.out.println("CLASS2 >>"+isInterface("Class2",sourceCodeHPP));
+	    System.out.println("IF1 >>"+isInterface("If1",sourceCodeHPP));
+	    System.out.println("IF3/FIGURE >>"+isInterface("Figure",sourceCodeHPP));
+	    System.out.println("IF4/TEST >>"+isInterface("Test",sourceCodeHPP));
 	    /////////////////////////////////////////////////////////////////////////////////////////
 		xmlHelper.writeDocumentToConsole(document);
 	}
 	
 	//Test ob eine übergebene Klasse im übergebenem Quellcode ein Interface ist
-	//Dabei wird davon ausgegangen, dass Interfaces nicht in folgender Struktur deklariert sind: "class Class1 : public Class3, public If1, public If2"
-	//!!Probleme wenn virtual am Anfang des Methoden-Namens
 	private boolean isInterface(String className,String sourceCodeHPP)
 	{	
-		boolean interFace = true;
+		//Klassen-Deklaration zusammen setzen
 		String keyword = "class "+className;
 		
-		// Klassen-Code (hpp) raus filtern
+		// Klassen-Code (hpp) aus Quellcode filtern
 		int keyIndex = sourceCodeHPP.indexOf(keyword) + keyword.length();
-		String sourcec = sourceCodeHPP.substring(keyIndex,sourceCodeHPP.indexOf("};", keyIndex)+2);
-		System.out.println("\n GEKUERZTER CODE \n"+sourcec+"\n ENDE2 \n");
+		String sourcec = sourceCodeHPP.substring(keyIndex,sourceCodeHPP.indexOf("};", keyIndex));
+			//System.out.println("\n GEKUERZTER CODE \n"+sourcec+"\n ENDE2 \n");
 		
-		// gefilterten Code public etc entfernen
+		// Code kürzen, filtern und anpassen
 		sourcec =  sourcec.replaceAll("public:", "");
 		sourcec =  sourcec.replaceAll("private:", "");
 		sourcec =  sourcec.replaceAll("protected:", "");
-		System.out.println("\n GEKUERZTER CODE 2 \n"+sourcec+"\n ENDE3 \n");
-		
-		// Prüfen ob alle Methoden virtuel und =0; sind && Dekonstruktor: virtual ~IDemo() {} entfernen
-		while(!sourcec.isEmpty()) 
+		sourcec =  sourcec.replaceAll("\n", "");
+		sourcec =  sourcec.replaceAll("\t", "");
+		sourcec = sourcec.replace('{', ' ');
+		while(sourcec.contains("  ")) 
 		{
-			//nächstes wort nach Klammer bekommen
-			//virtual?
-				//Dekonstruktor?
-					//~
-					//{}
-				//Endet auf =0; || = 0; || etc.?
-			
-				
-		/*	{
-			    virtual ~IDemo() {}
-				virtual void method2() = 0;
-			};
-			
-		*/
-			
+			sourcec =  sourcec.replaceAll("  ", " ");
 		}
+		sourcec = sourcec.trim();
+			//System.out.println("\n GEKUERZTER CODE 2 \n"+sourcec+"\n ENDE3 \n");
 		
-		return interFace;
+		// Prüfen ob alle Methoden virtuel und =0; sind && Dekonstruktor: virtual ~IDemo() {} 
+		int i = 0, n = sourcec.length();
+		while( i+keyword.length() < n && i!=-1 )
+    	{
+				//System.out.println("\n GEKUERZTER CODE 3 \n"+sourcec.substring( i, sourcec.length())+"\n ENDE4 \n");
+    		//virtuelle Methode
+    		if(sourcec.substring( i, i+"virtual ".length()).equals("virtual "))
+    		{ 
+    				//System.out.println(" \n ###TRUE1###" +i+"# \n");
+    				//System.out.println(sourcec.substring( i+"virtual ".length(), i+"virtual ".length()+1));
+    			//Dekonstruktor
+    		    if(sourcec.substring( i+"virtual ".length(), i+"virtual ".length()+1).equals("~"))
+    			{
+    					//System.out.println(" \n ###TRUE4### \n");
+    			}
+    			//nicht implementierte Methode
+    			else if(sourcec.lastIndexOf("0", sourcec.indexOf(";",i)) != -1 ) //&& sourcec.lastIndexOf("=", sourcec.indexOf("=", (sourcec.lastIndexOf("0", sourcec.indexOf(";",i)))   )) != -1
+    			{
+    					//System.out.println(" \n ###TRUE2### \n");
+    				if(sourcec.lastIndexOf("=", sourcec.indexOf("0", (sourcec.lastIndexOf("0", sourcec.indexOf(";",i)))   )) != -1)
+    				{
+    						//System.out.println(" \n ###TRUE3### \n");
+    				}
+    				else 
+    				{
+    						//System.out.println(" \n ###FALSE1### \n");
+    					return false;  			
+    				}
+    			}
+    			//Fehler-Fall
+    			else
+    			{
+    					//System.out.println(" \n ###FALSE2### \n");
+    				return false;
+    			}
+    		}
+    		
+    		/* //Konstruktor : Im Interface nicht zulässig
+    		 *
+    		else if(sourcec.substring( i, i+className.length()+2).equals(className+"()")) 
+    		{
+    			System.out.println("\nKonstruktor\n");
+    		}
+    		*/
+    		
+    		//Fehler-Fall
+    		else
+    		{
+    				//System.out.println(" \n ###FALSE3### \n");
+    			return false;
+    		}
+    		
+    		//Nächsten Methodenanfang finden
+    		//-1 Abfangen
+    			//System.out.println("\n"+ i +"\n");
+    		if(Math.min( sourcec.indexOf(";", i), sourcec.indexOf("}", i))!=-1)
+    		{
+    			i= Math.min( sourcec.indexOf(";", i), sourcec.indexOf("}", i)+2); 
+    				//System.out.println(" \n ###O1### \n");
+    		}
+    		else if (sourcec.indexOf(";", i)!=-1)
+    		{
+    			i= sourcec.indexOf(";", i)+2;
+    				//System.out.println(" \n ###O2### \n");
+    		}
+    			//System.out.println("\n"+ i +"\n");
+    	}	
+		return true;
 	}
 	
 	/**
