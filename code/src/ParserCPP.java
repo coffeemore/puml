@@ -192,11 +192,11 @@ public class ParserCPP implements ParserIf
 	    	// System.out.println("\n #################### BEGINN JANS TEST ####################\n");
 	    	//System.out.println("\n ORIGINAL SOURCECODE \n"+sourceCodeHPP+"\n ENDE \n");
 	    //isInterface("Class2",sourceCodeHPP);
-	    System.out.println("IF2 >>"+isInterface("If2",sourceCodeHPP));
-	    System.out.println("CLASS2 >>"+isInterface("Class2",sourceCodeHPP));
-	    System.out.println("IF1 >>"+isInterface("If1",sourceCodeHPP));
-	    System.out.println("IF3/FIGURE >>"+isInterface("Figure",sourceCodeHPP));
-	    System.out.println("IF4/TEST >>"+isInterface("Test",sourceCodeHPP));
+	    System.out.println("IF2 >>"+isAbstract("If2",sourceCodeHPP));
+	    System.out.println("CLASS2 >>"+isAbstract("Class2",sourceCodeHPP));
+	    System.out.println("IF1 >>"+isAbstract("If1",sourceCodeHPP));
+	    System.out.println("IF3/FIGURE >>"+isAbstract("Figure",sourceCodeHPP));
+	    System.out.println("IF4/TEST >>"+isAbstract("Test",sourceCodeHPP));
 	    /////////////////////////////////////////////////////////////////////////////////////////
 		xmlHelper.writeDocumentToConsole(document);
 	}
@@ -294,6 +294,70 @@ public class ParserCPP implements ParserIf
     			//System.out.println("\n"+ i +"\n");
     	}	
 		return true;
+	}
+	
+	private boolean isAbstract(String className,String sourceCodeHPP)
+	{	
+		//Klassen-Deklaration zusammen setzen
+		String keyword = "class "+className;
+		
+		// Klassen-Code (hpp) aus Quellcode filtern
+		int keyIndex = sourceCodeHPP.indexOf(keyword) + keyword.length();
+		String sourcec = sourceCodeHPP.substring(keyIndex,sourceCodeHPP.indexOf("};", keyIndex));
+			//System.out.println("\n GEKUERZTER CODE \n"+sourcec+"\n ENDE2 \n");
+		
+		// Code kürzen, filtern und anpassen
+		sourcec =  sourcec.replaceAll("public:", "");
+		sourcec =  sourcec.replaceAll("private:", "");
+		sourcec =  sourcec.replaceAll("protected:", "");
+		sourcec =  sourcec.replaceAll("\n", "");
+		sourcec =  sourcec.replaceAll("\t", "");
+		sourcec = sourcec.replace('{', ' ');
+		while(sourcec.contains("  ")) 
+		{
+			sourcec =  sourcec.replaceAll("  ", " ");
+		}
+		sourcec = sourcec.trim();
+			//System.out.println("\n GEKUERZTER CODE 2 \n"+sourcec+"\n ENDE3 \n");
+		
+		// Prüfen ob alle Methoden virtuel und =0; sind && Dekonstruktor: virtual ~IDemo() {} 
+		int i = 0, n = sourcec.length();
+		while( i+keyword.length() < n && i!=-1 )
+    	{
+				//System.out.println("\n GEKUERZTER CODE 3 \n"+sourcec.substring( i, sourcec.length())+"\n ENDE4 \n");
+    		//virtuelle Methode
+    		if(sourcec.substring( i, i+"virtual ".length()).equals("virtual "))
+    		{ 
+    				//System.out.println(" \n ###TRUE1###" +i+"# \n");
+    				//System.out.println(sourcec.substring( i+"virtual ".length(), i+"virtual ".length()+1));
+    
+    			//nicht implementierte Methode
+    			if(sourcec.lastIndexOf("0", sourcec.indexOf(";",i)) != -1 ) //&& sourcec.lastIndexOf("=", sourcec.indexOf("=", (sourcec.lastIndexOf("0", sourcec.indexOf(";",i)))   )) != -1
+    			{
+    					//System.out.println(" \n ###TRUE2### \n");
+    				if(sourcec.lastIndexOf("=", sourcec.indexOf("0", (sourcec.lastIndexOf("0", sourcec.indexOf(";",i)))   )) != -1)
+    				{
+    						//System.out.println(" \n ###TRUE3### \n");
+    					return true;
+    				}			
+    			}
+    		}
+    		//Nächsten Methodenanfang finden
+    		//-1 Abfangen
+    			//System.out.println("\n"+ i +"\n");
+    		if(Math.min( sourcec.indexOf(";", i), sourcec.indexOf("}", i))!=-1)
+    		{
+    			i= Math.min( sourcec.indexOf(";", i), sourcec.indexOf("}", i)+2); 
+    				//System.out.println(" \n ###O1### \n");
+    		}
+    		else if (sourcec.indexOf(";", i)!=-1)
+    		{
+    			i= sourcec.indexOf(";", i)+2;
+    				//System.out.println(" \n ###O2### \n");
+    		}
+    			//System.out.println("\n"+ i +"\n");
+    	}	
+		return false;
 	}
 	
 	/**
