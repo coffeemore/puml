@@ -15,8 +15,6 @@
 	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-test-sources.jar"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4-tests.jar"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.4/commons-cli-1.4.jar" sourcepath="lib/commons-cli-1.4/commons-cli-1.4.jar"/>
-	<classpathentry kind="lib" path="swing2swt.jar"/>
-	<classpathentry kind="lib" path="lib/swt-win32-x86_64-4.9.jar"/>
 	<classpathentry kind="lib" path="lib/xmlunit-2.6.2/xmlunit-core-2.6.2-javadoc.jar"/>
 	<classpathentry kind="lib" path="lib/xmlunit-2.6.2/xmlunit-core-2.6.2-sources.jar"/>
 	<classpathentry kind="lib" path="lib/xmlunit-2.6.2/xmlunit-core-2.6.2-tests.jar"/>

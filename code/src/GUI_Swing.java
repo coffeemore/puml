@@ -19,6 +19,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.JButton;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
@@ -41,16 +42,22 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
 import javax.swing.JFileChooser;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
+import java.awt.Color;
+import javax.swing.JRadioButtonMenuItem;
 
 public class GUI_Swing
 {
@@ -92,10 +99,12 @@ public class GUI_Swing
 	private JLabel lblMethod;
 	private JLabel lblClass;
 	private JPanel panel_1;
+	private FileNameExtensionFilter filter;
 
 	private ArrayList<String> paths;
 	private int lastPathsLength;
 	private ArrayList<String> srcCode;
+	private String mode;
 	private String classPumlCode;
 	private String seqPumlCode;
 	private String epClass;
@@ -107,6 +116,10 @@ public class GUI_Swing
 	private Document parsedDoc;
 	private JButton btnParse;
 	private JMenuItem mntmParse;
+	private JButton btnTest;
+	private JMenu mnModus;
+	private JRadioButtonMenuItem rdbtnmntmJava;
+	private JRadioButtonMenuItem rdbtnmntmCpp;
 
 	/**
 	 * Launch the application.
@@ -159,6 +172,8 @@ public class GUI_Swing
 		frame.setMinimumSize(new Dimension(640, 480));
 
 		fDialog = new JFileChooser(new File("."));
+		filter = new FileNameExtensionFilter("Java Code (.jar, .java)", "java", "jar");
+		mode = "java";
 
 		menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
@@ -272,6 +287,44 @@ public class GUI_Swing
 		chckbxmntmUseJar.setSelected(useJar);
 		mnOptionen.add(chckbxmntmUseJar);
 
+		mnModus = new JMenu("Modus");
+		mnOptionen.add(mnModus);
+
+		rdbtnmntmJava = new JRadioButtonMenuItem("Java");
+		rdbtnmntmJava.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				System.out.println(rdbtnmntmJava.isSelected());
+				System.out.println(mode);
+				if (rdbtnmntmJava.isSelected() && mode != "java")
+				{
+					changeMode("java");
+				}
+			}
+		});
+		rdbtnmntmJava.setSelected(true);
+		mnModus.add(rdbtnmntmJava);
+
+		rdbtnmntmCpp = new JRadioButtonMenuItem("C++");
+		rdbtnmntmCpp.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				System.out.println(rdbtnmntmCpp.isSelected());
+				if (rdbtnmntmCpp.isSelected() && mode != "cpp")
+				{
+					changeMode("cpp");
+				}
+				System.out.println(mode);
+			}
+		});
+		mnModus.add(rdbtnmntmCpp);
+
+		ButtonGroup bgMode = new ButtonGroup();
+		bgMode.add(rdbtnmntmJava);
+		bgMode.add(rdbtnmntmCpp);
+
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 
@@ -332,12 +385,16 @@ public class GUI_Swing
 			public void actionPerformed(ActionEvent e)
 			{
 				// TODO
-				if (epClass=="nicht gesetzt") {
-					JOptionPane.showMessageDialog(frame, "Einstiegspunkt nicht gesetzt!", "Fehler", JOptionPane.ERROR_MESSAGE);
-				} else {
+				if (epClass == "nicht gesetzt")
+				{
+					JOptionPane.showMessageDialog(frame, "Einstiegspunkt nicht gesetzt!", "Fehler",
+							JOptionPane.ERROR_MESSAGE);
+				}
+				else
+				{
 					showPreview(tmpSeqImage, "Sequenzdiagramm");
 				}
-				
+
 			}
 		});
 		pnlSeqPrev.add(btnSeqPrev, BorderLayout.SOUTH);
@@ -419,6 +476,27 @@ public class GUI_Swing
 		btnSave.setToolTipText("Speichern");
 		toolBar.add(btnSave);
 
+		btnTest = new JButton("Test");
+		btnTest.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				try
+				{
+					test();
+				}
+				catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException
+						| TransformerException e1)
+				{
+					// TODO Auto-generated catch block
+					System.err.println(e1.getCause());
+					System.err.println(e1.getMessage());
+				}
+			}
+		});
+		btnTest.setBackground(new Color(150, 200, 255));
+		toolBar.add(btnTest);
+
 //		btnParse = new JButton("");
 //		btnParse.addActionListener(new ActionListener()
 //		{
@@ -446,6 +524,50 @@ public class GUI_Swing
 //		toolBar.add(btnRunPUML);
 	}
 
+	private void resetElements()
+	{
+		dmtnRoot = new DefaultMutableTreeNode("Klassen");
+		textClass.setText("");
+		textSequence.setText("");
+		paths = new ArrayList<>();
+		lastPathsLength = 0;
+		srcCode = new ArrayList<>();
+		classPumlCode = "";
+		seqPumlCode= "";
+		
+		
+		frame.setTitle("PUML - no files selected");
+		frame.revalidate();
+
+	}
+
+	private void changeMode(String tmpMode)
+	{
+		switch (tmpMode)
+		{
+		case "java":
+		{
+			filter = new FileNameExtensionFilter("Java Code (.jar, .java)", "java", "jar");
+			mode = "java";
+			System.out.println("mode = java");
+			resetElements();
+			break;
+		}
+		case "cpp":
+		{
+			filter = new FileNameExtensionFilter("C++ Code (.cpp, .hpp)", "cpp", "hpp");
+			mode = "cpp";
+			System.out.println("mode = c++");
+			resetElements();
+			break;
+		}
+		default:
+		{
+			System.err.println("kein gültiger Modus");
+		}
+		}
+	}
+
 	private void openFile(boolean useFiles)
 	{
 		File[] items =
@@ -453,7 +575,7 @@ public class GUI_Swing
 		if (useFiles)
 		{
 			fDialog.setDialogTitle("Dateien ausw�hlen");
-			fDialog.setFileFilter(new FileNameExtensionFilter("Java Code (.jar, .java)", "java", "jar"));
+			fDialog.setFileFilter(filter);
 			fDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			fDialog.setMultiSelectionEnabled(true);
 			fDialog.showOpenDialog(frame);
@@ -484,6 +606,33 @@ public class GUI_Swing
 		if (items.length != 0)
 		{
 			runPUML();
+		}
+	}
+
+	private void test() throws ParserConfigurationException, SAXException, IOException, XPathExpressionException,
+			TransformerException
+	{
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		parsedDoc = builder.parse(new File("testfolder/xmlSpecifications/parsedData.xml"));
+		createTree(parsedDoc, dmtnRoot);
+
+	}
+
+	private void createTree(Document doc, DefaultMutableTreeNode root) throws XPathExpressionException,
+			TransformerException, SAXException, IOException, ParserConfigurationException
+	{
+
+		NodeList nodelist = PUMLgenerator.xmlHelper.getList(doc, "//classdefinition");
+		System.out.println(nodelist.getLength());
+		// classdefinition loop
+		for (int i = 0; i < nodelist.getLength(); i++)
+		{
+
+			Element tmpClassNode = (Element) nodelist.item(i);
+			System.out.println(tmpClassNode.getNodeName());
+			NodeList tmpNodelist = tmpClassNode.getElementsByTagName("methoddefinition");
+			// System.out.println("\t"+tmpNodelist.getLength());
 		}
 	}
 
@@ -632,20 +781,27 @@ public class GUI_Swing
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		catch (TransformerException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void showPreview(File imageFile, String title)
 	{
 		// TODO evtl. Panel übergeben, welches Vorschau und speichern enthält
-		if (paths.isEmpty()) {
+		if (paths.isEmpty())
+		{
 			JOptionPane.showMessageDialog(frame, "Pfadliste ist leer!", "Fehler", JOptionPane.ERROR_MESSAGE);
-		} else {
+		}
+		else
+		{
 			// Vorschau öffnen
 			JOptionPane.showMessageDialog(frame, new JLabel(new ImageIcon(imageFile.getAbsolutePath())), title,
 					JOptionPane.PLAIN_MESSAGE);
 		}
-		
-		
+
 //		if (modified)
 //		{
 //			if (paths.isEmpty())
