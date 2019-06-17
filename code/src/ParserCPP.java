@@ -160,31 +160,70 @@ public class ParserCPP implements ParserIf
 	        
 	        //Ausgabe des Folgewortes von "class"
 	        System.out.println(sourceCodeHPP.substring(index + keyword.length(), b));
+	       
+			
+			//Klasse oder Interface oder abstract
+	        String className =sourceCodeHPP.substring(index + keyword.length(), b);
 	        
-	        Element classdefinition = document.createElement("classdefinition");
-			root.appendChild(classdefinition);
-			
-			Element name = document.createElement("name");
-			classdefinition.appendChild(name);	
-			name.appendChild(document.createTextNode(sourceCodeHPP.substring(index + keyword.length(), b)));
+	        if(isInterface(className,sourceCodeHPP))
+	        {	
+	        	//Interface
+				Element interfacedefinition = document.createElement("interfacedefinition");
+				root.appendChild(interfacedefinition);
+				Element name = document.createElement("name");
+				interfacedefinition.appendChild(name);	
+	 			name.appendChild(document.createTextNode(className));
+	        }
+	        else if(isAbstract(className,sourceCodeHPP)) 
+	        {
+	        	 //Abstract
+				Element abstractdefinition = document.createElement("abstractdefinition");
+				root.appendChild(abstractdefinition);
+				Element name = document.createElement("name");
+				abstractdefinition.appendChild(name);	
+	 			name.appendChild(document.createTextNode(className));
+	        }
+	        else 
+	        {
+	        	 //Klasse
+		        Element classdefinition = document.createElement("classdefinition");
+	 			root.appendChild(classdefinition);
+	 			Element name = document.createElement("name");
+	 			classdefinition.appendChild(name);	
+	 			name.appendChild(document.createTextNode(className));
+	 			
+	 			
+	 			
+	 			//Code Analyse:
+	 			 //Vererbung eines Interfaces
+				Element implement = document.createElement("implements");
+				classdefinition.appendChild(implement);
+				
+				//Vererbung einer Klasse
+				Element extend = document.createElement("extends");
+				classdefinition.appendChild(extend);
+				
+				//Instanzen,(public, private , protected)
+				Element instance = document.createElement("instance");
+				classdefinition.appendChild(instance);
+				
+				//variablen
+				Element var = document.createElement("var");
+				classdefinition.appendChild(var);
+				
+				//Komposition 
+				Element compositions = document.createElement("compositions");
+				classdefinition.appendChild(compositions);
+				
+				//Aggregation
+				Element aggregation = document.createElement("aggregation");
+				classdefinition.appendChild(aggregation);
+				
+				//Methoden?
+	        }
 	        
-			Element implement = document.createElement("implements");
-			classdefinition.appendChild(implement);
-			
-			Element extend = document.createElement("extends");
-			classdefinition.appendChild(extend);
-			
-			Element instance = document.createElement("instance");
-			classdefinition.appendChild(instance);
-			
-			Element compositions = document.createElement("compositions");
-			classdefinition.appendChild(compositions);
-			
-			Element aggregation = document.createElement("aggregation");
-			classdefinition.appendChild(aggregation);
-			
-			Element interfacedefinition = document.createElement("interfacedefinition");
-			classdefinition.appendChild(interfacedefinition);
+	        
+	        
 			
 		    //Suche nach dem nächsten Index vom Wort "class" im HPP-Code
 	        index = sourceCodeHPP.indexOf(keyword, index + keyword.length());
@@ -320,7 +359,7 @@ public class ParserCPP implements ParserIf
 		sourcec = sourcec.trim();
 			//System.out.println("\n GEKUERZTER CODE 2 \n"+sourcec+"\n ENDE3 \n");
 		
-		// Prüfen ob alle Methoden virtuel und =0; sind && Dekonstruktor: virtual ~IDemo() {} 
+		// Prüfen ob eine Methoden virtuel und =0; sind 
 		int i = 0, n = sourcec.length();
 		while( i+keyword.length() < n && i!=-1 )
     	{
@@ -348,7 +387,7 @@ public class ParserCPP implements ParserIf
     		if(Math.min( sourcec.indexOf(";", i), sourcec.indexOf("}", i))!=-1)
     		{
     			i= Math.min( sourcec.indexOf(";", i), sourcec.indexOf("}", i)+2); 
-    				//System.out.println(" \n ###O1### \n");
+    				//System.out.println(" \n ###O1### \n"); 
     		}
     		else if (sourcec.indexOf(";", i)!=-1)
     		{
@@ -359,6 +398,7 @@ public class ParserCPP implements ParserIf
     	}	
 		return false;
 	}
+	
 	
 	/**
      * Liest den uebergebenen Quellcode ein und parsed die Informationen daraus
