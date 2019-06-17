@@ -39,336 +39,331 @@ import org.xmlunit.diff.ElementSelectors;
  */
 public class XmlHelperMethods
 {
-	private XPath xpath;
-	private XPathFactory xPathfactory;
+    private XPath xpath;
+    private XPathFactory xPathfactory;
 
-	/**
-	 * Konstruktor
-	 */
-	public XmlHelperMethods()
+    /**
+     * Konstruktor
+     */
+    public XmlHelperMethods()
+    {
+	this.xPathfactory = XPathFactory.newInstance();
+	this.xpath = xPathfactory.newXPath();
+    }
+
+    /**
+     * Konvertiert xml Datei in String
+     * 
+     * @param xmlDoc lesende Datei
+     */
+    public String xmlDocToString(Document xmlDoc)
+    {
+	return new String();
+    }
+
+    /**
+     * loescht einzelnen Knoten aus xml Datei
+     * 
+     * @param Knoten eines Elements
+     * @param        true = Unterknoten werden nicht gelöscht; false = Unterknoten
+     *               werden mit gelöscht
+     */
+    public void delNode(Node nodeName, boolean keepChildNodes)
+    {
+	Node parent = nodeName.getParentNode();
+	if (keepChildNodes)
 	{
-		this.xPathfactory = XPathFactory.newInstance();
-		this.xpath = xPathfactory.newXPath();
-	}
+	    NodeList childNodes = nodeName.getChildNodes();
+	    for (int i = 0; i < childNodes.getLength(); i++)
+	    {
+		parent.appendChild(childNodes.item(i).cloneNode(true));
 
-	/**
-	 * Konvertiert xml Datei in String
-	 * 
-	 * @param xmlDoc lesende Datei
-	 */
-	public String xmlDocToString(Document xmlDoc)
+	    }
+	    parent.removeChild(nodeName);
+
+	} else
 	{
-		return new String();
+	    parent.removeChild(nodeName);
 	}
+    }
 
-	/**
-	 * loescht einzelnen Knoten aus xml Datei
-	 * 
-	 * @param Knoten eines Elements
-	 * @param        true = Unterknoten werden nicht gelöscht; false = Unterknoten
-	 *               werden mit gelöscht
-	 */
-	public void delNode(Node nodeName, boolean keepChildNodes)
+    /**
+     * Hilfsmethode zum Laden eines XML-Documents fuer diverse Zwecke
+     * 
+     * @param filename Name/Ort des files
+     * @author mariangeissler - Funktion kann ggf. wieder geloescht werden
+     * @return Document
+     */
+    public Document getDocumentFrom(String filepath)
+    {
+	File file = new File(filepath);
+	try
 	{
-		Node parent = nodeName.getParentNode();
-		if (keepChildNodes)
-		{
-			NodeList childNodes = nodeName.getChildNodes();
-			for (int i = 0; i < childNodes.getLength(); i++)
-			{
-				parent.appendChild(childNodes.item(i).cloneNode(true));
+	    DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+	    DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
 
-			}
-			parent.removeChild(nodeName);
+	    Document document = documentBuilder.parse(file);
 
-		}
-		else
-		{
-			parent.removeChild(nodeName);
-		}
-	}
+	    // document.getDocumentElement().normalize();
 
-	/**
-	 * Hilfsmethode zum Laden eines XML-Documents fuer diverse Zwecke
-	 * 
-	 * @param filename Name/Ort des files
-	 * @author mariangeissler - Funktion kann ggf. wieder geloescht werden
-	 * @return Document
-	 */
-	public Document getDocumentFrom(String filepath)
+	    return document;
+	} catch (SAXException | IOException | ParserConfigurationException e)
 	{
-		File file = new File(filepath);
-		try
-		{
-			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
-
-			Document document = documentBuilder.parse(file);
-
-			// document.getDocumentElement().normalize();
-
-			return document;
-		}
-		catch (SAXException | IOException | ParserConfigurationException e)
-		{
-			e.printStackTrace();
-		}
-		return null;
+	    e.printStackTrace();
 	}
+	return null;
+    }
 
-	/**
-	 * Hilfsmethode zum Erstellen eines XML-Documents
-	 * 
-	 * @return Document
-	 */
-	public Document createDocument()
+    /**
+     * Hilfsmethode zum Erstellen eines XML-Documents 
+     * 
+     * @return Document
+     */
+    public Document createDocument()
+    {
+	    DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	    DocumentBuilder docBuilder;
+	    try
+	    {
+		docBuilder = docFactory.newDocumentBuilder();
+	    
+	    Document document = docBuilder.newDocument();
+	    return document;
+	    } catch (ParserConfigurationException e)
+	    {
+		e.printStackTrace();
+	    }
+	return null;
+    }
+
+    /**
+     * Hilfsmethode zum Ausgeben eines XML-Documents in der Console
+     * 
+     * @param xmlDoc
+     * @author mariangeissler - Funktion kann ggf. wieder geloescht werden
+     * @throws TransformerConfigurationException
+     */
+    public void writeDocumentToConsole(Document xmlDoc)
+    {
+	TransformerFactory transformerFactory = TransformerFactory.newInstance();
+	Transformer transformer;
+	try
 	{
-		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder docBuilder;
-		try
-		{
-			docBuilder = docFactory.newDocumentBuilder();
+	    transformer = transformerFactory.newTransformer();
 
-			Document document = docBuilder.newDocument();
-			return document;
-		}
-		catch (ParserConfigurationException e)
-		{
-			e.printStackTrace();
-		}
-		return null;
-	}
+	    // Formatierung der Ausgabe
+	    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+	    DOMSource domSource = new DOMSource(xmlDoc);
 
-	/**
-	 * Hilfsmethode zum Ausgeben eines XML-Documents in der Console
-	 * 
-	 * @param xmlDoc
-	 * @author mariangeissler - Funktion kann ggf. wieder geloescht werden
-	 * @throws TransformerConfigurationException
-	 */
-	public void writeDocumentToConsole(Document xmlDoc)
+	    // Ausgabe in Console
+	    StreamResult console = new StreamResult(System.out);
+
+	    // Schreibe Daten
+	    transformer.transform(domSource, console);
+	} catch (TransformerException e)
 	{
-		TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		Transformer transformer;
-		try
-		{
-			transformer = transformerFactory.newTransformer();
-
-			// Formatierung der Ausgabe
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			DOMSource domSource = new DOMSource(xmlDoc);
-
-			// Ausgabe in Console
-			StreamResult console = new StreamResult(System.out);
-
-			// Schreibe Daten
-			transformer.transform(domSource, console);
-		}
-		catch (TransformerException e)
-		{
-			e.printStackTrace();
-		}
+	    e.printStackTrace();
 	}
+    }
 
-	/**
-	 * Erstellt eine XML-Datei
-	 * 
-	 * @param doc - Dokument, das in eine XML-Datei geschrieben werden soll
-	 * @throws IOException
-	 * @throws TransformerException
-	 */
-	public void writeToFile(Document doc) throws IOException, TransformerException
+    /**
+     * Erstellt eine XML-Datei
+     * 
+     * @param doc - Dokument, das in eine XML-Datei geschrieben werden soll
+     * @throws IOException
+     * @throws TransformerException
+     */
+    public void writeToFile(Document doc) throws IOException, TransformerException
+    {
+	File file = new File("../code/testfolder/tempData/TestFile.xml");
+	file.createNewFile();
+
+	TransformerFactory tFactory = TransformerFactory.newInstance();
+	Transformer transformer = tFactory.newTransformer();
+	transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+	DOMSource source = new DOMSource(doc);
+	StreamResult result = new StreamResult(file);
+	transformer.transform(source, result);
+    }
+
+    /**
+     * Gibt den Unterbaum des übergebenen Knotens auf der Konsole aus
+     * 
+     * @param root
+     */
+
+    public void listAllNodes(Element root)
+    {
+	if (root.hasChildNodes())
 	{
-		File file = new File("../code/testfolder/tempData/TestFile.xml");
-		file.createNewFile();
+	    NodeList list = root.getChildNodes();
+	    for (int i = 0; i < list.getLength(); i++)
+	    {
+		Node node = list.item(i);
 
-		TransformerFactory tFactory = TransformerFactory.newInstance();
-		Transformer transformer = tFactory.newTransformer();
-		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-
-		DOMSource source = new DOMSource(doc);
-		StreamResult result = new StreamResult(file);
-		transformer.transform(source, result);
-	}
-
-	/**
-	 * Gibt den Unterbaum des übergebenen Knotens auf der Konsole aus
-	 * 
-	 * @param root
-	 */
-
-	public void listAllNodes(Element root)
-	{
-		if (root.hasChildNodes())
+		if (node.getNodeType() == Node.ELEMENT_NODE)
 		{
-			NodeList list = root.getChildNodes();
-			for (int i = 0; i < list.getLength(); i++)
-			{
-				Node node = list.item(i);
-
-				if (node.getNodeType() == Node.ELEMENT_NODE)
-				{
-					Element e = (Element) node;
-					String m = e.getTagName();
-					System.out.println(m);
-					listAllNodes(e);
-					System.out.println("/" + e.getTagName());
-				}
-			}
+		    Element e = (Element) node;
+		    String m = e.getTagName();
+		    System.out.println(m);
+		    listAllNodes(e);
+		    System.out.println("/" + e.getTagName());
 		}
+	    }
 	}
+    }
 
-	/**
-	 * Entfernt Kommentare unterhalb eines angegebenen Knotens
-	 * 
-	 * @param root - Knoten, unter dem Kommentare entfernt werden sollen
-	 */
-	public void removeComments(Element root)
+    /**
+     * Entfernt Kommentare unterhalb eines angegebenen Knotens
+     * 
+     * @param root - Knoten, unter dem Kommentare entfernt werden sollen
+     */
+    public void removeComments(Element root)
+    {
+	if (root.hasChildNodes())
 	{
-		if (root.hasChildNodes())
+	    NodeList list = root.getChildNodes();
+	    for (int i = 0; i < list.getLength(); i++)
+	    {
+		Node node = list.item(i);
+
+		if (node.getNodeType() == Node.ELEMENT_NODE)
 		{
-			NodeList list = root.getChildNodes();
-			for (int i = 0; i < list.getLength(); i++)
-			{
-				Node node = list.item(i);
-
-				if (node.getNodeType() == Node.ELEMENT_NODE)
-				{
-					Element e = (Element) node;
-					removeComments(e);
-				}
-				else if (node.getNodeType() == Node.COMMENT_NODE)
-				{
-					root.removeChild(node);
-				}
-			}
+		    Element e = (Element) node;
+		    removeComments(e);
+		} else if (node.getNodeType() == Node.COMMENT_NODE)
+		{
+		    root.removeChild(node);
 		}
+	    }
 	}
+    }
 
-	/**
-	 * Entfernt unnötigen Whitespace in einem Dokument
-	 * 
-	 * @param seq - Dokument, in dem unnötiger Whitespace entfernt werden soll
-	 * @return - Dokument ohne unnötigen Whitespace
-	 * @throws TransformerException
-	 * @throws IOException
-	 * @throws SAXException
-	 * @throws ParserConfigurationException
+    /**
+     * Entfernt unnötigen Whitespace in einem Dokument
+     * 
+     * @param seq - Dokument, in dem unnötiger Whitespace entfernt werden soll
+     * @return - Dokument ohne unnötigen Whitespace
+     * @throws TransformerException
+     * @throws IOException
+     * @throws SAXException
+     * @throws ParserConfigurationException
+     */
+    public Document removeWhitespace(Document seq)
+	    throws TransformerException, SAXException, IOException, ParserConfigurationException
+    {
+	StringWriter sw = new StringWriter();
+	TransformerFactory tf = TransformerFactory.newInstance();
+	Transformer transformer = tf.newTransformer();
+	transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+	transformer.transform(new DOMSource(seq), new StreamResult(sw));
+	String s = sw.toString();
+	String m = s.replaceAll("\\s+\\n", "\n");
+	DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+	DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+	seq = docBuilder.parse(new InputSource(new StringReader(m)));
+
+	return seq;
+    }
+
+    /**
+     * Funktion zum Suchen aller Knoten mit einem bestimmten Pfad
+     * 
+     * 
+     * @param doc  - xml-Dokument, das durchsucht werden soll
+     * @param name - Pfad, nach dem gesucht werden soll
+     * @return - NodeList aller gefundenen Knoten
+     * @throws XPathExpressionException
+     */
+    public NodeList getList(Node doc, String path) throws XPathExpressionException
+    {
+	/*
+	 * // XPath to find empty text nodes. XPathExpression xpathExp =
+	 * xPathfactory.newXPath().compile("//text()[normalize-space(.) = '']");
+	 * NodeList emptyTextNodes = (NodeList) xpathExp.evaluate(doc,
+	 * XPathConstants.NODESET); // Remove each empty text node from document. for
+	 * (int i = 0; i < emptyTextNodes.getLength(); i++) { Node emptyTextNode =
+	 * emptyTextNodes.item(i);
+	 * emptyTextNode.getParentNode().removeChild(emptyTextNode); }
 	 */
-	public Document removeWhitespace(Document seq)
-			throws TransformerException, SAXException, IOException, ParserConfigurationException
+	XPathExpression expr = this.xpath.compile(path);
+	NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+
+	return list;
+    }
+
+    /**
+     * Funktion zur Suche eines Childnodes mit einem bestimmten Namen; gibt ersten
+     * ChildNode mit diesem Namen zurück
+     * 
+     * @param parent übergebener Knoten
+     * @param name   Name des gesuchten Unterknotens
+     * @return
+     */
+    public Node getChildwithName(Node parent, String name)
+    {
+	NodeList cnodes = parent.getChildNodes();
+	for (int i = 0; i < cnodes.getLength(); i++)
 	{
-		StringWriter sw = new StringWriter();
-		TransformerFactory tf = TransformerFactory.newInstance();
-		Transformer transformer = tf.newTransformer();
-		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-		transformer.transform(new DOMSource(seq), new StreamResult(sw));
-		String s = sw.toString();
-		String m = s.replaceAll("\\s+\\n", "\n");
-		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-		seq = docBuilder.parse(new InputSource(new StringReader(m)));
-
-		return seq;
+	    if (cnodes.item(i).getNodeName().equals(name))
+	    {
+		return cnodes.item(i);
+	    }
 	}
+	return null;
+    }
 
-	/**
-	 * Funktion zum Suchen aller Knoten mit einem bestimmten Pfad
-	 * 
-	 * 
-	 * @param doc  - xml-Dokument, das durchsucht werden soll
-	 * @param name - Pfad, nach dem gesucht werden soll
-	 * @return - NodeList aller gefundenen Knoten
-	 * @throws XPathExpressionException
-	 */
-	public NodeList getList(Node doc, String path) throws XPathExpressionException
+    /**
+     * Funktion zum Abtesten, ob ein Knoten Childnodes mit einem bestimmten Namen
+     * hat
+     * 
+     * @param parent - übergebener Node
+     * @param name   - gesuchter ChildNode
+     * @return - boolean; true, wenn ChildNode vorhanden, sonst false
+     */
+    public boolean hasChildwithName(Node parent, String name)
+    {
+	NodeList cnodes = parent.getChildNodes();
+	for (int i = 0; i < cnodes.getLength(); i++)
 	{
-		/*
-		 * // XPath to find empty text nodes. XPathExpression xpathExp =
-		 * xPathfactory.newXPath().compile("//text()[normalize-space(.) = '']");
-		 * NodeList emptyTextNodes = (NodeList) xpathExp.evaluate(doc,
-		 * XPathConstants.NODESET); // Remove each empty text node from document. for
-		 * (int i = 0; i < emptyTextNodes.getLength(); i++) { Node emptyTextNode =
-		 * emptyTextNodes.item(i);
-		 * emptyTextNode.getParentNode().removeChild(emptyTextNode); }
-		 */
-		XPathExpression expr = this.xpath.compile(path);
-		NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
-
-		return list;
+	    if (cnodes.item(i).getNodeName().equals(name))
+	    {
+		return true;
+	    }
 	}
+	return false;
+    }
 
-	/**
-	 * Funktion zur Suche eines Childnodes mit einem bestimmten Namen; gibt ersten
-	 * ChildNode mit diesem Namen zurück
-	 * 
-	 * @param parent übergebener Knoten
-	 * @param name   Name des gesuchten Unterknotens
-	 * @return
-	 */
-	public Node getChildwithName(Node parent, String name)
+    /**
+     * Funktion zum Vergleichen von XML Dateien über XMLUnit
+     * 
+     * @param doc1 - Source Doc
+     * @param doc2 - Zu testendes Doc
+     * @return - boolean; true, wenn XML gleich, sonst false
+     */
+
+    public boolean compareXML(Document doc1, Document doc2)
+    {
+	DefaultComparisonFormatter formatter = new DefaultComparisonFormatter();
+	DefaultNodeMatcher nodeMatcher = new DefaultNodeMatcher(ElementSelectors.byNameAndText);
+	Diff d = DiffBuilder.compare(doc1).withTest(doc2).checkForSimilar()// .checkForIdentical()
+		.withNodeMatcher(nodeMatcher).ignoreWhitespace().normalizeWhitespace()
+		.withComparisonFormatter(formatter).ignoreComments().ignoreElementContentWhitespace().build();
+	Iterable<Difference> diffList = d.getDifferences();
+	Iterator<Difference> iterator = diffList.iterator();
+	while (iterator.hasNext())
 	{
-		NodeList cnodes = parent.getChildNodes();
-		for (int i = 0; i < cnodes.getLength(); i++)
-		{
-			if (cnodes.item(i).getNodeName().equals(name))
-			{
-				return cnodes.item(i);
-			}
-		}
-		return null;
+	    Difference next = iterator.next();
+	    System.out.println("Difference: " + next);
 	}
-
-	/**
-	 * Funktion zum Abtesten, ob ein Knoten Childnodes mit einem bestimmten Namen
-	 * hat
-	 * 
-	 * @param parent - übergebener Node
-	 * @param name   - gesuchter ChildNode
-	 * @return - boolean; true, wenn ChildNode vorhanden, sonst false
-	 */
-	public boolean hasChildwithName(Node parent, String name)
+	iterator=diffList.iterator();
+	if (iterator.hasNext())
 	{
-		NodeList cnodes = parent.getChildNodes();
-		for (int i = 0; i < cnodes.getLength(); i++)
-		{
-			if (cnodes.item(i).getNodeName().equals(name))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Funktion zum Vergleichen von XML Dateien über XMLUnit
-	 * 
-	 * @param doc1 - Source Doc
-	 * @param doc2 - Zu testendes Doc
-	 * @return - boolean; true, wenn XML gleich, sonst false
-	 */
-
-	public boolean compareXML(Document doc1, Document doc2)
+	    return false;
+	} else
 	{
-		DefaultComparisonFormatter formatter = new DefaultComparisonFormatter();
-		DefaultNodeMatcher nodeMatcher = new DefaultNodeMatcher(ElementSelectors.byNameAndText);
-		Diff d = DiffBuilder.compare(doc1).withTest(doc2).checkForSimilar()// .checkForIdentical()
-				.withNodeMatcher(nodeMatcher).ignoreWhitespace().normalizeWhitespace()
-				.withComparisonFormatter(formatter).ignoreComments().ignoreElementContentWhitespace().build();
-		Iterable<Difference> diffList = d.getDifferences();
-		Iterator<Difference> iterator = diffList.iterator();
-		while (iterator.hasNext())
-		{
-			Difference next = iterator.next();
-			System.out.println("Difference: " + next);
-		}
-		if (iterator.hasNext())
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
+	    return true;
 	}
+    }
 }
