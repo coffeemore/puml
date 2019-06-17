@@ -361,12 +361,13 @@ public class OutputPUML
 			if (list.item(a).getNodeName() != "#text")
 			{
 			    pumlCode += " " + list.item(a).getTextContent() + "\n";
+			    pumlCode += "activate " + tempStartClass + "\n";
 			    tempStartMethod = list.item(a).getTextContent();
 			}
 		    }
 		    // Einsetzen : [name=" + tempStartMethod + "]
 		    list = helper.getList(diagramData, "/parsed/sequencediagram/methoddefinition[name=\"" + tempStartMethod + "\"]"); //an Position der entry Methoddefinition
-		    pumlCode += helperMethodCall(list.item(0), tempStartClass); //TODO Versuch
+		    pumlCode += helperMethodCall(list.item(0), tempStartClass);
 
 		}
 		else
@@ -390,6 +391,7 @@ public class OutputPUML
 	 if (!firstMethodCall)
 	 {
 	     pumlCode = startClass + " -> " + startClass + ": " + methodName + "\n";
+	     pumlCode += "activate " + startClass + "\n";
 	 }
 	 firstMethodCall = false;
 	 try
@@ -400,7 +402,7 @@ public class OutputPUML
 		     {
 			 nextNode = helper.getList(nextNode,"following-sibling::*").item(0);
 		     }
-		     pumlCode += "activate " + startClass + "\n";
+		     //pumlCode += "activate " + startClass + "\n"; //benötigt
 			 
 		     if(nextNode.getNodeName()=="alternative")
 		     {
@@ -418,7 +420,7 @@ public class OutputPUML
 	}
 	catch (Exception e)
 	{
-	    // TODO: handle exception
+	  //No more Items
 	}
 	 
 
@@ -463,7 +465,6 @@ public class OutputPUML
                 	    if(nextNode.getNodeName()== "loop")
                 	    {
                 		pumlCode += helperLoopCall(nextNode, startClass);
-                		//TODO Weiterführend ???
                 	    }
                 	    nextNode = helper.getList(nextNode,"following-sibling::*").item(0);
                 		
@@ -471,7 +472,7 @@ public class OutputPUML
 	    	}
 		catch (Exception e)
 		{
-		// TODO: handle exception
+		  //No more Items
 		}
     	    
 	    
@@ -520,7 +521,7 @@ public class OutputPUML
 	}
 	catch (Exception e)
 	{
-	// TODO: handle exception
+	    //No more Items
 	}
 	
 	inst = (inst != "") ? " (" + inst + ")" : inst;
@@ -553,7 +554,7 @@ public class OutputPUML
 	    }
 	    catch(Exception e)
 	    {
-		
+		PUMLgenerator.logger.getLog().warning(e + " :: " + method + " Node not Found");
 	    }
 	}
 	else if(type.equals("unknown"))
@@ -564,8 +565,8 @@ public class OutputPUML
 	else if(type.equals("recursive"))
 	{
 	    pumlCode += startClass + " ->o " + startClass + ": " + method + inst + "\n";
-	    pumlCode += "activate " + startClass + "\n";
-	    pumlCode += "deactivate " + startClass + "\n";
+	    //pumlCode += "activate " + startClass + "\n";
+	    //pumlCode += "deactivate " + startClass + "\n";
 	}
 	else if(type.equals("handled"))
 	{
@@ -603,7 +604,7 @@ public class OutputPUML
 	}
 	catch(Exception e)
 	{
-	    
+	  //No more Items
 	}
 	
 	pumlCode += "end\n";
