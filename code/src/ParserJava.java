@@ -451,7 +451,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 		// (sourcec.charAt(0)==';'||sourcec.charAt(0)=='{')
 		// TODO: funktionen in funktionen haben nicht klassen als eltern
-		if (!(curNode.getNodeName().equals("source")))
+		if ((!(curNode.getNodeName().equals("source"))&& sourcec.contains("(")))
 		{
 
 		    String[] nameArray = new String[1];
@@ -678,15 +678,14 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 					    methodNode.appendChild(document.createTextNode(methodArray[2]));
 					    methodInstanceNode.appendChild(document.createTextNode(methodArray[1]));
-					    sourcec = res1.getSourceCode();
 					}
 					else
 					{
 
 					    prefixRBrace[0] = prefixRBrace[0].substring(5);
 					    methodNode.appendChild(document.createTextNode(prefixRBrace[0]));
-					    sourcec = res1.getSourceCode();
 					}
+				
 
 				    }
 				    else
@@ -695,9 +694,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 					methodCallNode.appendChild(methodInstanceNode);
 					methodNode.appendChild(document.createTextNode(methodArray[1]));
 					methodInstanceNode.appendChild(document.createTextNode(methodArray[0]));
-					sourcec = res1.getSourceCode();
 				    }
-
 				}
 				else
 				{
@@ -709,9 +706,10 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				    methodCallNode.appendChild(methodNode);
 
 				    methodNode.appendChild(document.createTextNode(prefixRBrace[0]));
-				    sourcec = res1.getSourceCode();
 
 				}
+				sourcec = res1.getSourceCode().substring(1);
+				
 				break;
 			    }
 			    break;
@@ -821,7 +819,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			    String functionDataFD = resFD.getData().strip();
 
 			    if ((prefixRBrace[0].equals("public") || prefixRBrace[0].equals("private")
-				    || prefixRBrace[0].equals("public")) && !prefixRBrace[1].equals("class")
+				    || prefixRBrace[0].equals("protected")) && !prefixRBrace[1].equals("class")
 				    && !functionDataFD.contains(";"))
 			    {
 				Element methoddefinitionNode = document.createElement("methoddefinition");
@@ -964,13 +962,16 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				boolean doneClass = false;
 
 				Element instanceNode = document.createElement("instance");
-				curNode.appendChild(instanceNode);
 				Element instanceNNode = document.createElement("name");
-				instanceNode.appendChild(instanceNNode);
-				instanceNNode.appendChild(document.createTextNode(prefixRBrace[0]));
 				Element instanceCNode = document.createElement("class");
+
 				instanceNode.appendChild(instanceCNode);
+				instanceNode.appendChild(instanceNNode);
+				curNode.appendChild(instanceNode);
+				
+				instanceNNode.appendChild(document.createTextNode(prefixRBrace[0]));
 				instanceCNode.appendChild(document.createTextNode(prefixRBrace[3]));
+				
 				Element goToClassNode = curNode;
 				do
 				{
@@ -1364,13 +1365,16 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			    Element varMainNode = document.createElement("var");
 			    Element varNameNode = document.createElement("name");
 			    Element varTypeNode = document.createElement("type");
+			    Element varAccessNode = document.createElement("access");
 
 			    varMainNode.appendChild(varTypeNode);
 			    varMainNode.appendChild(varNameNode);
+			    varMainNode.appendChild(varAccessNode);
 			    curNode.appendChild(varMainNode);
 
 			    varTypeNode.appendChild(document.createTextNode(varTypeArray[typeNumber]));
 			    varNameNode.appendChild(document.createTextNode(pureVarSplit[1]));
+			    varAccessNode.appendChild(document.createTextNode("pprivate"));
 
 			}
 			else
@@ -1379,13 +1383,16 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			    Element instanceMainNode = document.createElement("instance");
 			    Element instanceNameNode = document.createElement("name");
 			    Element instanceClassNode = document.createElement("class");
+			    Element varAccessNode = document.createElement("access");
 
 			    instanceMainNode.appendChild(instanceNameNode);
 			    instanceMainNode.appendChild(instanceClassNode);
+			    instanceMainNode.appendChild(varAccessNode);
 			    curNode.appendChild(instanceMainNode);
 
 			    instanceNameNode.appendChild(document.createTextNode(pureVarSplit[1]));
 			    instanceClassNode.appendChild(document.createTextNode(pureVarSplit[0]));
+			    varAccessNode.appendChild(document.createTextNode("pprivate"));
 			}
 			sourcec = varRes.getSourceCode();
 			continue;
