@@ -56,15 +56,22 @@ public class Console extends PUMLgenerator
 
 	options.addOption("ijava", false, "Dateien mit der Endung .java werden ignoriert.");
 	
+	//ignoriere Instanzen, Variablen, Methoden in Klassendiagrammen anzeigen
+	options.addOption("iinst",false, "Instanzen werden bei Erzeugung des Klassendiagramms nicht beruecksichtigt.");
+	
+	options.addOption("ivar",false, "Variablen werden bei Erzeugung des Klassendiagramms nicht beruecksichtigt.");
+	
+	options.addOption("imeth",false, "Methoden werden bei Erzeugung des Klassendiagramms nicht beruecksichtigt.");
+	
 	//Erstelle Klassendiagramm
 	options.addOption("cc",false, "Erzeugt ein Klassendiagramm.");
 		
 	//Alles auflisten
 	options.addOption("s",false, "Listet alle Klassen und Methoden auf.");
 		
-	//Alles auflisten
+	//Interactive Mode
 	options.addOption("int",false, "Startet interaktiven Modus.");
-
+	
 	// Angabe fuer den Ausgabepfad
 	Option output = Option.builder() 
 		.longOpt("o").argName("filepath").hasArg().desc("Angabe des Pfades fuer den Zielordner.").build();
@@ -95,6 +102,7 @@ public class Console extends PUMLgenerator
 		    CommandLine cmd = commandParser.parse(options, args);
 	
 		    // Argumentauswertungen und Ausfuehrungen
+		    //Start: Setter-Abfragen
 		    if (cmd.hasOption("c")) // Anleitung ausgeben
 		    {
 		    	System.out.println("Consolemode");
@@ -107,6 +115,19 @@ public class Console extends PUMLgenerator
 		    {
 		    	codeCollector.setUseJavaFiles(false);
 		    }
+		    if (cmd.hasOption("iinst")) //ignore instances in classdiagramm
+		    {
+		    	classDiagramGenerator.setShowInstances(false);
+		    }
+		    if (cmd.hasOption("ivar")) //ignore variables in classdiagramm
+		    {
+		    	classDiagramGenerator.setShowVars(false);
+		    }
+		    if (cmd.hasOption("imeth")) //ignore methods in classdiagramm
+		    {
+		    	classDiagramGenerator.setShowMethods(false);
+		    } //Ende: Setter-Abfragen
+		    //Verarbeitung
 		    if (cmd.hasOption("i")) // Verarbeitung vieler zu verarbeitenden Pfade
 		    {
 		    	//Print Ausgabeort, wenn vorhanden
