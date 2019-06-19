@@ -191,9 +191,7 @@ public class ParserCPP implements ParserIf
 	 			Element name = document.createElement("name");
 	 			classdefinition.appendChild(name);	
 	 			name.appendChild(document.createTextNode(className));
-	 			
-	 			
-	 			
+	 				 			
 	 			//Code Analyse:
 	 			 //Vererbung eines Interfaces
 				Element implement = document.createElement("implements");
@@ -219,7 +217,7 @@ public class ParserCPP implements ParserIf
 				Element aggregation = document.createElement("aggregation");
 				classdefinition.appendChild(aggregation);
 				
-				
+				//Methoden
 				int i = 0, n = sourceCodeCPP.length();
 				String methodinitial = className + "::";
 				int methodinitlength = methodinitial.length();
@@ -227,7 +225,6 @@ public class ParserCPP implements ParserIf
 		    	{
 		    		if(sourceCodeCPP.substring( i, i + methodinitlength).equals(methodinitial))
 		    		{
-		    			//Methoden
 						Element methoddefinition = document.createElement("methoddefinition");
 						classdefinition.appendChild(methoddefinition);
 						
@@ -251,12 +248,65 @@ public class ParserCPP implements ParserIf
 						
 						//Folgewort von methodinitial suchen (entspricht Methodenname)
 						int j  = i  + methodinitlength;
-						while(sourceCodeCPP.charAt(j) != '(' && j < sourceCodeCPP.length())
+						while(sourceCodeCPP.charAt(j) != '(' && j < n)
 						{
 							j++;
 						}
 						methName.appendChild(document.createTextNode(
 								sourceCodeCPP.substring(i  + methodinitlength, j)));
+						
+						i = j + 1;
+						h = i;
+						
+						while(sourceCodeCPP.charAt(j) != ')' && j < n)
+						{
+							j++;
+						}
+						
+						Element methparam = document.createElement("parameters");
+						methoddefinition.appendChild(methparam);
+
+						while(i < j)
+						{
+							//Bsp: (int param1, int param2) ist auszulesen
+							//Typ finden
+							while(sourceCodeCPP.charAt(i) != ' ' && i < j)
+							{
+								i++;
+							}
+
+							Element entry = document.createElement("entry");
+							methparam.appendChild(entry);
+														
+							Element paramType = document.createElement("type");
+							entry.appendChild(paramType);
+							
+							paramType.appendChild(document.createTextNode(
+									sourceCodeCPP.substring(h, i)));
+							
+							i++;
+							h = i;
+							
+							//Namen finden
+							while(sourceCodeCPP.charAt(i) != ',' && i < j)
+							{
+								i++;
+							}
+
+							Element paramName = document.createElement("name");
+							entry.appendChild(paramName);
+							
+							paramName.appendChild(document.createTextNode(
+									sourceCodeCPP.substring(h, i)));
+							
+							i++;
+							//Mögliches Leerzeichen hinter dem Komma überspringen
+							if(sourceCodeCPP.charAt(i) == ' ')
+							{
+								i++;
+							}
+							h = i;
+						}
 		    		}
 		    		i++;
 		    	}
