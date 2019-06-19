@@ -168,128 +168,165 @@ public class ParserCPP implements ParserIf
 	        if(isInterface(className,sourceCodeHPP))
 	        {	
 	        	//Interface
-				Element interfacedefinition = document.createElement("interfacedefinition");
-				root.appendChild(interfacedefinition);
+		        Element interfacedefinition = document.createElement("interfacedefinition");
+	 			root.appendChild(interfacedefinition);
+				//Name
 				Element name = document.createElement("name");
-				interfacedefinition.appendChild(name);	
+	 			interfacedefinition.appendChild(name);
 	 			name.appendChild(document.createTextNode(className));
 	 			
-	 			//Code Analyse:
 	 			//Vererbung eines Interfaces
 				Element implement = document.createElement("implements");
 				interfacedefinition.appendChild(implement);
-				
 				//Vererbung einer Klasse
 				Element extend = document.createElement("extends");
 				interfacedefinition.appendChild(extend);
-				
 				//Instanzen,(public, private , protected)
 				Element instance = document.createElement("instance");
 				interfacedefinition.appendChild(instance);
-				
-				//variablen
+				//Variablen
 				Element var = document.createElement("var");
 				interfacedefinition.appendChild(var);
-				
 				//Komposition 
 				Element compositions = document.createElement("compositions");
 				interfacedefinition.appendChild(compositions);
-				
 				//Aggregation
 				Element aggregation = document.createElement("aggregation");
 				interfacedefinition.appendChild(aggregation);
-				
 				//Methoden
-				
+				//JOHANN
+	 			
+				//Vererbung
+				String[] tmpArray = getHeredity(sourceCodeHPP, className);
+ 				for(int i = 0; i<tmpArray.length;i++)
+ 				{
+	 				if(isInterface(tmpArray[i],sourceCodeHPP))
+	 				{	
+	 					Element entry = document.createElement("entry");
+						implement.appendChild(entry);
+						entry.appendChild(document.createTextNode(tmpArray[i]));	
+	 				}
+	 				else if (!tmpArray[i].equals(""))
+	 				{	
+	 					Element entry = document.createElement("entry");	
+ 						extend.appendChild(entry);
+ 						entry.appendChild(document.createTextNode(tmpArray[i]));
+	 				}
+ 				}	
 	        }
 	        else if(isAbstract(className,sourceCodeHPP)) 
 	        {
-	        	//Abstract
-				Element abstractdefinition = document.createElement("abstractdefinition");
-				root.appendChild(abstractdefinition);
+	        	//Abstrakt
+		        Element abstractdefinition = document.createElement("abstractdefinition");
+	 			root.appendChild(abstractdefinition);
+				//Name
 				Element name = document.createElement("name");
-				abstractdefinition.appendChild(name);	
+	 			abstractdefinition.appendChild(name);
 	 			name.appendChild(document.createTextNode(className));
 	 			
-	 			//Code Analyse:
 	 			//Vererbung eines Interfaces
 				Element implement = document.createElement("implements");
 				abstractdefinition.appendChild(implement);
-				
 				//Vererbung einer Klasse
 				Element extend = document.createElement("extends");
 				abstractdefinition.appendChild(extend);
-				
 				//Instanzen,(public, private , protected)
 				Element instance = document.createElement("instance");
 				abstractdefinition.appendChild(instance);
-				
-				//variablen
+				//Variablen
 				Element var = document.createElement("var");
 				abstractdefinition.appendChild(var);
-				
 				//Komposition 
 				Element compositions = document.createElement("compositions");
 				abstractdefinition.appendChild(compositions);
-				
 				//Aggregation
 				Element aggregation = document.createElement("aggregation");
 				abstractdefinition.appendChild(aggregation);
-				
 				//Methoden
-				
+				//JOHANN
+	 			
+				//Vererbung
+				String[] tmpArray = getHeredity(sourceCodeHPP, className);
+ 				for(int i = 0; i<tmpArray.length;i++)
+ 				{
+	 				if(isInterface(tmpArray[i],sourceCodeHPP))
+	 				{	
+	 					Element entry = document.createElement("entry");
+						implement.appendChild(entry);
+						entry.appendChild(document.createTextNode(tmpArray[i]));	
+	 				}
+	 				else if (!tmpArray[i].equals(""))
+	 				{	
+	 					Element entry = document.createElement("entry");	
+ 						extend.appendChild(entry);
+ 						entry.appendChild(document.createTextNode(tmpArray[i]));
+	 				}
+ 				}				
 	        }
 	        else 
 	        {
 	        	//Klasse
 		        Element classdefinition = document.createElement("classdefinition");
 	 			root.appendChild(classdefinition);
-	 			Element name = document.createElement("name");
-	 			classdefinition.appendChild(name);	
+				//Name
+				Element name = document.createElement("name");
+	 			classdefinition.appendChild(name);
 	 			name.appendChild(document.createTextNode(className));
 	 			
-	 			//Code Analyse:
 	 			//Vererbung eines Interfaces
 				Element implement = document.createElement("implements");
 				classdefinition.appendChild(implement);
-				
 				//Vererbung einer Klasse
 				Element extend = document.createElement("extends");
 				classdefinition.appendChild(extend);
-				
 				//Instanzen,(public, private , protected)
 				Element instance = document.createElement("instance");
 				classdefinition.appendChild(instance);
-				
-				//variablen
+				//Variablen
 				Element var = document.createElement("var");
 				classdefinition.appendChild(var);
-				
 				//Komposition 
 				Element compositions = document.createElement("compositions");
 				classdefinition.appendChild(compositions);
-				
 				//Aggregation
 				Element aggregation = document.createElement("aggregation");
 				classdefinition.appendChild(aggregation);
-				
 				//Methoden
-				
+				//JOHANN
+	 			
+				//Vererbung
+				String[] tmpArray = getHeredity(sourceCodeHPP, className);
+ 				for(int i = 0; i<tmpArray.length;i++)
+ 				{
+	 				if(isInterface(tmpArray[i],sourceCodeHPP))
+	 				{	
+	 					Element entry = document.createElement("entry");
+						implement.appendChild(entry);
+						entry.appendChild(document.createTextNode(tmpArray[i]));	
+	 				}
+	 				else if (!tmpArray[i].equals(""))
+	 				{	
+	 					Element entry = document.createElement("entry");	
+ 						extend.appendChild(entry);
+ 						entry.appendChild(document.createTextNode(tmpArray[i]));
+	 				}
+ 				}	
 	        }
-	        
-	        
+	       
 		    //Suche nach dem nächsten Index vom Wort "class" im HPP-Code
 	        index = sourceCodeHPP.indexOf(keyword, index + keyword.length());
 	    }
 	    
 	    System.out.println("\n #################### BEGINN JANS TEST ####################\n");
 	    
+	    System.out.println("CLASS1 >>"+isInterface("Class1",sourceCodeHPP));
 	    System.out.println("IF2 >>"+isAbstract("If2",sourceCodeHPP));
 	    System.out.println("CLASS2 >>"+isAbstract("Class2",sourceCodeHPP));
 	    System.out.println("IF1 >>"+isAbstract("If1",sourceCodeHPP));
 	    System.out.println("IF3/FIGURE >>"+isAbstract("Figure",sourceCodeHPP));
 	    System.out.println("IF4/TEST >>"+isAbstract("Test",sourceCodeHPP));
 	    System.out.println("oA uI");
+	    System.out.println("CLASS1 >>"+isInterface("Class1",sourceCodeHPP));
 	    System.out.println("IF2 >>"+isInterface("If2",sourceCodeHPP));
 	    System.out.println("CLASS2 >>"+isInterface("Class2",sourceCodeHPP));
 	    System.out.println("IF1 >>"+isInterface("If1",sourceCodeHPP));
@@ -298,6 +335,25 @@ public class ParserCPP implements ParserIf
 	    
 	    System.out.println("\n #################### ENDE JANS TEST ####################\n");
 		xmlHelper.writeDocumentToConsole(document);
+	}
+
+	/**
+	 * @param sourceCodeHPP
+	 * @param className
+	 * @return
+	 */
+	public String[] getHeredity(String sourceCodeHPP, String className) 
+	{
+		String tmp = getFormatedSourceCodeHPP(className, sourceCodeHPP);
+		tmp = tmp.substring(0, tmp.indexOf("{"));
+		tmp = tmp.replaceAll("public", "");
+		tmp = tmp.replaceAll("private", "");
+		tmp = tmp.replaceAll("protected", "");
+		tmp = tmp.replaceAll(":", "");
+		tmp = tmp.replaceAll(" ", "");
+		tmp = tmp.trim();
+		String[] tmpArray = tmp.split(",");
+		return tmpArray;
 	}
 	
 	//Wertet aus, ob eine Klasse eines HPP-Quelltextes ein Interface ist
@@ -308,6 +364,7 @@ public class ParserCPP implements ParserIf
 		sourceCodeHPP =  sourceCodeHPP.replaceAll("public:", "");
 		sourceCodeHPP =  sourceCodeHPP.replaceAll("private:", "");
 		sourceCodeHPP =  sourceCodeHPP.replaceAll("protected:", "");
+		sourceCodeHPP = sourceCodeHPP.substring(sourceCodeHPP.indexOf("{")+1, sourceCodeHPP.length());
 		sourceCodeHPP = sourceCodeHPP.trim();
 		
 		// Prüfen ob alle Methoden virtuel und =0; sind && Dekonstruktor: virtual ~IDemo() {} 
@@ -360,8 +417,9 @@ public class ParserCPP implements ParserIf
 		sourceCodeHPP =  sourceCodeHPP.replaceAll("public:", "");
 		sourceCodeHPP =  sourceCodeHPP.replaceAll("private:", "");
 		sourceCodeHPP =  sourceCodeHPP.replaceAll("protected:", "");
+		sourceCodeHPP = sourceCodeHPP.substring(sourceCodeHPP.indexOf("{")+1, sourceCodeHPP.length());
 		sourceCodeHPP = sourceCodeHPP.trim();
-
+		
 		// Prüfen ob eine Methoden virtuel und =0; sind 
 		int i = 0, n = sourceCodeHPP.length();
 		while( i+className.length() < n && i!=-1 )
@@ -400,7 +458,10 @@ public class ParserCPP implements ParserIf
 		// Code kürzen, filtern und anpassen
 		sourceCodeHPP = sourceCodeHPP.replaceAll("\n", "");
 		sourceCodeHPP = sourceCodeHPP.replaceAll("\t", "");
-		sourceCodeHPP = sourceCodeHPP.replace('{', ' ');
+		
+			//Um Index 0 "perfekt" zu setzen
+			//sourceCodeHPP = sourceCodeHPP.replace('{', ' ');
+		
 		while(sourceCodeHPP.contains("  ")) 
 		{
 			sourceCodeHPP =  sourceCodeHPP.replaceAll("  ", " ");
