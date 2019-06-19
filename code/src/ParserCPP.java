@@ -219,11 +219,48 @@ public class ParserCPP implements ParserIf
 				Element aggregation = document.createElement("aggregation");
 				classdefinition.appendChild(aggregation);
 				
-				//Methoden?
-	        }
-	        
-	        
-	        
+				
+				int i = 0, n = sourceCodeCPP.length();
+				String methodinitial = className + "::";
+				int methodinitlength = methodinitial.length();
+				while(i + methodinitlength < n && i!=-1 )
+		    	{
+		    		if(sourceCodeCPP.substring( i, i + methodinitlength).equals(methodinitial))
+		    		{
+		    			//Methoden
+						Element methoddefinition = document.createElement("methoddefinition");
+						classdefinition.appendChild(methoddefinition);
+						
+						Element methName = document.createElement("name");
+						methoddefinition.appendChild(methName);
+						
+						Element methResult = document.createElement("result");
+						
+		    			//Vorgängerwort von methodinitial suchen (entspricht Resultattyp)
+						int h = i;
+						while(sourceCodeCPP.charAt(h) != '\n' && h > 0)
+						{
+							h--;
+						}
+						if(h < i - 1)
+						{
+							methoddefinition.appendChild(methResult);
+							methResult.appendChild(document.createTextNode(
+									sourceCodeCPP.substring( h + 1 , i - 1)));
+						}
+						
+						//Folgewort von methodinitial suchen (entspricht Methodenname)
+						int j  = i  + methodinitlength;
+						while(sourceCodeCPP.charAt(j) != '(' && j < sourceCodeCPP.length())
+						{
+							j++;
+						}
+						methName.appendChild(document.createTextNode(
+								sourceCodeCPP.substring(i  + methodinitlength, j)));
+		    		}
+		    		i++;
+		    	}
+	        }      
 			
 		    //Suche nach dem nächsten Index vom Wort "class" im HPP-Code
 	        index = sourceCodeHPP.indexOf(keyword, index + keyword.length());
