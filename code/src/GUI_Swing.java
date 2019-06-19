@@ -51,8 +51,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-
-
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.swing.JFileChooser;
@@ -648,17 +646,10 @@ public class GUI_Swing
 			srcCode = PUMLgenerator.codeCollector.getSourceCode();
 			PUMLgenerator.parser.parse(srcCode);
 			Document parsedDoc = PUMLgenerator.parser.getParsingResult();
-			
-			PUMLgenerator.xmlHelper.writeDocumentToConsole(parsedDoc);
-			
-			// XML output test
-			// PUMLgenerator.xmlHelper.writeDocumentToConsole(seqDoc);
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource domSource = new DOMSource(parsedDoc);
-			StreamResult streamResult = new StreamResult(new File("test.xml"));
-			transformer.transform(domSource, streamResult);
-			
+
+//			PUMLgenerator.xmlHelper.writeDocumentToConsole(parsedDoc);
+			saveDoc(parsedDoc, "testParsed.xml");
+
 			// Testdokument verwenden
 //			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 //			DocumentBuilder builder = factory.newDocumentBuilder();
@@ -672,19 +663,19 @@ public class GUI_Swing
 
 			// Klassendiagramm erstellen
 			Document classDoc = PUMLgenerator.classDiagramGenerator.createDiagram(parsedDoc);
+			saveDoc(classDoc, "testClass.xml");
 			classPumlCode = PUMLgenerator.outputPUML.getPUML(classDoc);
 			textClass.setText(classPumlCode);
 			PUMLgenerator.outputPUML.createPUMLfromString(tmpClassImage.getAbsolutePath(), classPumlCode);
 
 			// Sequenzdiagramm erstellen
 			Document seqDoc = PUMLgenerator.seqDiagramGenerator.createDiagram(parsedDoc, "Class1", "method1");
+			saveDoc(seqDoc, "testSequence.xml");
 			seqPumlCode = PUMLgenerator.outputPUML.getPUML(seqDoc);
 			textSequence.setText(seqPumlCode);
 			PUMLgenerator.outputPUML.createPUMLfromString(tmpSeqImage.getAbsolutePath(), seqPumlCode);
 
 			treeSequence.expandRow(0);
-
-
 
 //			seqPumlCode = PUMLgenerator.outputPUML.getPUML(seqDoc);
 //			textSequence.setText(seqPumlCode);
@@ -842,7 +833,18 @@ public class GUI_Swing
 			}
 		}
 	}
-	
+
+	private void saveDoc(Document doc, String filePath) throws TransformerException
+	{
+		// XML output test
+		// PUMLgenerator.xmlHelper.writeDocumentToConsole(seqDoc);
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		Transformer transformer = transformerFactory.newTransformer();
+		DOMSource domSource = new DOMSource(doc);
+		StreamResult streamResult = new StreamResult(new File(filePath));
+		transformer.transform(domSource, streamResult);
+	}
+
 	private static class PumlTreeNode extends DefaultMutableTreeNode
 	{
 		public enum Type
