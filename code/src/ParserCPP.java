@@ -281,55 +281,49 @@ public class ParserCPP implements ParserIf
 		    //Suche nach dem nächsten Index vom Wort "class" im HPP-Code
 	        index = sourceCodeHPP.indexOf(keyword, index + keyword.length());
 	    }
-	    	// System.out.println("\n #################### BEGINN JANS TEST ####################\n");
-	    	//System.out.println("\n ORIGINAL SOURCECODE \n"+sourceCodeHPP+"\n ENDE \n");
-	    //isInterface("Class2",sourceCodeHPP);
+	    
+	    System.out.println("\n #################### BEGINN JANS TEST ####################\n");
+	    
 	    System.out.println("IF2 >>"+isAbstract("If2",sourceCodeHPP));
 	    System.out.println("CLASS2 >>"+isAbstract("Class2",sourceCodeHPP));
 	    System.out.println("IF1 >>"+isAbstract("If1",sourceCodeHPP));
 	    System.out.println("IF3/FIGURE >>"+isAbstract("Figure",sourceCodeHPP));
 	    System.out.println("IF4/TEST >>"+isAbstract("Test",sourceCodeHPP));
-	    /////////////////////////////////////////////////////////////////////////////////////////
+	    System.out.println("oA uI");
+	    System.out.println("IF2 >>"+isInterface("If2",sourceCodeHPP));
+	    System.out.println("CLASS2 >>"+isInterface("Class2",sourceCodeHPP));
+	    System.out.println("IF1 >>"+isInterface("If1",sourceCodeHPP));
+	    System.out.println("IF3/FIGURE >>"+isInterface("Figure",sourceCodeHPP));
+	    System.out.println("IF4/TEST >>"+isInterface("Test",sourceCodeHPP));
+	    
+	    System.out.println("\n #################### ENDE JANS TEST ####################\n");
 		xmlHelper.writeDocumentToConsole(document);
 	}
 	
-	//Wertet aus, ob eine Klasse eines HPP-QUelltextes ein Interface ist
+	//Wertet aus, ob eine Klasse eines HPP-Quelltextes ein Interface ist
 	private boolean isInterface(String className,String sourceCodeHPP)
 	{	
-		//Klassen-Deklaration zusammen setzen
-		String keyword = "class "+className;
-		
-		// Klassen-Code (hpp) aus Quellcode filtern
-		int keyIndex = sourceCodeHPP.indexOf(keyword) + keyword.length();
-		String sourcec = sourceCodeHPP.substring(keyIndex,sourceCodeHPP.indexOf("};", keyIndex));
-			
 		// Code kürzen, filtern und anpassen
-		sourcec =  sourcec.replaceAll("public:", "");
-		sourcec =  sourcec.replaceAll("private:", "");
-		sourcec =  sourcec.replaceAll("protected:", "");
-		sourcec =  sourcec.replaceAll("\n", "");
-		sourcec =  sourcec.replaceAll("\t", "");
-		sourcec = sourcec.replace('{', ' ');
-		while(sourcec.contains("  ")) 
-		{
-			sourcec =  sourcec.replaceAll("  ", " ");
-		}
-		sourcec = sourcec.trim();
+		sourceCodeHPP = getFormatedSourceCodeHPP(className, sourceCodeHPP);
+		sourceCodeHPP =  sourceCodeHPP.replaceAll("public:", "");
+		sourceCodeHPP =  sourceCodeHPP.replaceAll("private:", "");
+		sourceCodeHPP =  sourceCodeHPP.replaceAll("protected:", "");
+		sourceCodeHPP = sourceCodeHPP.trim();
 		
 		// Prüfen ob alle Methoden virtuel und =0; sind && Dekonstruktor: virtual ~IDemo() {} 
-		int i = 0, n = sourcec.length();
-		while( i+keyword.length() < n && i!=-1 )
+		int i = 0, n = sourceCodeHPP.length();
+		while( i+className.length() < n && i!=-1 )
     	{
     		//virtuelle Methode
-    		if(sourcec.substring( i, i+"virtual ".length()).equals("virtual "))
+    		if(sourceCodeHPP.substring( i, i+"virtual ".length()).equals("virtual "))
     		{ 
     			//Dekonstruktor
-    		    if(sourcec.substring( i+"virtual ".length(), i+"virtual ".length()+1).equals("~"))
+    		    if(sourceCodeHPP.substring( i+"virtual ".length(), i+"virtual ".length()+1).equals("~"))
     			{
     					//Soweit True
     			}
     			//nicht implementierte Methode
-    			else if(sourcec.lastIndexOf("0", sourcec.indexOf(";",i)) != -1 && sourcec.lastIndexOf("=", sourcec.indexOf("0", (sourcec.lastIndexOf("0", sourcec.indexOf(";",i)))   )) != -1) 
+    			else if(sourceCodeHPP.lastIndexOf("0", sourceCodeHPP.indexOf(";",i)) != -1 && sourceCodeHPP.lastIndexOf("=", sourceCodeHPP.indexOf("0", (sourceCodeHPP.lastIndexOf("0", sourceCodeHPP.indexOf(";",i)))   )) != -1) 
     			{
     					//Soweit True	
     			}
@@ -346,13 +340,13 @@ public class ParserCPP implements ParserIf
     		}
     		
     		//Nächsten Methodenanfang finden und unsinnigen Index Abfangen	
-    		if(Math.min( sourcec.indexOf(";", i), sourcec.indexOf("}", i))>=0)
+    		if(Math.min( sourceCodeHPP.indexOf(";", i), sourceCodeHPP.indexOf("}", i))>=0)
     		{
-    			i= Math.min( sourcec.indexOf(";", i), sourcec.indexOf("}", i)+2); 
+    			i= Math.min( sourceCodeHPP.indexOf(";", i), sourceCodeHPP.indexOf("}", i)+2); 
     		}
-    		else if (sourcec.indexOf(";", i)>=0)
+    		else if (sourceCodeHPP.indexOf(";", i)>=0)
     		{
-    			i= sourcec.indexOf(";", i)+2;
+    			i= sourceCodeHPP.indexOf(";", i)+2;
     		}
     	}	
 		return true;
@@ -361,72 +355,58 @@ public class ParserCPP implements ParserIf
 	//Wertet aus, ob eine Klasse eines HPP-QUelltextes eine abstrakte Klasse ist
 	private boolean isAbstract(String className,String sourceCodeHPP)
 	{	
-		//Klassen-Deklaration zusammen setzen
-		String keyword = "class "+className;
-		
-		// Klassen-Code (hpp) aus Quellcode filtern
-		int keyIndex = sourceCodeHPP.indexOf(keyword) + keyword.length();
-		String sourcec = sourceCodeHPP.substring(keyIndex,sourceCodeHPP.indexOf("};", keyIndex));
-		
 		// Code kürzen, filtern und anpassen
-		sourcec =  sourcec.replaceAll("public:", "");
-		sourcec =  sourcec.replaceAll("private:", "");
-		sourcec =  sourcec.replaceAll("protected:", "");
-		
-		sourcec =  sourcec.replaceAll("\n", "");
-		sourcec =  sourcec.replaceAll("\t", "");
-		sourcec = sourcec.replace('{', ' ');
-		while(sourcec.contains("  ")) 
-		{
-			sourcec =  sourcec.replaceAll("  ", " ");
-		}
-		sourcec = sourcec.trim();
-		
+		sourceCodeHPP = getFormatedSourceCodeHPP(className, sourceCodeHPP);
+		sourceCodeHPP =  sourceCodeHPP.replaceAll("public:", "");
+		sourceCodeHPP =  sourceCodeHPP.replaceAll("private:", "");
+		sourceCodeHPP =  sourceCodeHPP.replaceAll("protected:", "");
+		sourceCodeHPP = sourceCodeHPP.trim();
+
 		// Prüfen ob eine Methoden virtuel und =0; sind 
-		int i = 0, n = sourcec.length();
-		while( i+keyword.length() < n && i!=-1 )
+		int i = 0, n = sourceCodeHPP.length();
+		while( i+className.length() < n && i!=-1 )
     	{
     		//virtuelle Methode
-    		if(sourcec.substring( i, i+"virtual ".length()).equals("virtual "))
+    		if(sourceCodeHPP.substring( i, i+"virtual ".length()).equals("virtual "))
     		{ 
     			//nicht implementierte Methode
-    			if(sourcec.lastIndexOf("0", sourcec.indexOf(";",i)) != -1 && sourcec.lastIndexOf("=", sourcec.indexOf("0", (sourcec.lastIndexOf("0", sourcec.indexOf(";",i)))   )) != -1) 
+    			if(sourceCodeHPP.lastIndexOf("0", sourceCodeHPP.indexOf(";",i)) != -1 && sourceCodeHPP.lastIndexOf("=", sourceCodeHPP.indexOf("0", (sourceCodeHPP.lastIndexOf("0", sourceCodeHPP.indexOf(";",i)))   )) != -1) 
     			{
     					return true;
     			}
     		}
     		
     		//Nächsten Methodenanfang finden und unsinnigen Index Abfangen	
-    		if(Math.min( sourcec.indexOf(";", i), sourcec.indexOf("}", i))>=0)
+    		if(Math.min( sourceCodeHPP.indexOf(";", i), sourceCodeHPP.indexOf("}", i))>=0)
     		{
-    			i= Math.min( sourcec.indexOf(";", i), sourcec.indexOf("}", i)+2); 
+    			i= Math.min( sourceCodeHPP.indexOf(";", i), sourceCodeHPP.indexOf("}", i)+2); 
     		}
-    		else if (sourcec.indexOf(";", i)>=0)
+    		else if (sourceCodeHPP.indexOf(";", i)>=0)
     		{
-    			i= sourcec.indexOf(";", i)+2;
+    			i= sourceCodeHPP.indexOf(";", i)+2;
     		}
     	}	
 		return false;
 	}
 	
 	//Liefert aus einem .hpp-Quellcode und einem Klassennamen den (ersten) passenden Klassen-Quelltext
-	public String getFormatedSourceCodeHPP(String className, String sourceCode)
+	public String getFormatedSourceCodeHPP(String className, String sourceCodeHPP)
 	{
 		//Klassen-Deklaration zusammen setzen
 		className= "class "+className;
 		// Klassen-Code aus Quellcode filtern
-		int keyIndex = sourceCode.indexOf(className) + className.length();
-		sourceCode = sourceCode.substring(keyIndex,sourceCode.indexOf("};", keyIndex));
+		int keyIndex = sourceCodeHPP.indexOf(className) + className.length();
+		sourceCodeHPP = sourceCodeHPP.substring(keyIndex,sourceCodeHPP.indexOf("};", keyIndex));
 		// Code kürzen, filtern und anpassen
-		sourceCode = sourceCode.replaceAll("\n", "");
-		sourceCode = sourceCode.replaceAll("\t", "");
-		sourceCode = sourceCode.replace('{', ' ');
-		while(sourceCode.contains("  ")) 
+		sourceCodeHPP = sourceCodeHPP.replaceAll("\n", "");
+		sourceCodeHPP = sourceCodeHPP.replaceAll("\t", "");
+		sourceCodeHPP = sourceCodeHPP.replace('{', ' ');
+		while(sourceCodeHPP.contains("  ")) 
 		{
-			sourceCode =  sourceCode.replaceAll("  ", " ");
+			sourceCodeHPP =  sourceCodeHPP.replaceAll("  ", " ");
 		}
-		sourceCode = sourceCode.trim();
-		return sourceCode;
+		sourceCodeHPP = sourceCodeHPP.trim();
+		return sourceCodeHPP;
 	}
 	
 	
