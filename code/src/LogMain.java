@@ -1,8 +1,5 @@
 import java.util.logging.Logger;
 import java.util.logging.XMLFormatter;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -10,77 +7,111 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 
+/**
+ * 
+ * @author Patrick Otte
+ */
 
 public class LogMain  {
-
+	
 	//Konstruktor
-	public LogMain() {
-		ConsoleHandler con = new ConsoleHandler();
+	public LogMain() 
+	{
+		log.setUseParentHandlers(false); //deaktiviert default Handler
+	}
+	
+	private static final Logger log = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	private String path=null;
+	
+	public Logger getLog()
+	{
+		return log;
+	}
+	public String getPath() 
+	{
+		return path;
+	}
+	public void setPath(String setpath)
+	{
+		path=setpath;
+	}
+	
+	
+	public void startLoggingFile(String dirpath)
+	{
+		//Setup  des XML-Loggers
 		SimpleDateFormat timelog = new SimpleDateFormat("dd-MM-yyyy_HH-mm");
 		Date dlog = new Date();
 		FileHandler xml=null;
-		home=System.getProperty("user.home");
-		File pumlDir = new File(home+"/PUMLlog");
-		String path = home+"/PUMLlog/"+timelog.format(dlog)+"_PUMLlog.xml"
-				+ "";
-		if (!pumlDir.exists()) {
-
-		    try{
-		        pumlDir.mkdir();
-		    } 
-		    catch(SecurityException se){
-		        //handle it
-		    }        
-		}
-		try {
-			xml = new FileHandler(path, true);
-		} catch (SecurityException | IOException e) {
-			// TODO Auto-generated catch block
+		setPath(dirpath+timelog.format(dlog)+"_PUMLlog.xml");
+		try 
+		{
+			xml = new FileHandler(getPath(), true); //true = FileHandler darf immer weiter in die Datei schreiben
+		} 
+		catch (SecurityException | IOException e) 
+		{
 			e.printStackTrace();
+			PUMLgenerator.logger.getLog().severe(e.getMessage());
 		}
-		/* logfile wird im User/Home Ordner des jeweiligen Systems gespeichert
-		 * true sagt aus, dass der FileHandler weiter in die Datei schreiben darf
-		 * ACHTUNG: Datei hat in der Variante kein Größenlimit! 
-		 * Kann aber nachträglich eingefügt werden.
-		 */
-		
-		log.setLevel(Level.ALL); //Alles wird geloggt
-		log.setUseParentHandlers(false); //deaktiviert default Handler
-	
 		xml.setFormatter(new XMLFormatter());
-		con.setLevel(Level.ALL);
+		xml.setLevel(Level.ALL);
 		log.addHandler(xml);
-		log.addHandler(con);
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-		      public void run() {
-		    	File xmlf = new File (path);
-		    	try {
-					deleteEmptyLog(xmlf);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+		/*
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() 
+		{
+		      public void run() 
+		      {
+					try 
+					{
+						deleteEmptyLog(getPath());
+					} 
+					catch (XPathExpressionException e) 
+					{
+						// TODO Auto-generated catch block
+						PUMLgenerator.logger.getLog().severe(e.getMessage());
+						PUMLgenerator.logger.getLog().severe("sollte eig loggen");
+						System.out.println("TEESSTTTT");
+						e.printStackTrace();
+					}
 		      }
-		    }));
+	    }));
+		*/
+			    
 	}
 
-	public void deleteEmptyLog(File xmlf) throws IOException{
-		FileReader fr = new FileReader(xmlf);
-		BufferedReader br = new BufferedReader(fr);
-		String empty = br.readLine();
-		br.close();
-		fr.close();
-		if (xmlf.exists()) 
+	/*public void deleteEmptyLog(String path) throws XPathExpressionException
+	{
+		try 
 		{
-			if(empty==null) 
+		    XmlHelperMethods helper = new XmlHelperMethods();
+			Document doc = helper.getDocumentFrom(path);
+		    XPathFactory xPathfactory = XPathFactory.newInstance();
+			XPath xpath = xPathfactory.newXPath();
+			XPathExpression expr = xpath.compile("/*");
+			System.out.println("VORHER");
+			NodeList list =  (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+			System.out.println("NACHHER?");
+			System.out.println(list.getLength());
+			if(list.item(0).getNodeName().equals(null)) 
 			{
-				xmlf.deleteOnExit();
+				((File) doc).deleteOnExit();
+				//System.out.println("Log gelöscht");
 			}
 		}
-	}
-	public String home; //Zur Speicherung des jeweiligen home directories des Systems
-	private static final Logger log = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-	public Logger getLog() {
-		return log;
+		catch (Exception ex)
+		{
+			PUMLgenerator.logger.getLog().warning(ex.getMessage());
+		}
+	}*/
+	
+	public void startLoggingConsole(Boolean console)
+	{
+		//Setup Konsolenausgabe
+		if(console)
+		{
+			ConsoleHandler con = new ConsoleHandler();
+			con.setLevel(Level.ALL);
+			log.addHandler(con);
+		}
 	}
 }

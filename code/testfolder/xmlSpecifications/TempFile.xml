@@ -232,8 +232,5 @@
 		<methodcall>
 			<method>method2</method>
 		</methodcall>
-		<methodcall>
-			<method>}</method>
-		</methodcall>
 	</interfacedefinition>
 </source>

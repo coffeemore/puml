@@ -29,99 +29,6 @@ public class ParserCPP implements ParserIf
 		this.document = document;
 	}
 	
-	//Hilfsklasse TokenResult: 
-	class TokenResult
-    {
-		private int foundToken;
-		private String data, sourceCode;
-		
-		/**
-		 * Konstruktor
-		 * 
-		 * @param foundToken
-		 * @param data
-		 * @param sourceCode
-		 */
-		public TokenResult(int foundToken, String data, String sourceCode)
-		{
-		    super();
-		    this.foundToken = foundToken;
-		    this.data = data;
-		    this.sourceCode = sourceCode;
-		}
-		
-	    
-	
-		//Getter- und Settermethoden
-		public int getFoundToken() 
-		{
-			return foundToken;
-		}
-		public void setFoundToken(int foundToken) 
-		{
-			this.foundToken = foundToken;
-		}
-		public String getData() 
-		{
-			return data;
-		}
-		public void setData(String data) 
-		{
-			this.data = data;
-		}
-		public String getSourceCode() 
-		{
-			return sourceCode;
-		}
-		public void setSourceCode(String sourceCode) 
-		{
-			this.sourceCode = sourceCode;
-		}
-    }
-	
-	public TokenResult goToTokenWithName(String source, String[] name)
-    {
-	//Variable wird genutzt um zB Namen zu speichern
-	String part = ""; 
-	boolean found = false;
-	int foundNameIndex = -1;
-	//Erstes/Erste Zeichen werden auf die uebertragenen Tokens ueberprueft
-	for (int i = 0; i < name.length; i++)
-	{
-	    if (source.substring(0, name[i].length()).equals(name[i]))
-	    {
-		found = true;
-		foundNameIndex = i;
-		//source = source.substring(name[i].length());
-	    }
-	}
-	while (!found && !source.isEmpty())
-	{
-		//erstes Zeichen wird in Part geschrieben
-	    part = part + source.substring(0, 1); 
-	    //erstes Zeichen wird aus dem Sourcecode entfernt
-	    source = source.substring(1); 
-	   
-	    if (source.isEmpty())
-	    {
-	    	break;
-	    }
-	   
-	    for (int i = 0; i < name.length; i++)
-	    {
-			if (source.substring(0, name[i].length()).equals(name[i]))
-			{
-			    found = true;
-			    foundNameIndex = i;
-			}
-	    }
-	}
-	
-	source = source.trim();
-	 //Rueckgabe welches Token gefunden wurde und des Inhalts zwischen den Tokens (zB einen Klassen-Namen)
-	return new TokenResult(foundNameIndex, part, source);
- }
-	
 	//Here is where the magic happens:
 	
 	 /**
@@ -133,59 +40,13 @@ public class ParserCPP implements ParserIf
      */
 	private void buildTree( ArrayList<String> code) throws ParserConfigurationException 
 	{
-		////JANS ZEUG////
-		
-		
-		String sourceCodeHPP = code.get(0);
-		String sourceCodeCPP = code.get(1);
-		String compString;		
-		/*
-		// Erstellen des Dokuments
-		DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
-		document = documentBuilder.newDocument();
-		//BOOL zur Abfrage ob Teilstring verarbeitet wurde (ansonsten ein Schritt weiter)
-		boolean done = false;
-		
-		// Start-Knoten setzen
-		Element curNode;
-		// root Element
-		Element root = document.createElement("source");
-		curNode = root;
-		document.appendChild(root);
-		
-		//KLAMMERSETZUNG
-		int curlBrace = 0, roundBrace = 0;
-		
-		// TODO 
-		//Zunächst HPP-Dateien durchgehen
-
-		while (!sourceCodeHPP.isEmpty())
-	    {
-			compString= "include";
-			//
-			if(sourceCodeHPP.substring(0, compString.length()).equals(compString)) 
-			{
-				sourceCodeHPP = sourceCodeHPP.substring(compString.length());
-				sourceCodeHPP = sourceCodeHPP.trim();
-				
-			    TokenResult res;
-			    sourceCodeHPP = sourceCodeHPP.substring(compString.length());
-			    sourceCodeHPP = sourceCodeHPP.trim();
-			    String[] nameArray = new String[1];
-			    nameArray[0] = ";";
-			    res = goToTokenWithName(sourceCodeHPP, nameArray);
-			    sourceCodeHPP = res.getSourceCode();
-			    done = true;
-			}
-			
-			if (!done)
-			{
-				sourceCodeHPP = sourceCodeHPP.substring(1);
-			}
-			
-	    }
-	    */
+		//TODO Auskommentieren richtig
+		String sourceCodeHPP = deleteComStr(code.get(0));
+		String sourceCodeCPP = deleteComStr(code.get(1));
+		//String sourceCodeHPP = code.get(0);
+		//String sourceCodeCPP = code.get(1);
+		sourceCodeHPP = sourceCodeHPP.trim();
+		sourceCodeCPP = sourceCodeCPP.trim();
 
 		//JOHANNS ZEUG:
 		Document document = xmlHelper.createDocument();
@@ -194,8 +55,6 @@ public class ParserCPP implements ParserIf
 		Element root = document.createElement("source");
 		document.appendChild(root);
 	
-		
-		/////////////////////////////////////////////////////////////////////////////////////////
 		//Suche nach dem Index vom Wort "class" im HPP-Code
 		String keyword = "class ";
 	    int index = sourceCodeHPP.indexOf(keyword);
@@ -208,81 +67,316 @@ public class ParserCPP implements ParserIf
 	        
 	        //Ausgabe des Folgewortes von "class"
 	        System.out.println(sourceCodeHPP.substring(index + keyword.length(), b));
+	       
+			
+			//Klasse oder Interface oder abstract
+	        String className =sourceCodeHPP.substring(index + keyword.length(), b);
 	        
-	        Element classdefinition = document.createElement("classdefinition");
-			root.appendChild(classdefinition);
-			
-			Element name = document.createElement("name");
-			classdefinition.appendChild(name);	
-			name.appendChild(document.createTextNode(sourceCodeHPP.substring(index + keyword.length(), b)));
-	        
-			Element implement = document.createElement("implements");
-			classdefinition.appendChild(implement);
-			
-			Element extend = document.createElement("extends");
-			classdefinition.appendChild(extend);
-			
-			Element instance = document.createElement("instance");
-			classdefinition.appendChild(instance);
-			
-			Element compositions = document.createElement("compositions");
-			classdefinition.appendChild(compositions);
-			
-			Element aggregation = document.createElement("aggregation");
-			classdefinition.appendChild(aggregation);
-			
-			Element interfacedefinition = document.createElement("interfacedefinition");
-			classdefinition.appendChild(interfacedefinition);
-			
+	        if(isInterface(className,sourceCodeHPP))
+	        {	
+	        	//Interface
+		        Element interfacedefinition = document.createElement("interfacedefinition");
+	 			root.appendChild(interfacedefinition);
+				//Name
+				Element name = document.createElement("name");
+	 			interfacedefinition.appendChild(name);
+	 			name.appendChild(document.createTextNode(className));
+	 			
+	 			//Vererbung eines Interfaces
+				Element implement = document.createElement("implements");
+				interfacedefinition.appendChild(implement);
+				//Vererbung einer Klasse
+				Element extend = document.createElement("extends");
+				interfacedefinition.appendChild(extend);
+				//Instanzen,(public, private , protected)
+				Element instance = document.createElement("instance");
+				interfacedefinition.appendChild(instance);
+				//Variablen
+				Element var = document.createElement("var");
+				interfacedefinition.appendChild(var);
+				//Komposition 
+				Element compositions = document.createElement("compositions");
+				interfacedefinition.appendChild(compositions);
+				//Aggregation
+				Element aggregation = document.createElement("aggregation");
+				interfacedefinition.appendChild(aggregation);
+				//Methoden
+				//JOHANN
+	 			
+				//Vererbung
+				String[] tmpArray = getHeredity(sourceCodeHPP, className);
+ 				for(int i = 0; i<tmpArray.length;i++)
+ 				{
+	 				if(isInterface(tmpArray[i],sourceCodeHPP))
+	 				{	
+	 					Element entry = document.createElement("entry");
+						implement.appendChild(entry);
+						entry.appendChild(document.createTextNode(tmpArray[i]));	
+	 				}
+	 				else if (!tmpArray[i].equals(""))
+	 				{	
+	 					Element entry = document.createElement("entry");	
+ 						extend.appendChild(entry);
+ 						entry.appendChild(document.createTextNode(tmpArray[i]));
+	 				}
+ 				}	
+	        }
+	        else if(isAbstract(className,sourceCodeHPP)) 
+	        {
+	        	//Abstrakt
+		        Element abstractdefinition = document.createElement("abstractdefinition");
+	 			root.appendChild(abstractdefinition);
+				//Name
+				Element name = document.createElement("name");
+	 			abstractdefinition.appendChild(name);
+	 			name.appendChild(document.createTextNode(className));
+	 			
+	 			//Vererbung eines Interfaces
+				Element implement = document.createElement("implements");
+				abstractdefinition.appendChild(implement);
+				//Vererbung einer Klasse
+				Element extend = document.createElement("extends");
+				abstractdefinition.appendChild(extend);
+				//Instanzen,(public, private , protected)
+				Element instance = document.createElement("instance");
+				abstractdefinition.appendChild(instance);
+				//Variablen
+				Element var = document.createElement("var");
+				abstractdefinition.appendChild(var);
+				//Komposition 
+				Element compositions = document.createElement("compositions");
+				abstractdefinition.appendChild(compositions);
+				//Aggregation
+				Element aggregation = document.createElement("aggregation");
+				abstractdefinition.appendChild(aggregation);
+				//Methoden
+				//JOHANN
+	 			
+				//Vererbung
+				String[] tmpArray = getHeredity(sourceCodeHPP, className);
+ 				for(int i = 0; i<tmpArray.length;i++)
+ 				{
+	 				if(isInterface(tmpArray[i],sourceCodeHPP))
+	 				{	
+	 					Element entry = document.createElement("entry");
+						implement.appendChild(entry);
+						entry.appendChild(document.createTextNode(tmpArray[i]));	
+	 				}
+	 				else if (!tmpArray[i].equals(""))
+	 				{	
+	 					Element entry = document.createElement("entry");	
+ 						extend.appendChild(entry);
+ 						entry.appendChild(document.createTextNode(tmpArray[i]));
+	 				}
+ 				}				
+	        }
+	        else 
+	        {
+	        	//Klasse
+		        Element classdefinition = document.createElement("classdefinition");
+	 			root.appendChild(classdefinition);
+				//Name
+				Element name = document.createElement("name");
+	 			classdefinition.appendChild(name);
+	 			name.appendChild(document.createTextNode(className));
+	 			
+	 			//Vererbung eines Interfaces
+				Element implement = document.createElement("implements");
+				classdefinition.appendChild(implement);
+				//Vererbung einer Klasse
+				Element extend = document.createElement("extends");
+				classdefinition.appendChild(extend);
+				//Instanzen,(public, private , protected)
+				Element instance = document.createElement("instance");
+				classdefinition.appendChild(instance);
+				//Variablen
+				Element var = document.createElement("var");
+				classdefinition.appendChild(var);
+				//Komposition 
+				Element compositions = document.createElement("compositions");
+				classdefinition.appendChild(compositions);
+				//Aggregation
+				Element aggregation = document.createElement("aggregation");
+				classdefinition.appendChild(aggregation);
+				//Methoden
+				//JOHANN
+	 			
+				//Vererbung
+				String[] tmpArray = getHeredity(sourceCodeHPP, className);
+ 				for(int i = 0; i<tmpArray.length;i++)
+ 				{
+	 				if(isInterface(tmpArray[i],sourceCodeHPP))
+	 				{	
+	 					Element entry = document.createElement("entry");
+						implement.appendChild(entry);
+						entry.appendChild(document.createTextNode(tmpArray[i]));	
+	 				}
+	 				else if (!tmpArray[i].equals(""))
+	 				{	
+	 					Element entry = document.createElement("entry");	
+ 						extend.appendChild(entry);
+ 						entry.appendChild(document.createTextNode(tmpArray[i]));
+	 				}
+ 				}	
+	        }
+	       
 		    //Suche nach dem nächsten Index vom Wort "class" im HPP-Code
 	        index = sourceCodeHPP.indexOf(keyword, index + keyword.length());
 	    }
 	    
-	    System.out.println("ÖÖ"+sourceCodeHPP+"ÖÖ");
-	    isInterface("Class2",sourceCodeHPP);
-	    /////////////////////////////////////////////////////////////////////////////////////////
+	    System.out.println("\n #################### BEGINN JANS TEST ####################\n");
+	    
+	    System.out.println("CLASS1 >>"+isInterface("Class1",sourceCodeHPP));
+	    System.out.println("IF2 >>"+isAbstract("If2",sourceCodeHPP));
+	    System.out.println("CLASS2 >>"+isAbstract("Class2",sourceCodeHPP));
+	    System.out.println("IF1 >>"+isAbstract("If1",sourceCodeHPP));
+	    System.out.println("IF3/FIGURE >>"+isAbstract("Figure",sourceCodeHPP));
+	    System.out.println("IF4/TEST >>"+isAbstract("Test",sourceCodeHPP));
+	    System.out.println("oA uI");
+	    System.out.println("CLASS1 >>"+isInterface("Class1",sourceCodeHPP));
+	    System.out.println("IF2 >>"+isInterface("If2",sourceCodeHPP));
+	    System.out.println("CLASS2 >>"+isInterface("Class2",sourceCodeHPP));
+	    System.out.println("IF1 >>"+isInterface("If1",sourceCodeHPP));
+	    System.out.println("IF3/FIGURE >>"+isInterface("Figure",sourceCodeHPP));
+	    System.out.println("IF4/TEST >>"+isInterface("Test",sourceCodeHPP));
+	    
+	    System.out.println("\n #################### ENDE JANS TEST ####################\n");
 		xmlHelper.writeDocumentToConsole(document);
 	}
-	
-	//Test ob eine übergebene Klasse im übergebenem Quellcode ein Interface ist
-	//Dabei wird davon ausgegangen, dass Interfaces nicht in folgender Struktur deklariert sind: "class Class1 : public Class3, public If1, public If2"
-	//!!Probleme wenn virtual am Anfng des Methoden-Namens
-	private boolean isInterface(String name,String sourceCodeHPP)
-	{
-		sourceCodeHPP= sourceCodeHPP.replaceAll("\n", "");
-		sourceCodeHPP= sourceCodeHPP.replaceAll("\t", "");
-		sourceCodeHPP= sourceCodeHPP.replaceAll(" ", "");
-		
-		name= "class"+name;
-		System.out.println("\n *"+name+"*\n");
-		boolean interFace = true;
-		String keyword = name;
-		System.out.println("ÄÄ"+ sourceCodeHPP+"ÄÄ");
-	    int index = sourceCodeHPP.indexOf(keyword);
-	    String tmp = "";
-	    System.out.println(keyword);
-	    System.out.println(index);
-	    System.out.println(sourceCodeHPP.indexOf(keyword));
-	    System.out.println(sourceCodeHPP.substring(index)+"\n");
-	    for( int i=0; index+i+1<=sourceCodeHPP.length()&& index+i >=0  && !(sourceCodeHPP.substring(index+i).equals("}")); i++)
-	    {
-	    	tmp = tmp + sourceCodeHPP.substring(index+i,index+1+i);
-	    	System.out.println("*+*" );
-	    }
-	    tmp = tmp.replaceAll("public:", "");
-	    tmp = tmp.replaceAll("protected:", "");
-	    tmp = tmp.replaceAll("private:", "");
-	    System.out.println(tmp);
-	    System.out.println("burger".substring(0, 1));
-		return interFace;
-	}
-	
-	private void SearchInCode(String subject, String sourceCodeCPP) 
-	{
-		
-		
 
+	/**
+	 * @param sourceCodeHPP
+	 * @param className
+	 * @return
+	 */
+	public String[] getHeredity(String sourceCodeHPP, String className) 
+	{
+		String tmp = getFormatedSourceCodeHPP(className, sourceCodeHPP);
+		tmp = tmp.substring(0, tmp.indexOf("{"));
+		tmp = tmp.replaceAll("public", "");
+		tmp = tmp.replaceAll("private", "");
+		tmp = tmp.replaceAll("protected", "");
+		tmp = tmp.replaceAll(":", "");
+		tmp = tmp.replaceAll(" ", "");
+		tmp = tmp.trim();
+		String[] tmpArray = tmp.split(",");
+		return tmpArray;
 	}
+	
+	//Wertet aus, ob eine Klasse eines HPP-Quelltextes ein Interface ist
+	private boolean isInterface(String className,String sourceCodeHPP)
+	{	
+		// Code kürzen, filtern und anpassen
+		sourceCodeHPP = getFormatedSourceCodeHPP(className, sourceCodeHPP);
+		sourceCodeHPP =  sourceCodeHPP.replaceAll("public:", "");
+		sourceCodeHPP =  sourceCodeHPP.replaceAll("private:", "");
+		sourceCodeHPP =  sourceCodeHPP.replaceAll("protected:", "");
+		sourceCodeHPP = sourceCodeHPP.substring(sourceCodeHPP.indexOf("{")+1, sourceCodeHPP.length());
+		sourceCodeHPP = sourceCodeHPP.trim();
+		
+		// Prüfen ob alle Methoden virtuel und =0; sind && Dekonstruktor: virtual ~IDemo() {} 
+		int i = 0, n = sourceCodeHPP.length();
+		while( i+className.length() < n && i!=-1 )
+    	{
+    		//virtuelle Methode
+    		if(sourceCodeHPP.substring( i, i+"virtual ".length()).equals("virtual "))
+    		{ 
+    			//Dekonstruktor
+    		    if(sourceCodeHPP.substring( i+"virtual ".length(), i+"virtual ".length()+1).equals("~"))
+    			{
+    					//Soweit True
+    			}
+    			//nicht implementierte Methode
+    			else if(sourceCodeHPP.lastIndexOf("0", sourceCodeHPP.indexOf(";",i)) != -1 && sourceCodeHPP.lastIndexOf("=", sourceCodeHPP.indexOf("0", (sourceCodeHPP.lastIndexOf("0", sourceCodeHPP.indexOf(";",i)))   )) != -1) 
+    			{
+    					//Soweit True	
+    			}
+    			//Fehler-Fall
+    			else
+    			{
+    				return false;
+    			}
+    		}
+    		//Fehler-Fall
+    		else
+    		{
+    			return false;
+    		}
+    		
+    		//Nächsten Methodenanfang finden und unsinnigen Index Abfangen	
+    		if(Math.min( sourceCodeHPP.indexOf(";", i), sourceCodeHPP.indexOf("}", i))>=0)
+    		{
+    			i= Math.min( sourceCodeHPP.indexOf(";", i), sourceCodeHPP.indexOf("}", i)+2); 
+    		}
+    		else if (sourceCodeHPP.indexOf(";", i)>=0)
+    		{
+    			i= sourceCodeHPP.indexOf(";", i)+2;
+    		}
+    	}	
+		return true;
+	}
+	
+	//Wertet aus, ob eine Klasse eines HPP-QUelltextes eine abstrakte Klasse ist
+	private boolean isAbstract(String className,String sourceCodeHPP)
+	{	
+		// Code kürzen, filtern und anpassen
+		sourceCodeHPP = getFormatedSourceCodeHPP(className, sourceCodeHPP);
+		sourceCodeHPP =  sourceCodeHPP.replaceAll("public:", "");
+		sourceCodeHPP =  sourceCodeHPP.replaceAll("private:", "");
+		sourceCodeHPP =  sourceCodeHPP.replaceAll("protected:", "");
+		sourceCodeHPP = sourceCodeHPP.substring(sourceCodeHPP.indexOf("{")+1, sourceCodeHPP.length());
+		sourceCodeHPP = sourceCodeHPP.trim();
+		
+		// Prüfen ob eine Methoden virtuel und =0; sind 
+		int i = 0, n = sourceCodeHPP.length();
+		while( i+className.length() < n && i!=-1 )
+    	{
+    		//virtuelle Methode
+    		if(sourceCodeHPP.substring( i, i+"virtual ".length()).equals("virtual "))
+    		{ 
+    			//nicht implementierte Methode
+    			if(sourceCodeHPP.lastIndexOf("0", sourceCodeHPP.indexOf(";",i)) != -1 && sourceCodeHPP.lastIndexOf("=", sourceCodeHPP.indexOf("0", (sourceCodeHPP.lastIndexOf("0", sourceCodeHPP.indexOf(";",i)))   )) != -1) 
+    			{
+    					return true;
+    			}
+    		}
+    		
+    		//Nächsten Methodenanfang finden und unsinnigen Index Abfangen	
+    		if(Math.min( sourceCodeHPP.indexOf(";", i), sourceCodeHPP.indexOf("}", i))>=0)
+    		{
+    			i= Math.min( sourceCodeHPP.indexOf(";", i), sourceCodeHPP.indexOf("}", i)+2); 
+    		}
+    		else if (sourceCodeHPP.indexOf(";", i)>=0)
+    		{
+    			i= sourceCodeHPP.indexOf(";", i)+2;
+    		}
+    	}	
+		return false;
+	}
+	
+	//Liefert aus einem .hpp-Quellcode und einem Klassennamen den (ersten) passenden Klassen-Quelltext
+	public String getFormatedSourceCodeHPP(String className, String sourceCodeHPP)
+	{
+		//Klassen-Deklaration zusammen setzen
+		className= "class "+className;
+		// Klassen-Code aus Quellcode filtern
+		int keyIndex = sourceCodeHPP.indexOf(className) + className.length();
+		sourceCodeHPP = sourceCodeHPP.substring(keyIndex,sourceCodeHPP.indexOf("};", keyIndex));
+		// Code kürzen, filtern und anpassen
+		sourceCodeHPP = sourceCodeHPP.replaceAll("\n", "");
+		sourceCodeHPP = sourceCodeHPP.replaceAll("\t", "");
+		
+			//Um Index 0 "perfekt" zu setzen
+			//sourceCodeHPP = sourceCodeHPP.replace('{', ' ');
+		
+		while(sourceCodeHPP.contains("  ")) 
+		{
+			sourceCodeHPP =  sourceCodeHPP.replaceAll("  ", " ");
+		}
+		sourceCodeHPP = sourceCodeHPP.trim();
+		return sourceCodeHPP;
+	}
+	
 	
 	/**
      * Liest den uebergebenen Quellcode ein und parsed die Informationen daraus
@@ -290,11 +384,8 @@ public class ParserCPP implements ParserIf
      */
     public void parse(ArrayList<String> sourceCode)
     {
-    	//sourceCode.set(0, deleteComStr(sourceCode.get(0)));
-    	//sourceCode.set(1, deleteComStr(sourceCode.get(1)));
-    	sourceCode.set(0,sourceCode.get(0));
-    	sourceCode.set(1,sourceCode.get(1));
-    	
+    	sourceCode.set(0, deleteComStr(sourceCode.get(0)));
+    	sourceCode.set(1, deleteComStr(sourceCode.get(1)));
     	
     	//Ausgabe eingelesener HPP-Dateien
     	System.out.println(sourceCode.get(0));
@@ -339,15 +430,8 @@ public class ParserCPP implements ParserIf
     			}
     			i++;
     		}
+    		/*Entfernt, da es Fehler hervorruft*/
     		//Filtern nach Strings
-    		else if(sourceCode.charAt(i) == '"')
-    		{
-    			i++;
-    			while(sourceCode.charAt(i) != '"' && i < n)
-    			{
-    				i++;
-    			}
-    		}
     		else
     		{
     			cSC += sourceCode.charAt(i);
@@ -369,31 +453,3 @@ public class ParserCPP implements ParserIf
 
 
 
-//BSP
-/*
- * compString = "class ";
-		if (sourcec.substring(0, compString.length()).equals(compString))
-		{
-		    sourcec = sourcec.substring(compString.length());
-		    sourcec = sourcec.trim();
-		    String[] nameArray = new String[3];
-		    nameArray[0] = "{";
-		    nameArray[1] = "extends";
-		    nameArray[2] = "implements";
-		    TokenResult res = goToTokenWithName(sourcec, nameArray);
-		    sourcec = res.getSourceCode();
-		    if (res.getFoundToken() == 0)
-		    {
-			sourcec = sourcec.substring(1);
-			curlBrace++;
-		    }
-		    String classNameStr = res.getData();
-		    classNameStr = classNameStr.strip();
-		    System.out.println("@className: " + classNameStr);
-
-		    Element classDefinition = document.createElement("classdefinition");
-		    Element classNameEl = document.createElement("name");
-		    classNameEl.appendChild(document.createTextNode(classNameStr));
-		    classDefinition.appendChild(classNameEl);
-		    curNode.appendChild(classDefinition);
-		    curNode = (Element) curNode.getLastChild();*/
