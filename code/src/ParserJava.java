@@ -1,3 +1,4 @@
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -16,8 +17,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * 
- * @author Klasse, die den Parser fuer Java implementiert
+ * Klasse, die den Parser fuer Java implementiert
  */
 public class ParserJava extends XmlHelperMethods implements ParserIf
 {
@@ -451,7 +451,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 		// (sourcec.charAt(0)==';'||sourcec.charAt(0)=='{')
 		// TODO: funktionen in funktionen haben nicht klassen als eltern
-		if ((!(curNode.getNodeName().equals("source"))&& sourcec.contains("(")))
+		if ((!(curNode.getNodeName().equals("source")) && sourcec.contains("(")))
 		{
 
 		    String[] nameArray = new String[1];
@@ -685,7 +685,6 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 					    prefixRBrace[0] = prefixRBrace[0].substring(5);
 					    methodNode.appendChild(document.createTextNode(prefixRBrace[0]));
 					}
-				
 
 				    }
 				    else
@@ -1491,7 +1490,6 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			    instanceNameNode.appendChild(document.createTextNode(pureVarSplit[1]));
 			    instanceClassNode.appendChild(document.createTextNode(pureVarSplit[0]));
 
-
 			    instanceMainNode.appendChild(instanceAccessNode);
 			    instanceMainNode.appendChild(instanceNameNode);
 			    instanceMainNode.appendChild(instanceClassNode);
@@ -1519,8 +1517,6 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			    Element varAccessNode = document.createElement("access");
 			    Element varTypeNode = document.createElement("type");
 
-
-
 			    varAccessNode.appendChild(document.createTextNode(pureVarSplit[0]));
 			    varTypeNode.appendChild(document.createTextNode(varTypeArray[typeNumber]));
 			    varNameNode.appendChild(document.createTextNode(pureVarSplit[2]));
@@ -1537,7 +1533,6 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			    Element instanceNameNode = document.createElement("name");
 			    Element instanceClassNode = document.createElement("class");
 			    Element instanceAccessNode = document.createElement("access");
-
 
 			    instanceNameNode.appendChild(document.createTextNode(pureVarSplit[2]));
 			    instanceClassNode.appendChild(document.createTextNode(pureVarSplit[1]));
@@ -1622,7 +1617,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 	    home = System.getProperty("user.home");
 	    File pumlDir = new File(home + "/tempLogger");
 
-	    String path = home + "/tempLogger/" + "_PUMLlog.xml";
+	    String path = home + "/tempLogger/" + "PUMLlog.xml";
 
 	    if (!pumlDir.exists())
 	    {
@@ -1673,6 +1668,47 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 	sourceCode.get(0).trim();
 	// sourceCode = sourceCode.replaceAll("=", " = ");
 	// System.out.println(sourceCode);
+	StringWriter writer = new StringWriter();
+	String xmlString = writer.getBuffer().toString();
+	System.out.println(xmlString); // Print to console or logs
+
+	String home;
+	home = System.getProperty("user.home");
+	File pumlDir = new File(home + "/tempLogger");
+
+	String path = home + "/tempLogger/" + "PUMLsource.dat";
+
+
+	if (!pumlDir.exists())
+	{
+
+	    try
+	    {
+		pumlDir.mkdir();
+	    }
+	    catch (SecurityException se)
+	    {
+		// handle it
+	    }
+	}
+	
+	 File tempLogger = new File(path);
+
+	
+	try
+	{
+	    FileWriter fileWriter = new FileWriter(tempLogger);
+	    PrintWriter printWriter = new PrintWriter(fileWriter);
+	    printWriter.print(sourceCode);
+	    printWriter.close();
+	}
+	catch (Exception e)
+	{
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+	
+	
 	try
 	{
 	    buildTree(sourceCode.get(0));
@@ -1694,4 +1730,5 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 	return document;
     }
+   
 }

@@ -37,4 +37,3 @@ Class1 *-- Class3
 Class1 o-- Class4
 Class1 o-- Class5
 @enduml
-
