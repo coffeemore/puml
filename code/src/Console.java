@@ -81,7 +81,9 @@ public class Console extends PUMLgenerator
 	options.addOption(output);
 	
 	//Logging als Logfile
-	Option logfile = Option.builder();
+	Option logfile = Option.builder()
+			.longOpt("lf").argName("log-filepath").hasArg().desc("Angabe des Pfades fuer das Logfile").build();
+	options.addOption(logfile);
 	
 	/*//Erstelle SeqenceDiagramm
 	Option seqDiag = Option.builder()
@@ -108,6 +110,15 @@ public class Console extends PUMLgenerator
 		    CommandLine cmd = commandParser.parse(options, args);
 	
 		    // Argumentauswertungen und Ausfuehrungen
+			if (cmd.hasOption("l")) //Debugging in Console
+	    	{
+	    		System.out.println("Debugging");
+	    		PUMLgenerator.logger.startLoggingConsole(true);
+	    	}
+			if (cmd.hasOption("lf"))
+			{
+				PUMLgenerator.logger.startLoggingFile(cmd.getOptionValue("lf"));
+			}
 		    //Start: Setter-Abfragen
 		    if (cmd.hasOption("c")) // Anleitung ausgeben
 		    {
