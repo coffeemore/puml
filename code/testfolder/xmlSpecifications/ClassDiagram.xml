@@ -104,6 +104,7 @@
 					<access>public</access>
 					<name>call2</name>
 					<result>void</result>
+					<type>static</type>
 				</methoddefinition>
 			</entry>
 			<entry>

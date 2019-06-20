@@ -6,7 +6,6 @@ import javax.xml.xpath.XPathExpressionException;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-
 import net.sourceforge.plantuml.FileUtils;
 
 class OutputPUMLTest_classdia
@@ -41,12 +40,9 @@ class OutputPUMLTest_classdia
     @Test
     // expectedFile.txt befindet sich fuer den Test im srcTest Ordner um in Git
     // aufgenommen zu werden.
-    void testSavePUMLtoFile() throws IOException, ParserConfigurationException, SAXException, XPathExpressionException
+    void testSavePUMLtoFile() throws IOException, XPathExpressionException
     {
 	File expected = new File("testfolder/xmlSpecifications/ClassDiagram.txt");
-	// savePumltoFile testen
-	// TODO Aendern der Filepaths bevor Test (je nach System), expectedFile
-	// platzieren
 	OutputPUML output = new OutputPUML();
 	output.savePUMLtoFile(output.getPUML(doc), "testfolder/xmlSpecifications/actualFile.txt");
 	File actual = new File("testfolder/xmlSpecifications/actualFile.txt");
@@ -65,20 +61,28 @@ class OutputPUMLTest_classdia
     }*/
 
     @Test
-    void testCreatePUMLfromString() throws IOException, ParserConfigurationException, SAXException
+    void testCreatePUMLfromString() throws IOException
     {
-	// TODO Aendern der Filepaths bevor Test (je nach System)
-	File expected = new File("testfolder/xmlSpecifications/ClassDiagram.png");
-	OutputPUML output = new OutputPUML();
-	try
-	{
-	    output.createPUMLfromString("testfolder/xmlSpecifications/ClassD_fromString.png", output.getPUML(doc));
-	} catch (XPathExpressionException | IOException e)
-	{
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-	File actual = new File("testfolder/xmlSpecifications/ClassD_fromString.png");
-	assertEquals(FileUtils.readFile(actual), FileUtils.readFile(expected));
+		// TODO Aendern der Filepaths bevor Test (je nach System)
+		File expected = new File("testfolder/xmlSpecifications/ClassDiagram.png");
+		OutputPUML output = new OutputPUML();
+		try
+		{
+		    output.createPUMLfromString("testfolder/xmlSpecifications/ClassD_fromString.png", output.getPUML(doc));
+		} 
+		catch (XPathExpressionException | IOException e)
+		{
+			PUMLgenerator.logger.getLog().severe(e.getMessage());
+		    e.printStackTrace();
+		}
+		File actual = new File("testfolder/xmlSpecifications/ClassD_fromString.png");
+		try
+		{	
+		assertEquals(FileUtils.readFile(actual), FileUtils.readFile(expected));
+		}
+		catch (IOException e)
+		{
+			PUMLgenerator.logger.getLog().severe(e.getMessage());
+		}
     }
 }
