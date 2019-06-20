@@ -712,101 +712,190 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			    }
 			    break;
 			case 2:
-			    if(!prefixRBrace[0].contains(".")&&!prefixRBrace[1].contains(".")) {
-			    Element methoddefinitionNode = document.createElement("methoddefinition");
-
-			    Element accessNode = document.createElement("access");
-
-			    Element nameNode = document.createElement("name");
-			    nameNode.appendChild(document.createTextNode(prefixRBrace[1]));
-
-			    methoddefinitionNode.appendChild(accessNode);
-			    methoddefinitionNode.appendChild(nameNode);
-
-			    curNode.appendChild(methoddefinitionNode);
-
-			    Element parametersNode = document.createElement("parameters");
-
-			    sourcec = res1.getSourceCode();
-			    sourcec = sourcec.substring(1);
-			    String[] nameArray2 = new String[2];
-			    nameArray2[0] = ")";
-			    nameArray2[1] = ",";
-			    TokenResult res2;
-
-			    if ((prefixRBrace[0].equals("public") || prefixRBrace[0].equals("private"))
-				    && prefixRBrace[1]
-					    .equals(curNode.getElementsByTagName("name").item(0).getTextContent()))
+			    if (!prefixRBrace[0].contains(".") && !prefixRBrace[1].contains("."))
 			    {
+				Element methoddefinitionNode = document.createElement("methoddefinition");
 
-				accessNode.appendChild(document.createTextNode(prefixRBrace[0]));
+				Element accessNode = document.createElement("access");
 
-				// Aggreagations-eintrag erstellen
+				Element nameNode = document.createElement("name");
+				nameNode.appendChild(document.createTextNode(prefixRBrace[1]));
 
-				Element classAggr = (Element) getChildwithName(curNode, "aggregations");
-				Element classComp = (Element) getChildwithName(curNode, "compositions");
-				do
+				methoddefinitionNode.appendChild(accessNode);
+				methoddefinitionNode.appendChild(nameNode);
+
+				curNode.appendChild(methoddefinitionNode);
+
+				Element parametersNode = document.createElement("parameters");
+
+				sourcec = res1.getSourceCode();
+				sourcec = sourcec.substring(1);
+				String[] nameArray2 = new String[2];
+				nameArray2[0] = ")";
+				nameArray2[1] = ",";
+				TokenResult res2;
+
+				if ((prefixRBrace[0].equals("public") || prefixRBrace[0].equals("private"))
+					&& prefixRBrace[1]
+						.equals(curNode.getElementsByTagName("name").item(0).getTextContent()))
 				{
 
-				    res2 = goToTokenWithName(sourcec, nameArray2);
-				    String functionData2 = res2.getData().strip();
+				    accessNode.appendChild(document.createTextNode(prefixRBrace[0]));
 
-				    String[] argumentConstructor = functionData2.split(" ");
-				    if (argumentConstructor.length == 2)
+				    // Aggreagations-eintrag erstellen
+
+				    Element classAggr = (Element) getChildwithName(curNode, "aggregations");
+				    Element classComp = (Element) getChildwithName(curNode, "compositions");
+				    do
 				    {
-					Element entryPNode = document.createElement("entry");
-					Element typePNode = document.createElement("type");
-					Element namePNode = document.createElement("name");
-					typePNode.appendChild(document.createTextNode(argumentConstructor[0]));
-					namePNode.appendChild(document.createTextNode(argumentConstructor[1]));
-					entryPNode.appendChild(typePNode);
-					entryPNode.appendChild(namePNode);
-					parametersNode.appendChild(entryPNode);
 
-					boolean inCompositions = false;
+					res2 = goToTokenWithName(sourcec, nameArray2);
+					String functionData2 = res2.getData().strip();
 
-					for (int i = 0; i < classComp.getElementsByTagName("entry").getLength(); i++)
+					String[] argumentConstructor = functionData2.split(" ");
+					if (argumentConstructor.length == 2)
 					{
-					    if (classComp.getElementsByTagName("entry").item(i).getTextContent()
-						    .equals(argumentConstructor[0]))
-						inCompositions = true;
+					    Element entryPNode = document.createElement("entry");
+					    Element typePNode = document.createElement("type");
+					    Element namePNode = document.createElement("name");
+					    typePNode.appendChild(document.createTextNode(argumentConstructor[0]));
+					    namePNode.appendChild(document.createTextNode(argumentConstructor[1]));
+					    entryPNode.appendChild(typePNode);
+					    entryPNode.appendChild(namePNode);
+					    parametersNode.appendChild(entryPNode);
 
-					}
+					    boolean inCompositions = false;
 
-					if (inCompositions == false)
-					{
-					    boolean inAggregations = false;
-
-					    for (int i = 0; i < classAggr.getElementsByTagName("entry")
+					    for (int i = 0; i < classComp.getElementsByTagName("entry")
 						    .getLength(); i++)
 					    {
-						if (classAggr.getElementsByTagName("entry").item(i).getTextContent()
+						if (classComp.getElementsByTagName("entry").item(i).getTextContent()
 							.equals(argumentConstructor[0]))
-						    inAggregations = true;
+						    inCompositions = true;
 
 					    }
-					    if (inAggregations == false)
+
+					    if (inCompositions == false)
 					    {
-						Element classCompositionEl = document.createElement("entry");
-						classAggr.appendChild(classCompositionEl);
-						classCompositionEl
-							.appendChild(document.createTextNode(argumentConstructor[0]));
+						boolean inAggregations = false;
+
+						for (int i = 0; i < classAggr.getElementsByTagName("entry")
+							.getLength(); i++)
+						{
+						    if (classAggr.getElementsByTagName("entry").item(i).getTextContent()
+							    .equals(argumentConstructor[0]))
+							inAggregations = true;
+
+						}
+						if (inAggregations == false)
+						{
+						    Element classCompositionEl = document.createElement("entry");
+						    classAggr.appendChild(classCompositionEl);
+						    classCompositionEl.appendChild(
+							    document.createTextNode(argumentConstructor[0]));
+						}
 					    }
 					}
+					sourcec = res2.getSourceCode();
+					sourcec = sourcec.substring(1);
 				    }
-				    sourcec = res2.getSourceCode();
-				    sourcec = sourcec.substring(1);
-				}
-				while (res2.getFoundToken() != 0);
-				// curNode = (Element) curNode.getLastChild();
-				curlBrace++;
-				if (parametersNode.hasChildNodes())
-				    methoddefinitionNode.appendChild(parametersNode);
+				    while (res2.getFoundToken() != 0);
+				    // curNode = (Element) curNode.getLastChild();
+				    curlBrace++;
+				    if (parametersNode.hasChildNodes())
+					methoddefinitionNode.appendChild(parametersNode);
 
+				}
+				else
+				{
+				    accessNode.appendChild(document.createTextNode("pprivate"));
+				    do
+				    {
+
+					res2 = goToTokenWithName(sourcec, nameArray2);
+					String functionData2 = res2.getData().strip();
+
+					String[] parameterFunction = functionData2.split(" ");
+					if (parameterFunction.length == 2)
+					{
+					    Element entryPNode = document.createElement("entry");
+					    Element typePNode = document.createElement("type");
+					    Element namePNode = document.createElement("name");
+					    typePNode.appendChild(document.createTextNode(parameterFunction[0]));
+					    namePNode.appendChild(document.createTextNode(parameterFunction[1]));
+					    entryPNode.appendChild(typePNode);
+					    entryPNode.appendChild(namePNode);
+					    parametersNode.appendChild(entryPNode);
+					}
+					sourcec = res2.getSourceCode();
+					sourcec = sourcec.substring(1);
+				    }
+				    while (res2.getFoundToken() != 0);
+
+				    if (parametersNode.hasChildNodes())
+					methoddefinitionNode.appendChild(parametersNode);
+
+				    Element resultNode = document.createElement("result");
+				    resultNode.appendChild(document.createTextNode(prefixRBrace[0]));
+				    methoddefinitionNode.appendChild(resultNode);
+
+				}
+				sourcec = sourcec.trim();
+				if (sourcec.substring(0, 6).equals("throws"))
+				{
+				    while (!(sourcec.charAt(0) == '{'))
+				    {
+					sourcec = sourcec.substring(1);
+
+				    }
+				}
+				else if (sourcec.charAt(0) == '{')
+				{
+				    sourcec = sourcec.substring(1);
+				    curlBrace++;
+				    curNode = (Element) curNode.getLastChild();
+				    done = true;
+				    continue;
+
+				}
 			    }
-			    else
+			    break;
+
+			case 3:// Funktionsdeklaration
+
+			    String[] nameArrayFD = new String[1];
+			    nameArrayFD[0] = "{";
+			    TokenResult resFD = goToTokenWithName(sourcec, nameArrayFD);
+			    String functionDataFD = resFD.getData().strip();
+
+			    if ((prefixRBrace[0].equals("public") || prefixRBrace[0].equals("private")
+				    || prefixRBrace[0].equals("protected")) && !prefixRBrace[1].equals("class"))
+			    // rausgenommen, weil manche Deklarationen keinen Koerper haben
+			    // && !functionDataFD.contains(";"))
 			    {
-				accessNode.appendChild(document.createTextNode("pprivate"));
+				Element methoddefinitionNode = document.createElement("methoddefinition");
+
+				Element accessNode = document.createElement("access");
+				accessNode.appendChild(document.createTextNode(prefixRBrace[0]));
+
+				Element nameNode = document.createElement("name");
+				nameNode.appendChild(document.createTextNode(prefixRBrace[2]));
+
+				methoddefinitionNode.appendChild(accessNode);
+				methoddefinitionNode.appendChild(nameNode);
+
+				methoddefinitionNode.appendChild(nameNode);
+				curNode.appendChild(methoddefinitionNode);
+				// ...
+				// curNode = (Element) curNode.getLastChild();
+				sourcec = res1.getSourceCode();
+				sourcec = sourcec.substring(1);
+				String[] nameArray2 = new String[2];
+				nameArray2[0] = ")";
+				nameArray2[1] = ",";
+				TokenResult res2;
+				Element parametersNode = document.createElement("parameters");
+
 				do
 				{
 
@@ -829,48 +918,36 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				    sourcec = sourcec.substring(1);
 				}
 				while (res2.getFoundToken() != 0);
-
 				if (parametersNode.hasChildNodes())
 				    methoddefinitionNode.appendChild(parametersNode);
 
 				Element resultNode = document.createElement("result");
-				resultNode.appendChild(document.createTextNode(prefixRBrace[0]));
+				resultNode.appendChild(document.createTextNode(prefixRBrace[1]));
 				methoddefinitionNode.appendChild(resultNode);
 
-				
+				sourcec = sourcec.trim();
 
+				if (sourcec.substring(0, 6).equals("throws"))
+				{
+				    while (!(sourcec.charAt(0) == '{'))
+				    {
+					sourcec = sourcec.substring(1);
 
-			    }
-			    sourcec = sourcec.trim();
-			    if (sourcec.substring(0, 6).equals("throws"))
-			    {
-				while (!(sourcec.charAt(0) == '{'))
+				    }
+				}
+
+				if (sourcec.charAt(0) == '{')
 				{
 				    sourcec = sourcec.substring(1);
-				    
+				    curlBrace++;
+				    curNode = (Element) curNode.getLastChild();
+				    done = true;
+				    continue;
 				}
-			    }else if (sourcec.charAt(0) == '{')
-			    {
-				sourcec = sourcec.substring(1);
-				curlBrace++;
-				curNode = (Element) curNode.getLastChild();
-				done = true;
-				continue;
-
-			    }
-			    }
-			    break;
-
-			case 3:// Funktionsdeklaration
-
-			    String[] nameArrayFD = new String[1];
-			    nameArrayFD[0] = "{";
-			    TokenResult resFD = goToTokenWithName(sourcec, nameArrayFD);
-			    String functionDataFD = resFD.getData().strip();
-
 //			    sourcec = res1.getSourceCode();
 //			    curNode = (Element) curNode.getLastChild();
 
+			    }
 			    break;
 			case 4:
 			    if ((prefixRBrace[0].equals("public") || prefixRBrace[0].equals("private"))
