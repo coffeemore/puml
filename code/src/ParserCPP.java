@@ -179,8 +179,9 @@ public class ParserCPP implements ParserIf
 				Element name = document.createElement("name");
 	 			classdefinition.appendChild(name);
 	 			name.appendChild(document.createTextNode(className));
-	 			
-	 			//Vererbung eines Interfaces
+	 				 			
+	 			//Code Analyse:
+	 			 //Vererbung eines Interfaces
 				Element implement = document.createElement("implements");
 				classdefinition.appendChild(implement);
 				//Vererbung einer Klasse
@@ -198,8 +199,102 @@ public class ParserCPP implements ParserIf
 				//Aggregation
 				Element aggregation = document.createElement("aggregation");
 				classdefinition.appendChild(aggregation);
+
+				
 				//Methoden
-				//JOHANN
+				int i = 0, n = sourceCodeCPP.length();
+				String methodinitial = className + "::";
+				int methodinitlength = methodinitial.length();
+				while(i + methodinitlength < n && i!=-1 )
+		    	{
+		    		if(sourceCodeCPP.substring( i, i + methodinitlength).equals(methodinitial))
+		    		{
+						Element methoddefinition = document.createElement("methoddefinition");
+						classdefinition.appendChild(methoddefinition);
+						
+						Element methName = document.createElement("name");
+						methoddefinition.appendChild(methName);
+						
+						Element methResult = document.createElement("result");
+						
+		    			//Vorgängerwort von methodinitial suchen (entspricht Resultattyp)
+						int h = i;
+						while(sourceCodeCPP.charAt(h) != '\n' && h > 0)
+						{
+							h--;
+						}
+						if(h < i - 1)
+						{
+							methoddefinition.appendChild(methResult);
+							methResult.appendChild(document.createTextNode(
+									sourceCodeCPP.substring( h + 1 , i - 1)));
+						}
+						
+						//Folgewort von methodinitial suchen (entspricht Methodenname)
+						int j  = i  + methodinitlength;
+						while(sourceCodeCPP.charAt(j) != '(' && j < n)
+						{
+							j++;
+						}
+						methName.appendChild(document.createTextNode(
+								sourceCodeCPP.substring(i  + methodinitlength, j)));
+						
+						i = j + 1;
+						h = i;
+						
+						while(sourceCodeCPP.charAt(j) != ')' && j < n)
+						{
+							j++;
+						}
+						
+						Element methparam = document.createElement("parameters");
+						methoddefinition.appendChild(methparam);
+
+						while(i < j)
+						{
+							//Bsp: (int param1, int param2) ist auszulesen
+							//Typ finden
+							while(sourceCodeCPP.charAt(i) != ' ' && i < j)
+							{
+								i++;
+							}
+
+							Element entry = document.createElement("entry");
+							methparam.appendChild(entry);
+														
+							Element paramType = document.createElement("type");
+							entry.appendChild(paramType);
+							
+							paramType.appendChild(document.createTextNode(
+									sourceCodeCPP.substring(h, i)));
+							
+							i++;
+							h = i;
+							
+							//Namen finden
+							while(sourceCodeCPP.charAt(i) != ',' && i < j)
+							{
+								i++;
+							}
+
+							Element paramName = document.createElement("name");
+							entry.appendChild(paramName);
+							
+							paramName.appendChild(document.createTextNode(
+									sourceCodeCPP.substring(h, i)));
+							
+							i++;
+							//Mögliches Leerzeichen hinter dem Komma überspringen
+							if(sourceCodeCPP.charAt(i) == ' ')
+							{
+								i++;
+							}
+							h = i;
+						}
+		    		}
+		    		i++;
+		    	}
+	        }  
 	 			
 				//Vererbung
 				String[] tmpArray = getHeredity(sourceCodeHPP, className);
@@ -220,6 +315,104 @@ public class ParserCPP implements ParserIf
  				}	
 	        }
 	       
+
+				
+				//Methoden
+				int i = 0, n = sourceCodeCPP.length();
+				String methodinitial = className + "::";
+				int methodinitlength = methodinitial.length();
+				while(i + methodinitlength < n && i!=-1 )
+		    	{
+		    		if(sourceCodeCPP.substring( i, i + methodinitlength).equals(methodinitial))
+		    		{
+						Element methoddefinition = document.createElement("methoddefinition");
+						classdefinition.appendChild(methoddefinition);
+						
+						Element methName = document.createElement("name");
+						methoddefinition.appendChild(methName);
+						
+						Element methResult = document.createElement("result");
+						
+		    			//Vorgängerwort von methodinitial suchen (entspricht Resultattyp)
+						int h = i;
+						while(sourceCodeCPP.charAt(h) != '\n' && h > 0)
+						{
+							h--;
+						}
+						if(h < i - 1)
+						{
+							methoddefinition.appendChild(methResult);
+							methResult.appendChild(document.createTextNode(
+									sourceCodeCPP.substring( h + 1 , i - 1)));
+						}
+						
+						//Folgewort von methodinitial suchen (entspricht Methodenname)
+						int j  = i  + methodinitlength;
+						while(sourceCodeCPP.charAt(j) != '(' && j < n)
+						{
+							j++;
+						}
+						methName.appendChild(document.createTextNode(
+								sourceCodeCPP.substring(i  + methodinitlength, j)));
+						
+						i = j + 1;
+						h = i;
+						
+						while(sourceCodeCPP.charAt(j) != ')' && j < n)
+						{
+							j++;
+						}
+						
+						Element methparam = document.createElement("parameters");
+						methoddefinition.appendChild(methparam);
+
+						while(i < j)
+						{
+							//Bsp: (int param1, int param2) ist auszulesen
+							//Typ finden
+							while(sourceCodeCPP.charAt(i) != ' ' && i < j)
+							{
+								i++;
+							}
+
+							Element entry = document.createElement("entry");
+							methparam.appendChild(entry);
+														
+							Element paramType = document.createElement("type");
+							entry.appendChild(paramType);
+							
+							paramType.appendChild(document.createTextNode(
+									sourceCodeCPP.substring(h, i)));
+							
+							i++;
+							h = i;
+							
+							//Namen finden
+							while(sourceCodeCPP.charAt(i) != ',' && i < j)
+							{
+								i++;
+							}
+
+							Element paramName = document.createElement("name");
+							entry.appendChild(paramName);
+							
+							paramName.appendChild(document.createTextNode(
+									sourceCodeCPP.substring(h, i)));
+							
+							i++;
+							//Mögliches Leerzeichen hinter dem Komma überspringen
+							if(sourceCodeCPP.charAt(i) == ' ')
+							{
+								i++;
+							}
+							h = i;
+						}
+		    		}
+		    		i++;
+		    	}
+	        }      
+			
+
 		    //Suche nach dem nächsten Index vom Wort "class" im HPP-Code
 	        index = sourceCodeHPP.indexOf(keyword, index + keyword.length());
 	    }
