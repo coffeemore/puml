@@ -50,6 +50,9 @@ public class Console extends PUMLgenerator
 	// hier wird ein neuer Container für Optionen angelegt
 	Options options = new Options();
 	options.addOption("c", false, "Konsole wird aufgerufen");
+	
+	//Logging Commandline
+	options.addOption("l", false, "Debug: Ausgabe in Konsole");
 
 	// ignorieren verschiedener Dateitypen
 	options.addOption("ijar", false, "Dateien mit der Endung .jar werden ignoriert.");
@@ -76,6 +79,9 @@ public class Console extends PUMLgenerator
 	Option output = Option.builder() 
 		.longOpt("o").argName("filepath").hasArg().desc("Angabe des Pfades fuer den Zielordner.").build();
 	options.addOption(output);
+	
+	//Logging als Logfile
+	Option logfile = Option.builder();
 	
 	/*//Erstelle SeqenceDiagramm
 	Option seqDiag = Option.builder()
