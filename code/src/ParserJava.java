@@ -17,7 +17,7 @@ import org.w3c.dom.Element;
 
 /**
  * 
- * @author Klasse, die den Parser f�r Java implementiert
+ * @author Klasse, die den Parser fuer Java implementiert
  */
 public class ParserJava extends XmlHelperMethods implements ParserIf
 {
@@ -451,7 +451,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 		// (sourcec.charAt(0)==';'||sourcec.charAt(0)=='{')
 		// TODO: funktionen in funktionen haben nicht klassen als eltern
-		if (!(curNode.getNodeName().equals("source")))
+		if ((!(curNode.getNodeName().equals("source"))&& sourcec.contains("(")))
 		{
 
 		    String[] nameArray = new String[1];
@@ -678,15 +678,14 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 					    methodNode.appendChild(document.createTextNode(methodArray[2]));
 					    methodInstanceNode.appendChild(document.createTextNode(methodArray[1]));
-					    sourcec = res1.getSourceCode();
 					}
 					else
 					{
 
 					    prefixRBrace[0] = prefixRBrace[0].substring(5);
 					    methodNode.appendChild(document.createTextNode(prefixRBrace[0]));
-					    sourcec = res1.getSourceCode();
 					}
+				
 
 				    }
 				    else
@@ -695,9 +694,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 					methodCallNode.appendChild(methodInstanceNode);
 					methodNode.appendChild(document.createTextNode(methodArray[1]));
 					methodInstanceNode.appendChild(document.createTextNode(methodArray[0]));
-					sourcec = res1.getSourceCode();
 				    }
-
 				}
 				else
 				{
@@ -709,9 +706,9 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				    methodCallNode.appendChild(methodNode);
 
 				    methodNode.appendChild(document.createTextNode(prefixRBrace[0]));
-				    sourcec = res1.getSourceCode();
 
 				}
+				sourcec = res1.getSourceCode().substring(1);
 				break;
 			    }
 			    break;
@@ -820,12 +817,22 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			    TokenResult resFD = goToTokenWithName(sourcec, nameArrayFD);
 			    String functionDataFD = resFD.getData().strip();
 
-			    if ((prefixRBrace[0].equals("public") || prefixRBrace[0].equals("private"))
-				    && !prefixRBrace[1].equals("class") && !functionDataFD.contains(";"))
+			    if ((prefixRBrace[0].equals("public") || prefixRBrace[0].equals("private")
+				    || prefixRBrace[0].equals("protected")) && !prefixRBrace[1].equals("class"))
+			    // rausgenommen, weil manche deklarationen keinen Koerper haben
+			    // && !functionDataFD.contains(";"))
 			    {
 				Element methoddefinitionNode = document.createElement("methoddefinition");
+
+				Element accessNode = document.createElement("access");
+				accessNode.appendChild(document.createTextNode(prefixRBrace[0]));
+
 				Element nameNode = document.createElement("name");
 				nameNode.appendChild(document.createTextNode(prefixRBrace[2]));
+
+				methoddefinitionNode.appendChild(accessNode);
+				methoddefinitionNode.appendChild(nameNode);
+
 				methoddefinitionNode.appendChild(nameNode);
 				curNode.appendChild(methoddefinitionNode);
 				// ...
@@ -862,6 +869,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				while (res2.getFoundToken() != 0);
 				if (parametersNode.hasChildNodes())
 				    methoddefinitionNode.appendChild(parametersNode);
+
 				Element resultNode = document.createElement("result");
 				resultNode.appendChild(document.createTextNode(prefixRBrace[1]));
 				methoddefinitionNode.appendChild(resultNode);
@@ -876,6 +884,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 				    }
 				}
+
 				if (sourcec.charAt(0) == '{')
 				{
 				    sourcec = sourcec.substring(1);
@@ -894,9 +903,20 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				    && prefixRBrace[1].equals("static"))
 			    {
 				Element methoddefinitionNode = document.createElement("methoddefinition");
+
+				Element accessNode = document.createElement("access");
+				accessNode.appendChild(document.createTextNode(prefixRBrace[0]));
+
 				Element nameNode = document.createElement("name");
 				nameNode.appendChild(document.createTextNode(prefixRBrace[3]));
+
+				Element typeNode = document.createElement("type");
+				typeNode.appendChild(document.createTextNode(prefixRBrace[1]));
+
+				methoddefinitionNode.appendChild(accessNode);
 				methoddefinitionNode.appendChild(nameNode);
+				methoddefinitionNode.appendChild(typeNode);
+
 				curNode.appendChild(methoddefinitionNode);
 				// ...
 				// curNode = (Element) curNode.getLastChild();
@@ -934,12 +954,11 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 				if (parametersNode.hasChildNodes())
 				    methoddefinitionNode.appendChild(parametersNode);
-				if (!prefixRBrace[2].equals("void"))
-				{
-				    Element resultNode = document.createElement("result");
-				    resultNode.appendChild(document.createTextNode(prefixRBrace[2]));
-				    methoddefinitionNode.appendChild(resultNode);
-				}
+
+				Element resultNode = document.createElement("result");
+				resultNode.appendChild(document.createTextNode(prefixRBrace[2]));
+				methoddefinitionNode.appendChild(resultNode);
+
 				sourcec = sourcec.trim();
 				if (sourcec.charAt(0) == '{')
 				{
@@ -953,10 +972,11 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 //			    sourcec = res1.getSourceCode();
 //			    curNode = (Element) curNode.getLastChild();
-				break;
+//				break;
 			    }
-
-			    if ((prefixRBrace[1].equals("=") || prefixRBrace[2].equals("new")))
+			    break;
+			case 5:
+			    if ((prefixRBrace[2].equals("=") || prefixRBrace[3].equals("new")))
 			    {
 				// Instance-knoten erstellen
 
@@ -964,12 +984,20 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 				Element instanceNode = document.createElement("instance");
 				curNode.appendChild(instanceNode);
+
+				Element instanceANode = document.createElement("access");
+				instanceANode.appendChild(document.createTextNode("pprivate"));
+
 				Element instanceNNode = document.createElement("name");
-				instanceNode.appendChild(instanceNNode);
-				instanceNNode.appendChild(document.createTextNode(prefixRBrace[0]));
+				instanceNNode.appendChild(document.createTextNode(prefixRBrace[1]));
+
 				Element instanceCNode = document.createElement("class");
+				instanceCNode.appendChild(document.createTextNode(prefixRBrace[4]));
+
+				instanceNode.appendChild(instanceANode);
+				instanceNode.appendChild(instanceNNode);
 				instanceNode.appendChild(instanceCNode);
-				instanceCNode.appendChild(document.createTextNode(prefixRBrace[3]));
+
 				Element goToClassNode = curNode;
 				do
 				{
@@ -984,7 +1012,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 					for (int i = 0; i < classComp.getElementsByTagName("entry").getLength(); i++)
 					{
 					    if (classComp.getElementsByTagName("entry").item(i).getTextContent()
-						    .equals(prefixRBrace[3]))
+						    .equals(prefixRBrace[4]))
 					    {
 
 						inCompositions = true;
@@ -995,7 +1023,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 					for (int i = 0; i < classAggr.getElementsByTagName("entry").getLength(); i++)
 					{
 					    if (classAggr.getElementsByTagName("entry").item(i).getTextContent()
-						    .equals(prefixRBrace[3]))
+						    .equals(prefixRBrace[4]))
 					    {
 						classAggr.removeChild(classAggr.getElementsByTagName("entry").item(i));
 					    }
@@ -1005,7 +1033,82 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 					if (inCompositions == false)
 					{
 					    Element classCompEntry = document.createElement("entry");
-					    classCompEntry.appendChild(document.createTextNode(prefixRBrace[3]));
+					    classCompEntry.appendChild(document.createTextNode(prefixRBrace[4]));
+					    classComp.appendChild(classCompEntry);
+					    // curNode = (Element) curNode.getLastChild();
+					}
+				    }
+				    goToClassNode = (Element) goToClassNode.getParentNode();
+
+				}
+				while (!doneClass);
+
+				TokenResult newRes = rBraceContent(sourcec);
+
+				sourcec = newRes.getSourceCode();
+				done = true;
+				continue;
+			    }
+			    break;
+			case 6:
+			    if ((prefixRBrace[3].equals("=") || prefixRBrace[4].equals("new")))
+			    {
+				// Instance-knoten erstellen
+
+				boolean doneClass = false;
+
+				Element instanceNode = document.createElement("instance");
+				curNode.appendChild(instanceNode);
+
+				Element instanceANode = document.createElement("access");
+				instanceANode.appendChild(document.createTextNode(prefixRBrace[0]));
+
+				Element instanceNNode = document.createElement("name");
+				instanceNNode.appendChild(document.createTextNode(prefixRBrace[2]));
+
+				Element instanceCNode = document.createElement("class");
+				instanceCNode.appendChild(document.createTextNode(prefixRBrace[5]));
+
+				instanceNode.appendChild(instanceANode);
+				instanceNode.appendChild(instanceNNode);
+				instanceNode.appendChild(instanceCNode);
+
+				Element goToClassNode = curNode;
+				do
+				{
+				    if (goToClassNode.getNodeName().equals("classdefinition"))
+				    {
+					doneClass = true;
+					Element classComp = (Element) getChildwithName(goToClassNode, "compositions");
+					Element classAggr = (Element) getChildwithName(goToClassNode, "aggregations");
+
+					boolean inCompositions = false;
+
+					for (int i = 0; i < classComp.getElementsByTagName("entry").getLength(); i++)
+					{
+					    if (classComp.getElementsByTagName("entry").item(i).getTextContent()
+						    .equals(prefixRBrace[5]))
+					    {
+
+						inCompositions = true;
+					    }
+					    ;
+					}
+
+					for (int i = 0; i < classAggr.getElementsByTagName("entry").getLength(); i++)
+					{
+					    if (classAggr.getElementsByTagName("entry").item(i).getTextContent()
+						    .equals(prefixRBrace[5]))
+					    {
+						classAggr.removeChild(classAggr.getElementsByTagName("entry").item(i));
+					    }
+					    ;
+					}
+
+					if (inCompositions == false)
+					{
+					    Element classCompEntry = document.createElement("entry");
+					    classCompEntry.appendChild(document.createTextNode(prefixRBrace[5]));
 					    classComp.appendChild(classCompEntry);
 					    // curNode = (Element) curNode.getLastChild();
 					}
@@ -1266,12 +1369,191 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			{
 			    curNode = (Element) curNode.getParentNode();
 			}
+
 		    }
 
 		    done = true;
 		    continue;
 		}
 		;
+
+		if (curNode.getNodeName().equals("classdefinition") && !(sourcec.charAt(0) == ';'))
+		{
+		    // TODO: var einlesen
+
+		    String[] nameArray = new String[1];
+		    nameArray[0] = ";";
+
+		    TokenResult varRes = goToTokenWithName(sourcec, nameArray);
+
+		    String varData = varRes.getData().strip();
+		    varData = varData.replaceAll("\n", " ");
+		    varData = varData.replaceAll(" +", " ");
+
+		    String[] pureVarSplit =
+		    { ";", ";", ";" };
+		    boolean splitDone = false;
+
+		    if (varData.contains("="))
+		    {
+			varData.replaceAll("=", " = ");
+			if (varData.contains(" new "))
+			{
+			    sourcec = sourcec.substring(1);
+			    continue;
+			}
+			String[] varSplit = varData.split(" ");
+			for (int i = 0; i < varSplit.length; i++)
+			{
+			    if (varSplit[i].equals("="))
+			    {
+				if (i <= 3)
+				{
+				    for (int j = 0; j < i; j++)
+				    {
+					pureVarSplit[j] = varSplit[j];
+				    }
+				    splitDone = true;
+				}
+				else
+				{
+				    System.out.println("Fehler bei Klassen-Variablen erkennen");
+				}
+
+			    }
+			}
+
+		    }
+
+		    String[] varSplit = varData.split(" ");
+		    if ((varSplit.length <= 3) && !splitDone)
+		    {
+			for (int j = 0; j < varSplit.length; j++)
+			{
+			    pureVarSplit[j] = varSplit[j];
+			}
+
+		    }
+		    else
+		    {
+			System.out.println("Fehler bei Klassen-Variablen erkennen");
+			sourcec = sourcec.substring(1);
+			continue;
+		    }
+		    String[] varTypeArray =
+		    { "int", "boolean", "char", "byte", "short", "long", "float", "double" };
+		    boolean createVarNode = false;
+		    int typeNumber = -1;
+
+		    if (pureVarSplit[2].equals(";"))
+		    {
+
+			if (pureVarSplit[1].equals(";"))
+			{
+			    sourcec = varRes.getSourceCode();
+			    continue;
+			}
+
+			for (int i = 0; i < varTypeArray.length; i++)
+			{
+			    if (varTypeArray[i].equals(pureVarSplit[0]))
+			    {
+				createVarNode = true;
+				typeNumber = i;
+			    }
+			}
+			if (createVarNode)
+			{
+			    Element varMainNode = document.createElement("var");
+			    Element varNameNode = document.createElement("name");
+			    Element varTypeNode = document.createElement("type");
+			    Element varAccessNode = document.createElement("access");
+
+			    varMainNode.appendChild(varTypeNode);
+			    varMainNode.appendChild(varNameNode);
+			    varMainNode.appendChild(varAccessNode);
+			    curNode.appendChild(varMainNode);
+
+			    varTypeNode.appendChild(document.createTextNode(varTypeArray[typeNumber]));
+			    varNameNode.appendChild(document.createTextNode(pureVarSplit[1]));
+			    varAccessNode.appendChild(document.createTextNode("pprivate"));
+
+			}
+			else
+			{
+
+			    Element instanceMainNode = document.createElement("instance");
+			    Element instanceAccessNode = document.createElement("access");
+			    Element instanceNameNode = document.createElement("name");
+			    Element instanceClassNode = document.createElement("class");
+
+			    instanceAccessNode.appendChild(document.createTextNode("pprivate"));
+			    instanceNameNode.appendChild(document.createTextNode(pureVarSplit[1]));
+			    instanceClassNode.appendChild(document.createTextNode(pureVarSplit[0]));
+
+
+			    instanceMainNode.appendChild(instanceAccessNode);
+			    instanceMainNode.appendChild(instanceNameNode);
+			    instanceMainNode.appendChild(instanceClassNode);
+			    curNode.appendChild(instanceMainNode);
+			}
+			sourcec = varRes.getSourceCode();
+			continue;
+
+		    }
+		    else
+		    {
+			for (int i = 0; i < varTypeArray.length; i++)
+			{
+			    if (varTypeArray[i].equals(pureVarSplit[1]))
+			    {
+				createVarNode = true;
+				typeNumber = i;
+			    }
+			}
+
+			if (createVarNode)
+			{
+			    Element varMainNode = document.createElement("var");
+			    Element varNameNode = document.createElement("name");
+			    Element varAccessNode = document.createElement("access");
+			    Element varTypeNode = document.createElement("type");
+
+
+
+			    varAccessNode.appendChild(document.createTextNode(pureVarSplit[0]));
+			    varTypeNode.appendChild(document.createTextNode(varTypeArray[typeNumber]));
+			    varNameNode.appendChild(document.createTextNode(pureVarSplit[2]));
+
+			    varMainNode.appendChild(varAccessNode);
+			    varMainNode.appendChild(varTypeNode);
+			    varMainNode.appendChild(varNameNode);
+			    curNode.appendChild(varMainNode);
+			}
+			else
+			{
+
+			    Element instanceMainNode = document.createElement("instance");
+			    Element instanceNameNode = document.createElement("name");
+			    Element instanceClassNode = document.createElement("class");
+			    Element instanceAccessNode = document.createElement("access");
+
+
+			    instanceNameNode.appendChild(document.createTextNode(pureVarSplit[2]));
+			    instanceClassNode.appendChild(document.createTextNode(pureVarSplit[1]));
+			    instanceAccessNode.appendChild(document.createTextNode(pureVarSplit[0]));
+
+			    instanceMainNode.appendChild(instanceAccessNode);
+			    instanceMainNode.appendChild(instanceNameNode);
+			    instanceMainNode.appendChild(instanceClassNode);
+			    curNode.appendChild(instanceMainNode);
+			}
+			sourcec = varRes.getSourceCode();
+			continue;
+
+		    }
+
+		}
 
 		if (!done)
 		{
@@ -1383,7 +1665,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
     /**
      * Liest den uebergebenen Quellcode ein und parsed die Informationen daraus
-     * 
+     *
      * @param sourceCode Vollstaendiger Java-Quellcode
      */
     public void parse(ArrayList<String> sourceCode)
@@ -1404,7 +1686,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
     /**
      * Liefert die Ergebnisse des Parsens zurueck
-     * 
+     *
      * @return XML Document mit den Ergebnissen des Parsens
      */
     public Document getParsingResult()

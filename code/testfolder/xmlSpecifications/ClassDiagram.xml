@@ -103,7 +103,6 @@
 				<methoddefinition>
 					<access>public</access>
 					<name>call2</name>
-					<type>static</type>
 					<result>void</result>
 				</methoddefinition>
 			</entry>

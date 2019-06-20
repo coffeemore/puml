@@ -126,4 +126,46 @@ class XmlHelperMethodsTest
 	);
     }
 
+    @Test
+    void writeToFile()
+    {
+
+    }
+
+    @Test
+    void listAllNodes()
+    {
+
+    }
+
+    @Test
+    void removeComments()
+    {
+
+    }
+
+    @Test
+    void removeWhitespace()
+    {
+
+    }
+
+    @Test
+    void getList()
+    {
+
+    }
+
+    @Test
+    void getChildwithName()
+    {
+
+    }
+
+    @Test
+    void hasChildwithName()
+    {
+
+    }
+
 }

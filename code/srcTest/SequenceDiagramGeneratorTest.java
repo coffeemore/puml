@@ -3,6 +3,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
 import java.io.IOException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
@@ -35,7 +37,6 @@ class SequenceDiagramGeneratorTest
     {
 	assertAll(() ->
 	{
-
 	    Document test = classUnderTest.createDiagram(parsedData, "Class1", "method1");
 	    Document seqDiagram = xmlHM.getDocumentFrom("..//code//testfolder//xmlSpecifications//SeqDiagram.xml");
 	    boolean s = false;
