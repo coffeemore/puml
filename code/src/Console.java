@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -131,9 +135,14 @@ public class Console extends PUMLgenerator
 		    
 		    	if (cmd.hasOption("ucpp")) // Cpp Dateien Parsen
 		    	{
+		    		parser = new ParserCPP();
 		    		codeCollector.setUseCppAndHppFilesFiles(true);
 		    		codeCollector.setUseJarFiles(false);
 		    		codeCollector.setUseJavaFiles(false);
+		    	}
+		    	else
+		    	{
+		    		// parser = new ParserJava();
 		    	}
 			    if (cmd.hasOption("ijar")) // ignore jar files
 			    {
@@ -231,7 +240,6 @@ public class Console extends PUMLgenerator
     private void interactiveMode()
     {
 		char choice = '\0';
-		
     	System.out.println("Interaktiver Modus");
     	
     	//Ausgabeort festlegen
