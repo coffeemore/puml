@@ -51,7 +51,7 @@ public class Console extends PUMLgenerator
 	Options options = new Options();
 	options.addOption("c", false, "Konsole wird aufgerufen");
 	
-	//Logging Commandline
+	// Logging Commandline
 	options.addOption("l", false, "Debug: Ausgabe in Konsole");
 
 	// ignorieren verschiedener Dateitypen
@@ -59,20 +59,22 @@ public class Console extends PUMLgenerator
 
 	options.addOption("ijava", false, "Dateien mit der Endung .java werden ignoriert.");
 	
-	//ignoriere Instanzen, Variablen, Methoden in Klassendiagrammen anzeigen
+	options.addOption("ucpp", false, "Verarbeite Dateien mit der Endung .cpp.");
+	
+	// ignoriere Instanzen, Variablen, Methoden in Klassendiagrammen anzeigen
 	options.addOption("iinst",false, "Instanzen werden bei Erzeugung des Klassendiagramms nicht beruecksichtigt.");
 	
 	options.addOption("ivar",false, "Variablen werden bei Erzeugung des Klassendiagramms nicht beruecksichtigt.");
 	
 	options.addOption("imeth",false, "Methoden werden bei Erzeugung des Klassendiagramms nicht beruecksichtigt.");
 	
-	//Erstelle Klassendiagramm
+	// Erstelle Klassendiagramm
 	options.addOption("cc",false, "Erzeugt ein Klassendiagramm.");
 		
-	//Alles auflisten
+	// Alles auflisten
 	options.addOption("s",false, "Listet alle Klassen und Methoden auf.");
 		
-	//Interactive Mode
+	// Interactive Mode
 	options.addOption("int",false, "Startet interaktiven Modus.");
 	
 	// Angabe fuer den Ausgabepfad
@@ -80,7 +82,7 @@ public class Console extends PUMLgenerator
 		.longOpt("o").argName("filepath").hasArg().desc("Angabe des Pfades fuer den Zielordner.").build();
 	options.addOption(output);
 	
-	//Logging als Logfile
+	// Logging als Logfile
 	Option logfile = Option.builder()
 			.longOpt("lf").argName("log-filepath").hasArg().desc("Angabe des Pfades fuer das Logfile").build();
 	options.addOption(logfile);
@@ -90,7 +92,7 @@ public class Console extends PUMLgenerator
 			.longOpt("cs").argName("Klasse, Methode").hasArgs().type(Integer.class).valueSeparator(',').numberOfArgs(2).desc("Erzeugt ein Sequenzdiagramm.").build();
 	options.addOption(seqDiag);*/
 	
-	//Erstelle SeqenceDiagramm
+	// Erstelle SeqenceDiagramm
 	Option seqDiag = Option.builder() 
 		.longOpt("cs").argName("Klasse, Methode").hasArg().valueSeparator(',').numberOfArgs(2).desc("Erzeugt ein Sequenzdiagramm.")
 		.build();
@@ -124,6 +126,12 @@ public class Console extends PUMLgenerator
 		    {
 		    	System.out.println("Consolemode");
 		    
+		    	if (cmd.hasOption("ucpp")) // Cpp Dateien Parsen
+		    	{
+		    		codeCollector.setUseCppAndHppFilesFiles(true);
+		    		codeCollector.setUseJarFiles(false);
+		    		codeCollector.setUseJavaFiles(false);
+		    	}
 			    if (cmd.hasOption("ijar")) // ignore jar files
 			    {
 			    	codeCollector.setUseJarFiles(false);
