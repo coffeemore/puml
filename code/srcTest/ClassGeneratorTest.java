@@ -37,6 +37,7 @@ class ClassGeneratorTest
     }
 
     @Test
+    //Vergleich des erstellten Documents mit der Spezifikation
     void compareXmls()
     {
 	assertAll(() ->

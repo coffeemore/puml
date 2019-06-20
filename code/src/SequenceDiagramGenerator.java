@@ -87,7 +87,7 @@ public class SequenceDiagramGenerator
 
 	xmlHM.removeComments(root);
 	seqDiagram = xmlHM.removeWhitespace(seqDiagram);
-	xmlHM.writeToFile(seqDiagram);
+	//xmlHM.writeToFile(seqDiagram);
 
 	return seqDiagram;
     }
