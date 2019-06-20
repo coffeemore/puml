@@ -21,17 +21,20 @@ public class PUMLgenerator
      */
     public static void main(String[] args) throws ParseException
     {
+    	myConsole = new Console();
+	    myConsole.showConsole(args);
 	//Nur temporäre Lösung. Sollte durch schöneres Konstrukt ersetzt werden
+    
+    /*
 	boolean useGUI = true;
 	if (args.length > 0)
 	   {
 		useGUI = false;
 	   }
-
-	if (!useGUI)
+	 */
+	    /*
+	 if (!useGUI)
 	{
-	    myConsole = new Console();
-	    myConsole.showConsole(args);
 	}
 	else
 	{
@@ -39,9 +42,10 @@ public class PUMLgenerator
 //		myGUI_SWT = new GUI_SWT();
 //		myGUI_SWT.open();
 		
-		myGUI_Swing = new GUI_Swing();
-		myGUI_Swing.showGUI();
+	myGUI_Swing = new GUI_Swing();
+	myGUI_Swing.showGUI();
 	}//endelse
+	 */
     }
 
 
