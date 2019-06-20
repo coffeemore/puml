@@ -37,7 +37,7 @@ public class LogMain  {
 	}
 	
 	
-	public void startLogging(String dirpath, Boolean console)
+	public void startLoggingFile(String dirpath)
 	{
 		//Setup  des XML-Loggers
 		SimpleDateFormat timelog = new SimpleDateFormat("dd-MM-yyyy_HH-mm");
@@ -56,14 +56,6 @@ public class LogMain  {
 		xml.setFormatter(new XMLFormatter());
 		xml.setLevel(Level.ALL);
 		log.addHandler(xml);
-		
-		//Setup Konsolenausgabe
-		if(console)
-		{
-			ConsoleHandler con = new ConsoleHandler();
-			con.setLevel(Level.ALL);
-			log.addHandler(con);
-		}
 		/*
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() 
 		{
@@ -111,4 +103,15 @@ public class LogMain  {
 			PUMLgenerator.logger.getLog().warning(ex.getMessage());
 		}
 	}*/
+	
+	public void startLoggingConsole(Boolean console)
+	{
+		//Setup Konsolenausgabe
+		if(console)
+		{
+			ConsoleHandler con = new ConsoleHandler();
+			con.setLevel(Level.ALL);
+			log.addHandler(con);
+		}
+	}
 }

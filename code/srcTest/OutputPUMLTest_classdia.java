@@ -18,7 +18,7 @@ class OutputPUMLTest_classdia
     void testGetPUML() throws XPathExpressionException, ParserConfigurationException, SAXException, IOException
     {
     	
-    	PUMLgenerator.logger.startLogging("testfolder/tempData/PUMLlog/", false);
+    	PUMLgenerator.logger.startLoggingFile("testfolder/tempData/PUMLlog/");
     	
 	// GetPuml testen
 	String actual = "";
