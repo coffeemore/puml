@@ -22,7 +22,7 @@ import org.xml.sax.SAXException;
 public class ParserJavaTest
 {
 
-    private ParserJava parserTest;
+    private ParserJava parserTest= new ParserJava();
     File xmlFile1;
     File xmlFile2;
     XmlHelperMethods xmlHM = new XmlHelperMethods();
@@ -77,9 +77,9 @@ public class ParserJavaTest
 	
 	ArrayList<String> pumlSourceCode = new ArrayList<String>();
 	pumlSourceCode.add(sc);
-	
+		
 	parserTest.parse(pumlSourceCode);
-	parsedData = xmlHM.getDocumentFrom("..//code//testfolder//xmlSpecifications//parsedData.xml");
+	
 
     }
 
