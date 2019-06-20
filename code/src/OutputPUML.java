@@ -341,7 +341,7 @@ public class OutputPUML
 		    list = helper.getList(diagramData, "/parsed/sequencediagram/classes/entry");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-			if (list.item(a).getNodeName() != "#text")
+			if (!list.item(a).getNodeName().equals("#text"))
 			{
 			    pumlCode += "participant " + list.item(a).getTextContent() + "\n";
 			}
@@ -349,7 +349,7 @@ public class OutputPUML
 		    list = helper.getList(diagramData, "/parsed/sequencediagram/entrypoint/class");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-			if (list.item(a).getNodeName() != "#text")
+			if (!list.item(a).getNodeName().equals("#text") )
 			{
 			    pumlCode += "note over " + list.item(a).getTextContent() + ":";
 			    tempStartClass = list.item(a).getTextContent();
@@ -358,7 +358,7 @@ public class OutputPUML
 		    list = helper.getList(diagramData, "/parsed/sequencediagram/entrypoint/method");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-			if (list.item(a).getNodeName() != "#text")
+			if (!list.item(a).getNodeName().equals("#text"))
 			{
 			    pumlCode += " " + list.item(a).getTextContent() + "\n";
 			    pumlCode += "activate " + tempStartClass + "\n";
@@ -398,19 +398,19 @@ public class OutputPUML
 	{
 		 while(nextNode.getNodeName() != null) //Versuch
 		 {
-		     if(nextNode.getNodeName()=="name")
+		     if(nextNode.getNodeName().equals("name"))
 		     {
 			 nextNode = helper.getList(nextNode,"following-sibling::*").item(0);
 		     }
 		     //pumlCode += "activate " + startClass + "\n"; //benötigt
 			 
-		     if(nextNode.getNodeName()=="alternative")
+		     if(nextNode.getNodeName().equals("alternative"))
 		     {
 			 pumlCode += helperAlternativeCall(nextNode, startClass);
 			 //nextNode = nextNode.getNextSibling();
 			    
 		     }
-		     if(nextNode.getNodeName() == "methodcall")
+		     if(nextNode.getNodeName().equals("methodcall"))
 		     {
 			 Node methodNode = helper.getList(nextNode, "child::*").item(0);
 			 pumlCode += helperMethodCallHandler(startClass, methodNode);
@@ -453,16 +453,16 @@ public class OutputPUML
     	    {
         	    while (nextNode.getNodeName() != null)
         	    {        		
-                	    if(nextNode.getNodeName()=="condition")
+                	    if(nextNode.getNodeName().equals("condition"))
                 	    {
                 		//nextNode = nextNode.getNextSibling();
                 	    }
-                	    if(nextNode.getNodeName() == "methodcall")
+                	    if(nextNode.getNodeName().equals("methodcall"))
                 	    {
                 		Node aufrufNode = helper.getList(nextNode, "child::*").item(0);
                 		pumlCode += helperMethodCallHandler(startClass, aufrufNode);
                 	    }
-                	    if(nextNode.getNodeName()== "loop")
+                	    if(nextNode.getNodeName().equals("loop"))
                 	    {
                 		pumlCode += helperLoopCall(nextNode, startClass);
                 	    }
@@ -495,22 +495,22 @@ public class OutputPUML
 	{
         	while (nextNode.getNodeName() != null)
         	{
-        	    if (nextNode.getNodeName() == "instance")
+        	    if (nextNode.getNodeName().equals("instance"))
         	    {
         		inst = nextNode.getTextContent();
         
         	    }
-        	    else if(nextNode.getNodeName() == "class")
+        	    else if(nextNode.getNodeName().equals("class"))
         	    {
         		toClass = nextNode.getTextContent();
         
         	    }
-        	    else if(nextNode.getNodeName() == "method")
+        	    else if(nextNode.getNodeName().equals("method"))
         	    {
         		method = nextNode.getTextContent();
         
         	    }
-        	    else if(nextNode.getNodeName() == "type")
+        	    else if(nextNode.getNodeName().equals("type"))
         	    {
         		
         		type = nextNode.getTextContent();
@@ -589,11 +589,11 @@ public class OutputPUML
 	{
 	    while (nextNode.getNodeName() != null)
 	    {
-        	if(nextNode.getNodeName()=="condition")
+        	if(nextNode.getNodeName().equals("condition"))
         	{
         	    pumlCode += nextNode.getTextContent() + "\n";
         	    //nextNode = nextNode.getNextSibling();
-        	}if(nextNode.getNodeName() == "methodcall")
+        	}if(nextNode.getNodeName().equals("methodcall"))
         	{
         	    nextNode = helper.getList(nextNode, "child::*").item(0);
         	    pumlCode += helperMethodCallHandler(startClass, nextNode);
