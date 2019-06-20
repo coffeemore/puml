@@ -20,13 +20,14 @@ import net.sourceforge.plantuml.SourceStringReader;
 
 /**
  * 
- * @author developer Klasse welche die Ausgabe des plantUML-Codes und die
- *         Klassendiagramme erzeugt
+ * developer Klasse welche die Ausgabe des plantUML-Codes und die
+ * Klassendiagramme erzeugt
+ * 
+ * @author Patrick Otte, Tore Arndt        
  */
 public class OutputPUML
 {
     public NodeList list = null;
-    PUMLgenerator puml = new PUMLgenerator();
     XmlHelperMethods helper = new XmlHelperMethods();
     boolean firstMethodCall = true;
     
@@ -46,19 +47,18 @@ public class OutputPUML
      * @throws XPathExpressionException
      * @throws IOException 
      */
-
     public String getPUML(Document diagramData) throws XPathExpressionException
-    {
+    {	
 		XPathFactory xPathfactory = XPathFactory.newInstance();
 		XPath xpath = xPathfactory.newXPath();
 		XPathExpression expr = xpath.compile("/parsed/*"); // Startpunkt parsed Knoten
 		list = (NodeList) expr.evaluate(diagramData, XPathConstants.NODESET); // in Liste
 		String compare = list.item(0).getNodeName();
 		String pumlCode = "@startuml\n";
-		if (compare == "classdiagramm")
+		if (compare.equals("classdiagramm"))
 		{
 			boolean gotInstances = false;
-			
+
 			//CLASSES
 			list = helper.getList(list.item(0), "classes/entry/name");
 		    for (int a = 0; a < list.getLength(); a++)
@@ -72,7 +72,7 @@ public class OutputPUML
 				    	pumlCode += "{\n";
 				    	gotInstances = true;
 				    }
-				    else 
+				    else
 				    {
 				    	pumlCode += "\n";
 				    }
@@ -81,7 +81,6 @@ public class OutputPUML
 				    for (int b=0; b<instanceList.getLength(); b++)
 				    {
 				    	NodeList tempList = helper.getList(instanceList.item(b), "access");
-				    	//System.out.println(tempList.item(0).getTextContent());
 					    if (tempList.item(0).getTextContent().equals("private")) 
 					    {
 					    	pumlCode += "-";
@@ -184,12 +183,23 @@ public class OutputPUML
 		    }
 		    
 		    //INTERFACES
-		    //TODO Kann Interface vars haben? (nein: vars teil löschen, ja: weiter fragen, gotInstances-Part?
 		    list = helper.getList(list.item(0).getParentNode().getParentNode().getParentNode(), "interfaces/entry/name");
 		    for (int a = 0; a < list.getLength(); a++)
 		    {
-				    pumlCode += "interface " + list.item(a).getTextContent() + "{\n";
+				    pumlCode += "interface " + list.item(a).getTextContent();
 				    NodeList instanceList = helper.getList(list.item(a).getParentNode(), "instance");
+				    NodeList methodList = helper.getList(list.item(a).getParentNode(), "methoddefinition");
+				    if ((instanceList.getLength() > 0) || (methodList.getLength()>0)) 
+				    {
+				    	pumlCode += "{\n";
+				    	gotInstances = true;
+				    }
+				    else
+				    {
+				    	pumlCode += "\n";
+				    }
+				    
+				    //INSTANCES
 				    for (int b=0; b<instanceList.getLength(); b++)
 				    {
 				    	NodeList tempList = helper.getList(instanceList.item(b), "access");
@@ -214,32 +224,8 @@ public class OutputPUML
 					    tempList = helper.getList(instanceList.item(b), "name");
 					    pumlCode += tempList.item(0).getTextContent()+"\n";
 				    }
-				    NodeList varList = helper.getList(list.item(a).getParentNode(), "var");
-				    for (int b=0; b<varList.getLength(); b++) 
-				    {
-				    	NodeList tempList = helper.getList(varList.item(b), "access");
-					    if (tempList.item(0).getTextContent().equals("private")) 
-					    {
-					    	pumlCode += "-";
-					    }
-					    else if (tempList.item(0).getTextContent().equals("public")) 
-					    {
-					    	pumlCode += "+";
-					    }
-					    else if (tempList.item(0).getTextContent().equals("protected")) 
-					    {
-					    	pumlCode += "#";
-					    }
-					    else if (tempList.item(0).getTextContent().equals("pprivate")) 
-					    {
-					    	pumlCode += "~";
-					    }
-					    tempList = helper.getList(varList.item(b), "type");
-					    pumlCode += tempList.item(0).getTextContent()+" ";
-					    tempList = helper.getList(varList.item(b), "name");
-					    pumlCode += tempList.item(0).getTextContent()+"\n";
-				    }
-				    NodeList methodList = helper.getList(list.item(a).getParentNode(), "methoddefinition");
+				    
+				    //METHODDEFINITION
 				    for (int b=0; b<methodList.getLength(); b++) 
 				    {
 				    	NodeList tempList = helper.getList(methodList.item(b), "access");
@@ -285,7 +271,11 @@ public class OutputPUML
 					    }
 					    pumlCode += ")\n";
 				    }
-				    pumlCode+="}\n";
+				    if(gotInstances) 
+				    {
+				    	pumlCode+="}\n";
+				    	gotInstances=false;
+				    }
 		    }
 
 		    // EXTENSIONS
@@ -333,7 +323,7 @@ public class OutputPUML
 		    }
     	}
 	
-		else if (compare == "sequencediagram")
+		else if (compare.equals("sequencediagram"))
 		{
 	
 		    String tempStartClass = "";
