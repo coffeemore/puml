@@ -32,7 +32,13 @@ class ConsoleTest
 		PUMLgenerator.main(options);
 		assertFalse(PUMLgenerator.codeCollector.isUseJarFiles());
 	}
-	
+	@Test
+	void testUseCpp() throws ParseException
+	{
+		String [] options = {"-c","-ucpp"};
+		PUMLgenerator.main(options);
+		assertFalse(PUMLgenerator.codeCollector.isUseCppAndHppFiles());
+	}
 	@Test
 	void testIgnoreJava() throws ParseException
 	{
