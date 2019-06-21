@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class ConsoleTest
 {
 	private Console testConsole;
-	
+	/*
 	@Test
 	void testMissingPath() throws ParseException
 	{
@@ -24,7 +24,7 @@ class ConsoleTest
 	    		"Es fehlt ein zu bearbeitender Pfad.", out.toString());
 	    System.setOut(save_out);
 	}
-	
+	*/
 	@Test
 	void testIgnoreJar() throws ParseException
 	{
@@ -37,7 +37,7 @@ class ConsoleTest
 	{
 		String [] options = {"-c","-ucpp"};
 		PUMLgenerator.main(options);
-		assertFalse(PUMLgenerator.codeCollector.isUseCppAndHppFiles());
+		assertTrue(PUMLgenerator.codeCollector.isUseCppAndHppFiles());
 	}
 	@Test
 	void testIgnoreJava() throws ParseException

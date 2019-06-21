@@ -138,6 +138,7 @@ public class ClassDiagramGenerator
 										if(!(currentNode.equals("access") ||
 											currentNode.equals("name") ||
 											currentNode.equals("parameters") ||
+											currentNode.equals("type") ||
 											currentNode.equals("result")))
 										{
 											Element elementremove = (Element) current;
