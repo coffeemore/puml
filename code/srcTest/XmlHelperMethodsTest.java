@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Comment;
@@ -132,7 +133,7 @@ class XmlHelperMethodsTest
 
     // löscht die Kommentare in einem Document
     @Test
-    void removeComments() throws ParserConfigurationException
+    void removeComments() throws ParserConfigurationException, XPathExpressionException
     {
 	SetUptestDoc();
 	Comment commentNode1 = testDoc.createComment("how are you");
@@ -140,7 +141,7 @@ class XmlHelperMethodsTest
 	Comment commentNode2 = testDoc.createComment("hello World");
 	testNode.appendChild(commentNode2);
 	Document aktErg = testDoc;
-	
+
 	SetUptestDoc();
 	Document erwErg = testDoc;
 	boolean status = false;
@@ -149,13 +150,13 @@ class XmlHelperMethodsTest
 	assertTrue(status);
 
     }
-    
+
     @Test
     void removeWhitespace() throws ParserConfigurationException, TransformerException, SAXException, IOException
     {
 	SetUptestDoc();
-	
+
 	xmlHM.removeWhitespace(testDoc);
-	
+
     }
 }
