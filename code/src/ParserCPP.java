@@ -10,6 +10,7 @@ public class ParserCPP implements ParserIf
 {
 	private Document document;
 	private XmlHelperMethods xmlHelper = new XmlHelperMethods();
+	private int[] classInterval = {0,0}; 
 	
 	 /**
      * leerer Konstruktor
@@ -40,6 +41,7 @@ public class ParserCPP implements ParserIf
      */
 	private void buildTree( ArrayList<String> code) throws ParserConfigurationException 
 	{
+
 		//TODO Auskommentieren richtig
 		String sourceCodeHPP = deleteComStr(code.get(0));
 		String sourceCodeCPP = deleteComStr(code.get(1));
@@ -47,7 +49,6 @@ public class ParserCPP implements ParserIf
 		//String sourceCodeCPP = code.get(1);
 		sourceCodeHPP = sourceCodeHPP.trim();
 		sourceCodeCPP = sourceCodeCPP.trim();
-
 		//JOHANNS ZEUG:
 		Document document = xmlHelper.createDocument();
 		
@@ -58,6 +59,7 @@ public class ParserCPP implements ParserIf
 		//Suche nach dem Index vom Wort "class" im HPP-Code
 		String keyword = "class ";
 	    int index = sourceCodeHPP.indexOf(keyword);
+
 	    
 	    while (index >=0)
 	    {
@@ -120,98 +122,7 @@ public class ParserCPP implements ParserIf
  				}	
  				
  				//Methoden
-				int i = 0, n = sourceCodeCPP.length();
-				String methodinitial = className + "::";
-				int methodinitlength = methodinitial.length();
-				while(i + methodinitlength < n && i!=-1 )
-		    	{
-		    		if(sourceCodeCPP.substring( i, i + methodinitlength).equals(methodinitial))
-		    		{
-						Element methoddefinition = document.createElement("methoddefinition");
-						interfacedefinition.appendChild(methoddefinition);
-						
-						Element methName = document.createElement("name");
-						methoddefinition.appendChild(methName);
-						
-						Element methResult = document.createElement("result");
-						
-		    			//Vorgängerwort von methodinitial suchen (entspricht Resultattyp)
-						int h = i;
-						while(sourceCodeCPP.charAt(h) != '\n' && h > 0)
-						{
-							h--;
-						}
-						if(h < i - 1)
-						{
-							methoddefinition.appendChild(methResult);
-							methResult.appendChild(document.createTextNode(
-									sourceCodeCPP.substring( h + 1 , i - 1)));
-						}
-						
-						//Folgewort von methodinitial suchen (entspricht Methodenname)
-						int j  = i  + methodinitlength;
-						while(sourceCodeCPP.charAt(j) != '(' && j < n)
-						{
-							j++;
-						}
-						methName.appendChild(document.createTextNode(
-								sourceCodeCPP.substring(i  + methodinitlength, j)));
-						
-						i = j + 1;
-						h = i;
-						
-						while(sourceCodeCPP.charAt(j) != ')' && j < n)
-						{
-							j++;
-						}
-						
-						Element methparam = document.createElement("parameters");
-						methoddefinition.appendChild(methparam);
-
-						while(i < j)
-						{
-							//Bsp: (int param1, int param2) ist auszulesen
-							//Typ finden
-							while(sourceCodeCPP.charAt(i) != ' ' && i < j)
-							{
-								i++;
-							}
-
-							Element entry = document.createElement("entry");
-							methparam.appendChild(entry);
-														
-							Element paramType = document.createElement("type");
-							entry.appendChild(paramType);
-							
-							paramType.appendChild(document.createTextNode(
-									sourceCodeCPP.substring(h, i)));
-							
-							i++;
-							h = i;
-							
-							//Namen finden
-							while(sourceCodeCPP.charAt(i) != ',' && i < j)
-							{
-								i++;
-							}
-
-							Element paramName = document.createElement("name");
-							entry.appendChild(paramName);
-							
-							paramName.appendChild(document.createTextNode(
-									sourceCodeCPP.substring(h, i)));
-							
-							i++;
-							//Mögliches Leerzeichen hinter dem Komma überspringen
-							if(sourceCodeCPP.charAt(i) == ' ')
-							{
-								i++;
-							}
-							h = i;
-						}
-		    		}
-		    		i++;
-		    	}
+				
  				
 	        }
 	        else if(isAbstract(className,sourceCodeHPP)) 
@@ -406,8 +317,19 @@ public class ParserCPP implements ParserIf
 				
 				
 				//Methoden
-				int i = 0, n = sourceCodeCPP.length();
-				String methodinitial = className + "::";
+ 				calclassinterval(sourceCodeCPP);
+ 				//System.out.println(classInterval[0] +"   "+ classInterval[1]);
+				int j = classInterval[0], i = j, n = classInterval[1];//sourceCodeCPP.length();
+
+ 				System.out.println("##############\n" + sourceCodeCPP.substring(i, n));
+ 				while(sourceCodeCPP.charAt(j) != '"')
+ 				{
+ 					j--;
+ 				}
+ 				j++;
+ 				String hppName = sourceCodeCPP.substring(j, i);
+ 				System.out.println(hppName);
+				String methodinitial = hppName + "::";
 				int methodinitlength = methodinitial.length();
 				while(i + methodinitlength < n && i!=-1 )
 		    	{
@@ -435,7 +357,7 @@ public class ParserCPP implements ParserIf
 						}
 						
 						//Folgewort von methodinitial suchen (entspricht Methodenname)
-						int j  = i  + methodinitlength;
+						j  = i  + methodinitlength;
 						while(sourceCodeCPP.charAt(j) != '(' && j < n)
 						{
 							j++;
@@ -463,6 +385,12 @@ public class ParserCPP implements ParserIf
 								i++;
 							}
 
+							//'*' auslassen
+							if(sourceCodeCPP.charAt(i - 1) == '*')
+							{
+								i--;
+							}
+							
 							Element entry = document.createElement("entry");
 							methparam.appendChild(entry);
 														
@@ -472,7 +400,15 @@ public class ParserCPP implements ParserIf
 							paramType.appendChild(document.createTextNode(
 									sourceCodeCPP.substring(h, i)));
 							
-							i++;
+							if(sourceCodeCPP.charAt(i) == '*')
+							{
+								i+=2;
+							}
+							else
+							{
+								i++;
+							}
+
 							h = i;
 							
 							//Namen finden
@@ -728,6 +664,49 @@ public class ParserCPP implements ParserIf
     	}		
     	return cSC;
     }
+    
+    private void calclassinterval(String sourceCodeCPP)
+    {
+    	if(classInterval[0] == 0)
+    	{
+    		classInterval[0] = sourceCodeCPP.indexOf(".hpp\"");
+    	}
+    	else
+    	{
+    		classInterval[0] = classInterval[1];
+    	}
+    	sourceCodeCPP = sourceCodeCPP.substring(classInterval[0] + 5);
+    	if(sourceCodeCPP.indexOf(".hpp\"") < 0)
+		{
+			classInterval[1] = sourceCodeCPP.length();
+		}
+    	else
+    	{
+       		classInterval[1] = sourceCodeCPP.indexOf(".hpp\"");
+    	}
+
+   		classInterval[1] += classInterval[0] + 5;
+    	
+    	
+    	/*sourceCodeCPP = sourceCodeCPP.substring(classInterval[0]);
+    	
+    	classInterval[1] = sourceCodeCPP.indexOf(".hpp\"") + classInterval[1];
+    	classInterval[0] = classInterval[1];
+
+    	sourceCodeCPP = sourceCodeCPP.substring(classInterval[0] + 5);
+    	
+    	if(sourceCodeCPP.indexOf(".hpp\"") < 0)
+		{
+			classInterval[1] = sourceCodeCPP.length();
+		}
+    	else
+    	{
+       		classInterval[1] = sourceCodeCPP.indexOf(".hpp\"");
+    	}
+
+   		classInterval[1] += classInterval[0];*/
+    }
+    
 	@Override 
 	 /**
     * Liefert die Ergebnisse des Parsens zurueck
