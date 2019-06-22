@@ -1089,8 +1089,9 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 					    // curNode = (Element) curNode.getLastChild();
 					}
 				    }
-				    goToClassNode = (Element) goToClassNode.getParentNode();
-
+//				    goToClassNode = (Element) goToClassNode.getParentNode();
+				    goToClassNode = (Element) getList(goToClassNode, "..").item(0);
+				    
 				}
 				while (!doneClass);
 
@@ -1164,7 +1165,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 					    // curNode = (Element) curNode.getLastChild();
 					}
 				    }
-				    goToClassNode = (Element) goToClassNode.getParentNode();
+//				    goToClassNode = (Element) goToClassNode.getParentNode();
+				    goToClassNode = (Element) getList(goToClassNode, "..").item(0);
 
 				}
 				while (!doneClass);
@@ -1201,7 +1203,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				System.out.println("Fehler bei case");
 				break;
 			    }
-			    curNode = (Element) curNode.getParentNode();
+//			    curNode = (Element) curNode.getParentNode();
+			    curNode = (Element) getList(curNode, "..").item(0);
 			}
 
 			sourcec = sourcec.substring(compString.length());
@@ -1243,7 +1246,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				System.out.println("Fehler bei case");
 				break;
 			    }
-			    curNode = (Element) curNode.getParentNode();
+//			    curNode = (Element) curNode.getParentNode();
+			    curNode = (Element) getList(curNode, "..").item(0);
 			}
 
 			sourcec = sourcec.substring(compString.length());
@@ -1396,11 +1400,13 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		{
 		    sourcec = sourcec.substring(1);
 		    curlBrace--;
-		    curNode = (Element) curNode.getParentNode();
+//		    curNode = (Element) curNode.getParentNode();
+		    curNode = (Element) getList(curNode, "..").item(0);
 		    sourcec = sourcec.trim();
 		    if (curNode.getFirstChild().getTextContent().equals("else"))
 		    {
-			curNode = (Element) curNode.getParentNode();
+//			curNode = (Element) curNode.getParentNode();
+			curNode = (Element) getList(curNode, "..").item(0);
 		    }
 		    else if (curNode.getNodeName().equals("alternative") && curNode.getFirstChild().getFirstChild()
 			    .getTextContent().substring(0, 6).equals("switch"))
@@ -1411,14 +1417,16 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			{
 			    curSwitch--;
 			}
-			curNode = (Element) curNode.getParentNode();
+//			curNode = (Element) curNode.getParentNode();
+			curNode = (Element) getList(curNode, "..").item(0);
 		    }
 		    else if (!sourcec.startsWith("else"))
 
 		    {
 			if (curNode.getFirstChild().getTextContent().startsWith("if"))
 			{
-			    curNode = (Element) curNode.getParentNode();
+//			    curNode = (Element) curNode.getParentNode();
+			    curNode = (Element) getList(curNode, "..").item(0);
 			}
 
 		    }
