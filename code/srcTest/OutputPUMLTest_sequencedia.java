@@ -44,7 +44,6 @@ class OutputPUMLTest_sequencedia
 				"deactivate Class2\n" + 
 				"end\n" + 
 				"end\n" + 
-//				"\n" + 
 				"Class1 -> Class1: method2\n" + 
 				"activate Class1\n" + 
 				"alt switch(i)/case 0\n" + 
@@ -57,9 +56,9 @@ class OutputPUMLTest_sequencedia
 				"alt if(b!=c)\n" + 
 				"Class1 -> Class1: method4\n" + 
 				"activate Class1\n" + 
+				"alt if(d!=e)\n" +
 				"Class1 ->o Class1: method3\n" + 
-				"activate Class1\n" + 
-				"deactivate Class1\n" + 
+				"end\n" + 
 				"deactivate Class1\n" + 
 				"end\n" + 
 				"deactivate Class1\n" + 
@@ -102,7 +101,7 @@ class OutputPUMLTest_sequencedia
     // aufgenommen zu werden.
     void testSavePUMLtoFile() throws IOException, ParserConfigurationException, SAXException, XPathExpressionException
     {
-		File expected = new File("testfolder/xmlSpecifications/SeqDiagram.txt");
+		File expected = new File("testfolder/xmlSpecifications/SeqDiagramNew.txt");
 		// savePumltoFile testen
 		// TODO Aendern der Filepaths bevor Test (je nach System), expectedFile
 		// platzieren
@@ -116,8 +115,8 @@ class OutputPUMLTest_sequencedia
     {
 		// TODO Aendern der Filepaths bevor Test (je nach System)
 		File expected = new File("testfolder/xmlSpecifications/SeqDiagram.png");
-		output.createPUMLfromFile("testfolder/xmlSpecifications/SeqDiagram.txt", "SeqD_fromFile.png");
-		File actual = new File("testfolder/xmlSpecifications/SeqD_fromFile.png");
+		output.createPUMLfromFile("testfolder/xmlSpecifications/actualSeqFile.txt", "SeqD_fromFile");
+		File actual = new File("testfolder/xmlSpecifications/SeqD_fromFile/SeqD_fromFile.png");
 		assertEquals(FileUtils.readFile(actual), FileUtils.readFile(expected));
 	}
 	

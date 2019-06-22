@@ -19,6 +19,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.JButton;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
@@ -31,6 +32,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -41,16 +43,22 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
 import javax.swing.JFileChooser;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
+import java.awt.Color;
+import javax.swing.JRadioButtonMenuItem;
 
 public class GUI_Swing
 {
@@ -79,7 +87,7 @@ public class GUI_Swing
 	private JPanel pnlSeqPrev;
 	private JButton btnSeqPrev;
 	private JFileChooser fDialog;
-	private DefaultMutableTreeNode dmtnRoot;
+	private PumlTreeNode ptnRoot;
 	private JScrollPane scrollPaneClass;
 	private JTextArea textClass;
 	private JScrollPane scrollPaneSequence;
@@ -88,14 +96,23 @@ public class GUI_Swing
 	private JLabel lblPlantumlCodeSequence;
 	private JSplitPane splitPane;
 	private JPanel panel;
-	private JTree tree_1;
+	private JTree treeSequence;
 	private JLabel lblMethod;
 	private JLabel lblClass;
 	private JPanel panel_1;
+	private JButton btnParse;
+	private JMenuItem mntmParse;
+	private JButton btnTest;
+	private JMenu mnModus;
+	private JRadioButtonMenuItem rdbtnmntmJava;
+	private JRadioButtonMenuItem rdbtnmntmCpp;
+	private JPanel pnlSeqPrevButton;
+	private FileNameExtensionFilter filter;
 
 	private ArrayList<String> paths;
 	private int lastPathsLength;
 	private ArrayList<String> srcCode;
+	private String mode;
 	private String classPumlCode;
 	private String seqPumlCode;
 	private String epClass;
@@ -104,9 +121,6 @@ public class GUI_Swing
 	private boolean useJar;
 	private File tmpClassImage;
 	private File tmpSeqImage;
-	private Document parsedDoc;
-	private JButton btnParse;
-	private JMenuItem mntmParse;
 
 	/**
 	 * Launch the application.
@@ -159,6 +173,8 @@ public class GUI_Swing
 		frame.setMinimumSize(new Dimension(640, 480));
 
 		fDialog = new JFileChooser(new File("."));
+		filter = new FileNameExtensionFilter("Java Code (.jar, .java)", "java", "jar");
+		mode = "java";
 
 		menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
@@ -209,30 +225,6 @@ public class GUI_Swing
 		});
 		mnDatei.add(mntmPathEditor);
 
-//		mntmRunPUML = new JMenuItem("PUML ausf\u00FChren");
-//		mntmRunPUML.addActionListener(new ActionListener()
-//		{
-//			public void actionPerformed(ActionEvent e)
-//			{
-//				if (!parsed)
-//				{
-//					parse();
-//				}
-//				runPUML();
-//			}
-//		});
-//
-//		mntmParse = new JMenuItem("Parse");
-//		mntmParse.addActionListener(new ActionListener()
-//		{
-//			public void actionPerformed(ActionEvent e)
-//			{
-//				
-//			}
-//		});
-//		mnDatei.add(mntmParse);
-//		mnDatei.add(mntmRunPUML);
-
 		mnOptionen = new JMenu("Optionen");
 		menuBar.add(mnOptionen);
 
@@ -272,6 +264,41 @@ public class GUI_Swing
 		chckbxmntmUseJar.setSelected(useJar);
 		mnOptionen.add(chckbxmntmUseJar);
 
+		mnModus = new JMenu("Modus");
+		mnOptionen.add(mnModus);
+
+		rdbtnmntmJava = new JRadioButtonMenuItem("Java");
+		rdbtnmntmJava.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if (rdbtnmntmJava.isSelected() && mode != "java")
+				{
+					changeMode("java");
+				}
+			}
+		});
+		rdbtnmntmJava.setSelected(true);
+		mnModus.add(rdbtnmntmJava);
+
+		rdbtnmntmCpp = new JRadioButtonMenuItem("C++");
+		rdbtnmntmCpp.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if (rdbtnmntmCpp.isSelected() && mode != "cpp")
+				{
+					changeMode("cpp");
+				}
+				System.out.println(mode);
+			}
+		});
+		mnModus.add(rdbtnmntmCpp);
+
+		ButtonGroup bgMode = new ButtonGroup();
+		bgMode.add(rdbtnmntmJava);
+		bgMode.add(rdbtnmntmCpp);
+
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 
@@ -297,6 +324,7 @@ public class GUI_Swing
 		pnlClass.add(scrollPaneClass, BorderLayout.CENTER);
 
 		textClass = new JTextArea();
+		textClass.setEditable(false);
 		scrollPaneClass.setViewportView(textClass);
 
 		lblPlantumlCodeClass = new JLabel("PlantUML Code:");
@@ -307,6 +335,7 @@ public class GUI_Swing
 		pnlSequence.setLayout(new BorderLayout(0, 0));
 
 		splitPane = new JSplitPane();
+		splitPane.setResizeWeight(0.2);
 		pnlSequence.add(splitPane, BorderLayout.CENTER);
 
 		panel = new JPanel();
@@ -317,6 +346,7 @@ public class GUI_Swing
 		panel.add(scrollPaneSequence);
 
 		textSequence = new JTextArea();
+		textSequence.setEditable(false);
 		scrollPaneSequence.setViewportView(textSequence);
 
 		lblPlantumlCodeSequence = new JLabel("PlantUML Code:");
@@ -332,15 +362,21 @@ public class GUI_Swing
 			public void actionPerformed(ActionEvent e)
 			{
 				// TODO
-				if (epClass=="nicht gesetzt") {
-					JOptionPane.showMessageDialog(frame, "Einstiegspunkt nicht gesetzt!", "Fehler", JOptionPane.ERROR_MESSAGE);
-				} else {
+				if (epClass == "nicht gesetzt")
+				{
+					JOptionPane.showMessageDialog(frame, "Einstiegspunkt nicht gesetzt!", "Fehler",
+							JOptionPane.ERROR_MESSAGE);
+				}
+				else
+				{
 					showPreview(tmpSeqImage, "Sequenzdiagramm");
 				}
-				
+
 			}
 		});
-		pnlSeqPrev.add(btnSeqPrev, BorderLayout.SOUTH);
+		pnlSeqPrevButton = new JPanel();
+		pnlSeqPrevButton.add(btnSeqPrev);
+		pnlSeqPrev.add(pnlSeqPrevButton, BorderLayout.SOUTH);
 
 		panel_1 = new JPanel();
 		panel_1.setBorder(new TitledBorder("Entry-Point:"));
@@ -353,23 +389,24 @@ public class GUI_Swing
 		lblClass = new JLabel("Klasse: " + epClass);
 		panel_1.add(lblClass, BorderLayout.NORTH);
 
-		dmtnRoot = new DefaultMutableTreeNode("Klassen", true);
-		tree_1 = new JTree(dmtnRoot);
-		splitPane.setLeftComponent(tree_1);
+		ptnRoot = new PumlTreeNode("Klassen", PumlTreeNode.Type.ROOT);
+		treeSequence = new JTree(ptnRoot);
+		treeSequence.setToolTipText("Methode anklicken um Einstiegspunkt zu setzen");
+		splitPane.setLeftComponent(treeSequence);
 
 		// Selection Listener welches Leaf und welcher Parent ausgewählt wurden (nur
 		// Leaf-Ebene)
-		tree_1.addTreeSelectionListener(new TreeSelectionListener()
+		treeSequence.addTreeSelectionListener(new TreeSelectionListener()
 		{
 			public void valueChanged(TreeSelectionEvent e)
 			{
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree_1.getLastSelectedPathComponent();
+				PumlTreeNode node = (PumlTreeNode) treeSequence.getLastSelectedPathComponent();
 				if (node == null)
 				{
 					return;
 				}
 
-				if (node.isLeaf())
+				if (node.getType() == PumlTreeNode.Type.METHOD)
 				{
 					epClass = node.getParent().toString();
 					epMethod = node.toString();
@@ -419,6 +456,27 @@ public class GUI_Swing
 		btnSave.setToolTipText("Speichern");
 		toolBar.add(btnSave);
 
+		btnTest = new JButton("Test");
+		btnTest.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				try
+				{
+					test();
+				}
+				catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException
+						| TransformerException e1)
+				{
+					// TODO Auto-generated catch block
+					System.err.println(e1.getCause());
+					System.err.println(e1.getMessage());
+				}
+			}
+		});
+		btnTest.setBackground(new Color(150, 200, 255));
+		toolBar.add(btnTest);
+
 //		btnParse = new JButton("");
 //		btnParse.addActionListener(new ActionListener()
 //		{
@@ -446,6 +504,53 @@ public class GUI_Swing
 //		toolBar.add(btnRunPUML);
 	}
 
+	private void resetElements()
+	{
+		ptnRoot.removeAllChildren();
+		textClass.setText("");
+		textSequence.setText("");
+		paths = new ArrayList<>();
+		lastPathsLength = 0;
+		srcCode = new ArrayList<>();
+		classPumlCode = "";
+		seqPumlCode = "";
+
+		frame.setTitle("PUML - no files selected");
+		frame.revalidate();
+
+	}
+
+	private void changeMode(String tmpMode)
+	{
+		switch (tmpMode)
+		{
+		case "java":
+		{
+			filter = new FileNameExtensionFilter("Java Code (.jar, .java)", "java", "jar");
+			mode = "java";
+//			System.out.println("mode = java");
+			chckbxmntmUseJava.setEnabled(true);
+			chckbxmntmUseJar.setEnabled(true);
+			resetElements();
+			break;
+		}
+		case "cpp":
+		{
+			filter = new FileNameExtensionFilter("C++ Code (.cpp, .hpp)", "cpp", "hpp");
+			mode = "cpp";
+//			System.out.println("mode = c++");
+			chckbxmntmUseJava.setEnabled(false);
+			chckbxmntmUseJar.setEnabled(false);
+			resetElements();
+			break;
+		}
+		default:
+		{
+			System.err.println("kein gültiger Modus");
+		}
+		}
+	}
+
 	private void openFile(boolean useFiles)
 	{
 		File[] items =
@@ -453,7 +558,7 @@ public class GUI_Swing
 		if (useFiles)
 		{
 			fDialog.setDialogTitle("Dateien ausw�hlen");
-			fDialog.setFileFilter(new FileNameExtensionFilter("Java Code (.jar, .java)", "java", "jar"));
+			fDialog.setFileFilter(filter);
 			fDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			fDialog.setMultiSelectionEnabled(true);
 			fDialog.showOpenDialog(frame);
@@ -487,6 +592,45 @@ public class GUI_Swing
 		}
 	}
 
+	private void test() throws ParserConfigurationException, SAXException, IOException, XPathExpressionException,
+			TransformerException
+	{
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document parsedDoc = builder.parse(new File("testfolder/xmlSpecifications/parsedData.xml"));
+		createTree(parsedDoc, ptnRoot);
+//		System.out.println(treeSequence.getRowCount());
+		for (int i = 0; i < treeSequence.getRowCount(); i++)
+		{
+			treeSequence.expandRow(i);
+		}
+
+	}
+
+	private void createTree(Document doc, DefaultMutableTreeNode root) throws XPathExpressionException,
+			TransformerException, SAXException, IOException, ParserConfigurationException
+	{
+		root.removeAllChildren();
+		NodeList nodelist = PUMLgenerator.xmlHelper.getList(doc, "//classdefinition");
+//		System.out.println(nodelist.getLength() + " Klassen gefunden");
+		// classdefinition loop
+		for (int c = 0; c < nodelist.getLength(); c++)
+		{
+			String className = nodelist.item(c).getFirstChild().getNextSibling().getTextContent();
+			NodeList tmpNodelist = PUMLgenerator.xmlHelper.getList(nodelist.item(c), ".//methoddefinition");
+//			System.out.println(className + " mit " + tmpNodelist.getLength() + " Methoden gefunden");
+			PumlTreeNode tmpClassNode = new PumlTreeNode(className, PumlTreeNode.Type.CLASS);
+			root.add(tmpClassNode);
+			for (int m = 0; m < tmpNodelist.getLength(); m++)
+			{
+				String methodName = PUMLgenerator.xmlHelper.getList(tmpNodelist.item(m), ".//name").item(0)
+						.getFirstChild().getTextContent();
+//				System.out.println("\t" + methodName);
+				tmpClassNode.add(new PumlTreeNode(methodName, PumlTreeNode.Type.METHOD));
+			}
+		}
+	}
+
 	private void runPUML()
 	{
 
@@ -496,93 +640,42 @@ public class GUI_Swing
 			frame.setTitle("PUML - parsing ...");
 
 			// Dokument aus Quelltext generieren
-//			PUMLgenerator.codeCollector.paths = paths;
-//			PUMLgenerator.codeCollector.setUseJarFiles(useJar);
-//			PUMLgenerator.codeCollector.setUseJavaFiles(useJava);
-//			srcCode = PUMLgenerator.codeCollector.getSourceCode();
-//			PUMLgenerator.parser.parse(srcCode);
-//			parsedDoc = PUMLgenerator.parser.getParsingResult();
+			PUMLgenerator.codeCollector.paths = paths;
+			PUMLgenerator.codeCollector.setUseJarFiles(useJar);
+			PUMLgenerator.codeCollector.setUseJavaFiles(useJava);
+			srcCode = PUMLgenerator.codeCollector.getSourceCode();
+			PUMLgenerator.parser.parse(srcCode);
+			Document parsedDoc = PUMLgenerator.parser.getParsingResult();
+
+//			PUMLgenerator.xmlHelper.writeDocumentToConsole(parsedDoc);
+			saveDoc(parsedDoc, "testParsed.xml");
 
 			// Testdokument verwenden
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			parsedDoc = builder.parse(new File("testfolder/xmlSpecifications/parsedData.xml"));
+//			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//			DocumentBuilder builder = factory.newDocumentBuilder();
+//			Document parsedDoc = builder.parse(new File("testfolder/xmlSpecifications/parsedData.xml"));
+
+			createTree(parsedDoc, ptnRoot);
+			for (int i = 0; i < treeSequence.getRowCount(); i++)
+			{
+				treeSequence.expandRow(i);
+			}
 
 			// Klassendiagramm erstellen
 			Document classDoc = PUMLgenerator.classDiagramGenerator.createDiagram(parsedDoc);
+			saveDoc(classDoc, "testClass.xml");
 			classPumlCode = PUMLgenerator.outputPUML.getPUML(classDoc);
 			textClass.setText(classPumlCode);
 			PUMLgenerator.outputPUML.createPUMLfromString(tmpClassImage.getAbsolutePath(), classPumlCode);
 
 			// Sequenzdiagramm erstellen
 			Document seqDoc = PUMLgenerator.seqDiagramGenerator.createDiagram(parsedDoc, "Class1", "method1");
+			saveDoc(seqDoc, "testSequence.xml");
 			seqPumlCode = PUMLgenerator.outputPUML.getPUML(seqDoc);
 			textSequence.setText(seqPumlCode);
 			PUMLgenerator.outputPUML.createPUMLfromString(tmpSeqImage.getAbsolutePath(), seqPumlCode);
 
-			// JTree generieren für den Einstiegspunkt des Sequenzdiagramms
-			// TODO Methoden werden noch nicht richtig angezeigt
-//			Node sourceNode = parsedDoc.getFirstChild();
-//			NodeList nodes = sourceNode.getChildNodes();
-//			DefaultMutableTreeNode dmtnTmpMethod;
-//			DefaultMutableTreeNode dmtnTmpClass;
-//			// classdefinition loop
-//			for (int cntC = 0; cntC < nodes.getLength(); cntC++)
-//			{
-//
-//				if (nodes.item(cntC).getNodeName() == "classdefinition")
-//				{
-//					NodeList tmpNodes1 = nodes.item(cntC).getChildNodes();
-//
-//					// methoddefinition loop
-//					for (int cntM = 0; cntM < tmpNodes1.getLength(); cntM++)
-//					{
-//						dmtnTmpClass = new DefaultMutableTreeNode();
-//						if (tmpNodes1.item(cntM).getNodeName() == "name")
-//						{
-//							System.out.println(tmpNodes1.item(cntM).getTextContent());
-//							dmtnTmpClass.setUserObject(tmpNodes1.item(cntM).getTextContent());
-//							dmtnRoot.add(dmtnTmpClass);
-//
-//						}
-//						if (tmpNodes1.item(cntM).getNodeName() == "methoddefinition")
-//						{
-//							NodeList tmpNodes2 = tmpNodes1.item(cntM).getChildNodes();
-//							// methodname loop
-//							for (int cntMN = 0; cntMN < tmpNodes2.getLength(); cntMN++)
-//							{
-//								if (tmpNodes2.item(cntMN).getNodeName() == "name")
-//								{
-//									System.out.println("" + tmpNodes2.item(cntMN).getTextContent());
-//									dmtnTmpMethod = new DefaultMutableTreeNode(tmpNodes2.item(cntMN).getTextContent());
-//									dmtnTmpClass.add(dmtnTmpMethod);
-//								}
-//							}
-//						}
-//					}
-//				}
-//				// TODO interfaces
-//			}
-
-			// JTree Beispiel zur Auswahl des Einstiegspunktes
-			for (int nodeCnt = 0; nodeCnt < 4; nodeCnt++)
-			{
-				DefaultMutableTreeNode dmtnTmp = new DefaultMutableTreeNode("Class" + nodeCnt);
-				dmtnRoot.add(dmtnTmp);
-
-				for (int leafCnt = 1; leafCnt < 4; leafCnt++)
-					dmtnTmp.add(new DefaultMutableTreeNode("method" + (nodeCnt * 3 + leafCnt)));
-			}
-
-			tree_1.expandRow(0);
-
-			// XML output test
-			// PUMLgenerator.xmlHelper.writeDocumentToConsole(seqDoc);
-//			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-//			Transformer transformer = transformerFactory.newTransformer();
-//			DOMSource domSource = new DOMSource(seqDoc);
-//			StreamResult streamResult = new StreamResult(new File("test.xml"));
-//			transformer.transform(domSource, streamResult);
+			treeSequence.expandRow(0);
 
 //			seqPumlCode = PUMLgenerator.outputPUML.getPUML(seqDoc);
 //			textSequence.setText(seqPumlCode);
@@ -632,20 +725,27 @@ public class GUI_Swing
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		catch (TransformerException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void showPreview(File imageFile, String title)
 	{
 		// TODO evtl. Panel übergeben, welches Vorschau und speichern enthält
-		if (paths.isEmpty()) {
+		if (paths.isEmpty())
+		{
 			JOptionPane.showMessageDialog(frame, "Pfadliste ist leer!", "Fehler", JOptionPane.ERROR_MESSAGE);
-		} else {
+		}
+		else
+		{
 			// Vorschau öffnen
 			JOptionPane.showMessageDialog(frame, new JLabel(new ImageIcon(imageFile.getAbsolutePath())), title,
 					JOptionPane.PLAIN_MESSAGE);
 		}
-		
-		
+
 //		if (modified)
 //		{
 //			if (paths.isEmpty())
@@ -731,6 +831,38 @@ public class GUI_Swing
 			{
 
 			}
+		}
+	}
+
+	private void saveDoc(Document doc, String filePath) throws TransformerException
+	{
+		// XML output test
+		// PUMLgenerator.xmlHelper.writeDocumentToConsole(seqDoc);
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		Transformer transformer = transformerFactory.newTransformer();
+		DOMSource domSource = new DOMSource(doc);
+		StreamResult streamResult = new StreamResult(new File(filePath));
+		transformer.transform(domSource, streamResult);
+	}
+
+	private static class PumlTreeNode extends DefaultMutableTreeNode
+	{
+		public enum Type
+		{
+			ROOT, CLASS, METHOD
+		}
+
+		private Type type;
+
+		public PumlTreeNode(Object userObject, Type type)
+		{
+			super.setUserObject(userObject);
+			this.type = type;
+		}
+
+		public Type getType()
+		{
+			return type;
 		}
 	}
 }

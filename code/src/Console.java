@@ -50,11 +50,21 @@ public class Console extends PUMLgenerator
 	// hier wird ein neuer Container für Optionen angelegt
 	Options options = new Options();
 	options.addOption("c", false, "Konsole wird aufgerufen");
+	
+	//Logging Commandline
+	options.addOption("l", false, "Debug: Ausgabe in Konsole");
 
 	// ignorieren verschiedener Dateitypen
 	options.addOption("ijar", false, "Dateien mit der Endung .jar werden ignoriert.");
 
 	options.addOption("ijava", false, "Dateien mit der Endung .java werden ignoriert.");
+	
+	//ignoriere Instanzen, Variablen, Methoden in Klassendiagrammen anzeigen
+	options.addOption("iinst",false, "Instanzen werden bei Erzeugung des Klassendiagramms nicht beruecksichtigt.");
+	
+	options.addOption("ivar",false, "Variablen werden bei Erzeugung des Klassendiagramms nicht beruecksichtigt.");
+	
+	options.addOption("imeth",false, "Methoden werden bei Erzeugung des Klassendiagramms nicht beruecksichtigt.");
 	
 	//Erstelle Klassendiagramm
 	options.addOption("cc",false, "Erzeugt ein Klassendiagramm.");
@@ -62,13 +72,16 @@ public class Console extends PUMLgenerator
 	//Alles auflisten
 	options.addOption("s",false, "Listet alle Klassen und Methoden auf.");
 		
-	//Alles auflisten
+	//Interactive Mode
 	options.addOption("int",false, "Startet interaktiven Modus.");
-
+	
 	// Angabe fuer den Ausgabepfad
 	Option output = Option.builder() 
 		.longOpt("o").argName("filepath").hasArg().desc("Angabe des Pfades fuer den Zielordner.").build();
 	options.addOption(output);
+	
+	//Logging als Logfile
+	Option logfile = Option.builder();
 	
 	/*//Erstelle SeqenceDiagramm
 	Option seqDiag = Option.builder()
@@ -95,63 +108,83 @@ public class Console extends PUMLgenerator
 		    CommandLine cmd = commandParser.parse(options, args);
 	
 		    // Argumentauswertungen und Ausfuehrungen
+		    //Start: Setter-Abfragen
 		    if (cmd.hasOption("c")) // Anleitung ausgeben
 		    {
 		    	System.out.println("Consolemode");
-		    }
-		    if (cmd.hasOption("ijar")) // ignore jar files
-		    {
-		    	codeCollector.setUseJarFiles(false);
-		    }
-		    if (cmd.hasOption("ijava")) // ignore java files
-		    {
-		    	codeCollector.setUseJavaFiles(false);
-		    }
-		    if (cmd.hasOption("i")) // Verarbeitung vieler zu verarbeitenden Pfade
-		    {
-		    	//Print Ausgabeort, wenn vorhanden
-		    	if (cmd.getOptionValue("o") != null)
-		    	{
-					System.out.print("PUML-Ausgabe unter : "+ cmd.getOptionValue("o")+ "\n");
-		    	}
-				//Lesen der Pfade
-				for (String k : cmd.getOptionValues("i"))
-				{
-			       	if (!k.equals(""))
+		    
+			    if (cmd.hasOption("ijar")) // ignore jar files
+			    {
+			    	codeCollector.setUseJarFiles(false);
+			    }
+			    if (cmd.hasOption("ijava")) // ignore java files
+			    {
+			    	codeCollector.setUseJavaFiles(false);
+			    }
+			    if (cmd.hasOption("iinst")) //ignore instances in classdiagramm
+			    {
+			    	classDiagramGenerator.setShowInstances(false);
+			    }
+			    if (cmd.hasOption("ivar")) //ignore variables in classdiagramm
+			    {
+			    	classDiagramGenerator.setShowVars(false);
+			    }
+			    if (cmd.hasOption("imeth")) //ignore methods in classdiagramm
+			    {
+			    	classDiagramGenerator.setShowMethods(false);
+			    } //Ende: Setter-Abfragen
+			    //Verarbeitung
+			    if (cmd.hasOption("i")) // Verarbeitung vieler zu verarbeitenden Pfade
+			    {
+			    	//Print Ausgabeort, wenn vorhanden
+			    	if (cmd.getOptionValue("o") != null)
 			    	{
-			    		System.out.println("Lese: "+ k + "\nadded: "+codeCollector.paths.add(k));
+						System.out.print("PUML-Ausgabe unter : "+ cmd.getOptionValue("o")+ "\n");
 			    	}
+					//Lesen der Pfade
+					for (String k : cmd.getOptionValues("i"))
+					{
+				       	if (!k.equals(""))
+				    	{
+				    		System.out.println("Lese: "+ k + "\nadded: "+codeCollector.paths.add(k));
+				    	}
+					}
+					// Parser verarbeitet Daten
+				    PUMLgenerator.parser.parse(codeCollector.getSourceCode()); 
+				    
+					if (cmd.hasOption("s")) //Alle Klassen Methoden auflisten
+					{
+						showAllClassesMethods();
+					}
+					if (cmd.hasOption("o")) // Pruefe ob Zielordner gegeben
+					{
+						outputLocation = cmd.getOptionValue("o");
+					}
+					if (cmd.hasOption("int")) //Starte Dialog zur Abfrage
+					{
+						interactiveMode();
+					}
+					if (cmd.hasOption("cc")) //Gewuenschtes Diagramm
+					{
+						createClassDiag(outputLocation);
+					}
+					if (cmd.hasOption("cs"))
+					{
+						System.out.print("Entry " + cmd.getOptionValues("cs")[0] + " und " + cmd.getOptionValues("cs")[1] +"\n");
+						entryClass = cmd.getOptionValues("cs")[0];
+						entryMethode = cmd.getOptionValues("cs")[1];
+			    		createSQDiagram(entryClass, entryMethode, outputLocation);
+					}
 				}
-				// Parser verarbeitet Daten
-			    PUMLgenerator.parser.parse(codeCollector.getSourceCode()); 
-			    
-				if (cmd.hasOption("s")) //Alle Klassen Methoden auflisten
-				{
-					showAllClassesMethods();
-				}
-				if (cmd.hasOption("o")) // Pruefe ob Zielordner gegeben
-				{
-					outputLocation = cmd.getOptionValue("o");
-				}
-				if (cmd.hasOption("int")) //Starte Dialog zur Abfrage
-				{
-					interactiveMode();
-				}
-				if (cmd.hasOption("cc")) //Gewuenschtes Diagramm
-				{
-					createClassDiag(outputLocation);
-				}
-				if (cmd.hasOption("cs"))
-				{
-					System.out.print("Entry " + cmd.getOptionValues("cs")[0] + " und " + cmd.getOptionValues("cs")[1] +"\n");
-					entryClass = cmd.getOptionValues("cs")[0];
-					entryMethode = cmd.getOptionValues("cs")[1];
-		    		createSQDiagram(entryClass, entryMethode, outputLocation);
-				}
-			}
-		    else if (!cmd.hasOption("i"))
+			    else if (!cmd.hasOption("i"))
+			    {
+			    	System.out.println("Es fehlt ein zu bearbeitender Pfad.");
+			    }
+			    }
+		    else
 		    {
-		    	System.out.println("Es fehlt ein zu bearbeitender Pfad.");
+				myGUI_Swing = new GUI_Swing();
+		    	GUI_Swing.showGUI();
 		    }
 		}
 		catch (UnrecognizedOptionException uoe ) // Falls Parameter unbekannt, Hilfe ausgeben

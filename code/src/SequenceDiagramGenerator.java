@@ -87,7 +87,6 @@ public class SequenceDiagramGenerator
 
 	xmlHM.removeComments(root);
 	seqDiagram = xmlHM.removeWhitespace(seqDiagram);
-	xmlHM.writeToFile(seqDiagram);
 
 	return seqDiagram;
     }
@@ -142,11 +141,11 @@ public class SequenceDiagramGenerator
 	    Node seqMethodNode = list.item(i);
 	    String cName = xmlHM.getList(mList.item(i), "../name").item(0).getTextContent();
 	    classTag.setTextContent(cName);
-	    seqMethodNode.insertBefore(classTag, seqMethodNode.getFirstChild());
+	    seqMethodNode.insertBefore(classTag, xmlHM.getList(seqMethodNode, "child::*").item(0));
 
 	    // vorhandene Parameters-, Access- oder Result-Tags werden gesucht und entfernt
 	    Node node = list.item(i);
-	    NodeList childs = node.getChildNodes();
+	    NodeList childs = xmlHM.getList(node, "child::*");
 	    for (int j = 0; j < childs.getLength(); j++)
 	    {
 		Node child = childs.item(j);
@@ -165,12 +164,6 @@ public class SequenceDiagramGenerator
 	for (int i = 0; i < list.getLength(); i++)
 	{
 	    xmlHM.delNode(list.item(i), true);
-//	    Node parent = list.item(i).getParentNode();
-//	    NodeList childs = xmlHM.getList(list.item(i), "child::*");
-//	    for(int j = 0; j < childs.getLength(); j++) {
-//		parent.appendChild(childs.item(j));
-//	    }
-//	    parent.removeChild(list.item(i));
 	}
     }
 
@@ -196,12 +189,12 @@ public class SequenceDiagramGenerator
 	NodeList methodcalls = xmlHM.getList(seqDiagram, "//methodcall");
 	for (int i = 0; i < methodcalls.getLength(); i++)
 	{
-	    NodeList mchildnodes = methodcalls.item(i).getChildNodes();
+	    NodeList mchildnodes = xmlHM.getList(methodcalls.item(i), "child::*");
 	    for (int j = 0; j < mchildnodes.getLength(); j++)
 	    {
 		if (mchildnodes.item(j).getNodeName().equals("instance"))
 		{
-		    if (!xmlHM.hasChildwithName(mchildnodes.item(j).getParentNode(), "class"))
+		    if (!xmlHM.hasChildwithName(xmlHM.getList(mchildnodes.item(j),"..").item(0), "class"))
 		    {
 			String iname = mchildnodes.item(j).getTextContent();
 			// wenn Instanz in InstanzenListe vorhanden
@@ -244,7 +237,7 @@ public class SequenceDiagramGenerator
 	for (int i = 0; i < cList.getLength(); i++)
 	{
 	    // Liste aller Unterknoten v. Classdefinition
-	    NodeList cuList = cList.item(i).getChildNodes();
+	    NodeList cuList = xmlHM.getList(cList.item(i), "child::*");
 	    // alle Unterknoten der Klassen werden durchgegangen
 	    for (int j = 0; j < cuList.getLength(); j++)
 	    {
@@ -329,10 +322,10 @@ public class SequenceDiagramGenerator
 	    NodeList iList = xmlHM.getList(doc, "//instance");
 	    for (int i = 0; i < iList.getLength(); i++)
 	    {
-		if (!(iList.item(i).getParentNode().getNodeName().equals("methodcall")
-			|| iList.item(i).getParentNode().getNodeName().equals("classdefinition")))
+		if (!(xmlHM.getList(iList.item(i), "..").item(0).getNodeName().equals("methodcall")
+			|| xmlHM.getList(iList.item(i), "..").item(0).getNodeName().equals("classdefinition")))
 		{
-		    iList.item(i).getParentNode().removeChild(iList.item(i));
+		    xmlHM.getList(iList.item(i), "..").item(0).removeChild(iList.item(i));
 		}
 	    }
 	} catch (Exception e)
@@ -356,8 +349,8 @@ public class SequenceDiagramGenerator
 	for (int i = 0; i < iList.getLength(); i++)
 	{
 	    // Instanzen nicht direkt unterhalb von methodcalls -> lokale Instanzen
-	    if (!(iList.item(i).getParentNode().getNodeName().equals("methodcall")
-		    || iList.item(i).getParentNode().getNodeName().equals("classdefinition")))
+	    if (!(xmlHM.getList(iList.item(i), "..").item(0).getNodeName().equals("methodcall")
+		    || xmlHM.getList(iList.item(i), "..").item(0).getNodeName().equals("classdefinition")))
 	    {
 		// currentI ist ein instance-Knoten
 		Node currentI = iList.item(i);
@@ -379,40 +372,41 @@ public class SequenceDiagramGenerator
      * @param currentNode   - aktuell betrachteter Knoten
      * @param instanceName  - Name der lokalen Instanz
      * @param instanceClass - Name der Klasse der lokalen Instanz
+     * @throws XPathExpressionException 
      */
 
     private void recursiveHandlelocalInstances(Document doc, Node currentNode, String instanceName,
-	    String instanceClass)
+	    String instanceClass) throws XPathExpressionException
     {
 	// lokale Instanz ist in späteren Siblings gültig
 	Node current = currentNode;
-	while (!(current.getNextSibling() == null))
+	while (!(xmlHM.getList(current, "following-sibling::*").item(0) == null))
 	{
 	    while (current.getNodeType() != Node.ELEMENT_NODE || current.getNodeName().equals("instance"))
 	    {
-		current = current.getNextSibling();
+		current = xmlHM.getList(current, "following-sibling::*").item(0);
 	    }
 	    if (current.getNodeName().equals("methodcall"))
 	    {
 		Node instanceNode = xmlHM.getChildwithName(current, "instance");
 
 		if (instanceNode.getTextContent().equals(instanceName)
-			&& !xmlHM.hasChildwithName(instanceNode.getParentNode(), "validity"))
+			&& !xmlHM.hasChildwithName(xmlHM.getList(instanceNode, "..").item(0), "validity"))
 		{
 		    Node classTag = doc.createElement("class");
 		    classTag.setTextContent(instanceClass);
-		    instanceNode.getParentNode().appendChild(classTag);
+		    xmlHM.getList(instanceNode, "..").item(0).appendChild(classTag);
 		}
 	    }
 	    if (current.hasChildNodes() && !current.getNodeName().equals("methodcall"))
 	    {
-		NodeList cnodes = current.getChildNodes();
+		NodeList cnodes = xmlHM.getList(current, "child::*");
 		for (int k = 0; k < cnodes.getLength(); k++)
 		{
 		    recursiveHandlelocalInstances(doc, current, instanceName, instanceClass);
 		}
 	    }
-	    current = current.getNextSibling();
+	    current = xmlHM.getList(current, "following-sibling::*").item(0);
 	}
     }
 
@@ -600,7 +594,7 @@ public class SequenceDiagramGenerator
 
 	    if (name.equals(calledMethod))
 	    {
-		NodeList list2 = xmlHM.getList(node.getParentNode(), ".//methodcall");
+		NodeList list2 = xmlHM.getList(xmlHM.getList(node, "..").item(0), ".//methodcall");
 		if (list2.getLength() == 0)
 		{
 		    return false;
@@ -716,7 +710,7 @@ public class SequenceDiagramGenerator
 	    String classname = currentClass.getTextContent();
 	    if (!usedClasses.contains(classname))
 	    {
-		currentClass.getParentNode().removeChild(currentClass);
+		xmlHM.getList(currentClass, "..").item(0).removeChild(currentClass);
 	    }
 	}
     }
@@ -733,7 +727,7 @@ public class SequenceDiagramGenerator
 	    String methodClass = xmlHM.getChildwithName(currentMethod, "class").getTextContent();
 	    if (!methodWasUsed(methodName, methodClass))
 	    {
-		currentMethod.getParentNode().removeChild(currentMethod);
+		xmlHM.getList(currentMethod, "..").item(0).removeChild(currentMethod);
 	    }
 	}
     }
@@ -750,13 +744,5 @@ public class SequenceDiagramGenerator
 	    }
 	}
 	return false;
-    }
-
-    public void listArrayList(ArrayList<ArrayList<String>> list2)
-    {
-	for (int i = 0; i < list2.size(); i++)
-	{
-	    System.out.println(list2.get(i));
-	}
     }
 }
