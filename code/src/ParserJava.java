@@ -711,30 +711,36 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				break;
 			    }
 			    break;
-			case 2:// Konstruktor oder else if
-			    switch (prefixRBrace[0])
+			case 2:
+			    if (!prefixRBrace[0].contains(".") && !prefixRBrace[1].contains("."))
 			    {
-//							case "else":
-//
-//								break;
-//
-//							case "new":// Objekterzeugung
-//
-//								break;
-			    case "private":// privater Konstruktor
-			    case "public": // Konstruktor
+				Element methoddefinitionNode = document.createElement("methoddefinition");
 
-				if (prefixRBrace[1]
-					.equals(curNode.getElementsByTagName("name").item(0).getTextContent()))
+				Element accessNode = document.createElement("access");
+
+				Element nameNode = document.createElement("name");
+				nameNode.appendChild(document.createTextNode(prefixRBrace[1]));
+
+				methoddefinitionNode.appendChild(accessNode);
+				methoddefinitionNode.appendChild(nameNode);
+
+				curNode.appendChild(methoddefinitionNode);
+
+				Element parametersNode = document.createElement("parameters");
+
+				sourcec = res1.getSourceCode();
+				sourcec = sourcec.substring(1);
+				String[] nameArray2 = new String[2];
+				nameArray2[0] = ")";
+				nameArray2[1] = ",";
+				TokenResult res2;
+
+				if ((prefixRBrace[0].equals("public") || prefixRBrace[0].equals("private"))
+					&& prefixRBrace[1]
+						.equals(curNode.getElementsByTagName("name").item(0).getTextContent()))
 				{
 
-				    System.out.println("Konstruktor");
-				    sourcec = res1.getSourceCode();
-				    sourcec = sourcec.substring(1);
-				    String[] nameArray2 = new String[2];
-				    nameArray2[0] = ")";
-				    nameArray2[1] = ",";
-				    TokenResult res2;
+				    accessNode.appendChild(document.createTextNode(prefixRBrace[0]));
 
 				    // Aggreagations-eintrag erstellen
 
@@ -749,6 +755,15 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 					String[] argumentConstructor = functionData2.split(" ");
 					if (argumentConstructor.length == 2)
 					{
+					    Element entryPNode = document.createElement("entry");
+					    Element typePNode = document.createElement("type");
+					    Element namePNode = document.createElement("name");
+					    typePNode.appendChild(document.createTextNode(argumentConstructor[0]));
+					    namePNode.appendChild(document.createTextNode(argumentConstructor[1]));
+					    entryPNode.appendChild(typePNode);
+					    entryPNode.appendChild(namePNode);
+					    parametersNode.appendChild(entryPNode);
+
 					    boolean inCompositions = false;
 
 					    for (int i = 0; i < classComp.getElementsByTagName("entry")
@@ -787,28 +802,65 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				    while (res2.getFoundToken() != 0);
 				    // curNode = (Element) curNode.getLastChild();
 				    curlBrace++;
-
-				    sourcec = sourcec.trim();
-				    if (sourcec.charAt(0) == '{')
-				    {
-					sourcec = sourcec.substring(1);
-					curlBrace++;
-					// Element constNode = document.createElement("constructor");
-					// curNode.appendChild(constNode);
-					curNode = (Element) curNode.getLastChild();
-					done = true;
-					continue;
-
-				    }
+				    if (parametersNode.hasChildNodes())
+					methoddefinitionNode.appendChild(parametersNode);
 
 				}
+				else
+				{
+				    accessNode.appendChild(document.createTextNode("pprivate"));
+				    do
+				    {
 
-				break;
-			    default:
-				System.out.println("Konstruktor oder else if");
-				break;
+					res2 = goToTokenWithName(sourcec, nameArray2);
+					String functionData2 = res2.getData().strip();
+
+					String[] parameterFunction = functionData2.split(" ");
+					if (parameterFunction.length == 2)
+					{
+					    Element entryPNode = document.createElement("entry");
+					    Element typePNode = document.createElement("type");
+					    Element namePNode = document.createElement("name");
+					    typePNode.appendChild(document.createTextNode(parameterFunction[0]));
+					    namePNode.appendChild(document.createTextNode(parameterFunction[1]));
+					    entryPNode.appendChild(typePNode);
+					    entryPNode.appendChild(namePNode);
+					    parametersNode.appendChild(entryPNode);
+					}
+					sourcec = res2.getSourceCode();
+					sourcec = sourcec.substring(1);
+				    }
+				    while (res2.getFoundToken() != 0);
+
+				    if (parametersNode.hasChildNodes())
+					methoddefinitionNode.appendChild(parametersNode);
+
+				    Element resultNode = document.createElement("result");
+				    resultNode.appendChild(document.createTextNode(prefixRBrace[0]));
+				    methoddefinitionNode.appendChild(resultNode);
+
+				}
+				sourcec = sourcec.trim();
+				if (sourcec.substring(0, 6).equals("throws"))
+				{
+				    while (!(sourcec.charAt(0) == '{'))
+				    {
+					sourcec = sourcec.substring(1);
+
+				    }
+				}
+				else if (sourcec.charAt(0) == '{')
+				{
+				    sourcec = sourcec.substring(1);
+				    curlBrace++;
+				    curNode = (Element) curNode.getLastChild();
+				    done = true;
+				    continue;
+
+				}
 			    }
 			    break;
+
 			case 3:// Funktionsdeklaration
 
 			    String[] nameArrayFD = new String[1];
@@ -818,7 +870,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 			    if ((prefixRBrace[0].equals("public") || prefixRBrace[0].equals("private")
 				    || prefixRBrace[0].equals("protected")) && !prefixRBrace[1].equals("class"))
-			    // rausgenommen, weil manche deklarationen keinen Koerper haben
+			    // rausgenommen, weil manche Deklarationen keinen Koerper haben
 			    // && !functionDataFD.contains(";"))
 			    {
 				Element methoddefinitionNode = document.createElement("methoddefinition");
@@ -901,38 +953,38 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			    if ((prefixRBrace[0].equals("public") || prefixRBrace[0].equals("private"))
 				    && prefixRBrace[1].equals("static"))
 			    {
-				Element methoddefinitionNode = document.createElement("methoddefinition");
+				Element methoddefinitionNode1 = document.createElement("methoddefinition");
 
-				Element accessNode = document.createElement("access");
-				accessNode.appendChild(document.createTextNode(prefixRBrace[0]));
+				Element accessNode1 = document.createElement("access");
+				accessNode1.appendChild(document.createTextNode(prefixRBrace[0]));
 
-				Element nameNode = document.createElement("name");
-				nameNode.appendChild(document.createTextNode(prefixRBrace[3]));
+				Element nameNode1 = document.createElement("name");
+				nameNode1.appendChild(document.createTextNode(prefixRBrace[3]));
 
 				Element typeNode = document.createElement("type");
 				typeNode.appendChild(document.createTextNode(prefixRBrace[1]));
 
-				methoddefinitionNode.appendChild(accessNode);
-				methoddefinitionNode.appendChild(nameNode);
-				methoddefinitionNode.appendChild(typeNode);
+				methoddefinitionNode1.appendChild(accessNode1);
+				methoddefinitionNode1.appendChild(nameNode1);
+				methoddefinitionNode1.appendChild(typeNode);
 
-				curNode.appendChild(methoddefinitionNode);
+				curNode.appendChild(methoddefinitionNode1);
 				// ...
 				// curNode = (Element) curNode.getLastChild();
 
 				// Parameter der Funktion bestimmen
 				sourcec = res1.getSourceCode();
 				sourcec = sourcec.substring(1);
-				String[] nameArray2 = new String[2];
-				nameArray2[0] = ")";
-				nameArray2[1] = ",";
-				TokenResult res2;
-				Element parametersNode = document.createElement("parameters");
+				String[] nameArray3 = new String[2];
+				nameArray3[0] = ")";
+				nameArray3[1] = ",";
+				TokenResult res3;
+				Element parametersNode1 = document.createElement("parameters");
 				do
 				{
 
-				    res2 = goToTokenWithName(sourcec, nameArray2);
-				    String functionData2 = res2.getData().strip();
+				    res3 = goToTokenWithName(sourcec, nameArray3);
+				    String functionData2 = res3.getData().strip();
 
 				    String[] parameterFunction = functionData2.split(" ");
 				    if (parameterFunction.length == 2)
@@ -944,19 +996,19 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 					namePNode.appendChild(document.createTextNode(parameterFunction[1]));
 					entryPNode.appendChild(typePNode);
 					entryPNode.appendChild(namePNode);
-					parametersNode.appendChild(entryPNode);
+					parametersNode1.appendChild(entryPNode);
 				    }
-				    sourcec = res2.getSourceCode();
+				    sourcec = res3.getSourceCode();
 				    sourcec = sourcec.substring(1);
 				}
-				while (res2.getFoundToken() != 0);
+				while (res3.getFoundToken() != 0);
 
-				if (parametersNode.hasChildNodes())
-				    methoddefinitionNode.appendChild(parametersNode);
+				if (parametersNode1.hasChildNodes())
+				    methoddefinitionNode1.appendChild(parametersNode1);
 
 				Element resultNode = document.createElement("result");
 				resultNode.appendChild(document.createTextNode(prefixRBrace[2]));
-				methoddefinitionNode.appendChild(resultNode);
+				methoddefinitionNode1.appendChild(resultNode);
 
 				sourcec = sourcec.trim();
 				if (sourcec.charAt(0) == '{')
@@ -1555,7 +1607,9 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		    sourcec = sourcec.substring(1);
 		}
 	    }
-	    catch (StringIndexOutOfBoundsException e)
+	    catch (
+
+	    StringIndexOutOfBoundsException e)
 	    {
 
 		System.out.println(e.getCause());
@@ -1601,6 +1655,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 	    }
 	}
+
 	TransformerFactory tf = TransformerFactory.newInstance();
 	Transformer transformer;
 	try
@@ -1678,7 +1733,6 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 	String path = home + "/tempLogger/" + "PUMLsource.dat";
 
-
 	if (!pumlDir.exists())
 	{
 
@@ -1691,10 +1745,9 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		// handle it
 	    }
 	}
-	
-	 File tempLogger = new File(path);
 
-	
+	File tempLogger = new File(path);
+
 	try
 	{
 	    FileWriter fileWriter = new FileWriter(tempLogger);
@@ -1707,8 +1760,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
-	
-	
+
 	try
 	{
 	    buildTree(sourceCode.get(0));
@@ -1730,5 +1782,5 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 	return document;
     }
-   
+
 }

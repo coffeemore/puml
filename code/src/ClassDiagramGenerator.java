@@ -80,7 +80,7 @@ public class ClassDiagramGenerator
 				Node classdefinitionNode = classList.item(i);
 				Element entry = document.createElement("entry");
 				classes.appendChild(entry);
-				Element name = document.createElement("Name");
+				Element name = document.createElement("name");
 				Element elClassdef = (Element) classdefinitionNode;
 				entry.appendChild(name);
 				//Erzeugt "name"-tag mit Classennamen als Texteintrag
@@ -138,6 +138,7 @@ public class ClassDiagramGenerator
 										if(!(currentNode.equals("access") ||
 											currentNode.equals("name") ||
 											currentNode.equals("parameters") ||
+											currentNode.equals("type") ||
 											currentNode.equals("result")))
 										{
 											Element elementremove = (Element) current;

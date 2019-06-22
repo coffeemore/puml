@@ -101,7 +101,7 @@ class OutputPUMLTest_sequencedia
     // aufgenommen zu werden.
     void testSavePUMLtoFile() throws IOException, ParserConfigurationException, SAXException, XPathExpressionException
     {
-		File expected = new File("testfolder/xmlSpecifications/SeqDiagramNew.txt");
+		File expected = new File("testfolder/xmlSpecifications/SeqDiagram.txt");
 		// savePumltoFile testen
 		// TODO Aendern der Filepaths bevor Test (je nach System), expectedFile
 		// platzieren
@@ -110,7 +110,7 @@ class OutputPUMLTest_sequencedia
 		assertEquals(FileUtils.readFile(actual), FileUtils.readFile(expected));
     }
 
-    @Test
+    /*  @Test
     void testCreatePUMLfromFile() throws IOException
     {
 		// TODO Aendern der Filepaths bevor Test (je nach System)
@@ -118,7 +118,7 @@ class OutputPUMLTest_sequencedia
 		output.createPUMLfromFile("testfolder/xmlSpecifications/actualSeqFile.txt", "SeqD_fromFile");
 		File actual = new File("testfolder/xmlSpecifications/SeqD_fromFile/SeqD_fromFile.png");
 		assertEquals(FileUtils.readFile(actual), FileUtils.readFile(expected));
-	}
+	}*/
 	
     @Test
     void testCreatePUMLfromString() throws IOException, ParserConfigurationException, SAXException
