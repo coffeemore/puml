@@ -142,7 +142,8 @@ public class ClassDiagramGenerator
 											currentNode.equals("result")))
 										{
 											Element elementremove = (Element) current;
-											elementremove.getParentNode().removeChild(elementremove);
+//											elementremove.getParentNode().removeChild(elementremove);
+											xmlHelper.getList(elementremove, "..").item(0).removeChild(elementremove);
 											//System.out.println("Unterknoten " + currentNode + " wird nicht übernommen.");
 										}
 									}

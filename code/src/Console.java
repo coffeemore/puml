@@ -498,7 +498,9 @@ public class Console extends PUMLgenerator
 				}
 				else if (choice == 'n')
 				{
-					xmlHelper.delNode(classNodeList.item(i).getParentNode(), false);
+//					xmlHelper.delNode(classNodeList.item(i).getParentNode(), false);
+					xmlHelper.delNode(xmlHelper.getList(classNodeList.item(i), "..").item(0), false);
+
 					System.out.println("Klasse: '"+ classNodeList.item(i).getTextContent() + "' wird nicht beruecksichtigt." );
 				}
 				choice = '\0';

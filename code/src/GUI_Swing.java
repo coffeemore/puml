@@ -35,8 +35,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -46,7 +44,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -567,9 +565,10 @@ public class GUI_Swing
 	private void test() throws ParserConfigurationException, SAXException, IOException, XPathExpressionException,
 			TransformerException
 	{
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		Document parsedDoc = builder.parse(new File("testfolder/xmlSpecifications/parsedData.xml"));
+		
+		PUMLgenerator.xmlHelper.getDocumentFrom("testfolder/xmlSpecifications/parsedData.xml");
+//		Document parsedDoc = builder.parse(new File("testfolder/xmlSpecifications/parsedData.xml"));
+		
 		createTree(parsedDoc, ptnRoot);
 //		System.out.println(treeSequence.getRowCount());
 		for (int i = 0; i < treeSequence.getRowCount(); i++)
@@ -589,7 +588,7 @@ public class GUI_Swing
 			// classdefinition loop
 			for (int c = 0; c < nodelist.getLength(); c++)
 			{
-//				String className = nodelist.item(c).getFirstChild().getNextSibling().getTextContent();
+//				String className = nodelist.item(c).getFirstChild().getNextd().getTextContent();
 				String className = PUMLgenerator.xmlHelper.getList(nodelist.item(c), "./name[1]").item(0).getTextContent();
 				NodeList tmpNodelist = PUMLgenerator.xmlHelper.getList(nodelist.item(c), ".//methoddefinition");
 //				System.out.println(className + " mit " + tmpNodelist.getLength() + " Methoden gefunden");
