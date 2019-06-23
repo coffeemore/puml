@@ -41,7 +41,7 @@ public class CodeCollector
      * True = .cpp- und .hpp-Dateien werden verwendet; False = .cpp- und
      * .hpp-Dateien werden ignoriert
      */
-    private boolean useCppAndHppFiles = true;
+    private boolean useCppAndHppFiles = false;
 
     /**
      * Konstruktor

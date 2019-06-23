@@ -500,8 +500,12 @@ public class Console extends PUMLgenerator
 				}
 				else if (choice == 'n')
 				{
-//					xmlHelper.delNode(classNodeList.item(i).getParentNode(), false);
-					xmlHelper.delNode(xmlHelper.getList(classNodeList.item(i), "..").item(0), false);
+					//xmlHelper.delNode(xmlHelper.getList(classNodeList.item(i), "..").item(0), false);
+					//xmlHelper.delNode(classNodeList.item(i), false);
+					parserDoc.removeChild(classNodeList.item(i));
+					
+					//TODO: Parser Result anpassen
+					//Rueckgabe der ClassNodeList fuer PUML
 
 					System.out.println("Klasse: '"+ classNodeList.item(i).getTextContent() + "' wird nicht beruecksichtigt." );
 				}
