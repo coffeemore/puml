@@ -287,12 +287,14 @@ public class Console extends PUMLgenerator
 				}
 			}
 			System.out.println("Gewaehlte Klasse: " + entryClass + " und Methode: " + entryMethode);
+			createSQPlantUmlText(entryClass, entryMethode, outputLocation);
 			createSQDiagram(entryClass, entryMethode ,outputLocation);
 		}
 		else //ClassDiag
 		{
 			//Waehle Klassen aus und erzeuge das Klassen-Diagramm
 			setClassesI();
+			createClassPlantUmlText(outputLocation);
 			createClassDiag(outputLocation);
 		}
 		System.out.println("Ende Interaktiver Modus");

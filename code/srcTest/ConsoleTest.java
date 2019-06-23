@@ -37,7 +37,7 @@ class ConsoleTest
 	{
 		String [] options = {"-c","-ucpp"};
 		PUMLgenerator.main(options);
-		assertFalse(PUMLgenerator.codeCollector.isUseCppAndHppFiles());
+		assertTrue(PUMLgenerator.codeCollector.isUseCppAndHppFiles());
 	}
 	@Test
 	void testIgnoreJava() throws ParseException
