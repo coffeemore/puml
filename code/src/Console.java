@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,32 +54,52 @@ public class Console extends PUMLgenerator
 	// hier wird ein neuer Container für Optionen angelegt
 	Options options = new Options();
 	options.addOption("c", false, "Konsole wird aufgerufen");
+	
+	// Logging Commandline
+	options.addOption("l", false, "Debug: Ausgabe in Konsole");
 
 	// ignorieren verschiedener Dateitypen
-	options.addOption("ijar", false, "Dateien mit der Endung .jar werden ignoriert.");
+	options.addOption("ijar", false, "Dateien mit der Endung '.jar' werden ignoriert.");
 
-	options.addOption("ijava", false, "Dateien mit der Endung .java werden ignoriert.");
+	options.addOption("ijava", false, "Dateien mit der Endung '.java' werden ignoriert.");
 	
-	//Erstelle Klassendiagramm
+	options.addOption("ucpp", false, "Verarbeite Dateien mit der Endung '.cpp'.");
+	
+	// ignoriere Instanzen, Variablen, Methoden in Klassendiagrammen anzeigen
+	options.addOption("iinst",false, "Instanzen werden bei Erzeugung des Klassendiagramms nicht beruecksichtigt.");
+	
+	options.addOption("ivar",false, "Variablen werden bei Erzeugung des Klassendiagramms nicht beruecksichtigt.");
+	
+	options.addOption("imeth",false, "Methoden werden bei Erzeugung des Klassendiagramms nicht beruecksichtigt.");
+	
+	// Erstelle Klassendiagramm
 	options.addOption("cc",false, "Erzeugt ein Klassendiagramm.");
+	
+	// Erstelle Klassendiagramm
+	options.addOption("ct",false, "Erzeugt den PlantUML-Code als Text.");
 		
-	//Alles auflisten
-	options.addOption("s",false, "Listet alle Klassen und Methoden auf.");
+	// Alles auflisten
+	options.addOption("s",false, "Listet alle Klassen und Methoden in der Konsole auf.");
 		
-	//Alles auflisten
+	// Interactive Mode
 	options.addOption("int",false, "Startet interaktiven Modus.");
-
+	
 	// Angabe fuer den Ausgabepfad
 	Option output = Option.builder() 
 		.longOpt("o").argName("filepath").hasArg().desc("Angabe des Pfades fuer den Zielordner.").build();
 	options.addOption(output);
+	
+	// Logging als Logfile
+	Option logfile = Option.builder()
+			.longOpt("lf").argName("log-filepath").hasArg().desc("Angabe des Pfades fuer das Logfile").build();
+	options.addOption(logfile);
 	
 	/*//Erstelle SeqenceDiagramm
 	Option seqDiag = Option.builder()
 			.longOpt("cs").argName("Klasse, Methode").hasArgs().type(Integer.class).valueSeparator(',').numberOfArgs(2).desc("Erzeugt ein Sequenzdiagramm.").build();
 	options.addOption(seqDiag);*/
 	
-	//Erstelle SeqenceDiagramm
+	// Erstelle SeqenceDiagramm
 	Option seqDiag = Option.builder() 
 		.longOpt("cs").argName("Klasse, Methode").hasArg().valueSeparator(',').numberOfArgs(2).desc("Erzeugt ein Sequenzdiagramm.")
 		.build();
@@ -95,63 +119,111 @@ public class Console extends PUMLgenerator
 		    CommandLine cmd = commandParser.parse(options, args);
 	
 		    // Argumentauswertungen und Ausfuehrungen
+			if (cmd.hasOption("l")) //Debugging in Console
+	    	{
+	    		System.out.println("Debugging");
+	    		PUMLgenerator.logger.startLoggingConsole(true);
+	    	}
+			if (cmd.hasOption("lf"))
+			{
+				PUMLgenerator.logger.startLoggingFile(cmd.getOptionValue("lf"));
+			}
+		    //Start: Setter-Abfragen
 		    if (cmd.hasOption("c")) // Anleitung ausgeben
 		    {
 		    	System.out.println("Consolemode");
-		    }
-		    if (cmd.hasOption("ijar")) // ignore jar files
-		    {
-		    	codeCollector.setUseJarFiles(false);
-		    }
-		    if (cmd.hasOption("ijava")) // ignore java files
-		    {
-		    	codeCollector.setUseJavaFiles(false);
-		    }
-		    if (cmd.hasOption("i")) // Verarbeitung vieler zu verarbeitenden Pfade
-		    {
-		    	//Print Ausgabeort, wenn vorhanden
-		    	if (cmd.getOptionValue("o") != null)
+		    
+		    	if (cmd.hasOption("ucpp")) // Cpp Dateien Parsen
 		    	{
-					System.out.print("PUML-Ausgabe unter : "+ cmd.getOptionValue("o")+ "\n");
+		    		parser = new ParserCPP();
+		    		codeCollector.setUseCppAndHppFilesFiles(true);
+		    		codeCollector.setUseJarFiles(false);
+		    		codeCollector.setUseJavaFiles(false);
 		    	}
-				//Lesen der Pfade
-				for (String k : cmd.getOptionValues("i"))
-				{
-			       	if (!k.equals(""))
+		    	else
+		    	{
+		    		// parser = new ParserJava();
+		    	}
+			    if (cmd.hasOption("ijar")) // ignore jar files
+			    {
+			    	codeCollector.setUseJarFiles(false);
+			    }
+			    if (cmd.hasOption("ijava")) // ignore java files
+			    {
+			    	codeCollector.setUseJavaFiles(false);
+			    }
+			    if (cmd.hasOption("iinst")) //ignore instances in classdiagramm
+			    {
+			    	classDiagramGenerator.setShowInstances(false);
+			    }
+			    if (cmd.hasOption("ivar")) //ignore variables in classdiagramm
+			    {
+			    	classDiagramGenerator.setShowVars(false);
+			    }
+			    if (cmd.hasOption("imeth")) //ignore methods in classdiagramm
+			    {
+			    	classDiagramGenerator.setShowMethods(false);
+			    } //Ende: Setter-Abfragen
+			    //Verarbeitung
+			    if (cmd.hasOption("i")) // Verarbeitung vieler zu verarbeitenden Pfade
+			    {
+			    	//Print Ausgabeort, wenn vorhanden
+			    	if (cmd.getOptionValue("o") != null)
 			    	{
-			    		System.out.println("Lese: "+ k + "\nadded: "+codeCollector.paths.add(k));
+						System.out.print("PUML-Ausgabe unter : "+ cmd.getOptionValue("o")+ "\n");
 			    	}
+					//Lesen der Pfade
+					for (String k : cmd.getOptionValues("i"))
+					{
+				       	if (!k.equals(""))
+				    	{
+				    		System.out.println("Lese: "+ k + "\nadded: "+codeCollector.paths.add(k));
+				    	}
+					}
+					// Parser verarbeitet Daten
+				    PUMLgenerator.parser.parse(codeCollector.getSourceCode()); 
+				    
+					if (cmd.hasOption("s")) //Alle Klassen Methoden auflisten
+					{
+						showAllClassesMethods();
+					}
+					if (cmd.hasOption("o")) // Pruefe ob Zielordner gegeben
+					{
+						outputLocation = cmd.getOptionValue("o");
+					}
+					if (cmd.hasOption("int")) //Starte Dialog zur Abfrage
+					{
+						interactiveMode();
+					}
+					if (cmd.hasOption("cc")) //Gewuenschtes Diagramm: Klassendiagramm
+					{
+						if (cmd.hasOption("ct"))
+						{
+							createClassPlantUmlText(outputLocation);
+						}
+						createClassDiag(outputLocation);
+					}
+					else if (cmd.hasOption("cs")) //Gewuenschtes Diagramm: SQDiagramm
+					{
+						System.out.print("Entry " + cmd.getOptionValues("cs")[0] + " und " + cmd.getOptionValues("cs")[1] +"\n");
+						entryClass = cmd.getOptionValues("cs")[0];
+						entryMethode = cmd.getOptionValues("cs")[1];
+						if (cmd.hasOption("ct"))
+						{
+							createSQPlantUmlText(entryClass, entryMethode, outputLocation);
+						}
+			    		createSQDiagram(entryClass, entryMethode, outputLocation);
+					}
 				}
-				// Parser verarbeitet Daten
-			    PUMLgenerator.parser.parse(codeCollector.getSourceCode()); 
-			    
-				if (cmd.hasOption("s")) //Alle Klassen Methoden auflisten
-				{
-					showAllClassesMethods();
-				}
-				if (cmd.hasOption("o")) // Pruefe ob Zielordner gegeben
-				{
-					outputLocation = cmd.getOptionValue("o");
-				}
-				if (cmd.hasOption("int")) //Starte Dialog zur Abfrage
-				{
-					interactiveMode();
-				}
-				if (cmd.hasOption("cc")) //Gewuenschtes Diagramm
-				{
-					createClassDiag(outputLocation);
-				}
-				if (cmd.hasOption("cs"))
-				{
-					System.out.print("Entry " + cmd.getOptionValues("cs")[0] + " und " + cmd.getOptionValues("cs")[1] +"\n");
-					entryClass = cmd.getOptionValues("cs")[0];
-					entryMethode = cmd.getOptionValues("cs")[1];
-		    		createSQDiagram(entryClass, entryMethode, outputLocation);
-				}
-			}
-		    else if (!cmd.hasOption("i"))
+			    else if (!cmd.hasOption("i"))
+			    {
+			    	System.out.println("Es fehlt ein zu bearbeitender Pfad.");
+			    }
+			    }
+		    else
 		    {
-		    	System.out.println("Es fehlt ein zu bearbeitender Pfad.");
+				myGUI_Swing = new GUI_Swing();
+		    	GUI_Swing.showGUI();
 		    }
 		}
 		catch (UnrecognizedOptionException uoe ) // Falls Parameter unbekannt, Hilfe ausgeben
@@ -168,7 +240,6 @@ public class Console extends PUMLgenerator
     private void interactiveMode()
     {
 		char choice = '\0';
-		
     	System.out.println("Interaktiver Modus");
     	
     	//Ausgabeort festlegen
@@ -216,12 +287,14 @@ public class Console extends PUMLgenerator
 				}
 			}
 			System.out.println("Gewaehlte Klasse: " + entryClass + " und Methode: " + entryMethode);
+			createSQPlantUmlText(entryClass, entryMethode, outputLocation);
 			createSQDiagram(entryClass, entryMethode ,outputLocation);
 		}
 		else //ClassDiag
 		{
 			//Waehle Klassen aus und erzeuge das Klassen-Diagramm
 			setClassesI();
+			createClassPlantUmlText(outputLocation);
 			createClassDiag(outputLocation);
 		}
 		System.out.println("Ende Interaktiver Modus");
@@ -235,13 +308,28 @@ public class Console extends PUMLgenerator
 	{
 		try 
 	    {  
-			//PUML code erstellen
-			outputPUML.savePUMLtoFile(outputPUML.getPUML(
-					classDiagramGenerator.createDiagram(parser.getParsingResult())), outPath + "outPUML_Code");
 			//Diagramm erzeugen aus String
 			outputPUML.createPUMLfromString(
 					outPath + "outPUML_Graph", outputPUML.getPUML(
 							classDiagramGenerator.createDiagram(parser.getParsingResult())));
+	    }
+	    catch (IOException | XPathExpressionException e)
+	    {
+	    	System.out.println("Kommandozeile: Verarbeitung Klassendiagramm fehlgeschlagen");
+	    	e.printStackTrace();
+	    }
+	}
+    /**
+	 * Methode zum Erzeugen des PlantUML-Codes eines Klassendiagramms aus Interactivem Modus und Cmd-Standard-Nutzung
+	 * @param outPath Ausgabepunkt, beachte Klassenvariable
+	 */
+	private void createClassPlantUmlText(String outPath)
+	{
+		try 
+	    {  
+			//PUML code erstellen
+			outputPUML.savePUMLtoFile(outputPUML.getPUML(
+					classDiagramGenerator.createDiagram(parser.getParsingResult())), outPath + "outPUML_Code");
 	    }
 	    catch (IOException | XPathExpressionException e)
 	    {
@@ -260,15 +348,32 @@ public class Console extends PUMLgenerator
     {
     	try
 		{
-			//Code Erzeugen
-			outputPUML.savePUMLtoFile(outputPUML.getPUML(
-					seqDiagramGenerator.createDiagram(parser.getParsingResult(), entryClass, entryMethode)), outPath + "outPUML_Code");
 			//Diagramm erzeugen
 			outputPUML.createPUMLfromString(
 					outPath + "outPUML_Graph", outputPUML.getPUML(seqDiagramGenerator.createDiagram(
 							parser.getParsingResult(),
 								entryClass,
 								entryMethode)));
+		}
+		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException | SAXException | TransformerException e)
+		{
+			System.out.println("Kommandozeile: Verarbeitung SQ ohne output-Pfad fehlgeschlagen");
+			e.printStackTrace();
+		}
+    }
+    /**
+     * Erstellt PlantUML-Code eines Sequenzdiagramms mit Angabe der Einsiegspunkte
+     * @param entryClass Ausgewaehlte Klasse
+     * @param entryMethode Ausgewaehlte Methode
+     * @param outPath Ausgabepunkt, beachte Klassenvariable
+     */
+    private void createSQPlantUmlText(String entryClass, String entryMethode, String outPath)
+    {
+    	try
+		{
+			//Code Erzeugen
+			outputPUML.savePUMLtoFile(outputPUML.getPUML(
+					seqDiagramGenerator.createDiagram(parser.getParsingResult(), entryClass, entryMethode)), outPath + "outPUML_Code");
 		}
 		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException | SAXException | TransformerException e)
 		{
@@ -395,7 +500,13 @@ public class Console extends PUMLgenerator
 				}
 				else if (choice == 'n')
 				{
-					xmlHelper.delNode(classNodeList.item(i).getParentNode(), false);
+					//xmlHelper.delNode(xmlHelper.getList(classNodeList.item(i), "..").item(0), false);
+					//xmlHelper.delNode(classNodeList.item(i), false);
+					parserDoc.removeChild(classNodeList.item(i));
+					
+					//TODO: Parser Result anpassen
+					//Rueckgabe der ClassNodeList fuer PUML
+
 					System.out.println("Klasse: '"+ classNodeList.item(i).getTextContent() + "' wird nicht beruecksichtigt." );
 				}
 				choice = '\0';
