@@ -138,10 +138,12 @@ public class ClassDiagramGenerator
 										if(!(currentNode.equals("access") ||
 											currentNode.equals("name") ||
 											currentNode.equals("parameters") ||
+											currentNode.equals("type") ||
 											currentNode.equals("result")))
 										{
 											Element elementremove = (Element) current;
-											elementremove.getParentNode().removeChild(elementremove);
+//											elementremove.getParentNode().removeChild(elementremove);
+											xmlHelper.getList(elementremove, "..").item(0).removeChild(elementremove);
 											//System.out.println("Unterknoten " + currentNode + " wird nicht übernommen.");
 										}
 									}

@@ -67,13 +67,14 @@ public class XmlHelperMethods
      * @param Knoten eines Elements
      * @param        true = Unterknoten werden nicht gelöscht; false = Unterknoten
      *               werden mit gelöscht
+     * @throws XPathExpressionException
      */
-    public void delNode(Node nodeName, boolean keepChildNodes)
+    public void delNode(Node nodeName, boolean keepChildNodes) throws XPathExpressionException
     {
-	Node parent = nodeName.getParentNode();
+	Node parent = getList(nodeName, "..").item(0);
 	if (keepChildNodes)
 	{
-	    NodeList childNodes = nodeName.getChildNodes();
+	    NodeList childNodes = getList(nodeName, "child::*");
 	    for (int i = 0; i < childNodes.getLength(); i++)
 	    {
 		parent.appendChild(childNodes.item(i).cloneNode(true));
@@ -115,24 +116,24 @@ public class XmlHelperMethods
     }
 
     /**
-     * Hilfsmethode zum Erstellen eines XML-Documents 
+     * Hilfsmethode zum Erstellen eines XML-Documents
      * 
      * @return Document
      */
     public Document createDocument()
     {
-	    DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-	    DocumentBuilder docBuilder;
-	    try
-	    {
-		docBuilder = docFactory.newDocumentBuilder();
-	    
+	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	DocumentBuilder docBuilder;
+	try
+	{
+	    docBuilder = docFactory.newDocumentBuilder();
+
 	    Document document = docBuilder.newDocument();
 	    return document;
-	    } catch (ParserConfigurationException e)
-	    {
-		e.printStackTrace();
-	    }
+	} catch (ParserConfigurationException e)
+	{
+	    e.printStackTrace();
+	}
 	return null;
     }
 
@@ -191,13 +192,13 @@ public class XmlHelperMethods
      * Gibt den Unterbaum des übergebenen Knotens auf der Konsole aus
      * 
      * @param root
+     * @throws XPathExpressionException
      */
-
-    public void listAllNodes(Element root)
+    public void listAllNodes(Element root) throws XPathExpressionException
     {
 	if (root.hasChildNodes())
 	{
-	    NodeList list = root.getChildNodes();
+	    NodeList list = getList(root, "child::*");
 	    for (int i = 0; i < list.getLength(); i++)
 	    {
 		Node node = list.item(i);
@@ -218,12 +219,13 @@ public class XmlHelperMethods
      * Entfernt Kommentare unterhalb eines angegebenen Knotens
      * 
      * @param root - Knoten, unter dem Kommentare entfernt werden sollen
+     * @throws XPathExpressionException
      */
-    public void removeComments(Element root)
+    public void removeComments(Element root) throws XPathExpressionException
     {
 	if (root.hasChildNodes())
 	{
-	    NodeList list = root.getChildNodes();
+	    NodeList list = getList(root, "child::*");
 	    for (int i = 0; i < list.getLength(); i++)
 	    {
 		Node node = list.item(i);
@@ -300,10 +302,11 @@ public class XmlHelperMethods
      * @param parent übergebener Knoten
      * @param name   Name des gesuchten Unterknotens
      * @return
+     * @throws XPathExpressionException
      */
-    public Node getChildwithName(Node parent, String name)
+    public Node getChildwithName(Node parent, String name) throws XPathExpressionException
     {
-	NodeList cnodes = parent.getChildNodes();
+	NodeList cnodes = getList(parent, "child::*");
 	for (int i = 0; i < cnodes.getLength(); i++)
 	{
 	    if (cnodes.item(i).getNodeName().equals(name))
@@ -321,10 +324,11 @@ public class XmlHelperMethods
      * @param parent - übergebener Node
      * @param name   - gesuchter ChildNode
      * @return - boolean; true, wenn ChildNode vorhanden, sonst false
+     * @throws XPathExpressionException
      */
-    public boolean hasChildwithName(Node parent, String name)
+    public boolean hasChildwithName(Node parent, String name) throws XPathExpressionException
     {
-	NodeList cnodes = parent.getChildNodes();
+	NodeList cnodes = getList(parent, "child::*");
 	for (int i = 0; i < cnodes.getLength(); i++)
 	{
 	    if (cnodes.item(i).getNodeName().equals(name))
@@ -357,7 +361,7 @@ public class XmlHelperMethods
 	    Difference next = iterator.next();
 	    System.out.println("Difference: " + next);
 	}
-	iterator=diffList.iterator();
+	iterator = diffList.iterator();
 	if (iterator.hasNext())
 	{
 	    return false;

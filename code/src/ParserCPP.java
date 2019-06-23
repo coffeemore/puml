@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -10,6 +11,7 @@ public class ParserCPP implements ParserIf
 {
 	private Document document;
 	private XmlHelperMethods xmlHelper = new XmlHelperMethods();
+	private int[] classInterval = {0,0}; 
 	
 	 /**
      * leerer Konstruktor
@@ -40,6 +42,7 @@ public class ParserCPP implements ParserIf
      */
 	private void buildTree( ArrayList<String> code) throws ParserConfigurationException 
 	{
+
 		//TODO Auskommentieren richtig
 		String sourceCodeHPP = deleteComStr(code.get(0));
 		String sourceCodeCPP = deleteComStr(code.get(1));
@@ -47,7 +50,6 @@ public class ParserCPP implements ParserIf
 		//String sourceCodeCPP = code.get(1);
 		sourceCodeHPP = sourceCodeHPP.trim();
 		sourceCodeCPP = sourceCodeCPP.trim();
-
 		//JOHANNS ZEUG:
 		Document document = xmlHelper.createDocument();
 		
@@ -58,6 +60,7 @@ public class ParserCPP implements ParserIf
 		//Suche nach dem Index vom Wort "class" im HPP-Code
 		String keyword = "class ";
 	    int index = sourceCodeHPP.indexOf(keyword);
+
 	    
 	    while (index >=0)
 	    {
@@ -100,8 +103,6 @@ public class ParserCPP implements ParserIf
 				//Aggregation
 				Element aggregation = document.createElement("aggregation");
 				interfacedefinition.appendChild(aggregation);
-				//Methoden
-				//JOHANN
 	 			
 				//Vererbung
 				String[] tmpArray = getHeredity(sourceCodeHPP, className);
@@ -120,6 +121,10 @@ public class ParserCPP implements ParserIf
  						entry.appendChild(document.createTextNode(tmpArray[i]));
 	 				}
  				}	
+ 				
+ 				//Methoden
+ 				//createMethods(sourceCodeCPP, document, interfacedefinition);
+ 				
 	        }
 	        else if(isAbstract(className,sourceCodeHPP)) 
 	        {
@@ -149,57 +154,6 @@ public class ParserCPP implements ParserIf
 				//Aggregation
 				Element aggregation = document.createElement("aggregation");
 				abstractdefinition.appendChild(aggregation);
-				//Methoden
-				//JOHANN
-	 			
-				//Vererbung
-				String[] tmpArray = getHeredity(sourceCodeHPP, className);
- 				for(int i = 0; i<tmpArray.length;i++)
- 				{
-	 				if(isInterface(tmpArray[i],sourceCodeHPP))
-	 				{	
-	 					Element entry = document.createElement("entry");
-						implement.appendChild(entry);
-						entry.appendChild(document.createTextNode(tmpArray[i]));	
-	 				}
-	 				else if (!tmpArray[i].equals(""))
-	 				{	
-	 					Element entry = document.createElement("entry");	
- 						extend.appendChild(entry);
- 						entry.appendChild(document.createTextNode(tmpArray[i]));
-	 				}
- 				}				
-	        }
-	        else 
-	        {
-	        	//Klasse
-		        Element classdefinition = document.createElement("classdefinition");
-	 			root.appendChild(classdefinition);
-				//Name
-				Element name = document.createElement("name");
-	 			classdefinition.appendChild(name);
-	 			name.appendChild(document.createTextNode(className));
-	 			
-	 			//Vererbung eines Interfaces
-				Element implement = document.createElement("implements");
-				classdefinition.appendChild(implement);
-				//Vererbung einer Klasse
-				Element extend = document.createElement("extends");
-				classdefinition.appendChild(extend);
-				//Instanzen,(public, private , protected)
-				Element instance = document.createElement("instance");
-				classdefinition.appendChild(instance);
-				//Variablen
-				Element var = document.createElement("var");
-				classdefinition.appendChild(var);
-				//Komposition 
-				Element compositions = document.createElement("compositions");
-				classdefinition.appendChild(compositions);
-				//Aggregation
-				Element aggregation = document.createElement("aggregation");
-				classdefinition.appendChild(aggregation);
-				//Methoden
-				//JOHANN
 	 			
 				//Vererbung
 				String[] tmpArray = getHeredity(sourceCodeHPP, className);
@@ -218,14 +172,76 @@ public class ParserCPP implements ParserIf
  						entry.appendChild(document.createTextNode(tmpArray[i]));
 	 				}
  				}	
+ 				
+ 				//Methoden
+ 				
 	        }
+	        else 
+	        {
+	        	//Klasse
+		        Element classdefinition = document.createElement("classdefinition");
+	 			root.appendChild(classdefinition);
+				//Name
+				Element name = document.createElement("name");
+	 			classdefinition.appendChild(name);
+	 			name.appendChild(document.createTextNode(className));
+	 				 			
+	 			//Code Analyse:
+	 			 //Vererbung eines Interfaces
+				Element implement = document.createElement("implements");
+				classdefinition.appendChild(implement);
+				//Vererbung einer Klasse
+				Element extend = document.createElement("extends");
+				classdefinition.appendChild(extend);
+				//Instanzen,(public, private , protected)
+				Element instance = document.createElement("instance");
+				classdefinition.appendChild(instance);
+				//Variablen
+				Element var = document.createElement("var");
+				classdefinition.appendChild(var);
+				//Komposition 
+				Element compositions = document.createElement("compositions");
+				classdefinition.appendChild(compositions);
+				//Aggregation
+				Element aggregation = document.createElement("aggregation");
+				classdefinition.appendChild(aggregation);
+
+				//Vererbung
+				String[] tmpArray = getHeredity(sourceCodeHPP, className);
+ 				for(int i = 0; i<tmpArray.length;i++)
+ 				{
+	 				if(isInterface(tmpArray[i],sourceCodeHPP))
+	 				{	
+	 					Element entry = document.createElement("entry");
+						implement.appendChild(entry);
+						entry.appendChild(document.createTextNode(tmpArray[i]));	
+	 				}
+	 				else if (!tmpArray[i].equals(""))
+	 				{	
+	 					Element entry = document.createElement("entry");	
+ 						extend.appendChild(entry);
+ 						entry.appendChild(document.createTextNode(tmpArray[i]));
+	 				}
+ 				}	
+				
+				//Methoden
+ 				createMethods(sourceCodeCPP, document, classdefinition);
+				
+	        }  
+	 			
+	      //Suche nach dem nächsten Index vom Wort "class" im HPP-Code
+		     index = sourceCodeHPP.indexOf(keyword, index + keyword.length());
+	     }
 	       
-		    //Suche nach dem nächsten Index vom Wort "class" im HPP-Code
-	        index = sourceCodeHPP.indexOf(keyword, index + keyword.length());
-	    }
+
+				
+				
+			
+
+		   
 	    
+ 
 	    System.out.println("\n #################### BEGINN JANS TEST ####################\n");
-	    
 	    System.out.println("CLASS1 >>"+isInterface("Class1",sourceCodeHPP));
 	    System.out.println("IF2 >>"+isAbstract("If2",sourceCodeHPP));
 	    System.out.println("CLASS2 >>"+isAbstract("Class2",sourceCodeHPP));
@@ -242,6 +258,122 @@ public class ParserCPP implements ParserIf
 	    
 	    System.out.println("\n #################### ENDE JANS TEST ####################\n");
 		xmlHelper.writeDocumentToConsole(document);
+	}
+
+	private void createMethods(String sourceCodeCPP, Document document, Element classdefinition) {
+		calclassinterval(sourceCodeCPP);
+		int j = classInterval[0], i = j, n = classInterval[1];//sourceCodeCPP.length();
+		while(sourceCodeCPP.charAt(j) != '"')
+		{
+			j--;
+		}
+		j++;
+		String hppName = sourceCodeCPP.substring(j, i);
+		String methodinitial = hppName + "::";
+		int methodinitlength = methodinitial.length();
+		while(i + methodinitlength < n && i!=-1 )
+		{
+			if(sourceCodeCPP.substring( i, i + methodinitlength).equals(methodinitial))
+			{
+				Element methoddefinition = document.createElement("methoddefinition");
+				classdefinition.appendChild(methoddefinition);
+				
+				Element methName = document.createElement("name");
+				methoddefinition.appendChild(methName);
+				
+				Element methResult = document.createElement("result");
+				
+				//Vorgängerwort von methodinitial suchen (entspricht Resultattyp)
+				int h = i;
+				while(sourceCodeCPP.charAt(h) != '\n' && h > 0)
+				{
+					h--;
+				}
+				if(h < i - 1)
+				{
+					methoddefinition.appendChild(methResult);
+					methResult.appendChild(document.createTextNode(
+							sourceCodeCPP.substring( h + 1 , i - 1)));
+				}
+				
+				//Folgewort von methodinitial suchen (entspricht Methodenname)
+				j  = i  + methodinitlength;
+				while(sourceCodeCPP.charAt(j) != '(' && j < n)
+				{
+					j++;
+				}
+				methName.appendChild(document.createTextNode(
+						sourceCodeCPP.substring(i  + methodinitlength, j)));
+				
+				i = j + 1;
+				h = i;
+				
+				while(sourceCodeCPP.charAt(j) != ')' && j < n)
+				{
+					j++;
+				}
+				
+				Element methparam = document.createElement("parameters");
+				methoddefinition.appendChild(methparam);
+
+				while(i < j)
+				{
+					//Bsp: (int param1, int param2) ist auszulesen
+					//Typ finden
+					while(sourceCodeCPP.charAt(i) != ' ' && i < j)
+					{
+						i++;
+					}
+
+					//'*' auslassen
+					if(sourceCodeCPP.charAt(i - 1) == '*')
+					{
+						i--;
+					}
+					
+					Element entry = document.createElement("entry");
+					methparam.appendChild(entry);
+												
+					Element paramType = document.createElement("type");
+					entry.appendChild(paramType);
+					
+					paramType.appendChild(document.createTextNode(
+							sourceCodeCPP.substring(h, i)));
+					
+					if(sourceCodeCPP.charAt(i) == '*')
+					{
+						i+=2;
+					}
+					else
+					{
+						i++;
+					}
+
+					h = i;
+					
+					//Namen finden
+					while(sourceCodeCPP.charAt(i) != ',' && i < j)
+					{
+						i++;
+					}
+
+					Element paramName = document.createElement("name");
+					entry.appendChild(paramName);
+					
+					paramName.appendChild(document.createTextNode(
+							sourceCodeCPP.substring(h, i)));
+					
+					i++;
+					//Mögliches Leerzeichen hinter dem Komma überspringen
+					if(sourceCodeCPP.charAt(i) == ' ')
+					{
+						i++;
+					}
+					h = i;
+				}
+			}
+			i++;
+		}
 	}
 
 	/**
@@ -439,6 +571,27 @@ public class ParserCPP implements ParserIf
     	}		
     	return cSC;
     }
+    
+    private void calclassinterval(String sourceCodeCPP)
+    {
+    	if(classInterval[0] == 0)
+    	{
+    		classInterval[0] = sourceCodeCPP.indexOf(".hpp\"");
+    	}
+    	else
+    	{
+    		classInterval[0] = classInterval[1];
+    	}
+    	if(sourceCodeCPP.indexOf(".hpp\"", classInterval[0] + 5) < 0)
+		{
+			classInterval[1] = sourceCodeCPP.length();
+		}
+    	else
+    	{
+       		classInterval[1] = sourceCodeCPP.indexOf(".hpp\"", classInterval[0] + 5);
+    	}
+    }
+    
 	@Override 
 	 /**
     * Liefert die Ergebnisse des Parsens zurueck
