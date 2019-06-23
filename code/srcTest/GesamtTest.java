@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import org.apache.commons.cli.ParseException;
+import org.junit.internal.runners.TestClass;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
@@ -34,6 +35,7 @@ class GesamtTest
     @Test
     void test() throws IOException, ParseException
     {
+	testClass = new PUMLgenerator();
 	String[] specification = {
 		"-c",
 		"-ijar",
