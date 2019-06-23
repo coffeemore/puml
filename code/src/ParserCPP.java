@@ -121,6 +121,15 @@ public class ParserCPP implements ParserIf
 			entry.appendChild(document.createTextNode(tmpArray[i]));
 		    }
 		}
+		
+		// Aggregation
+		ArrayList<String> aggrList = aggregation(sourceCodeCPP, className);
+		for (int i = 0; i < aggrList.size(); i++)
+		{
+		    Element entry = document.createElement("entry");
+		    aggregation.appendChild(entry);
+		    entry.appendChild(document.createTextNode(aggrList.get(i)));
+		}
 
 		// Methoden
 		int i = 0, n = sourceCodeCPP.length();
@@ -258,6 +267,15 @@ public class ParserCPP implements ParserIf
 			extend.appendChild(entry);
 			entry.appendChild(document.createTextNode(tmpArray[i]));
 		    }
+		}
+		
+		// Aggregation
+		ArrayList<String> aggrList = aggregation(sourceCodeCPP, className);
+		for (int i = 0; i < aggrList.size(); i++)
+		{
+		    Element entry = document.createElement("entry");
+		    aggregation.appendChild(entry);
+		    entry.appendChild(document.createTextNode(aggrList.get(i)));
 		}
 
 		// Methoden
@@ -408,6 +426,14 @@ public class ParserCPP implements ParserIf
 		    entry.appendChild(document.createTextNode(aggrList.get(i)));		    
 		}
 		
+		//Komposition: Such-Konstrukt zur Einfachheit: "new Class()"
+		ArrayList<String> compList=composition(sourceCodeHPP, sourceCodeCPP, className);
+		for(int i=0;i<compList.size();i++)
+		{
+		    Element entry = document.createElement("entry");
+		    compositions.appendChild(entry);
+		    entry.appendChild(document.createTextNode(compList.get(i)));		    
+		}
 
 		// Methoden
 		int i = 0, n = sourceCodeCPP.length();
@@ -528,10 +554,89 @@ public class ParserCPP implements ParserIf
     }
 
     /**
-     * Liefert eine Liste der im Konstruktor geforderten Klassen/Pointer zurück.
+     * Liefert eine Liste der in HPP- uns CPP-Code vorkommenden Aufrufe mit new ___()
      * @param sourceCodeCPP
      * @param className
      * @return 
+     * @return aggregation
+     */
+    private ArrayList<String> composition(String sourceCodeHPP, String sourceCodeCPP, String className)
+    {
+	//Klassen-QuellCode
+	sourceCodeHPP = getFormatedSourceCodeHPP(className, sourceCodeHPP);
+	sourceCodeCPP = getFormatedSourceCodeCPP(className, sourceCodeCPP);
+	//Liste zum Speichern der Kompositionen
+	ArrayList<String> komposition = new ArrayList<String>();
+	//HPP nach Kompositionen durchsuchen
+	String h="";
+	int fromIndex=0;
+	while(sourceCodeHPP.indexOf("new ", fromIndex+1)>=0) 
+	{
+	    fromIndex=sourceCodeHPP.indexOf("new ", fromIndex+1);
+	    //Herrausschneiden des Bezeichners zwischen new_ und )
+	    h = sourceCodeHPP.substring(fromIndex+"new ".length(), sourceCodeHPP.indexOf("(",fromIndex+"new ".length()));
+	    System.out.println("\nKKKK"+h+"KKKK\n");
+	    //Verhindern von Duplikaten
+	    if(!komposition.contains(h)) 
+	    {
+		komposition.add(h);
+	    }
+	}
+	//CPP nach Kompositionen durchsuchen
+	h = "";
+	fromIndex = 0;
+	while (sourceCodeCPP.indexOf("new ", fromIndex + 1) >= 0)
+	{
+	    fromIndex = sourceCodeCPP.indexOf("new ", fromIndex + 1);
+	    // Herrausschneiden des Bezeichners zwischen new_ und )
+	    h = sourceCodeCPP.substring(fromIndex + "new ".length(),
+		    sourceCodeCPP.indexOf("(", fromIndex + "new ".length()));
+	    System.out.println("\nKKKK" + h + "KKKK\n");
+	    // Verhindern von Duplikaten
+	    if (!komposition.contains(h))
+	    {
+		komposition.add(h);
+	    }
+	}
+	System.out.println(komposition.toString());
+	return komposition;
+    }
+
+    /**
+     * @param sourceCodeCPP
+     * @param className
+     * @return
+     */
+    public String getFormatedSourceCodeCPP(String className, String sourceCodeCPP)
+    {
+	//Klassen-Code bis zum Ende oder ersten #include 
+	if(sourceCodeCPP.indexOf( "#include", sourceCodeCPP.indexOf(className+"::"+className))!=-1)
+	{
+	    sourceCodeCPP= sourceCodeCPP.substring(sourceCodeCPP.indexOf("#include \""+className+".hpp\""),sourceCodeCPP.indexOf( "#include", sourceCodeCPP.indexOf("#include \""+className+".hpp\"")));
+	}
+	else 
+	{
+	    sourceCodeCPP= sourceCodeCPP.substring(sourceCodeCPP.indexOf("#include \""+className+".hpp\""),sourceCodeCPP.length());
+	}
+	System.out.println(sourceCodeCPP);
+
+	// Code kürzen, filtern und anpassen
+	sourceCodeCPP = sourceCodeCPP.replaceAll("\n", "");
+	sourceCodeCPP = sourceCodeCPP.replaceAll("\t", "");
+	while (sourceCodeCPP.contains("  "))
+	{
+	    sourceCodeCPP = sourceCodeCPP.replaceAll("  ", " ");
+	}
+	sourceCodeCPP = sourceCodeCPP.trim();
+	
+	return sourceCodeCPP;
+    }
+
+    /**
+     * Liefert eine Liste der im Konstruktor geforderten Klassen/Pointer zurück.
+     * @param sourceCodeCPP
+     * @param className
+     * @return aggregation
      */
     public ArrayList<String> aggregation(String sourceCodeCPP, String className)
     {
@@ -556,14 +661,14 @@ public class ParserCPP implements ParserIf
 		aggregation.add(h);
 	    }
 	}   
-	return  aggregation;
+	return aggregation;
     }
 
     /**
      * Liefert ein Array zurück mit allen Klassen von denen geerbt wird.
      * @param sourceCodeHPP
      * @param className
-     * @return
+     * @return tmpArray
      */
     public String[] getHeredity(String sourceCodeHPP, String className)
     {
