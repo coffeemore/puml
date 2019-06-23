@@ -400,13 +400,13 @@ public class ParserCPP implements ParserIf
 		}
 		
 		//Aggregation
-		aggregation(sourceCodeCPP, className);
-		/*for(int i=0;i<aggr.size();i++)
+		ArrayList<String> aggrList = aggregation(sourceCodeCPP, className);
+		for(int i=0;i<aggrList.size();i++)
 		{
 		    Element entry = document.createElement("entry");
 		    aggregation.appendChild(entry);
-		    entry.appendChild(document.createTextNode(aggr.get(i)));		    
-		}*/
+		    entry.appendChild(document.createTextNode(aggrList.get(i)));		    
+		}
 		
 
 		// Methoden
@@ -528,50 +528,39 @@ public class ParserCPP implements ParserIf
     }
 
     /**
+     * Liefert eine Liste der im Konstruktor geforderten Klassen/Pointer zurück.
      * @param sourceCodeCPP
      * @param className
+     * @return 
      */
-    public String[] aggregation(String sourceCodeCPP, String className)
+    public ArrayList<String> aggregation(String sourceCodeCPP, String className)
     {
-	String[] tmpArray =null;
-	int fromIndex = 0;
-	ArrayList<String> aggr = new ArrayList<String>();
+	ArrayList<String> aggregation = new ArrayList<String>();
 	String tmp="";
+	int fromIndex = 0;
+	//Konstruktor-Argumente heraus filtern
 	while(sourceCodeCPP.indexOf(className+"::"+className, fromIndex+(className+"::"+className).length()) >= 0 )
 	{
 	    fromIndex = sourceCodeCPP.indexOf(className+"::"+className, fromIndex+(className+"::"+className).length());
 	    tmp = sourceCodeCPP.substring(sourceCodeCPP.indexOf("(", fromIndex), sourceCodeCPP.indexOf(")", fromIndex)+1);
 	    System.out.println("\n****"+tmp+"****\n"+fromIndex);
 	    
-	    int tmpIndex=0;
 	    String h="";
+	    int tmpIndex=0;
+	    //Klassen/Pointer-Argumente herausfiltern
 	    while(tmp.indexOf("*",tmpIndex+1)>=0)
 	    {
-	      tmpIndex=tmp.indexOf("*",tmpIndex+1);
-	      if(tmp.indexOf(",",tmpIndex)>=0) 
-	      {
-		 h=tmp.substring(tmpIndex+1,Math.min(tmp.indexOf(",",tmpIndex),tmp.indexOf(")",tmpIndex))); 
-	      }
-	      else if(tmp.indexOf(")",tmpIndex)>=0)
-	      {
-		 h=tmp.substring(tmpIndex+1,tmp.indexOf(")",tmpIndex)); 
-	      }
-	  
-	      System.out.println("\nNN"+h.trim()+"NN\n"+tmpIndex);
-	      aggr.add(h);
-	      tmp.replace(h,"");
+		tmpIndex=tmp.indexOf("*",tmpIndex+1);
+		h=tmp.substring(Math.max(tmp.lastIndexOf(" ", tmpIndex) , Math.max(tmp.lastIndexOf("(", tmpIndex)  , tmp.lastIndexOf(",", tmpIndex)))+1 ,tmpIndex); 
+		System.out.println("\n****NN"+h+"NN****\n"+fromIndex);
+		aggregation.add(h);
 	    }
-
-	    tmpArray=Stream.concat(
-	                Arrays.stream(tmpArray), 
-	                Arrays.stream(tmp.split(","))
-	            ).toArray(String[]::new);
-	}
-	System.out.println(tmpArray.toString());
-	return tmpArray;
+	}   
+	return  aggregation;
     }
 
     /**
+     * Liefert ein Array zurück mit allen Klassen von denen geerbt wird.
      * @param sourceCodeHPP
      * @param className
      * @return
