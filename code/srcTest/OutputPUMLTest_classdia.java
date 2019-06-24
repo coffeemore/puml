@@ -44,8 +44,8 @@ class OutputPUMLTest_classdia
     {
 	File expected = new File("testfolder/xmlSpecifications/ClassDiagram.txt");
 	OutputPUML output = new OutputPUML();
-	output.savePUMLtoFile(output.getPUML(doc), "testfolder/xmlSpecifications/actualFile.txt");
-	File actual = new File("testfolder/xmlSpecifications/actualFile.txt");
+	output.savePUMLtoFile(output.getPUML(doc), "testfolder/tempData/actualFile.txt");
+	File actual = new File("testfolder/tempData/actualFile.txt");
 	assertEquals(FileUtils.readFile(actual), FileUtils.readFile(expected));
     }
 
@@ -68,14 +68,14 @@ class OutputPUMLTest_classdia
 		OutputPUML output = new OutputPUML();
 		try
 		{
-		    output.createPUMLfromString("testfolder/xmlSpecifications/ClassD_fromString.png", output.getPUML(doc));
+		    output.createPUMLfromString("testfolder/tempData/ClassD_fromString.png", output.getPUML(doc));
 		} 
 		catch (XPathExpressionException | IOException e)
 		{
 			PUMLgenerator.logger.getLog().severe(e.getMessage());
 		    e.printStackTrace();
 		}
-		File actual = new File("testfolder/xmlSpecifications/ClassD_fromString.png");
+		File actual = new File("testfolder/tempData/ClassD_fromString.png");
 		try
 		{	
 		assertEquals(FileUtils.readFile(actual), FileUtils.readFile(expected));

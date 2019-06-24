@@ -105,7 +105,7 @@ class OutputPUMLTest_sequencedia
 		// savePumltoFile testen
 		// TODO Aendern der Filepaths bevor Test (je nach System), expectedFile
 		// platzieren
-		output.savePUMLtoFile(output.getPUML(doc), "testfolder/xmlSpecifications/actualSeqFile.txt");
+		output.savePUMLtoFile(output.getPUML(doc), "testfolder/tempData/actualSeqFile.txt");
 		File actual = new File("testfolder/xmlSpecifications/actualSeqFile.txt");
 		assertEquals(FileUtils.readFile(actual), FileUtils.readFile(expected));
     }
@@ -126,12 +126,12 @@ class OutputPUMLTest_sequencedia
 	// TODO Aendern der Filepaths bevor Test (je nach System)
 	File expected = new File("testfolder/xmlSpecifications/SeqDiagram.png");
 	try {
-		output.createPUMLfromString("testfolder/xmlSpecifications/SeqD_fromString.png", output.getPUML(doc));
+		output.createPUMLfromString("testfolder/tempData/SeqD_fromString.png", output.getPUML(doc));
 	} catch (XPathExpressionException | IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-	File actual = new File("testfolder/xmlSpecifications/SeqD_fromString.png");
+	File actual = new File("testfolder/tempData/SeqD_fromString.png");
 	assertEquals(FileUtils.readFile(actual), FileUtils.readFile(expected));
     }
 }

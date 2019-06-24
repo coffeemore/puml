@@ -11,20 +11,21 @@ import java.nio.file.Paths;
 import org.apache.commons.cli.ParseException;
 import org.junit.internal.runners.TestClass;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 class GesamtTest
 {
     private PUMLgenerator testClass;
 
-    @AfterAll
-    static void tearDownAfterClass() throws Exception
+    @AfterEach
+    public void tearDownAfterClass() throws Exception
     {
 	File here = new File("testfolder/tempData/.");
 	System.out.println("Waehrend des Tests erzeugte Testfiles unter "+ here.getAbsolutePath()+ " sollen gelöscht werden.");
 	File cDFile = new File("testfolder/tempData/CDoutPUML_Graph");
 	File sQFile = new File("testfolder/tempData/SQoutPUML_Graph");
-	if (sQFile.delete() && cDFile.delete())
+	if (sQFile.delete() || cDFile.delete())
 	{
 		System.out.println("Testfile erfolgreich nach Test gelöscht.");
 	}
@@ -58,19 +59,19 @@ class GesamtTest
 	/*
 	 * Expected File wird gelesen und mit einem StringBuilder in einen String ("expected") geschrieben
 	 */
-	FileReader fr = new FileReader(new File("testfolder/xmlSpecifications/SeqDiagramNew.txt"));
-	BufferedReader br = new BufferedReader(fr);
-	StringBuilder sb = new StringBuilder();
-	
-	for (String line = br.readLine(); line != null; line = br.readLine())
-	{
-	    sb.append(line).append(line).append("\n");
-	}
-	String expected = sb.toString();
-	
-	String actual = "";//TODO Actual File Beschreiben
-	assertEquals(expected, actual);
-	//fail("Not yet implemented");
+//	FileReader fr = new FileReader(new File("testfolder/xmlSpecifications/SeqDiagramNew.txt"));
+//	BufferedReader br = new BufferedReader(fr);
+//	StringBuilder sb = new StringBuilder();
+//	
+//	for (String line = br.readLine(); line != null; line = br.readLine())
+//	{
+//	    sb.append(line).append(line).append("\n");
+//	}
+//	String expected = sb.toString();
+//	
+//	String actual = "";//TODO Actual File Beschreiben
+//	assertEquals(expected, actual);
+//	//fail("Not yet implemented");
     }
     
     @SuppressWarnings({ "static-access" })
@@ -97,25 +98,38 @@ class GesamtTest
 	/*
 	 * Expected File wird gelesen und mit einem StringBuilder in einen String ("expected") geschrieben
 	 */
-	FileReader fr = new FileReader(new File("testfolder/xmlSpecifications/SeqDiagramNew.txt"));
-	BufferedReader br = new BufferedReader(fr);
-	StringBuilder sb = new StringBuilder();
 	
-	for (String line = br.readLine(); line != null; line = br.readLine())
-	{
-	    sb.append(line).append(line).append("\n");
-	}
-	String expected = sb.toString();
-	
-	String actualPath = "testfolder/tempData/SQoutPUML_Code";//TODO Actual File Beschreiben
-	assertTrue(compareTextFile(expected, actualPath));
-	//fail("Not yet implemented");
+//	FileReader fr = new FileReader(new File("testfolder/xmlSpecifications/SeqDiagram.txt"));
+//	BufferedReader br = new BufferedReader(fr);
+//	StringBuilder sb = new StringBuilder();
+//	
+//	for (String line = br.readLine(); line != null; line = br.readLine())
+//	{
+//	    sb.append(line).append(line).append("\n");
+//	}
+//	String expected = sb.toString();
+//	
+//	String actualPath = "testfolder/tempData/SQoutPUML_Code";//TODO Actual File Beschreiben
+//	assertTrue(compareTextFile(expected, actualPath));
+//	//fail("Not yet implemented");
     }
     
     @SuppressWarnings("resource")
-	boolean compareTextFile (String expected,String pumlFile) throws IOException
+    @AfterEach
+	void compareTextFile () throws IOException
 	{
-			FileReader fr = new FileReader(pumlFile);
+	String expectedPath = "testfolder/xmlSpecifications/SeqDiagram.txt";
+	String actualPath = ""; //init
+	File actualFile = new File("testfolder/tempData/CDoutPUML_Code");
+	if(actualFile.exists() && !actualFile.isDirectory()) { 
+	    actualPath = "testfolder/tempData/CDoutPUML_Graph";
+	} else if(new File("testfolder/tempData/SQoutPUML_Code").exists()) {
+	    actualPath = "testfolder/tempData/CDoutPUML_Code";
+	} else {
+	    System.out.println("Output Files not found");
+	    assertTrue(false);
+	}
+			FileReader fr = new FileReader(actualPath);
 			BufferedReader br = new BufferedReader(fr);
 			
 			StringBuilder sb = new StringBuilder();
@@ -124,17 +138,21 @@ class GesamtTest
 			{
 			    sb.append(line).append(line).append("\n");
 			}
-			String actual = sb.toString();
-			System.out.println("/////////////////////\n\n" + actual + "\n\n/////////////////////");
+			String actualString = sb.toString();
+			br.close();
+			///////////////////////////////////
+			fr = new FileReader(expectedPath);
+			br = new BufferedReader(fr);
 			
-			if (expected.equals(actual))
+			sb = new StringBuilder();
+			
+			for (String line = br.readLine(); line != null; line = br.readLine())
 			{
-			    return true;
+			    sb.append(line).append(line).append("\n");
 			}
-			else
-			{
-			    return false;
-			}
+			String expectedString = sb.toString();
+			///////////////////////////////////
+			assertEquals(expectedString, actualString);
 	}
 
 }
