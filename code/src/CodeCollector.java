@@ -35,7 +35,7 @@ public class CodeCollector
     /**
      * True = .jar-Dateien werden verwendet; False = .jar-Dateien werden ignoriert
      */
-    private boolean useJarFiles = false;
+    private boolean useJarFiles = true;
 
     /**
      * True = .cpp- und .hpp-Dateien werden verwendet; False = .cpp- und
