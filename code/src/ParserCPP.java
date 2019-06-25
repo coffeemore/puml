@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -44,17 +43,16 @@ public class ParserCPP implements ParserIf
      */
     private void buildTree(ArrayList<String> code) throws ParserConfigurationException
     {
-	// Auskommentieren
+	// Auskommentieren und Trimmen
 	String sourceCodeHPP = deleteComStr(code.get(0));
 	String sourceCodeCPP = deleteComStr(code.get(1));
-	// String sourceCodeHPP = code.get(0);
-	// String sourceCodeCPP = code.get(1);
 	sourceCodeHPP = sourceCodeHPP.trim();
 	sourceCodeCPP = sourceCodeCPP.trim();
 
-	// JOHANNS ZEUG:
+	//XML-Dokument erstellen
 	Document document = xmlHelper.createDocument();
-
+	
+	//Root-Knoten im XML-Baum erstellen
 	Element root = document.createElement("source");
 	document.appendChild(root);
 
@@ -72,9 +70,10 @@ public class ParserCPP implements ParserIf
 	    // Ausgabe des Folgewortes von "class"
 	    System.out.println(sourceCodeHPP.substring(index + keyword.length(), b));
 
-	    // Klasse oder Interface oder abstract
+	    //Klassen-Namen herrausfinden
 	    String className = sourceCodeHPP.substring(index + keyword.length(), b);
-
+	    
+	    // Klasse oder Interface oder abstrakte Klasse
 	    if (isInterface(className, sourceCodeHPP))
 	    {
 		// Interface
@@ -129,6 +128,15 @@ public class ParserCPP implements ParserIf
 		    Element entry = document.createElement("entry");
 		    aggregation.appendChild(entry);
 		    entry.appendChild(document.createTextNode(aggrList.get(i)));
+		}
+
+		// Komposition: Such-Konstrukt zur Einfachheit: "new Class()"
+		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className, false);
+		for (int i = 0; i < compList.size(); i++)
+		{
+		    Element entry = document.createElement("entry");
+		    compositions.appendChild(entry);
+		    entry.appendChild(document.createTextNode(compList.get(i)));
 		}
 
 		// Methoden
@@ -188,6 +196,15 @@ public class ParserCPP implements ParserIf
 		    Element entry = document.createElement("entry");
 		    aggregation.appendChild(entry);
 		    entry.appendChild(document.createTextNode(aggrList.get(i)));
+		}
+
+		// Komposition: Such-Konstrukt zur Einfachheit: "new Class()"
+		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className, false);
+		for (int i = 0; i < compList.size(); i++)
+		{
+		    Element entry = document.createElement("entry");
+		    compositions.appendChild(entry);
+		    entry.appendChild(document.createTextNode(compList.get(i)));
 		}
 
 		// Methoden
@@ -252,7 +269,7 @@ public class ParserCPP implements ParserIf
 		}
 
 		// Komposition: Such-Konstrukt zur Einfachheit: "new Class()"
-		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className);
+		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className, true);
 		for (int i = 0; i < compList.size(); i++)
 		{
 		    Element entry = document.createElement("entry");
@@ -289,6 +306,7 @@ public class ParserCPP implements ParserIf
 
 	System.out.println("\n #################### ENDE JANS TEST ####################\n");
 	xmlHelper.writeDocumentToConsole(document);
+	
     }
 
     private void createMethods(String sourceCodeCPP, Document document, Element classdefinition)
@@ -413,11 +431,11 @@ public class ParserCPP implements ParserIf
      * @return
      * @return aggregation
      */
-    private ArrayList<String> composition(String sourceCodeHPP, String sourceCodeCPP, String className)
+    private ArrayList<String> composition(String sourceCodeHPP, String sourceCodeCPP, String className, boolean hasCPP)
     {
 	// Klassen-QuellCode
 	sourceCodeHPP = getFormatedSourceCodeHPP(className, sourceCodeHPP);
-	sourceCodeCPP = getFormatedSourceCodeCPP(className, sourceCodeCPP);
+	
 	// Liste zum Speichern der Kompositionen
 	ArrayList<String> komposition = new ArrayList<String>();
 	// HPP nach Kompositionen durchsuchen
@@ -436,18 +454,23 @@ public class ParserCPP implements ParserIf
 	    }
 	}
 	// CPP nach Kompositionen durchsuchen
-	h = "";
-	fromIndex = 0;
-	while (sourceCodeCPP.indexOf("new ", fromIndex + 1) >= 0)
+	if (hasCPP)
 	{
-	    fromIndex = sourceCodeCPP.indexOf("new ", fromIndex + 1);
-	    // Herrausschneiden des Bezeichners zwischen new_ und )
-	    h = sourceCodeCPP.substring(fromIndex + "new ".length(),
-		    sourceCodeCPP.indexOf("(", fromIndex + "new ".length()));
-	    // Verhindern von Duplikaten
-	    if (!komposition.contains(h))
+	    // Klassen-QuellCode
+	    sourceCodeCPP = getFormatedSourceCodeCPP(className, sourceCodeCPP);
+	    h = "";
+	    fromIndex = 0;
+	    while (sourceCodeCPP.indexOf("new ", fromIndex + 1) >= 0)
 	    {
-		komposition.add(h);
+		fromIndex = sourceCodeCPP.indexOf("new ", fromIndex + 1);
+		// Herrausschneiden des Bezeichners zwischen new_ und )
+		h = sourceCodeCPP.substring(fromIndex + "new ".length(),
+			sourceCodeCPP.indexOf("(", fromIndex + "new ".length()));
+		// Verhindern von Duplikaten
+		if (!komposition.contains(h))
+		{
+		    komposition.add(h);
+		}
 	    }
 	}
 	return komposition;
