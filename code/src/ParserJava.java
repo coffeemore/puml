@@ -245,7 +245,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		compString = "r = tf.newTransformer()";
 		if (sourcec.startsWith(compString))
 		{
-		    System.out.println("Debugger hier platzieren");
+		    //System.out.println("Debugger hier platzieren");
+			PUMLgenerator.logger.getLog().warning("Debugger hier platzieren");
 		}
 		/////////////////////
 
