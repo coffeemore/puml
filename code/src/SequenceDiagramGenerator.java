@@ -330,7 +330,7 @@ public class SequenceDiagramGenerator
 	    }
 	} catch (Exception e)
 	{
-	    e.printStackTrace();
+		PUMLgenerator.logger.getLog().warning("@SequenceDiagramGenerator/deleteInstancesNotInMethodcalls: "+e.toString());
 	}
 	return doc;
     }

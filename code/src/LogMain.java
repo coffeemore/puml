@@ -50,7 +50,7 @@ public class LogMain  {
 		} 
 		catch (SecurityException | IOException e) 
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
 			PUMLgenerator.logger.getLog().severe(e.getMessage());
 		}
 		xml.setFormatter(new XMLFormatter());
