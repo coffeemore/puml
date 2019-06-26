@@ -51,7 +51,7 @@ public class LogMain  {
 		catch (SecurityException | IOException e) 
 		{
 			//e.printStackTrace();
-			PUMLgenerator.logger.getLog().severe(e.getMessage());
+			PUMLgenerator.logger.getLog().severe("@LogMain/startLoggingFile: "+e.toString());
 		}
 		xml.setFormatter(new XMLFormatter());
 		xml.setLevel(Level.ALL);

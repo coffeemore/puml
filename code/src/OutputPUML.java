@@ -402,7 +402,7 @@ public class OutputPUML
 	}
 	catch (Exception e)
 	{
-		PUMLgenerator.logger.getLog().warning(e.toString());
+		PUMLgenerator.logger.getLog().warning("@OutputPUML/helperMethodCall: "+e.toString());
 	  //No more Items
 	}
 	 
@@ -455,7 +455,7 @@ public class OutputPUML
 	    	}
 		catch (Exception e)
 		{
-			PUMLgenerator.logger.getLog().warning(e.toString());
+			PUMLgenerator.logger.getLog().warning("@OutputPUML/helperAlternativeCall: "+e.toString());
 		  //No more Items
 		}
     	    
@@ -505,7 +505,7 @@ public class OutputPUML
 	}
 	catch (Exception e)
 	{
-		PUMLgenerator.logger.getLog().warning(e.toString());
+		PUMLgenerator.logger.getLog().warning("@OutputPUML/helperMethodCallHandler: "+e.toString());
 	    //No more Items
 	}
 	
@@ -539,7 +539,7 @@ public class OutputPUML
 	    }
 	    catch(Exception e)
 	    {
-		PUMLgenerator.logger.getLog().warning(e + " :: " + method + " Node not Found");
+	    	PUMLgenerator.logger.getLog().warning("@OutputPUML/helperMethodCallHandler: "+e.toString());
 	    }
 	}
 	else if(type.equals("unknown"))
@@ -589,7 +589,7 @@ public class OutputPUML
 	}
 	catch(Exception e)
 	{
-		PUMLgenerator.logger.getLog().warning(e.toString());
+		PUMLgenerator.logger.getLog().warning("@OutputPUML/helperLoopCall: "+e.toString());
 	  //No more Items
 	}
 	
