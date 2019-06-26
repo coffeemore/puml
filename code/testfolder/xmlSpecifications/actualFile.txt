@@ -1,0 +1,39 @@
+@startuml
+class Class1{
+-Class2 classInstance1
+#Class2 classInstance2
++Class4 iClass4
+~Class5 iClass5
+-int var1
+#double var2
++short var3
+~byte var4
++Class1(Class4 iClass4, Class5 iClass5)
+-int method1(int param1, int param2)
+#void method2()
++void method3()
+~void method4()
+}
+class Class2{
++void call1()
++void call2()
+}
+class Class3{
++void call1()
+}
+class Class4
+class Class5
+interface If1{
++int method1(int param1, int param2)
+}
+interface If2{
++void method2()
+}
+Class3 <|-- Class1
+If1 <|-- Class1
+If2 <|-- Class1
+Class1 *-- Class2
+Class1 *-- Class3
+Class1 o-- Class4
+Class1 o-- Class5
+@enduml

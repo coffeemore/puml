@@ -110,7 +110,7 @@ public class XmlHelperMethods
 	    return document;
 	} catch (SAXException | IOException | ParserConfigurationException e)
 	{
-	    e.printStackTrace();
+	    PUMLgenerator.logger.getLog().warning("@XmlHelperMethods/getDocumentFrom: "+e.toString());
 	}
 	return null;
     }
@@ -132,7 +132,7 @@ public class XmlHelperMethods
 	    return document;
 	} catch (ParserConfigurationException e)
 	{
-	    e.printStackTrace();
+		PUMLgenerator.logger.getLog().warning("@XmlHelperMethods/createDocument"+e.toString());
 	}
 	return null;
     }
@@ -163,7 +163,7 @@ public class XmlHelperMethods
 	    transformer.transform(domSource, console);
 	} catch (TransformerException e)
 	{
-	    e.printStackTrace();
+	    PUMLgenerator.logger.getLog().warning("@XmlHelperMethods/writeDocumentToConsole: "+e.toString());
 	}
     }
 

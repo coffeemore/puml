@@ -41,7 +41,7 @@ public class CodeCollector
      * True = .cpp- und .hpp-Dateien werden verwendet; False = .cpp- und
      * .hpp-Dateien werden ignoriert
      */
-    private boolean useCppAndHppFiles = true;
+    private boolean useCppAndHppFiles = false;
 
     /**
      * Konstruktor
@@ -204,7 +204,7 @@ public class CodeCollector
 
 	} catch (IOException e)
 	{
-	    e.printStackTrace();
+		PUMLgenerator.logger.getLog().warning("@CodeCollector/collectJar: " + e.toString());
 	} finally
 	{
 	    try
@@ -219,7 +219,7 @@ public class CodeCollector
 		}
 	    } catch (IOException ex)
 	    {
-		ex.printStackTrace();
+	    	PUMLgenerator.logger.getLog().warning("@CodeCollector/collectJar: " + ex.toString());
 	    }
 	}
 	return sc;
@@ -281,7 +281,7 @@ public class CodeCollector
 		}
 	    } catch (IOException e)
 	    {
-		e.printStackTrace();
+	    	PUMLgenerator.logger.getLog().warning("@CodeCollector/collectSimpleFiles: " + e.toString());
 	    } finally
 	    {
 		// BufferedReader und FileReader werden geschlossen
@@ -297,7 +297,7 @@ public class CodeCollector
 		    }
 		} catch (IOException ex)
 		{
-		    ex.printStackTrace();
+			PUMLgenerator.logger.getLog().warning("@CodeCollector/collectSimpleFiles: " + ex.toString());
 		}
 	    }
 	}

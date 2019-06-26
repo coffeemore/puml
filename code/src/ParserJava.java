@@ -245,7 +245,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		compString = "r = tf.newTransformer()";
 		if (sourcec.startsWith(compString))
 		{
-		    System.out.println("Debugger hier platzieren");
+		    //System.out.println("Debugger hier platzieren");
+			PUMLgenerator.logger.getLog().warning("Debugger hier platzieren");
 		}
 		/////////////////////
 
@@ -589,6 +590,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				}
 				catch (Exception e)
 				{
+					PUMLgenerator.logger.getLog().warning("@ParserJava: "+e.toString());
 				    Element whileLoopNode = document.createElement("loop");
 				    Element whileConditionNode = document.createElement("condition");
 
@@ -1619,8 +1621,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 	    StringIndexOutOfBoundsException e)
 	    {
-
-		System.out.println(e.getCause());
+	    	PUMLgenerator.logger.getLog().warning("@ParserJava: "+e.toString());
+		//System.out.println(e.getCause());
 		boolean sourceEnd = true;
 		if (sourcec.length() <= 10)
 		{
@@ -1646,8 +1648,9 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 	    }
 	    catch (java.lang.ClassCastException e)
 	    {
-		System.out.println("Fehler in der While: " + e.toString());
-		System.out.println("Bei Position: " + sourcec.substring(0, 10));
+	    	PUMLgenerator.logger.getLog().warning("@ParserJava: Fehler in der While: " + e.toString() + " bei Position: " + sourcec.substring(0, 10));
+		//System.out.println("Fehler in der While: " + e.toString());
+		//System.out.println("Bei Position: " + sourcec.substring(0, 10));
 
 		String[] excNameArray = new String[1];
 		excNameArray[0] = ";";
@@ -1658,8 +1661,9 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 	    }
 	    catch (Exception e)
 	    {
-		System.out.println("Fehler in der While: " + e.toString());
-		System.out.println("Bei Position: " + sourcec.substring(0, 10));
+	    	PUMLgenerator.logger.getLog().warning("@ParserJava: Fehler in der While: " + e.toString() + " bei Position: " + sourcec.substring(0, 10));
+		//System.out.println("Fehler in der While: " + e.toString());
+		//System.out.println("Bei Position: " + sourcec.substring(0, 10));
 
 	    }
 	}
@@ -1691,6 +1695,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		}
 		catch (SecurityException se)
 		{
+			PUMLgenerator.logger.getLog().warning("@ParserJava: "+se.toString());
 		    // handle it
 		}
 	    }
@@ -1704,18 +1709,21 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 	    }
 	    catch (Exception e)
 	    {
+	    	PUMLgenerator.logger.getLog().warning("@ParserJava: "+e.toString());
 		// TODO Auto-generated catch block
-		e.printStackTrace();
+		//e.printStackTrace();
 	    }
 
 	}
 	catch (TransformerException e)
 	{
-	    e.printStackTrace();
+	    //e.printStackTrace();
+	    PUMLgenerator.logger.getLog().warning("@ParserJava: "+e.toString());
 	}
 	catch (Exception e)
 	{
-	    e.printStackTrace();
+		PUMLgenerator.logger.getLog().warning("@ParserJava: "+e.toString());
+	    //e.printStackTrace();
 	}
 	// System.out.println(document.getTextContent());
 	// System.out.println(curNode.getNodeName() + " " + curNode.getTextContent());
@@ -1750,6 +1758,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 	    }
 	    catch (SecurityException se)
 	    {
+	    	PUMLgenerator.logger.getLog().warning("@ParserJava: "+se.toString());
 		// handle it
 	    }
 	}
@@ -1765,8 +1774,9 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 	}
 	catch (Exception e)
 	{
+		PUMLgenerator.logger.getLog().warning("@ParserJava: "+e.toString());
 	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+	    //e.printStackTrace();
 	}
 
 	try
@@ -1775,8 +1785,9 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 	}
 	catch (ParserConfigurationException e)
 	{
+		PUMLgenerator.logger.getLog().warning("@ParserJava: "+e.toString());
 	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+	    //e.printStackTrace();
 	}
     }
 
