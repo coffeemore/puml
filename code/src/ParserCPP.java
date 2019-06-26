@@ -231,8 +231,8 @@ public class ParserCPP implements ParserIf
 		Element instance = document.createElement("instance");
 		classdefinition.appendChild(instance);
 		// Variablen
-		Element var = document.createElement("var");
-		classdefinition.appendChild(var);
+		//Element var = document.createElement("var");
+		//classdefinition.appendChild(var);
 		// Komposition
 		Element compositions = document.createElement("compositions");
 		classdefinition.appendChild(compositions);
@@ -258,6 +258,9 @@ public class ParserCPP implements ParserIf
 		    }
 		}
 
+		// var
+		createVar(sourceCodeHPP, document, classdefinition, index);
+		
 		// Aggregation
 		ArrayList<String> aggrList = aggregation(sourceCodeCPP, className);
 		for (int i = 0; i < aggrList.size(); i++)
@@ -308,7 +311,85 @@ public class ParserCPP implements ParserIf
 	
     }
 
-    private void createMethods(String sourceCodeCPP, String sourceCodeHPP, Document document, Element classdefinition) {
+    private void createVar(String sourceCodeHPP, Document document, Element classdefinition, int i) {
+
+    	int j, b, a;
+
+    	if(sourceCodeHPP.indexOf("class ", i + 1) > 0)
+    	{
+    		b = sourceCodeHPP.indexOf("class ", i + 1);
+    	}
+    	else
+    	{
+    		b = sourceCodeHPP.length();
+    	}
+    	
+    	String currentHPP = sourceCodeHPP.substring(i ,b);
+    	String[] vartyp = {"bool", "char", "int", "short", "long", "float", "double"};
+    	for(int v = 0; v < vartyp.length; v++)
+    	{
+    		j = 0;
+    		do
+    		{
+    			j = currentHPP.indexOf(vartyp[v], j + 1);
+    			if(j > 0)
+    			{
+    				a = j;
+    				while(currentHPP.charAt(a) != ' ')
+    				{
+    					a++;
+    				}
+    				a++;
+    				b = a;
+    				while(currentHPP.charAt(b) != ';')
+    				{
+    					b++;
+    				}
+    				String varname = currentHPP.substring(a, b);
+    				
+    				String varaccess;
+    				while(currentHPP.charAt(b) != ':')
+    				{
+    					b--;
+    				}
+    				a = b;
+    				if(currentHPP.charAt(b - 1) != ' ')
+    				{
+    					while(currentHPP.charAt(a) != '\n')
+        				{
+        					a--;
+        				}
+    					varaccess = currentHPP.substring(a + 1, b);
+    				}
+    				else
+    				{
+    					varaccess = "private";
+    				}
+    				
+    				if(varname.indexOf(")") < 0)
+    				{
+            	    	Element var = document.createElement("var");
+            			classdefinition.appendChild(var);
+            			
+            			Element access = document.createElement("access");
+            			var.appendChild(access);
+            			access.appendChild(document.createTextNode(varaccess));
+            			
+            			Element type = document.createElement("type");
+            			var.appendChild(type);
+            			type.appendChild(document.createTextNode(vartyp[v]));
+            			
+            			Element name = document.createElement("name");
+            			var.appendChild(name);
+            			name.appendChild(document.createTextNode(varname));            			    			
+    				}
+    			}
+    		} 
+    		while(j > 0);
+    	}
+	}
+
+	private void createMethods(String sourceCodeCPP, String sourceCodeHPP, Document document, Element classdefinition) {
 		calclassinterval(sourceCodeCPP);
 		int j = cppInterval[0], i = j, n = cppInterval[1];//sourceCodeCPP.length();
 		while(sourceCodeCPP.charAt(j) != '"')
