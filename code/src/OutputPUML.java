@@ -406,6 +406,7 @@ public class OutputPUML
 	}
 	catch (Exception e)
 	{
+		PUMLgenerator.logger.getLog().warning(e.toString());
 	  //No more Items
 	}
 	 
@@ -458,6 +459,7 @@ public class OutputPUML
 	    	}
 		catch (Exception e)
 		{
+			PUMLgenerator.logger.getLog().warning(e.toString());
 		  //No more Items
 		}
     	    
@@ -507,6 +509,7 @@ public class OutputPUML
 	}
 	catch (Exception e)
 	{
+		PUMLgenerator.logger.getLog().warning(e.toString());
 	    //No more Items
 	}
 	
@@ -590,6 +593,7 @@ public class OutputPUML
 	}
 	catch(Exception e)
 	{
+		PUMLgenerator.logger.getLog().warning(e.toString());
 	  //No more Items
 	}
 	
