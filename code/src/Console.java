@@ -1,7 +1,3 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -315,8 +311,7 @@ public class Console extends PUMLgenerator
 	    }
 	    catch (IOException | XPathExpressionException e)
 	    {
-	    	System.out.println("Kommandozeile: Verarbeitung Klassendiagramm fehlgeschlagen");
-	    	e.printStackTrace();
+	    	PUMLgenerator.logger.getLog().warning("@Console/createClassDiag: Verarbeitung Klassendiagramm fehlgeschlagen" + e.toString());
 	    }
 	}
     /**
@@ -333,8 +328,7 @@ public class Console extends PUMLgenerator
 	    }
 	    catch (IOException | XPathExpressionException e)
 	    {
-	    	System.out.println("Kommandozeile: Verarbeitung Klassendiagramm fehlgeschlagen");
-	    	e.printStackTrace();
+	    	PUMLgenerator.logger.getLog().warning("@Console/createClassPlantUmlText: Verarbeitung Klassendiagramm fehlgeschlagen" + e.toString());
 	    }
 	}
 	
@@ -357,8 +351,7 @@ public class Console extends PUMLgenerator
 		}
 		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException | SAXException | TransformerException e)
 		{
-			System.out.println("Kommandozeile: Verarbeitung SQ ohne output-Pfad fehlgeschlagen");
-			e.printStackTrace();
+			PUMLgenerator.logger.getLog().warning("@Console/createSQDiagram: Verarbeitung SQ fehlgeschlagen" + e.toString());
 		}
     }
     /**
@@ -377,8 +370,7 @@ public class Console extends PUMLgenerator
 		}
 		catch (XPathExpressionException | DOMException | IOException | ParserConfigurationException | SAXException | TransformerException e)
 		{
-			System.out.println("Kommandozeile: Verarbeitung SQ ohne output-Pfad fehlgeschlagen");
-			e.printStackTrace();
+			PUMLgenerator.logger.getLog().warning("@Console/createSQPlantUmlText: Verarbeitung SQ fehlgeschlagen" + e.toString());
 		}
     }
     /**
@@ -426,8 +418,7 @@ public class Console extends PUMLgenerator
 		}
 		catch (XPathExpressionException e)
 		{
-			System.out.println("Fehler beim Initialisieren der Klassen-Nodeliste in validateClass.");
-			e.printStackTrace();
+			PUMLgenerator.logger.getLog().warning("@Console/validateUserInput: Fehler beim Initialisieren der Klassen-Nodeliste in validateClass." + e.toString());
 		}
 		return false;
     }
@@ -462,8 +453,7 @@ public class Console extends PUMLgenerator
 		}
 		catch (XPathExpressionException e)
 		{
-			e.printStackTrace();
-			System.out.println("Kommandozeile: Verarbeitung showAllClassesMethods fehlgeschlagen.");
+			PUMLgenerator.logger.getLog().warning("@Console/showAllClassesMethods: Verarbeitung fehlgeschlagen" + e.toString());
 		}
     }
 	
@@ -514,8 +504,7 @@ public class Console extends PUMLgenerator
 		}
 		catch (XPathExpressionException e)
 		{
-			e.printStackTrace();
-			System.out.println("Kommandozeile: Verarbeitung setAllClasses fehlgeschlagen.");
+			PUMLgenerator.logger.getLog().warning("@Console/setClassesI: Verarbeitung fehlgeschlagen" + e.toString());
 		}
     }	
 }

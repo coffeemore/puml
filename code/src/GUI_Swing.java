@@ -130,7 +130,7 @@ public class GUI_Swing
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					PUMLgenerator.logger.getLog().warning("@GUI_Swing/showGUI: " + e.toString());
 				}
 			}
 		});
@@ -461,7 +461,7 @@ public class GUI_Swing
 				catch (Exception e1)
 				{
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					PUMLgenerator.logger.getLog().warning("@GUI_Swing/initialize/btnTest: " + e1.toString());
 				}
 			}
 		});
@@ -606,7 +606,7 @@ public class GUI_Swing
 		catch (XPathExpressionException e)
 		{
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			PUMLgenerator.logger.getLog().warning("@GUI_Swing/createTree: " + e.toString());
 		}
 
 	}
@@ -666,7 +666,7 @@ public class GUI_Swing
 		catch (Exception e)
 		{
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			PUMLgenerator.logger.getLog().warning("@GUI_Swing/runPUML: " + e.toString());
 		}
 	}
 
@@ -684,7 +684,7 @@ public class GUI_Swing
 		catch (Exception e)
 		{
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			PUMLgenerator.logger.getLog().warning("@GUI_Swing/createClassDiagramm: " + e.toString());
 		}
 
 	}
@@ -703,7 +703,7 @@ public class GUI_Swing
 		catch (Exception e)
 		{
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			PUMLgenerator.logger.getLog().warning("@GUI_Swing/createSequenceDiagramm: " + e.toString());
 		}
 
 	}

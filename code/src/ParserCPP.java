@@ -827,7 +827,8 @@ public class ParserCPP implements ParserIf
 	catch (ParserConfigurationException e)
 	{
 	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+		PUMLgenerator.logger.getLog().warning("@ParserCPP/parse: "+e.toString());
+	    //e.printStackTrace();
 	}
 
     }
