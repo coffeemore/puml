@@ -299,7 +299,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		    }
 		    String classNameStr = res.getData();
 		    classNameStr = classNameStr.strip();
-		    System.out.println("@className: " + classNameStr);
+		    PUMLgenerator.logger.getLog().warning("@className: \" + classNameStr");
+		    //System.out.println("@className: " + classNameStr);
 
 		    Element classDefinition = document.createElement("classdefinition");
 		    Element classNameEl = document.createElement("name");
@@ -325,7 +326,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			    curlBrace++;
 			}
 			classExtendsStr = classExtendsStr.strip();
-			System.out.println("@extendsName: " + classExtendsStr);
+			PUMLgenerator.logger.getLog().warning("@extendsName: " + classExtendsStr);
+			//System.out.println("@extendsName: " + classExtendsStr);
 
 			Element classExtends = document.createElement("extends");
 			Element classExtendsEl = document.createElement("entry");
@@ -363,7 +365,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 			    String classImplementsStr = res.getData();
 			    classImplementsStr = classImplementsStr.strip();
-			    System.out.println("@implements: " + classImplementsStr);
+			    PUMLgenerator.logger.getLog().warning("@implements: " + classImplementsStr);
+			    //System.out.println("@implements: " + classImplementsStr);
 
 			    Element classImplementsEl = document.createElement("entry");
 			    classImplementsEl.appendChild(document.createTextNode(classImplementsStr));
@@ -402,7 +405,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		    }
 
 		    interfaceName = interfaceName.strip();
-		    System.out.println("@interfaceName: " + interfaceName);
+		    PUMLgenerator.logger.getLog().warning("@interfaceName: " + interfaceName);
+		    //System.out.println("@interfaceName: " + interfaceName);
 
 		    Element ifDefinition = document.createElement("interfacedefinition");
 		    Element ifNameEl = document.createElement("name");
@@ -415,7 +419,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 		    //////// Temporär///////
 		    // Name der Klasse/des Interfaces
-		    System.out.println(curNode.getFirstChild().getTextContent());
+		    PUMLgenerator.logger.getLog().warning(curNode.getFirstChild().getTextContent());
+		    //System.out.println(curNode.getFirstChild().getTextContent());
 		    ///////////////////////
 
 		    compString = "extends ";
@@ -433,7 +438,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			    curlBrace++;
 			}
 			extendsName = extendsName.strip();
-			System.out.println("@extendsName: " + extendsName);
+			PUMLgenerator.logger.getLog().warning("@extendsName: " + extendsName);
+			//System.out.println("@extendsName: " + extendsName);
 		    }
 		    Element compNode = document.createElement("compositions");
 		    curNode.appendChild(compNode);
@@ -479,7 +485,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			switch (prefixRBrace.length)
 			{
 			case 0:
-			    System.out.println("nichts");
+				PUMLgenerator.logger.getLog().warning("nichts");
+			    //System.out.println("nichts");
 			    break;
 			case 1:// Funktionsaufruf oder Schleifen/Anweisungen
 			    switch (prefixRBrace[0])
@@ -507,9 +514,11 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				    sourcec = sourcec.substring(1);
 				    curlBrace++;
 				    curNode = (Element) curNode.getLastChild();
-				    System.out.println(curNode.getNodeName());
+				    PUMLgenerator.logger.getLog().warning(curNode.getNodeName());
+				    //System.out.println(curNode.getNodeName());
 				    curNode = (Element) curNode.getLastChild();
-				    System.out.println(curNode.getNodeName());
+				    PUMLgenerator.logger.getLog().warning(curNode.getNodeName());
+				    //System.out.println(curNode.getNodeName());
 				}
 				done = true;
 				continue;
@@ -645,7 +654,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				}
 				else
 				{
-				    System.out.println("Fehler bei switch");
+					PUMLgenerator.logger.getLog().warning("Fehler bei Switch");
+				    //System.out.println("Fehler bei switch");
 				}
 				done = true;
 				continue;
@@ -654,7 +664,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			    default:
 				// TODO: muss noch erweitert werden für method(method()) und
 				// Object.method1().method2()
-				System.out.println("Funktionsaufruf");
+			    	PUMLgenerator.logger.getLog().warning("Funktionsaufruf");
+				//System.out.println("Funktionsaufruf");
 				if (prefixRBrace[0].contains("."))
 				{
 
@@ -1202,7 +1213,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			{
 			    if (curNode.getNodeName().equals("alternative"))
 			    {
-				System.out.println("Fehler bei case");
+			    	PUMLgenerator.logger.getLog().warning("Fehler bei case");
+				//System.out.println("Fehler bei case");
 				break;
 			    }
 //			    curNode = (Element) curNode.getParentNode();
@@ -1245,7 +1257,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			{
 			    if (curNode.getNodeName().equals("alternative"))
 			    {
-				System.out.println("Fehler bei case");
+			    	PUMLgenerator.logger.getLog().warning("Fehler bei case");
+				//System.out.println("Fehler bei case");
 				break;
 			    }
 //			    curNode = (Element) curNode.getParentNode();
@@ -1270,7 +1283,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			}
 			else
 			{
-			    System.out.println("Fehler bei default");
+				PUMLgenerator.logger.getLog().warning("Fehler bei default");
+			    //System.out.println("Fehler bei default");
 			}
 			curNode = (Element) curNode.getLastChild();
 
@@ -1285,7 +1299,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 		if (sourcec.startsWith("break"))
 		{
-		    System.out.println("break gefunden");
+			PUMLgenerator.logger.getLog().warning("break gefunden");
+		    //System.out.println("break gefunden");
 		}
 		///////
 		compString = "else";
@@ -1337,7 +1352,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			    sourcec = sourcec.substring(1);
 			    curlBrace++;
 			    curNode = (Element) curNode.getLastChild();
-			    System.out.println(curNode.getNodeName());
+			    PUMLgenerator.logger.getLog().warning(curNode.getNodeName());
+			    //System.out.println(curNode.getNodeName());
 			}
 			done = true;
 			continue;
@@ -1375,7 +1391,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			}
 			else
 			{
-			    System.out.println("Fehler bei DoWhile");
+				PUMLgenerator.logger.getLog().warning("Fehler bei DoWhile");
+			    //System.out.println("Fehler bei DoWhile");
 			}
 
 			done = true;
@@ -1478,7 +1495,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				}
 				else
 				{
-				    System.out.println("Fehler bei Klassen-Variablen erkennen");
+					PUMLgenerator.logger.getLog().warning("Fehler bei Klassen-Variablen erkennen");
+				    //System.out.println("Fehler bei Klassen-Variablen erkennen");
 				}
 
 			    }
@@ -1497,7 +1515,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		    }
 		    else
 		    {
-			System.out.println("Fehler bei Klassen-Variablen erkennen");
+		    	PUMLgenerator.logger.getLog().warning("Fehler bei Klassen-Variablen erkennen");
+			//System.out.println("Fehler bei Klassen-Variablen erkennen");
 			sourcec = sourcec.substring(1);
 			continue;
 		    }
@@ -1643,7 +1662,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		{
 		    sourcec = "";
 		}
-		System.out.println("Source erweitert");
+		PUMLgenerator.logger.getLog().warning("Source erweitert");
+		//System.out.println("Source erweitert");
 
 	    }
 	    catch (java.lang.ClassCastException e)
@@ -1678,7 +1698,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 	    transformer.transform(new DOMSource(document), new StreamResult(writer));
 
 	    String xmlString = writer.getBuffer().toString();
-	    System.out.println(xmlString); // Print to console or logs
+	    PUMLgenerator.logger.getLog().warning(xmlString);
+	    //System.out.println(xmlString); // Print to console or logs
 
 	    String home;
 	    home = System.getProperty("user.home");
@@ -1741,7 +1762,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 	// System.out.println(sourceCode);
 	StringWriter writer = new StringWriter();
 	String xmlString = writer.getBuffer().toString();
-	System.out.println(xmlString); // Print to console or logs
+	PUMLgenerator.logger.getLog().warning(xmlString);
+	//System.out.println(xmlString); // Print to console or logs
 
 	String home;
 	home = System.getProperty("user.home");
