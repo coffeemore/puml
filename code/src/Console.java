@@ -492,8 +492,10 @@ public class Console extends PUMLgenerator
 				{
 					//xmlHelper.delNode(xmlHelper.getList(classNodeList.item(i), "..").item(0), false);
 					//xmlHelper.delNode(classNodeList.item(i), false);
-					parserDoc.removeChild(classNodeList.item(i));
+					xmlHelper.writeDocumentToConsole(parserDoc);
+					System.out.println(classNodeList.item(i).getTextContent());
 					
+					xmlHelper.writeDocumentToConsole(parserDoc);
 					//TODO: Parser Result anpassen
 					//Rueckgabe der ClassNodeList fuer PUML
 
