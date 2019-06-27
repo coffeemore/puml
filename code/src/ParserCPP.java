@@ -258,8 +258,11 @@ public class ParserCPP implements ParserIf
 		    }
 		}
 
+		// instance
+		createInstanze(createCurrentHPP(sourceCodeHPP, index), document, classdefinition);
+		
 		// var
-		createVar(sourceCodeHPP, document, classdefinition, index);
+		createVar(createCurrentHPP(sourceCodeHPP, index), document, classdefinition);
 		
 		// Aggregation
 		ArrayList<String> aggrList = aggregation(sourceCodeCPP, className);
@@ -310,31 +313,105 @@ public class ParserCPP implements ParserIf
 	xmlHelper.writeDocumentToConsole(document);
 	
     }
-
-    private void createVar(String sourceCodeHPP, Document document, Element classdefinition, int i) {
-
-    	int j, b, a;
-
-    	if(sourceCodeHPP.indexOf("class ", i + 1) > 0)
+    
+    private String createCurrentHPP(String sourceCodeHPP, int index)
+    {
+    	int j;
+    	if(sourceCodeHPP.indexOf("class ", index + 1) > 0)
     	{
-    		b = sourceCodeHPP.indexOf("class ", i + 1);
+    		j = sourceCodeHPP.indexOf("class ", index + 1);
     	}
     	else
     	{
-    		b = sourceCodeHPP.length();
+    		j = sourceCodeHPP.length();
     	}
-    	
-    	String currentHPP = sourceCodeHPP.substring(i ,b);
+    	return sourceCodeHPP.substring(index ,j);
+    }
+
+    private void createInstanze(String currentHPP, Document document, Element classdefinition) {
+    	int i = 0, b, a;
+
+    	while(currentHPP.indexOf("*", i) > 0)
+    	{
+    		// * markiert Instanzen
+    		i = currentHPP.indexOf("*", i);
+    		b = i;
+    		a = b;
+    		
+    		while(currentHPP.charAt(a) != '\n' &&
+    				currentHPP.charAt(a) != ' ' &&
+    				currentHPP.charAt(a) != '\t')
+    		{
+    			a--;
+    		}
+    		String classStr= currentHPP.substring(a + 1, b);
+    		
+    		a = b + 2;
+    		b = a;
+    		while(currentHPP.charAt(b) != ';' && currentHPP.charAt(b) != ' ')
+    		{
+    			b++;
+    		}
+    		String nameStr = currentHPP.substring(a, b);
+    		
+    		String accessStr;
+    		while(currentHPP.charAt(b) != ':')
+    		{
+    			b--;
+    		}
+    		
+    		//Wenn Sichtabarkeit nicht definiert, dann ist diese private
+    		if(currentHPP.charAt(b - 1) == ' ')
+    		{
+    			accessStr  = "private";
+    		}
+    		else
+    		{
+    			a = b;
+    			while(currentHPP.charAt(a) != '\n')
+    			{
+    				a--;
+    			}
+    			accessStr  = currentHPP.substring(a + 1, b);
+    		}
+    		
+    		//Herausfiltern von faelschlich eingelesenen Instanzen
+    		if(nameStr.indexOf(")") < 0 && classStr.indexOf("(") < 0)
+    		{
+    			Element instance = document.createElement("instance");
+    			classdefinition.appendChild(instance);
+    			
+    			Element access = document.createElement("access");
+    			instance.appendChild(access);
+    			access.appendChild(document.createTextNode(accessStr));
+    			
+    			Element name = document.createElement("name");
+    			instance.appendChild(name);
+    			name.appendChild(document.createTextNode(nameStr));
+        		
+    			Element classEl = document.createElement("class");
+    			instance.appendChild(classEl);
+    			classEl.appendChild(document.createTextNode(classStr));
+    		}    		
+    		i++;
+    	}
+	}
+
+	private void createVar(String currentHPP, Document document, Element classdefinition) {
+		
+    	int i, b, a;
     	String[] vartyp = {"bool", "char", "int", "short", "long", "float", "double"};
+    	//Suche nach aufgelisteten Datentypen
     	for(int v = 0; v < vartyp.length; v++)
     	{
-    		j = 0;
+    		i = 0;
     		do
     		{
-    			j = currentHPP.indexOf(vartyp[v], j + 1);
-    			if(j > 0)
+    			i = currentHPP.indexOf(vartyp[v], i + 1);
+    			if(i > 0)
     			{
-    				a = j;
+    				//Suche des Variablennamens nachfolgend auf Datentyp
+    				a = i;
     				while(currentHPP.charAt(a) != ' ')
     				{
     					a++;
@@ -347,6 +424,7 @@ public class ParserCPP implements ParserIf
     				}
     				String varname = currentHPP.substring(a, b);
     				
+    				//Einlesen der Sichtbarkeit, wenn undefiniert -> private
     				String varaccess;
     				while(currentHPP.charAt(b) != ':')
     				{
@@ -366,6 +444,7 @@ public class ParserCPP implements ParserIf
     					varaccess = "private";
     				}
     				
+    				//Herausfiltern faelschlich eingelesener Variablen
     				if(varname.indexOf(")") < 0)
     				{
             	    	Element var = document.createElement("var");
@@ -385,7 +464,7 @@ public class ParserCPP implements ParserIf
     				}
     			}
     		} 
-    		while(j > 0);
+    		while(i > 0);
     	}
 	}
 
