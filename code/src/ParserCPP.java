@@ -6,8 +6,8 @@ import org.w3c.dom.Element;
 
 public class ParserCPP implements ParserIf
 {
-    private Document document;
     private XmlHelperMethods xmlHelper = new XmlHelperMethods();
+    private Document document = xmlHelper.createDocument();
     private int[] cppInterval = {0,0};
 
     /**
@@ -49,7 +49,7 @@ public class ParserCPP implements ParserIf
 	sourceCodeCPP = sourceCodeCPP.trim();
 
 	//XML-Dokument erstellen
-	Document document = xmlHelper.createDocument();
+	//Document document = xmlHelper.createDocument();
 	
 	//Root-Knoten im XML-Baum erstellen
 	Element root = document.createElement("source");
@@ -310,7 +310,7 @@ public class ParserCPP implements ParserIf
 	 */
 
 	System.out.println("\n #################### ENDE JANS TEST ####################\n");
-	xmlHelper.writeDocumentToConsole(document);
+	//xmlHelper.writeDocumentToConsole(document);
 	
     }
     
