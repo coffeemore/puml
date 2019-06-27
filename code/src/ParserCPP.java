@@ -131,7 +131,7 @@ public class ParserCPP implements ParserIf
 		}
 
 		// Komposition: Such-Konstrukt zur Einfachheit: "new Class()"
-		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className, false);
+		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className);
 		for (int i = 0; i < compList.size(); i++)
 		{
 		    Element entry = document.createElement("entry");
@@ -199,7 +199,7 @@ public class ParserCPP implements ParserIf
 		}
 
 		// Komposition: Such-Konstrukt zur Einfachheit: "new Class()"
-		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className, false);
+		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className);
 		for (int i = 0; i < compList.size(); i++)
 		{
 		    Element entry = document.createElement("entry");
@@ -269,7 +269,7 @@ public class ParserCPP implements ParserIf
 		}
 
 		// Komposition: Such-Konstrukt zur Einfachheit: "new Class()"
-		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className, true);
+		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className);
 		for (int i = 0; i < compList.size(); i++)
 		{
 		    Element entry = document.createElement("entry");
@@ -431,11 +431,11 @@ public class ParserCPP implements ParserIf
      * @return
      * @return aggregation
      */
-    private ArrayList<String> composition(String sourceCodeHPP, String sourceCodeCPP, String className, boolean hasCPP)
+    private ArrayList<String> composition(String sourceCodeHPP, String sourceCodeCPP, String className)
     {
 	// Klassen-QuellCode
 	sourceCodeHPP = getFormatedSourceCodeHPP(className, sourceCodeHPP);
-	
+
 	// Liste zum Speichern der Kompositionen
 	ArrayList<String> komposition = new ArrayList<String>();
 	// HPP nach Kompositionen durchsuchen
@@ -453,11 +453,12 @@ public class ParserCPP implements ParserIf
 		komposition.add(h);
 	    }
 	}
-	// CPP nach Kompositionen durchsuchen
-	if (hasCPP)
+	// CPP überprüfen und wenn vorhanden nach Kompositionen durchsuchen
+
+	// Klassen-QuellCode suchen
+	sourceCodeCPP = getFormatedSourceCodeCPP(className, sourceCodeCPP);
+	if (sourceCodeCPP.equals(""))
 	{
-	    // Klassen-QuellCode
-	    sourceCodeCPP = getFormatedSourceCodeCPP(className, sourceCodeCPP);
 	    h = "";
 	    fromIndex = 0;
 	    while (sourceCodeCPP.indexOf("new ", fromIndex + 1) >= 0)
@@ -473,6 +474,7 @@ public class ParserCPP implements ParserIf
 		}
 	    }
 	}
+
 	return komposition;
     }
 
