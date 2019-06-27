@@ -1,30 +1,10 @@
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
 import org.apache.commons.cli.ParseException;
 import org.junit.jupiter.api.Test;
 
 class ConsoleTest
 {
-	private Console testConsole;
-	/*
-	@Test
-	void testMissingPath() throws ParseException
-	{
-	    PrintStream save_out = System.out;
-	    final ByteArrayOutputStream out = new ByteArrayOutputStream();
-	    System.setOut(new PrintStream(out));
-	    //Testaufruf
-	    String [] options = {"-c"};
-		PUMLgenerator.main(options);
-		//Auswertung
-	    assertEquals("Consolemode\n" + 
-	    		"Es fehlt ein zu bearbeitender Pfad.", out.toString());
-	    System.setOut(save_out);
-	}
-	*/
+	//private Console testConsole;
 	@Test
 	void testIgnoreJar() throws ParseException
 	{
