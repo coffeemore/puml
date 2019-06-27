@@ -240,7 +240,7 @@ public class Console extends PUMLgenerator
     	
     	//Ausgabeort festlegen
     	//Nicht wenn outputlocation ueber "-o" gegeben
-    	while ((outputLocation.contentEquals("./")) && (!(choice == 'a') || choice == 'p')) 
+    	while ((outputLocation.contentEquals("./")) && !(choice == 'a' || choice == 'p')) 
 		{
 			System.out.println("Ziel-Datei in [a]rbeitsverzeichnis oder [p]fad speichern?");
 			choice = scanner.next().charAt(0);
@@ -248,7 +248,7 @@ public class Console extends PUMLgenerator
     	if (choice == 'p') //Pfad einlesen
 		{
 			System.out.println("Ausgabepfad fuer UML-Diagramm und -Code angeben");
-			outputLocation = scanner.nextLine();
+			outputLocation = scanner.next().toString();
 		}
     	//Diagrammauswahl treffen
     	while (!(choice == 's' || choice == 'k'))
@@ -430,7 +430,6 @@ public class Console extends PUMLgenerator
     {
 		try
 		{
-			//Document parserDoc = (); //Test
 			Document parserDoc = PUMLgenerator.parser.getParsingResult();
 			//Initialisiere Nodelist fuer Klassennamen
 			NodeList classNodeList = xmlHelper.getList(parserDoc, "/source/classdefinition/name");
@@ -490,14 +489,13 @@ public class Console extends PUMLgenerator
 				}
 				else if (choice == 'n')
 				{
-					//xmlHelper.delNode(xmlHelper.getList(classNodeList.item(i), "..").item(0), false);
-					//xmlHelper.delNode(classNodeList.item(i), false);
-					xmlHelper.writeDocumentToConsole(parserDoc);
-					System.out.println(classNodeList.item(i).getTextContent());
-					
-					xmlHelper.writeDocumentToConsole(parserDoc);
+					//xmlHelper.writeDocumentToConsole(parserDoc);
+					System.out.println(" ********************************************************* "+ classNodeList.item(i).getTextContent());
+					//xmlHelper.delNode(parserDoc.getParentNode().removeChild(classNodeList.item(i)), false);
+					System.out.println(parserDoc.getElementById( classNodeList.item(i).getNodeName()) );
+					parserDoc.getElementById( classNodeList.item(i).getNodeName());
+					//xmlHelper.writeDocumentToConsole(parserDoc);
 					//TODO: Parser Result anpassen
-					//Rueckgabe der ClassNodeList fuer PUML
 
 					System.out.println("Klasse: '"+ classNodeList.item(i).getTextContent() + "' wird nicht beruecksichtigt." );
 				}
