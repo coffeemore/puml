@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="org/eclipse/wb/swt/SWTResourceManager.java" kind="src" path="src"/>
+	<classpathentry excluding="org/" kind="src" path="src"/>
 	<classpathentry excluding="RegExTest.java|KommentarfilterTest.java" kind="src" path="srcTest"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
