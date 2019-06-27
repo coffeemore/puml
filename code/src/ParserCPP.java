@@ -130,7 +130,7 @@ public class ParserCPP implements ParserIf
 		}
 
 		// Komposition: Such-Konstrukt zur Einfachheit: "new Class()"
-		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className, false);
+		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className);
 		for (int i = 0; i < compList.size(); i++)
 		{
 		    Element entry = document.createElement("entry");
@@ -198,7 +198,7 @@ public class ParserCPP implements ParserIf
 		}
 
 		// Komposition: Such-Konstrukt zur Einfachheit: "new Class()"
-		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className, false);
+		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className);
 		for (int i = 0; i < compList.size(); i++)
 		{
 		    Element entry = document.createElement("entry");
@@ -271,7 +271,7 @@ public class ParserCPP implements ParserIf
 		}
 
 		// Komposition: Such-Konstrukt zur Einfachheit: "new Class()"
-		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className, true);
+		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className);
 		for (int i = 0; i < compList.size(); i++)
 		{
 		    Element entry = document.createElement("entry");
@@ -553,11 +553,11 @@ public class ParserCPP implements ParserIf
      * @return
      * @return aggregation
      */
-    private ArrayList<String> composition(String sourceCodeHPP, String sourceCodeCPP, String className, boolean hasCPP)
+    private ArrayList<String> composition(String sourceCodeHPP, String sourceCodeCPP, String className)
     {
 	// Klassen-QuellCode
 	sourceCodeHPP = getFormatedSourceCodeHPP(className, sourceCodeHPP);
-	
+
 	// Liste zum Speichern der Kompositionen
 	ArrayList<String> komposition = new ArrayList<String>();
 	// HPP nach Kompositionen durchsuchen
@@ -575,11 +575,12 @@ public class ParserCPP implements ParserIf
 		komposition.add(h);
 	    }
 	}
-	// CPP nach Kompositionen durchsuchen
-	if (hasCPP)
+	// CPP überprüfen und wenn vorhanden nach Kompositionen durchsuchen
+
+	// Klassen-QuellCode suchen
+	sourceCodeCPP = getFormatedSourceCodeCPP(className, sourceCodeCPP);
+	if (sourceCodeCPP.equals(""))
 	{
-	    // Klassen-QuellCode
-	    sourceCodeCPP = getFormatedSourceCodeCPP(className, sourceCodeCPP);
 	    h = "";
 	    fromIndex = 0;
 	    while (sourceCodeCPP.indexOf("new ", fromIndex + 1) >= 0)
@@ -595,6 +596,7 @@ public class ParserCPP implements ParserIf
 		}
 	    }
 	}
+
 	return komposition;
     }
 
@@ -606,25 +608,36 @@ public class ParserCPP implements ParserIf
     public String getFormatedSourceCodeCPP(String className, String sourceCodeCPP)
     {
 	// Klassen-Code bis zum Ende oder ersten #include
-	if (sourceCodeCPP.indexOf("#include", sourceCodeCPP.indexOf(className + "::" + className)) != -1)
+	if(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"") >= 0)
 	{
-	    sourceCodeCPP = sourceCodeCPP.substring(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\""),
-		    sourceCodeCPP.indexOf("#include", sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"")));
+	    	if (sourceCodeCPP.indexOf("#include", sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"")) >= 0)
+		{
+		    sourceCodeCPP = sourceCodeCPP.substring(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\""),
+			    sourceCodeCPP.indexOf("#include", sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"")));
+		}
+		else
+		{
+		    sourceCodeCPP = sourceCodeCPP.substring(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\""),
+			    sourceCodeCPP.length());
+		}    
+	  
+	
+        	// Code kürzen, filtern und anpassen
+        	sourceCodeCPP = sourceCodeCPP.replaceAll("\n", "");
+        	sourceCodeCPP = sourceCodeCPP.replaceAll("\t", "");
+        	while (sourceCodeCPP.contains("  "))
+        	{
+        	    sourceCodeCPP = sourceCodeCPP.replaceAll("  ", " ");
+        	}
+        	sourceCodeCPP = sourceCodeCPP.trim();
+        	return sourceCodeCPP;
 	}
-	else
+	else 
 	{
-	    sourceCodeCPP = sourceCodeCPP.substring(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\""),
-		    sourceCodeCPP.length());
+	    //Logger kein passender CPP Code gefunden
+	    return "";
 	}
-	// Code kürzen, filtern und anpassen
-	sourceCodeCPP = sourceCodeCPP.replaceAll("\n", "");
-	sourceCodeCPP = sourceCodeCPP.replaceAll("\t", "");
-	while (sourceCodeCPP.contains("  "))
-	{
-	    sourceCodeCPP = sourceCodeCPP.replaceAll("  ", " ");
-	}
-	sourceCodeCPP = sourceCodeCPP.trim();
-	return sourceCodeCPP;
+	
     }
 
     /**
@@ -789,20 +802,29 @@ public class ParserCPP implements ParserIf
 	className = "class " + className;
 	// Klassen-Code aus Quellcode filtern
 	int keyIndex = sourceCodeHPP.indexOf(className) + className.length();
-	sourceCodeHPP = sourceCodeHPP.substring(keyIndex, sourceCodeHPP.indexOf("};", keyIndex));
-	// Code kürzen, filtern und anpassen
-	sourceCodeHPP = sourceCodeHPP.replaceAll("\n", "");
-	sourceCodeHPP = sourceCodeHPP.replaceAll("\t", "");
-
-	// Um Index 0 "perfekt" zu setzen
-	// sourceCodeHPP = sourceCodeHPP.replace('{', ' ');
-
-	while (sourceCodeHPP.contains("  "))
+	if(keyIndex >= 0 && sourceCodeHPP.indexOf("};", keyIndex) >= 0)
 	{
-	    sourceCodeHPP = sourceCodeHPP.replaceAll("  ", " ");
+	    	sourceCodeHPP = sourceCodeHPP.substring(keyIndex, sourceCodeHPP.indexOf("};", keyIndex));
+		// Code kürzen, filtern und anpassen
+		sourceCodeHPP = sourceCodeHPP.replaceAll("\n", "");
+		sourceCodeHPP = sourceCodeHPP.replaceAll("\t", "");
+
+		// Um Index 0 "perfekt" zu setzen
+		// sourceCodeHPP = sourceCodeHPP.replace('{', ' ');
+
+		while (sourceCodeHPP.contains("  "))
+		{
+		    sourceCodeHPP = sourceCodeHPP.replaceAll("  ", " ");
+		}
+		sourceCodeHPP = sourceCodeHPP.trim();
+		return sourceCodeHPP;
 	}
-	sourceCodeHPP = sourceCodeHPP.trim();
-	return sourceCodeHPP;
+	else 
+	{
+	    //Logger kein pasender SourceCode gefunden
+	    return "";
+	}
+	
     }
 
     /**
