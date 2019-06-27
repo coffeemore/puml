@@ -484,25 +484,36 @@ public class ParserCPP implements ParserIf
     public String getFormatedSourceCodeCPP(String className, String sourceCodeCPP)
     {
 	// Klassen-Code bis zum Ende oder ersten #include
-	if (sourceCodeCPP.indexOf("#include", sourceCodeCPP.indexOf(className + "::" + className)) != -1)
+	if(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"") >= 0)
 	{
-	    sourceCodeCPP = sourceCodeCPP.substring(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\""),
-		    sourceCodeCPP.indexOf("#include", sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"")));
+	    	if (sourceCodeCPP.indexOf("#include", sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"")) >= 0)
+		{
+		    sourceCodeCPP = sourceCodeCPP.substring(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\""),
+			    sourceCodeCPP.indexOf("#include", sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"")));
+		}
+		else
+		{
+		    sourceCodeCPP = sourceCodeCPP.substring(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\""),
+			    sourceCodeCPP.length());
+		}    
+	  
+	
+        	// Code kürzen, filtern und anpassen
+        	sourceCodeCPP = sourceCodeCPP.replaceAll("\n", "");
+        	sourceCodeCPP = sourceCodeCPP.replaceAll("\t", "");
+        	while (sourceCodeCPP.contains("  "))
+        	{
+        	    sourceCodeCPP = sourceCodeCPP.replaceAll("  ", " ");
+        	}
+        	sourceCodeCPP = sourceCodeCPP.trim();
+        	return sourceCodeCPP;
 	}
-	else
+	else 
 	{
-	    sourceCodeCPP = sourceCodeCPP.substring(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\""),
-		    sourceCodeCPP.length());
+	    //Logger kein passender CPP Code gefunden
+	    return "";
 	}
-	// Code kürzen, filtern und anpassen
-	sourceCodeCPP = sourceCodeCPP.replaceAll("\n", "");
-	sourceCodeCPP = sourceCodeCPP.replaceAll("\t", "");
-	while (sourceCodeCPP.contains("  "))
-	{
-	    sourceCodeCPP = sourceCodeCPP.replaceAll("  ", " ");
-	}
-	sourceCodeCPP = sourceCodeCPP.trim();
-	return sourceCodeCPP;
+	
     }
 
     /**
@@ -667,20 +678,29 @@ public class ParserCPP implements ParserIf
 	className = "class " + className;
 	// Klassen-Code aus Quellcode filtern
 	int keyIndex = sourceCodeHPP.indexOf(className) + className.length();
-	sourceCodeHPP = sourceCodeHPP.substring(keyIndex, sourceCodeHPP.indexOf("};", keyIndex));
-	// Code kürzen, filtern und anpassen
-	sourceCodeHPP = sourceCodeHPP.replaceAll("\n", "");
-	sourceCodeHPP = sourceCodeHPP.replaceAll("\t", "");
-
-	// Um Index 0 "perfekt" zu setzen
-	// sourceCodeHPP = sourceCodeHPP.replace('{', ' ');
-
-	while (sourceCodeHPP.contains("  "))
+	if(keyIndex >= 0 && sourceCodeHPP.indexOf("};", keyIndex) >= 0)
 	{
-	    sourceCodeHPP = sourceCodeHPP.replaceAll("  ", " ");
+	    	sourceCodeHPP = sourceCodeHPP.substring(keyIndex, sourceCodeHPP.indexOf("};", keyIndex));
+		// Code kürzen, filtern und anpassen
+		sourceCodeHPP = sourceCodeHPP.replaceAll("\n", "");
+		sourceCodeHPP = sourceCodeHPP.replaceAll("\t", "");
+
+		// Um Index 0 "perfekt" zu setzen
+		// sourceCodeHPP = sourceCodeHPP.replace('{', ' ');
+
+		while (sourceCodeHPP.contains("  "))
+		{
+		    sourceCodeHPP = sourceCodeHPP.replaceAll("  ", " ");
+		}
+		sourceCodeHPP = sourceCodeHPP.trim();
+		return sourceCodeHPP;
 	}
-	sourceCodeHPP = sourceCodeHPP.trim();
-	return sourceCodeHPP;
+	else 
+	{
+	    //Logger kein pasender SourceCode gefunden
+	    return "";
+	}
+	
     }
 
     /**
