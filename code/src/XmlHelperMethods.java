@@ -87,6 +87,20 @@ public class XmlHelperMethods
 	    parent.removeChild(nodeName);
 	}
     }
+    
+    //Hilfsmethode zum Loeschen leerer Unterknoten des uebergebenen Knotens
+    public Node removeEmptyNodes(Node node) {
+		NodeList nodeList = node.getChildNodes();
+		for(int i=0; i < nodeList.getLength(); i++){
+			Node childNode = nodeList.item(i);
+			if(childNode.getTextContent().equals("")){
+				childNode.getParentNode().removeChild(childNode);
+				i--;
+			}
+			removeEmptyNodes(childNode);
+		}
+		return node;
+	}
 
     /**
      * Hilfsmethode zum Laden eines XML-Documents fuer diverse Zwecke

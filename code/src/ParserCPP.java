@@ -3,6 +3,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class ParserCPP implements ParserIf
 {
@@ -310,9 +312,15 @@ public class ParserCPP implements ParserIf
 	 */
 
 	System.out.println("\n #################### ENDE JANS TEST ####################\n");
-	//xmlHelper.writeDocumentToConsole(document);
+	
+	
+	document = (Document) xmlHelper.removeEmptyNodes(document);
+	
+	xmlHelper.writeDocumentToConsole(document);
 	
     }
+    
+	
     
     private String createCurrentHPP(String sourceCodeHPP, int index)
     {
