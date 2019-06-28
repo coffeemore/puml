@@ -4,10 +4,17 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+
+/**
+ * 
+ * Klasse zum parsen von C++-Quellcode in XML
+ * 
+ * @author Johann Gerhardt, Jan Sollmann        
+ */
 public class ParserCPP implements ParserIf
 {
-    private Document document;
     private XmlHelperMethods xmlHelper = new XmlHelperMethods();
+    private Document document = xmlHelper.createDocument();
     private int[] cppInterval = {0,0};
 
     /**
@@ -49,7 +56,7 @@ public class ParserCPP implements ParserIf
 	sourceCodeCPP = sourceCodeCPP.trim();
 
 	//XML-Dokument erstellen
-	Document document = xmlHelper.createDocument();
+	//Document document = xmlHelper.createDocument();
 	
 	//Root-Knoten im XML-Baum erstellen
 	Element root = document.createElement("source");
@@ -713,7 +720,7 @@ public class ParserCPP implements ParserIf
 	}
 	else 
 	{
-	    //Logger kein passender CPP Code gefunden
+	    System.out.println("kein CPP-Quellcode zu " +className+ " gefunden");
 	    return "";
 	}
 	
@@ -900,7 +907,7 @@ public class ParserCPP implements ParserIf
 	}
 	else 
 	{
-	    //Logger kein pasender SourceCode gefunden
+	    System.out.println("kein HPP-Quellcode zu " +className+ " gefunden");
 	    return "";
 	}
 	
