@@ -489,16 +489,11 @@ public class Console extends PUMLgenerator
 				}
 				else if (choice == 'n')
 				{
-					System.out.println(" ********************************************************* "+ classNodeList.item(i).getTextContent());
-					
+					System.out.println(" **"+ classNodeList.item(i).getTextContent());
+					System.out.println("get Parent "+ classNodeList.item(i).getParentNode().getNodeName());
 					xmlHelper.writeDocumentToConsole(parserDoc);
-				    NodeList editList = xmlHelper.getList(parserDoc, "/source/classdefinition/entry[name=\"" + classNodeList.item(i).getTextContent() + "\"]");
-				    System.out.println(editList.getLength());
-				    xmlHelper.delNode(editList.item(i), false);
-				    System.out.println(" ********************************************************* DELETED");
-				    xmlHelper.writeDocumentToConsole(parserDoc);
-					
-
+					xmlHelper.delNode(classNodeList.item(i).getParentNode(), false);
+					xmlHelper.writeDocumentToConsole(parserDoc);
 					System.out.println("Klasse: '"+ classNodeList.item(i).getTextContent() + "' wird nicht beruecksichtigt." );
 				}
 				choice = '\0';
