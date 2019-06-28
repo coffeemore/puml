@@ -39,6 +39,7 @@ public class ClassDiagramGenerator
      */
     public Document createDiagram(Document parsedData)
     {
+    	//xmlHelper.writeDocumentToConsole(parsedData);
     	XmlHelperMethods xmlHM = new XmlHelperMethods();
     	try 
     	{
@@ -106,15 +107,6 @@ public class ClassDiagramGenerator
 					    entry.appendChild(document.importNode(varList.item(j), true));
 					}
 				}
-				
-				/*
-				//löschen übrflüssiger Knoten im "methoddefinition"-Knoten
-				NodeList delList = xmlHelper.getList(elClassdef, "./methoddefinition/alternative");
-				for(int j = 0; delList.getLength() > j; j++)
-				{
-					Element elementremove = (Element) delList.item(j);
-			        elementremove.getParentNode().removeChild(elementremove);
-				}*/
 
 				//Kopieren der "methoddefinition"-Knoten von parsedData zu document
 				if(showMethods)
@@ -129,7 +121,6 @@ public class ClassDiagramGenerator
 						for (int k = 0; k < count; k++)
 							{
 								current = children.item(k);
-								//System.out.println(j + "  " + current);
 								if(current != null) {
 									if (current.getNodeType() == Node.ELEMENT_NODE)
 									{
@@ -142,7 +133,6 @@ public class ClassDiagramGenerator
 											currentNode.equals("result")))
 										{
 											Element elementremove = (Element) current;
-//											elementremove.getParentNode().removeChild(elementremove);
 											xmlHelper.getList(elementremove, "..").item(0).removeChild(elementremove);
 											//System.out.println("Unterknoten " + currentNode + " wird nicht übernommen.");
 										}
@@ -203,11 +193,6 @@ public class ClassDiagramGenerator
 										elClassdef.getElementsByTagName("name").item(0).getTextContent()));
 								to.appendChild(document.createTextNode(
 										element.getElementsByTagName("entry").item(j).getTextContent()));
-
-								/*Element veryNextEntry = document.createElement("entry");
-								interfaces.appendChild(veryNextEntry);
-								veryNextEntry.appendChild(document.createTextNode(
-										element.getElementsByTagName("entry").item(j).getTextContent()));*/
 							}
 						}
 					}
@@ -227,18 +212,16 @@ public class ClassDiagramGenerator
 					Node current = null;
 					int count = children.getLength();
 					for (int k = 0; k < count; k++)
-						{
-							current = children.item(k);
-							if(current != null) {
-								if (current.getNodeType() == Node.ELEMENT_NODE)
-								{
-									interfaces.appendChild(entry);
-									entry.appendChild(document.importNode(current, true));
-								}
+					{
+						current = children.item(k);
+						if(current != null) {
+							if (current.getNodeType() == Node.ELEMENT_NODE)
+							{
+								interfaces.appendChild(entry);
+								entry.appendChild(document.importNode(current, true));
 							}
 						}
-					//interfaces.appendChild(entry);
-				    //entry.appendChild(document.importNode(instanceList.item(i), true));
+					}
 				}
 				else
 				{
