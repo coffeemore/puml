@@ -4,20 +4,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.apache.commons.cli.ParseException;
-import org.junit.internal.runners.TestClass;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 class GesamtTest
 {
     private PUMLgenerator testClass;
-
+/*
     @AfterEach
     public void tearDownAfterClass() throws Exception
     {
@@ -35,6 +29,7 @@ class GesamtTest
 	}
     }
 
+*/
     @SuppressWarnings({ "static-access" })
     @Test
     void testSQ() throws IOException, ParseException
