@@ -86,7 +86,7 @@ public class SequenceDiagramGenerator
 	deleteUnusedClassesAndMethods(seqDiagram, epClass);
 
 	xmlHM.removeComments(root);
-	seqDiagram = xmlHM.removeWhitespace(seqDiagram);
+	//seqDiagram = xmlHM.removeWhitespace(seqDiagram); fügt irgendwie mehr leerzeichen ein anstsatt sie zu löschen
 
 	return seqDiagram;
     }
@@ -199,10 +199,12 @@ public class SequenceDiagramGenerator
 			String iname = mchildnodes.item(j).getTextContent();
 			// wenn Instanz in InstanzenListe vorhanden
 			String cname = findClassofInstance(instanceList, iname);
-
-			Node classTag = seqDiagram.createElement("class");
-			classTag.setTextContent(cname);
-			methodcalls.item(i).appendChild(classTag);
+			if(!cname.isEmpty())
+			{
+			    Node classTag = seqDiagram.createElement("class");
+			    classTag.setTextContent(cname);
+			    methodcalls.item(i).appendChild(classTag);
+			}
 		    }
 		}
 	    }
@@ -304,7 +306,7 @@ public class SequenceDiagramGenerator
 		}
 	    }
 	}
-	return " ";
+	return "";
     }
 
     /**
@@ -330,7 +332,7 @@ public class SequenceDiagramGenerator
 	    }
 	} catch (Exception e)
 	{
-	    e.printStackTrace();
+		PUMLgenerator.logger.getLog().warning("@SequenceDiagramGenerator/deleteInstancesNotInMethodcalls: "+e.toString());
 	}
 	return doc;
     }
@@ -458,7 +460,7 @@ public class SequenceDiagramGenerator
 		    calledClass = epClass;
 		} else
 		{
-		    if (classNode.getTextContent().equals(" "))
+		    if (classNode.getTextContent().isEmpty())
 		    {
 			calledClass = " ";
 		    } else

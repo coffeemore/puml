@@ -91,7 +91,10 @@ class OutputPUMLTest_sequencedia
 				"deactivate Class1\n" + 
 				"deactivate Class1\n" + 
 				"@enduml";
-		actual = new OutputPUML().getPUML(doc);
+		
+		OutputPUML tmpOutput = new OutputPUML();
+		actual = tmpOutput.getPUML(doc);
+		actual = tmpOutput.getPUML(doc);
 		assertEquals(expected, actual);
 		//System.out.println("Hier is der Code: \n" + actual + "oder so" + expected);
     }

@@ -50,6 +50,8 @@ import org.xml.sax.SAXException;
 
 import javax.swing.JFileChooser;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
 import java.awt.Color;
@@ -113,6 +115,7 @@ public class GUI_Swing
 	private File tmpClassImage;
 	private File tmpSeqImage;
 	private Document parsedDoc;
+	private ParserIf parser;
 
 	/**
 	 * Launch the application.
@@ -131,6 +134,7 @@ public class GUI_Swing
 				catch (Exception e)
 				{
 					e.printStackTrace();
+					PUMLgenerator.logger.getLog().warning("@GUI_Swing/showGUI: " + e.toString());
 				}
 			}
 		});
@@ -149,6 +153,9 @@ public class GUI_Swing
 	 */
 	private void initialize()
 	{
+		parser = new ParserJava();
+		PUMLgenerator.logger.startLoggingConsole(true);
+
 		paths = new ArrayList<String>();
 		lastPathsLength = 0;
 		useJava = true;
@@ -164,6 +171,22 @@ public class GUI_Swing
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("PUML - no files selected");
 		frame.setMinimumSize(new Dimension(640, 480));
+		frame.addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowClosing(WindowEvent e)
+			{
+				// TODO Auto-generated method stub
+//				System.out.println("EXIT");
+				if(tmpClassImage.exists()) {
+					tmpClassImage.delete();
+				}
+				if(tmpSeqImage.exists()) {
+					tmpSeqImage.delete();
+				}
+				super.windowClosing(e);
+			}
+		});
 
 		fDialog = new JFileChooser(new File("."));
 		filter = new FileNameExtensionFilter("Java Code (.jar, .java)", "java", "jar");
@@ -375,7 +398,7 @@ public class GUI_Swing
 				else
 				{
 					createSequenceDiagramm(parsedDoc);
-					System.out.println(epClass + " " + epMethod);
+//					System.out.println(epClass + " " + epMethod);
 					showPreview(tmpSeqImage, "Sequenzdiagramm");
 				}
 
@@ -462,11 +485,12 @@ public class GUI_Swing
 				{
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
+					PUMLgenerator.logger.getLog().warning("@GUI_Swing/initialize/btnTest: " + e1.toString());
 				}
 			}
 		});
 		btnTest.setBackground(new Color(150, 200, 255));
-		//toolBar.add(btnTest);
+		// toolBar.add(btnTest);
 	}
 
 	private void resetElements()
@@ -481,6 +505,9 @@ public class GUI_Swing
 		seqPumlCode = "";
 		epClass = "nicht gesetzt";
 		epMethod = "nicht gesetzt";
+
+		DefaultTreeModel model = (DefaultTreeModel) treeSequence.getModel();
+		model.reload();
 
 		frame.setTitle("PUML - no files selected");
 		frame.revalidate();
@@ -498,6 +525,7 @@ public class GUI_Swing
 //			System.out.println("mode = java");
 			chckbxmntmUseJava.setEnabled(true);
 			chckbxmntmUseJar.setEnabled(true);
+			parser = new ParserJava();
 			resetElements();
 			break;
 		}
@@ -508,6 +536,7 @@ public class GUI_Swing
 //			System.out.println("mode = c++");
 			chckbxmntmUseJava.setEnabled(false);
 			chckbxmntmUseJar.setEnabled(false);
+			parser = new ParserCPP();
 			resetElements();
 			break;
 		}
@@ -556,19 +585,17 @@ public class GUI_Swing
 		// wenn Dateien/Pfade ausgewählt -> verarbeiten
 		if (items.length != 0)
 		{
-			System.out.println("PUML ausführen");
 			runPUML();
-			System.out.println("PUML ausgeführt");
 		}
 	}
 
 	private void test() throws ParserConfigurationException, SAXException, IOException, XPathExpressionException,
 			TransformerException
 	{
-		
+
 		PUMLgenerator.xmlHelper.getDocumentFrom("testfolder/xmlSpecifications/parsedData.xml");
 //		Document parsedDoc = builder.parse(new File("testfolder/xmlSpecifications/parsedData.xml"));
-		
+
 		createTree(parsedDoc, ptnRoot);
 //		System.out.println(treeSequence.getRowCount());
 		for (int i = 0; i < treeSequence.getRowCount(); i++)
@@ -589,7 +616,8 @@ public class GUI_Swing
 			for (int c = 0; c < nodelist.getLength(); c++)
 			{
 //				String className = nodelist.item(c).getFirstChild().getNextd().getTextContent();
-				String className = PUMLgenerator.xmlHelper.getList(nodelist.item(c), "./name[1]").item(0).getTextContent();
+				String className = PUMLgenerator.xmlHelper.getList(nodelist.item(c), "./name[1]").item(0)
+						.getTextContent();
 				NodeList tmpNodelist = PUMLgenerator.xmlHelper.getList(nodelist.item(c), ".//methoddefinition");
 //				System.out.println(className + " mit " + tmpNodelist.getLength() + " Methoden gefunden");
 				PumlTreeNode tmpClassNode = new PumlTreeNode(className, PumlTreeNode.Type.CLASS);
@@ -607,6 +635,7 @@ public class GUI_Swing
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			PUMLgenerator.logger.getLog().warning("@GUI_Swing/createTree: " + e.toString());
 		}
 
 	}
@@ -629,18 +658,17 @@ public class GUI_Swing
 				PUMLgenerator.codeCollector.setUseJarFiles(useJar);
 				PUMLgenerator.codeCollector.setUseJavaFiles(useJava);
 				srcCode = PUMLgenerator.codeCollector.getSourceCode();
-				PUMLgenerator.parser.parse(srcCode);
-				parsedDoc = PUMLgenerator.parser.getParsingResult();
+				parser.parse(srcCode);
+				parsedDoc = parser.getParsingResult();
 
 //				PUMLgenerator.xmlHelper.writeDocumentToConsole(parsedDoc);
-				saveDoc(parsedDoc, "testParsed.xml");
+//				saveDoc(parsedDoc, "testParsed.xml");
 
 				// Testdokument verwenden
 //				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 //				DocumentBuilder builder = factory.newDocumentBuilder();
 //				Document parsedDoc = builder.parse(new File("testfolder/xmlSpecifications/parsedData.xml"));
 
-				
 				createTree(parsedDoc, ptnRoot);
 				DefaultTreeModel model = (DefaultTreeModel) treeSequence.getModel();
 				model.reload();
@@ -667,6 +695,7 @@ public class GUI_Swing
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			PUMLgenerator.logger.getLog().warning("@GUI_Swing/runPUML: " + e.toString());
 		}
 	}
 
@@ -676,7 +705,7 @@ public class GUI_Swing
 		try
 		{
 			Document classDoc = PUMLgenerator.classDiagramGenerator.createDiagram(parsedDoc);
-			saveDoc(classDoc, "testClass.xml");
+//			saveDoc(classDoc, "testClass.xml");
 			classPumlCode = PUMLgenerator.outputPUML.getPUML(classDoc);
 			textClass.setText(classPumlCode);
 			PUMLgenerator.outputPUML.createPUMLfromString(tmpClassImage.getAbsolutePath(), classPumlCode);
@@ -685,6 +714,7 @@ public class GUI_Swing
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			PUMLgenerator.logger.getLog().warning("@GUI_Swing/createClassDiagramm: " + e.toString());
 		}
 
 	}
@@ -695,7 +725,7 @@ public class GUI_Swing
 		try
 		{
 			Document seqDoc = PUMLgenerator.seqDiagramGenerator.createDiagram(parsedDoc, epClass, epMethod);
-			saveDoc(seqDoc, "testSequence.xml");
+//			saveDoc(seqDoc, "testSequence.xml");
 			seqPumlCode = PUMLgenerator.outputPUML.getPUML(seqDoc);
 			textSequence.setText(seqPumlCode);
 			PUMLgenerator.outputPUML.createPUMLfromString(tmpSeqImage.getAbsolutePath(), seqPumlCode);
@@ -704,6 +734,7 @@ public class GUI_Swing
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			PUMLgenerator.logger.getLog().warning("@GUI_Swing/createSequenceDiagramm: " + e.toString());
 		}
 
 	}
@@ -729,6 +760,7 @@ public class GUI_Swing
 			}
 			catch (IOException e)
 			{
+				e.printStackTrace();
 				JOptionPane.showMessageDialog(frame, "Ein-/Ausgabe-Fehler", "Fehler", JOptionPane.ERROR_MESSAGE);
 			}
 		}

@@ -5,11 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -406,6 +402,7 @@ public class OutputPUML
 	}
 	catch (Exception e)
 	{
+		PUMLgenerator.logger.getLog().warning("@OutputPUML/helperMethodCall: "+e.toString());
 	  //No more Items
 	}
 	 
@@ -458,6 +455,7 @@ public class OutputPUML
 	    	}
 		catch (Exception e)
 		{
+			PUMLgenerator.logger.getLog().warning("@OutputPUML/helperAlternativeCall: "+e.toString());
 		  //No more Items
 		}
     	    
@@ -507,6 +505,7 @@ public class OutputPUML
 	}
 	catch (Exception e)
 	{
+		PUMLgenerator.logger.getLog().warning("@OutputPUML/helperMethodCallHandler: "+e.toString());
 	    //No more Items
 	}
 	
@@ -540,7 +539,7 @@ public class OutputPUML
 	    }
 	    catch(Exception e)
 	    {
-		PUMLgenerator.logger.getLog().warning(e + " :: " + method + " Node not Found");
+	    	PUMLgenerator.logger.getLog().warning("@OutputPUML/helperMethodCallHandler: "+e.toString());
 	    }
 	}
 	else if(type.equals("unknown"))
@@ -590,6 +589,7 @@ public class OutputPUML
 	}
 	catch(Exception e)
 	{
+		PUMLgenerator.logger.getLog().warning("@OutputPUML/helperLoopCall: "+e.toString());
 	  //No more Items
 	}
 	

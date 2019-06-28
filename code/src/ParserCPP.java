@@ -8,8 +8,7 @@ public class ParserCPP implements ParserIf
 {
     private Document document;
     private XmlHelperMethods xmlHelper = new XmlHelperMethods();
-    private int[] classInterval =
-    { 0, 0 };
+    private int[] cppInterval = {0,0};
 
     /**
      * leerer Konstruktor
@@ -131,7 +130,7 @@ public class ParserCPP implements ParserIf
 		}
 
 		// Komposition: Such-Konstrukt zur Einfachheit: "new Class()"
-		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className, false);
+		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className);
 		for (int i = 0; i < compList.size(); i++)
 		{
 		    Element entry = document.createElement("entry");
@@ -199,7 +198,7 @@ public class ParserCPP implements ParserIf
 		}
 
 		// Komposition: Such-Konstrukt zur Einfachheit: "new Class()"
-		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className, false);
+		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className);
 		for (int i = 0; i < compList.size(); i++)
 		{
 		    Element entry = document.createElement("entry");
@@ -232,8 +231,8 @@ public class ParserCPP implements ParserIf
 		Element instance = document.createElement("instance");
 		classdefinition.appendChild(instance);
 		// Variablen
-		Element var = document.createElement("var");
-		classdefinition.appendChild(var);
+		//Element var = document.createElement("var");
+		//classdefinition.appendChild(var);
 		// Komposition
 		Element compositions = document.createElement("compositions");
 		classdefinition.appendChild(compositions);
@@ -259,6 +258,12 @@ public class ParserCPP implements ParserIf
 		    }
 		}
 
+		// instance
+		createInstanze(createCurrentHPP(sourceCodeHPP, index), document, classdefinition);
+		
+		// var
+		createVar(createCurrentHPP(sourceCodeHPP, index), document, classdefinition);
+		
 		// Aggregation
 		ArrayList<String> aggrList = aggregation(sourceCodeCPP, className);
 		for (int i = 0; i < aggrList.size(); i++)
@@ -269,7 +274,7 @@ public class ParserCPP implements ParserIf
 		}
 
 		// Komposition: Such-Konstrukt zur Einfachheit: "new Class()"
-		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className, true);
+		ArrayList<String> compList = composition(sourceCodeHPP, sourceCodeCPP, className);
 		for (int i = 0; i < compList.size(); i++)
 		{
 		    Element entry = document.createElement("entry");
@@ -278,7 +283,7 @@ public class ParserCPP implements ParserIf
 		}
 
 		// Methoden
-		createMethods(sourceCodeCPP, document, classdefinition);
+		createMethods(sourceCodeCPP, sourceCodeHPP, document, classdefinition);
 
 	    }
 
@@ -308,118 +313,314 @@ public class ParserCPP implements ParserIf
 	xmlHelper.writeDocumentToConsole(document);
 	
     }
-
-    private void createMethods(String sourceCodeCPP, Document document, Element classdefinition)
+    
+    private String createCurrentHPP(String sourceCodeHPP, int index)
     {
-	calclassinterval(sourceCodeCPP);
-	int j = classInterval[0], i = j, n = classInterval[1];// sourceCodeCPP.length();
-	while (sourceCodeCPP.charAt(j) != '"')
-	{
-	    j--;
+    	int j;
+    	if(sourceCodeHPP.indexOf("class ", index + 1) > 0)
+    	{
+    		j = sourceCodeHPP.indexOf("class ", index + 1);
+    	}
+    	else
+    	{
+    		j = sourceCodeHPP.length();
+    	}
+    	return sourceCodeHPP.substring(index ,j);
+    }
+
+    private void createInstanze(String currentHPP, Document document, Element classdefinition) {
+    	int i = 0, b, a;
+
+    	while(currentHPP.indexOf("*", i) > 0)
+    	{
+    		// * markiert Instanzen
+    		i = currentHPP.indexOf("*", i);
+    		b = i;
+    		a = b;
+    		
+    		while(currentHPP.charAt(a) != '\n' &&
+    				currentHPP.charAt(a) != ' ' &&
+    				currentHPP.charAt(a) != '\t')
+    		{
+    			a--;
+    		}
+    		String classStr= currentHPP.substring(a + 1, b);
+    		
+    		a = b + 2;
+    		b = a;
+    		while(currentHPP.charAt(b) != ';' && currentHPP.charAt(b) != ' ')
+    		{
+    			b++;
+    		}
+    		String nameStr = currentHPP.substring(a, b);
+    		
+    		String accessStr;
+    		while(currentHPP.charAt(b) != ':')
+    		{
+    			b--;
+    		}
+    		
+    		//Wenn Sichtabarkeit nicht definiert, dann ist diese private
+    		if(currentHPP.charAt(b - 1) == ' ')
+    		{
+    			accessStr  = "private";
+    		}
+    		else
+    		{
+    			a = b;
+    			while(currentHPP.charAt(a) != '\n')
+    			{
+    				a--;
+    			}
+    			accessStr  = currentHPP.substring(a + 1, b);
+    		}
+    		
+    		//Herausfiltern von faelschlich eingelesenen Instanzen
+    		if(nameStr.indexOf(")") < 0 && classStr.indexOf("(") < 0)
+    		{
+    			Element instance = document.createElement("instance");
+    			classdefinition.appendChild(instance);
+    			
+    			Element access = document.createElement("access");
+    			instance.appendChild(access);
+    			access.appendChild(document.createTextNode(accessStr));
+    			
+    			Element name = document.createElement("name");
+    			instance.appendChild(name);
+    			name.appendChild(document.createTextNode(nameStr));
+        		
+    			Element classEl = document.createElement("class");
+    			instance.appendChild(classEl);
+    			classEl.appendChild(document.createTextNode(classStr));
+    		}    		
+    		i++;
+    	}
 	}
-	j++;
-	String hppName = sourceCodeCPP.substring(j, i);
-	String methodinitial = hppName + "::";
-	int methodinitlength = methodinitial.length();
-	while (i + methodinitlength < n && i != -1)
-	{
-	    if (sourceCodeCPP.substring(i, i + methodinitlength).equals(methodinitial))
-	    {
-		Element methoddefinition = document.createElement("methoddefinition");
-		classdefinition.appendChild(methoddefinition);
 
-		Element methName = document.createElement("name");
-		methoddefinition.appendChild(methName);
-
-		Element methResult = document.createElement("result");
-
-		// Vorgängerwort von methodinitial suchen (entspricht Resultattyp)
-		int h = i;
-		while (sourceCodeCPP.charAt(h) != '\n' && h > 0)
-		{
-		    h--;
-		}
-		if (h < i - 1)
-		{
-		    methoddefinition.appendChild(methResult);
-		    methResult.appendChild(document.createTextNode(sourceCodeCPP.substring(h + 1, i - 1)));
-		}
-
-		// Folgewort von methodinitial suchen (entspricht Methodenname)
-		j = i + methodinitlength;
-		while (sourceCodeCPP.charAt(j) != '(' && j < n)
-		{
-		    j++;
-		}
-		methName.appendChild(document.createTextNode(sourceCodeCPP.substring(i + methodinitlength, j)));
-
-		i = j + 1;
-		h = i;
-
-		while (sourceCodeCPP.charAt(j) != ')' && j < n)
-		{
-		    j++;
-		}
-
-		Element methparam = document.createElement("parameters");
-		methoddefinition.appendChild(methparam);
-
-		while (i < j)
-		{
-		    // Bsp: (int param1, int param2) ist auszulesen
-		    // Typ finden
-		    while (sourceCodeCPP.charAt(i) != ' ' && i < j)
-		    {
-			i++;
-		    }
-
-		    // '*' auslassen
-		    if (sourceCodeCPP.charAt(i - 1) == '*')
-		    {
-			i--;
-		    }
-
-		    Element entry = document.createElement("entry");
-		    methparam.appendChild(entry);
-
-		    Element paramType = document.createElement("type");
-		    entry.appendChild(paramType);
-
-		    paramType.appendChild(document.createTextNode(sourceCodeCPP.substring(h, i)));
-
-		    if (sourceCodeCPP.charAt(i) == '*')
-		    {
-			i += 2;
-		    }
-		    else
-		    {
-			i++;
-		    }
-
-		    h = i;
-
-		    // Namen finden
-		    while (sourceCodeCPP.charAt(i) != ',' && i < j)
-		    {
-			i++;
-		    }
-
-		    Element paramName = document.createElement("name");
-		    entry.appendChild(paramName);
-
-		    paramName.appendChild(document.createTextNode(sourceCodeCPP.substring(h, i)));
-
-		    i++;
-		    // Mögliches Leerzeichen hinter dem Komma überspringen
-		    if (sourceCodeCPP.charAt(i) == ' ')
-		    {
-			i++;
-		    }
-		    h = i;
-		}
-	    }
-	    i++;
+	private void createVar(String currentHPP, Document document, Element classdefinition) {
+		
+    	int i, b, a;
+    	String[] vartyp = {"bool", "char", "int", "short", "long", "float", "double"};
+    	//Suche nach aufgelisteten Datentypen
+    	for(int v = 0; v < vartyp.length; v++)
+    	{
+    		i = 0;
+    		do
+    		{
+    			i = currentHPP.indexOf(vartyp[v], i + 1);
+    			if(i > 0)
+    			{
+    				//Suche des Variablennamens nachfolgend auf Datentyp
+    				a = i;
+    				while(currentHPP.charAt(a) != ' ')
+    				{
+    					a++;
+    				}
+    				a++;
+    				b = a;
+    				while(currentHPP.charAt(b) != ';')
+    				{
+    					b++;
+    				}
+    				String varname = currentHPP.substring(a, b);
+    				
+    				//Einlesen der Sichtbarkeit, wenn undefiniert -> private
+    				String varaccess;
+    				while(currentHPP.charAt(b) != ':')
+    				{
+    					b--;
+    				}
+    				a = b;
+    				if(currentHPP.charAt(b - 1) != ' ')
+    				{
+    					while(currentHPP.charAt(a) != '\n')
+        				{
+        					a--;
+        				}
+    					varaccess = currentHPP.substring(a + 1, b);
+    				}
+    				else
+    				{
+    					varaccess = "private";
+    				}
+    				
+    				//Herausfiltern faelschlich eingelesener Variablen
+    				if(varname.indexOf(")") < 0)
+    				{
+            	    	Element var = document.createElement("var");
+            			classdefinition.appendChild(var);
+            			
+            			Element access = document.createElement("access");
+            			var.appendChild(access);
+            			access.appendChild(document.createTextNode(varaccess));
+            			
+            			Element type = document.createElement("type");
+            			var.appendChild(type);
+            			type.appendChild(document.createTextNode(vartyp[v]));
+            			
+            			Element name = document.createElement("name");
+            			var.appendChild(name);
+            			name.appendChild(document.createTextNode(varname));            			    			
+    				}
+    			}
+    		} 
+    		while(i > 0);
+    	}
 	}
+
+	private void createMethods(String sourceCodeCPP, String sourceCodeHPP, Document document, Element classdefinition) {
+		calclassinterval(sourceCodeCPP);
+		int j = cppInterval[0], i = j, n = cppInterval[1];//sourceCodeCPP.length();
+		while(sourceCodeCPP.charAt(j) != '"')
+		{
+			j--;
+		}
+		j++;
+		String hppName = sourceCodeCPP.substring(j, i);
+		String methodinitial = hppName + "::";
+		int methodinitlength = methodinitial.length();
+		while(i + methodinitlength < n && i!=-1 )
+		{
+			if(sourceCodeCPP.substring( i, i + methodinitlength).equals(methodinitial))
+			{
+				Element methoddefinition = document.createElement("methoddefinition");
+				classdefinition.appendChild(methoddefinition);
+				
+				Element access = document.createElement("access");
+				methoddefinition.appendChild(access);
+				
+				//name
+				Element methName = document.createElement("name");
+				methoddefinition.appendChild(methName);
+				
+				Element methResult = document.createElement("result");
+				
+				//Vorgängerwort von methodinitial suchen (entspricht Resultattyp)
+				int h = i;
+				while(sourceCodeCPP.charAt(h) != '\n' && h > 0)
+				{
+					h--;
+				}
+				if(h < i - 1)
+				{
+					methoddefinition.appendChild(methResult);
+					methResult.appendChild(document.createTextNode(
+							sourceCodeCPP.substring( h + 1 , i - 1)));
+				}
+				
+				//Folgewort von methodinitial suchen (entspricht Methodenname)
+				j  = i  + methodinitlength;
+				while(sourceCodeCPP.charAt(j) != '(' && j < n)
+				{
+					j++;
+				}
+				
+				String name = sourceCodeCPP.substring(i  + methodinitlength, j);
+				
+				methName.appendChild(document.createTextNode(name));
+				
+				//access
+				String searchHPPspot = "class " + hppName;
+				int x = sourceCodeHPP.indexOf(searchHPPspot);
+				int y = sourceCodeHPP.indexOf(name + "(", x);
+				int z = y;
+				
+				while(sourceCodeHPP.charAt(z) != '\n')
+				{
+					z--;
+				}
+				
+				//type
+				if(sourceCodeHPP.indexOf("static", z) > 0 && sourceCodeHPP.indexOf("static", z) < y)
+				{
+					Element type = document.createElement("type");
+					methoddefinition.appendChild(type);
+					type.appendChild(document.createTextNode("static"));
+				}
+				
+				while(sourceCodeHPP.charAt(y) != ':')
+				{
+					y--;
+				}
+				x = y;
+				while(sourceCodeHPP.charAt(x) != '\n')
+				{
+					x--;
+				}
+				x++;
+				//System.out.println(sourceCodeHPP.substring(x, y));
+				access.appendChild(document.createTextNode(sourceCodeHPP.substring(x, y)));
+								
+				
+				i = j + 1;
+				h = i;
+				
+				while(sourceCodeCPP.charAt(j) != ')' && j < n)
+				{
+					j++;
+				}
+				
+				Element methparam = document.createElement("parameters");
+				methoddefinition.appendChild(methparam);
+
+				while(i < j)
+				{
+					//Bsp: (int param1, int param2) ist auszulesen
+					//Typ finden
+					while(sourceCodeCPP.charAt(i) != ' ' && i < j)
+					{
+						i++;
+					}
+
+					//'*' auslassen
+					if(sourceCodeCPP.charAt(i - 1) == '*')
+					{
+						i--;
+					}
+					
+					Element entry = document.createElement("entry");
+					methparam.appendChild(entry);
+												
+					Element paramType = document.createElement("type");
+					entry.appendChild(paramType);
+					
+					paramType.appendChild(document.createTextNode(
+							sourceCodeCPP.substring(h, i)));
+					
+					if(sourceCodeCPP.charAt(i) == '*')
+					{
+						i+=2;
+					}
+					else
+					{
+						i++;
+					}
+
+					h = i;
+					
+					//Namen finden
+					while(sourceCodeCPP.charAt(i) != ',' && i < j)
+					{
+						i++;
+					}
+
+					Element paramName = document.createElement("name");
+					entry.appendChild(paramName);
+					
+					paramName.appendChild(document.createTextNode(
+							sourceCodeCPP.substring(h, i)));
+					
+					i++;
+					//Mögliches Leerzeichen hinter dem Komma überspringen
+					if(sourceCodeCPP.charAt(i) == ' ')
+					{
+						i++;
+					}
+					h = i;
+				}
+			}
+			i++;
+		}
     }
 
     /**
@@ -431,11 +632,11 @@ public class ParserCPP implements ParserIf
      * @return
      * @return aggregation
      */
-    private ArrayList<String> composition(String sourceCodeHPP, String sourceCodeCPP, String className, boolean hasCPP)
+    private ArrayList<String> composition(String sourceCodeHPP, String sourceCodeCPP, String className)
     {
 	// Klassen-QuellCode
 	sourceCodeHPP = getFormatedSourceCodeHPP(className, sourceCodeHPP);
-	
+
 	// Liste zum Speichern der Kompositionen
 	ArrayList<String> komposition = new ArrayList<String>();
 	// HPP nach Kompositionen durchsuchen
@@ -453,11 +654,12 @@ public class ParserCPP implements ParserIf
 		komposition.add(h);
 	    }
 	}
-	// CPP nach Kompositionen durchsuchen
-	if (hasCPP)
+	// CPP überprüfen und wenn vorhanden nach Kompositionen durchsuchen
+
+	// Klassen-QuellCode suchen
+	sourceCodeCPP = getFormatedSourceCodeCPP(className, sourceCodeCPP);
+	if (sourceCodeCPP.equals(""))
 	{
-	    // Klassen-QuellCode
-	    sourceCodeCPP = getFormatedSourceCodeCPP(className, sourceCodeCPP);
 	    h = "";
 	    fromIndex = 0;
 	    while (sourceCodeCPP.indexOf("new ", fromIndex + 1) >= 0)
@@ -473,6 +675,7 @@ public class ParserCPP implements ParserIf
 		}
 	    }
 	}
+
 	return komposition;
     }
 
@@ -484,25 +687,36 @@ public class ParserCPP implements ParserIf
     public String getFormatedSourceCodeCPP(String className, String sourceCodeCPP)
     {
 	// Klassen-Code bis zum Ende oder ersten #include
-	if (sourceCodeCPP.indexOf("#include", sourceCodeCPP.indexOf(className + "::" + className)) != -1)
+	if(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"") >= 0)
 	{
-	    sourceCodeCPP = sourceCodeCPP.substring(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\""),
-		    sourceCodeCPP.indexOf("#include", sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"")));
+	    	if (sourceCodeCPP.indexOf("#include", sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"")) >= 0)
+		{
+		    sourceCodeCPP = sourceCodeCPP.substring(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\""),
+			    sourceCodeCPP.indexOf("#include", sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"")));
+		}
+		else
+		{
+		    sourceCodeCPP = sourceCodeCPP.substring(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\""),
+			    sourceCodeCPP.length());
+		}    
+	  
+	
+        	// Code kürzen, filtern und anpassen
+        	sourceCodeCPP = sourceCodeCPP.replaceAll("\n", "");
+        	sourceCodeCPP = sourceCodeCPP.replaceAll("\t", "");
+        	while (sourceCodeCPP.contains("  "))
+        	{
+        	    sourceCodeCPP = sourceCodeCPP.replaceAll("  ", " ");
+        	}
+        	sourceCodeCPP = sourceCodeCPP.trim();
+        	return sourceCodeCPP;
 	}
-	else
+	else 
 	{
-	    sourceCodeCPP = sourceCodeCPP.substring(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\""),
-		    sourceCodeCPP.length());
+	    //Logger kein passender CPP Code gefunden
+	    return "";
 	}
-	// Code kürzen, filtern und anpassen
-	sourceCodeCPP = sourceCodeCPP.replaceAll("\n", "");
-	sourceCodeCPP = sourceCodeCPP.replaceAll("\t", "");
-	while (sourceCodeCPP.contains("  "))
-	{
-	    sourceCodeCPP = sourceCodeCPP.replaceAll("  ", " ");
-	}
-	sourceCodeCPP = sourceCodeCPP.trim();
-	return sourceCodeCPP;
+	
     }
 
     /**
@@ -667,20 +881,29 @@ public class ParserCPP implements ParserIf
 	className = "class " + className;
 	// Klassen-Code aus Quellcode filtern
 	int keyIndex = sourceCodeHPP.indexOf(className) + className.length();
-	sourceCodeHPP = sourceCodeHPP.substring(keyIndex, sourceCodeHPP.indexOf("};", keyIndex));
-	// Code kürzen, filtern und anpassen
-	sourceCodeHPP = sourceCodeHPP.replaceAll("\n", "");
-	sourceCodeHPP = sourceCodeHPP.replaceAll("\t", "");
-
-	// Um Index 0 "perfekt" zu setzen
-	// sourceCodeHPP = sourceCodeHPP.replace('{', ' ');
-
-	while (sourceCodeHPP.contains("  "))
+	if(keyIndex >= 0 && sourceCodeHPP.indexOf("};", keyIndex) >= 0)
 	{
-	    sourceCodeHPP = sourceCodeHPP.replaceAll("  ", " ");
+	    	sourceCodeHPP = sourceCodeHPP.substring(keyIndex, sourceCodeHPP.indexOf("};", keyIndex));
+		// Code kürzen, filtern und anpassen
+		sourceCodeHPP = sourceCodeHPP.replaceAll("\n", "");
+		sourceCodeHPP = sourceCodeHPP.replaceAll("\t", "");
+
+		// Um Index 0 "perfekt" zu setzen
+		// sourceCodeHPP = sourceCodeHPP.replace('{', ' ');
+
+		while (sourceCodeHPP.contains("  "))
+		{
+		    sourceCodeHPP = sourceCodeHPP.replaceAll("  ", " ");
+		}
+		sourceCodeHPP = sourceCodeHPP.trim();
+		return sourceCodeHPP;
 	}
-	sourceCodeHPP = sourceCodeHPP.trim();
-	return sourceCodeHPP;
+	else 
+	{
+	    //Logger kein pasender SourceCode gefunden
+	    return "";
+	}
+	
     }
 
     /**
@@ -705,7 +928,8 @@ public class ParserCPP implements ParserIf
 	catch (ParserConfigurationException e)
 	{
 	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+		PUMLgenerator.logger.getLog().warning("@ParserCPP/parse: "+e.toString());
+	    //e.printStackTrace();
 	}
 
     }
@@ -749,21 +973,21 @@ public class ParserCPP implements ParserIf
 
     private void calclassinterval(String sourceCodeCPP)
     {
-	if (classInterval[0] == 0)
+	if (cppInterval[0] == 0)
 	{
-	    classInterval[0] = sourceCodeCPP.indexOf(".hpp\"");
+	    cppInterval[0] = sourceCodeCPP.indexOf(".hpp\"");
 	}
 	else
 	{
-	    classInterval[0] = classInterval[1];
+	    cppInterval[0] = cppInterval[1];
 	}
-	if (sourceCodeCPP.indexOf(".hpp\"", classInterval[0] + 5) < 0)
+	if (sourceCodeCPP.indexOf(".hpp\"", cppInterval[0] + 5) < 0)
 	{
-	    classInterval[1] = sourceCodeCPP.length();
+	    cppInterval[1] = sourceCodeCPP.length();
 	}
 	else
 	{
-	    classInterval[1] = sourceCodeCPP.indexOf(".hpp\"", classInterval[0] + 5);
+	    cppInterval[1] = sourceCodeCPP.indexOf(".hpp\"", cppInterval[0] + 5);
 	}
     }
 

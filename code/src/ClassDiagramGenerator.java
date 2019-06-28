@@ -260,7 +260,7 @@ public class ClassDiagramGenerator
 		}
     	catch (XPathExpressionException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+    		PUMLgenerator.logger.getLog().warning("@ClassDiagramGenerator/creatDiagram: " + e.toString());
 		}
 		return null;
 	}
