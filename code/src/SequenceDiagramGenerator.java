@@ -460,7 +460,7 @@ public class SequenceDiagramGenerator
 		    calledClass = epClass;
 		} else
 		{
-		    if (classNode.getTextContent().equals(" "))
+		    if (classNode.getTextContent().isEmpty())
 		    {
 			calledClass = " ";
 		    } else
