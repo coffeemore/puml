@@ -44,7 +44,8 @@ public class OutputPUML
      * @throws IOException 
      */
     public String getPUML(Document diagramData) throws XPathExpressionException
-    {	
+    {
+		firstMethodCall = true;
 		list = helper.getList(diagramData, "/parsed/*");
 		String pumlCode = "@startuml\n";
 		if (list.item(0).getNodeName().equals("classdiagramm"))
@@ -378,7 +379,7 @@ public class OutputPUML
 	 firstMethodCall = false;
 	 try
 	{
-		 while(nextNode.getNodeName() != null) //Versuch
+		 while(nextNode != null) //Versuch
 		 {
 		     if(nextNode.getNodeName().equals("name"))
 		     {
@@ -434,7 +435,7 @@ public class OutputPUML
 	    Node nextNode = helper.getList(cases.item(i), "child::*").item(0);
     	    try
     	    {
-        	    while (nextNode.getNodeName() != null)
+        	    while (nextNode != null)
         	    {        		
                 	    if(nextNode.getNodeName().equals("condition"))
                 	    {
@@ -477,7 +478,7 @@ public class OutputPUML
 	Node nextNode = methodCallNode;
 	try
 	{
-        	while (nextNode.getNodeName() != null)
+        	while (nextNode != null)
         	{
         	    if (nextNode.getNodeName().equals("instance"))
         	    {
@@ -572,7 +573,7 @@ public class OutputPUML
 	
 	try
 	{
-	    while (nextNode.getNodeName() != null)
+	    while (nextNode != null)
 	    {
         	if(nextNode.getNodeName().equals("condition"))
         	{

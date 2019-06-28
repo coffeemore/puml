@@ -83,8 +83,6 @@ class GesamtTest
 		//"Class1,method1",
 		"--i",
 		"testfolder/xmlSpecifications/sources/java/Class1.java" ,
-		//"testfolder/xmlSpecifications/sources/java/Class2.java;" ,
-		//"testfolder/xmlSpecifications/sources/java/Class3.java" ,
 		"-o", //erstellt Ordener, wenn nicht vorhanden??
 		"testfolder/tempData/CD"
 		
@@ -115,11 +113,12 @@ class GesamtTest
 	{
 	String expectedPath = "testfolder/xmlSpecifications/SeqDiagram.txt";
 	String actualPath = ""; //init
-	File actualFile = new File("testfolder/tempData/CDoutPUML_Code");
-	if(actualFile.exists() && !actualFile.isDirectory()) { 
-	    actualPath = "testfolder/tempData/CDoutPUML_Graph";
-	} else if(new File("testfolder/tempData/SQoutPUML_Code").exists()) {
+	File actualFileCD = new File("testfolder/tempData/CDoutPUML_Code");
+	File actualFileSQ = new File("testfolder/tempData/SQoutPUML_Code");
+	if(actualFileCD.exists() && !actualFileCD.isDirectory()) { 
 	    actualPath = "testfolder/tempData/CDoutPUML_Code";
+	} else if(actualFileSQ.exists() && !actualFileSQ.isDirectory()) {
+	    actualPath = "testfolder/tempData/SQoutPUML_Code";
 	} else {
 	    System.out.println("Output Files not found");
 	    assertTrue(false);
