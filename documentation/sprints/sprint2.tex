@@ -11,16 +11,17 @@ Als Softwarearchitekt und Product Owner wünschen wir uns, dass möglichst wenig
 \nsecbegin{Zeitliche Planung}
 \begin{figure}[hbtp]
 \centering
-\includegraphics[width=\textwidth]{Bilder/gantt}
-\caption{Gantt-Diagramm für Sprint 1}
+\includegraphics[width=\textwidth]{Bilder/diagram_sprint2}
+\caption{Kontroll-Diagramm für Sprint 2}
 \end{figure}
 \nsecend%Zeitliche Planung
 
 \nsecbegin{Liste der durchgeführten Meetings}
 \begin{itemize}
-\item Planning-Meeting (00.00.2019)
-\item Zwischen-Meeting (00.00.2019)
-\item Review-Meeting (00.00.2019)
+\item Planning-Meeting (21.02.2019)
+\item Zwischen-Meeting (08.04.2019)
+\item Zwischen-Meeting (11.04.2019)
+\item Review-Meeting (15.04.2019)
 \end{itemize}
 \nsecend%Liste der durchgeführten Meetings
 
@@ -33,8 +34,21 @@ Der zweite Sprint wird zeitlich in der letzten Woche der Semesterferien begonnen
         \hline
         Arbeitspaket & Person & Start & Ende & h & Artefakt\\
         \hline
-        Dummyklassen & Musterstudi & 3.5.09 & 12.5.09 & 14 & Klasse.java\\ \hline
-        AP XYZ &  &  &  & & \\ \hline
+        Testdaten & Marian Geissler   & 06.04.2019 & 15.04.2019 & 2 &  \\ \hline
+        Logger & Patrick Otte   & 08.02.2019 & 08.04.2019 & 12 & LogMain.java \\ \hline
+        Output & Patrick Otte   & 11.04.2019 & 15.04.2019 & 3 & OutputPUML.java \\ \hline
+        Konsole & Johann Gerhardt   & 14.04.2019 & 14.04.2019 & 1 & Console.java \\ \hline
+        Java-Parser & Michael Lux   & 30.03.2019 & 30.03.2019 & 14 & ParserJava.java\\ \hline
+        GUI & Jan Sollmann  & 01.04.2019 & 06.04.2019 & 5 & GUI\_SWT.java \\ \hline
+        GUI & Julian Uebe  & 21.02.2019 & 15.04.2019 & 7 & SWT-Tool \\ \hline
+        Code-Collector & Elisabeth Schuster  & 07.02.2019 & 14.04.2019 & 5.5  & CodeCollector.java \\ \hline
+        Profiler & Elisabeth Schuster  & 10.04.2019 & 26.04.2019 & 7  & Profiler \\ \hline
+       Java-Parser & Jona Meyer  & 30.03.2019 & 30.03.2019 & 7 & ParserJave.java \\ \hline
+        Code-Collector & Leo Rauschke  & 07.04.2019 & 14.04.2019 & 5.75 & CodeCollector.java \\ \hline
+        Profiler & Leo Rauschke  & 09.04.2019 & 29.04.2019 & 3 & Profiler\\ \hline
+        Output & Tore Arndt  & 11.04.2019 & 15.04.2019 & 5 & OutputPUML.java\\ \hline
+        
+        
 \end{longtable}     
 \nsecend
 
@@ -53,6 +67,16 @@ Die Test-Überdeckung in diesem Sprint war überdurchschnittlich.
 \hline
 \textbf{Klasse} & \textbf{Methode} & \textbf{Anmerkungen}\\
  \hline
+ 
+ Testdatensatz & komplett & zukünftig als automatischer Ausgabe-Test\\ \hline
+ GUI\_SWT.java & komplett & wird durch Swing-GUI ersetzt\\ \hline
+ CodeCollector & Pfadbehandlung & Funktioniert nun auch unter Windows\\ \hline
+ CodeCollector & einlesen & Funktioniert\\ \hline
+ ParserJava.java & buildTree & Es bestehen weitherhin Bugs\\ \hline
+ Alle & komplett & Unit-Tests für das ganze Programm folgen\\ \hline
+ ParserJava.java & buildTree & Erweiterung für das Erstellen von Sequenzdiagrammen\\ \hline
+ GUI\_SWT.java & createContents, runPUML & Ausgabe für Sequenzdiagramme muss implementiert werden\\ \hline
+ 
 %Console & showConsole & Pfad anpassen \\
 \hline
 \end{tabularx}

@@ -1,6 +1,6 @@
-#include "Class2.hpp"
+#include "Class3.hpp"
 
-void Class2::call1()
+void Class3::call1()
 {
 
 }
