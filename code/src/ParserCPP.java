@@ -295,7 +295,7 @@ public class ParserCPP implements ParserIf
 		}
 
 		// Methoden
-		createMethods(sourceCodeCPP, sourceCodeHPP, document, classdefinition);
+		//createMethods(sourceCodeCPP, sourceCodeHPP, document, classdefinition);
 
 	    }
 
@@ -883,7 +883,11 @@ public class ParserCPP implements ParserIf
 	sourceCodeHPP = sourceCodeHPP.replaceAll("protected:", "");
 	sourceCodeHPP = sourceCodeHPP.substring(sourceCodeHPP.indexOf("{") + 1, sourceCodeHPP.length());
 	sourceCodeHPP = sourceCodeHPP.trim();
-
+	// "leere" Klassen werden als normale Klassen interpretiert
+	if(sourceCodeHPP.equals("")) 
+	{
+	    return false;
+	}
 	// Prüfen ob alle Methoden virtuel und =0; sind && Dekonstruktor: virtual
 	// ~IDemo() {}
 	int i = 0, n = sourceCodeHPP.length();
@@ -939,7 +943,11 @@ public class ParserCPP implements ParserIf
 	sourceCodeHPP = sourceCodeHPP.replaceAll("protected:", "");
 	sourceCodeHPP = sourceCodeHPP.substring(sourceCodeHPP.indexOf("{") + 1, sourceCodeHPP.length());
 	sourceCodeHPP = sourceCodeHPP.trim();
-
+	// "leere" Klassen werden als normale Klassen interpretiert
+	if(sourceCodeHPP.equals("")) 
+	{
+	   return false;
+	}
 	// Prüfen ob eine Methoden virtuel und =0; sind
 	int i = 0, n = sourceCodeHPP.length();
 	while (i + className.length() < n && i != -1)
