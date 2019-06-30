@@ -218,6 +218,9 @@ public class ParserCPP implements ParserIf
 		    entry.appendChild(document.createTextNode(compList.get(i)));
 		}
 
+		// Methoden
+		// createMethods(sourceCodeCPP, document, classdefinition);
+
 	    }
 	    else
 	    {
