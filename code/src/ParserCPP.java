@@ -107,8 +107,8 @@ public class ParserCPP implements ParserIf
 		Element compositions = document.createElement("compositions");
 		interfacedefinition.appendChild(compositions);
 		// Aggregation
-		Element aggregation = document.createElement("aggregation");
-		interfacedefinition.appendChild(aggregation);
+		Element aggregations = document.createElement("aggregations");
+		interfacedefinition.appendChild(aggregations);
 
 		
 		//Methoden Interfaces
@@ -137,7 +137,7 @@ public class ParserCPP implements ParserIf
 		for (int i = 0; i < aggrList.size(); i++)
 		{
 		    Element entry = document.createElement("entry");
-		    aggregation.appendChild(entry);
+		    aggregations.appendChild(entry);
 		    entry.appendChild(document.createTextNode(aggrList.get(i)));
 		}
 
@@ -179,8 +179,8 @@ public class ParserCPP implements ParserIf
 		Element compositions = document.createElement("compositions");
 		abstractdefinition.appendChild(compositions);
 		// Aggregation
-		Element aggregation = document.createElement("aggregation");
-		abstractdefinition.appendChild(aggregation);
+		Element aggregations = document.createElement("aggregations");
+		abstractdefinition.appendChild(aggregations);
 
 		// Vererbung
 		String[] tmpArray = getHeredity(sourceCodeHPP, className);
@@ -205,7 +205,7 @@ public class ParserCPP implements ParserIf
 		for (int i = 0; i < aggrList.size(); i++)
 		{
 		    Element entry = document.createElement("entry");
-		    aggregation.appendChild(entry);
+		    aggregations.appendChild(entry);
 		    entry.appendChild(document.createTextNode(aggrList.get(i)));
 		}
 
@@ -249,8 +249,8 @@ public class ParserCPP implements ParserIf
 		Element compositions = document.createElement("compositions");
 		classdefinition.appendChild(compositions);
 		// Aggregation
-		Element aggregation = document.createElement("aggregation");
-		classdefinition.appendChild(aggregation);
+		Element aggregations = document.createElement("aggregations");
+		classdefinition.appendChild(aggregations);
 
 		// Vererbung
 		String[] tmpArray = getHeredity(sourceCodeHPP, className);
@@ -281,7 +281,7 @@ public class ParserCPP implements ParserIf
 		for (int i = 0; i < aggrList.size(); i++)
 		{
 		    Element entry = document.createElement("entry");
-		    aggregation.appendChild(entry);
+		    aggregations.appendChild(entry);
 		    entry.appendChild(document.createTextNode(aggrList.get(i)));
 		}
 
@@ -326,7 +326,7 @@ public class ParserCPP implements ParserIf
 	//System.out.println("\n #################### ENDE JANS TEST ####################\n");
 	
 	document = (Document) xmlHelper.removeEmptyNodes(document);
-	//xmlHelper.writeDocumentToConsole(document);
+	xmlHelper.writeDocumentToConsole(document);
 	
     }
     
@@ -740,9 +740,10 @@ public class ParserCPP implements ParserIf
 	while (sourceCodeHPP.indexOf("new ", fromIndex + 1) >= 0)
 	{
 	    fromIndex = sourceCodeHPP.indexOf("new ", fromIndex + 1);
-	    // Herrausschneiden des Bezeichners zwischen new_ und )
+	    // Herrausschneiden des Bezeichners zwischen new_ und (
 	    h = sourceCodeHPP.substring(fromIndex + "new ".length(),
 		    sourceCodeHPP.indexOf("(", fromIndex + "new ".length()));
+	    System.out.println(sourceCodeHPP);
 	    // Verhindern von Duplikaten
 	    if (!komposition.contains(h))
 	    {
@@ -753,12 +754,14 @@ public class ParserCPP implements ParserIf
 
 	// Klassen-QuellCode suchen
 	sourceCodeCPP = getFormatedSourceCodeCPP(className, sourceCodeCPP);
-	if (sourceCodeCPP.equals(""))
+	System.out.println("\n PP"+sourceCodeCPP);
+	if (!sourceCodeCPP.equals(""))
 	{
 	    h = "";
 	    fromIndex = 0;
 	    while (sourceCodeCPP.indexOf("new ", fromIndex + 1) >= 0)
 	    {
+		System.out.println("\n PP"+sourceCodeCPP);
 		fromIndex = sourceCodeCPP.indexOf("new ", fromIndex + 1);
 		// Herrausschneiden des Bezeichners zwischen new_ und )
 		h = sourceCodeCPP.substring(fromIndex + "new ".length(),
@@ -782,20 +785,25 @@ public class ParserCPP implements ParserIf
     public String getFormatedSourceCodeCPP(String className, String sourceCodeCPP)
     {
 	// Klassen-Code bis zum Ende oder ersten #include
+	System.out.println(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\""));
+	
 	if(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"") >= 0)
 	{
+	    System.out.println("\n T1,5"+sourceCodeCPP); 
 	    	if (sourceCodeCPP.indexOf("#include", sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"")) >= 0)
 		{
 		    sourceCodeCPP = sourceCodeCPP.substring(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\""),
 			    sourceCodeCPP.indexOf("#include", sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"")));
+		    System.out.println("\n T1"+sourceCodeCPP);
 		}
 		else
 		{
 		    sourceCodeCPP = sourceCodeCPP.substring(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\""),
 			    sourceCodeCPP.length());
+		    System.out.println("\n T2"+sourceCodeCPP);
 		}    
-	  
-	
+	    	
+	    	
         	// Code kürzen, filtern und anpassen
         	sourceCodeCPP = sourceCodeCPP.replaceAll("\n", "");
         	sourceCodeCPP = sourceCodeCPP.replaceAll("\t", "");
@@ -804,12 +812,13 @@ public class ParserCPP implements ParserIf
         	    sourceCodeCPP = sourceCodeCPP.replaceAll("  ", " ");
         	}
         	sourceCodeCPP = sourceCodeCPP.trim();
+        	System.out.println("\n T3"+sourceCodeCPP);
         	return sourceCodeCPP;
 	}
 	else 
 	{
 		PUMLgenerator.logger.getLog().warning("kein CPP-Quellcode zu " +className+ " gefunden");
-	    //System.out.println("kein CPP-Quellcode zu " +className+ " gefunden");
+	    System.out.println("kein CPP-Quellcode zu " +className+ " gefunden");
 	    return "";
 	}
 	
