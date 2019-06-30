@@ -104,6 +104,10 @@ public class ParserCPP implements ParserIf
 		Element aggregation = document.createElement("aggregation");
 		interfacedefinition.appendChild(aggregation);
 
+		
+		//Methoden Interfaces ################################################
+		createInterfacesMethods(createCurrentHPP(sourceCodeHPP, index), document, interfacedefinition);
+		
 		// Vererbung
 		String[] tmpArray = getHeredity(sourceCodeHPP, className);
 		for (int i = 0; i < tmpArray.length; i++)
@@ -139,8 +143,6 @@ public class ParserCPP implements ParserIf
 		    compositions.appendChild(entry);
 		    entry.appendChild(document.createTextNode(compList.get(i)));
 		}
-
-		// Methoden
 
 	    }
 	    else if (isAbstract(className, sourceCodeHPP))
@@ -208,9 +210,6 @@ public class ParserCPP implements ParserIf
 		    entry.appendChild(document.createTextNode(compList.get(i)));
 		}
 
-		// Methoden
-		// createMethods(sourceCodeCPP, document, classdefinition);
-
 	    }
 	    else
 	    {
@@ -257,7 +256,7 @@ public class ParserCPP implements ParserIf
 			Element entry = document.createElement("entry");
 			extend.appendChild(entry);
 			entry.appendChild(document.createTextNode(tmpArray[i]));
-		    }
+		    }	    
 		}
 
 		// instance
@@ -320,9 +319,9 @@ public class ParserCPP implements ParserIf
 	
     }
     
-	
-    
-    private String createCurrentHPP(String sourceCodeHPP, int index)
+
+
+	private String createCurrentHPP(String sourceCodeHPP, int index)
     {
     	int j;
     	if(sourceCodeHPP.indexOf("class ", index + 1) > 0)
@@ -476,6 +475,85 @@ public class ParserCPP implements ParserIf
     	}
 	}
 
+	private void createInterfacesMethods(String currentHPP, Document document, Element interfacedefinition) {
+		int i = 0, a, b;
+		while(currentHPP.indexOf("(", i) > 0)
+		{
+			Element methoddefinition = document.createElement("methoddefinition");
+			interfacedefinition.appendChild(methoddefinition);
+			
+			Element access = document.createElement("access");
+			methoddefinition.appendChild(access);
+			
+			i = currentHPP.indexOf("(", i);
+			
+			b = i;
+			while(b > 0 && currentHPP.charAt(b) != ':')
+			{
+				b--;
+			}
+			a = b;
+			if(b == 0)
+			{
+				access.appendChild(document.createTextNode("private"));
+			}
+			else
+			{
+				while(currentHPP.charAt(a) != '\n')
+				{
+					a--;
+				}
+				access.appendChild(document.createTextNode(currentHPP.substring(a + 1, b)));
+			}
+			
+			b = i;
+			while(currentHPP.charAt(b) != ' ')
+			{
+				b--;
+			}
+			Element methname = document.createElement("name");
+			methoddefinition.appendChild(methname);
+			methname.appendChild(document.createTextNode(currentHPP.substring(b + 1, i)));
+			
+			a = b;
+			while(currentHPP.charAt(a - 1) != ' ')
+			{
+				a--;
+			}
+			Element methresult = document.createElement("result");
+			methoddefinition.appendChild(methresult);
+			methresult.appendChild(document.createTextNode(currentHPP.substring(a, b)));
+			
+			a = i + 1;
+			b = i;
+			i = currentHPP.indexOf(")", i);
+			
+			Element param = document.createElement("parameters");
+			methoddefinition.appendChild(param);
+			
+			while(a < i)
+			{
+				Element entry = document.createElement("entry");
+				param.appendChild(entry);
+				b = a;
+				b = currentHPP.indexOf(" ", b);
+				Element paramtype = document.createElement("type");
+				entry.appendChild(paramtype);
+				paramtype.appendChild(document.createTextNode(currentHPP.substring(a, b)));
+				
+				while(currentHPP.charAt(a) != ',' && a < i)
+				{
+					a++;
+				}
+				Element paramname = document.createElement("name");
+				entry.appendChild(paramname);
+				paramname.appendChild(document.createTextNode(currentHPP.substring(b + 1, a)));
+				a += 2;
+			}
+
+		}
+	}
+	
 	private void createMethods(String sourceCodeCPP, String sourceCodeHPP, Document document, Element classdefinition) {
 		calclassinterval(sourceCodeCPP);
 		int j = cppInterval[0], i = j, n = cppInterval[1];//sourceCodeCPP.length();

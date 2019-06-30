@@ -88,12 +88,20 @@ public class XmlHelperMethods
 	}
     }
     
-    //Hilfsmethode zum Loeschen leerer Unterknoten des uebergebenen Knotens
-    public Node removeEmptyNodes(Node node) {
+    /**
+     * Hilfsmethode zum Loeschen leerer Knoten
+     * 
+     * @param node - Knoten von dem ausgehend Unterknoten behandelt werden sollen
+     * @return Knoten ohne leere Unterknoten
+     */
+    public Node removeEmptyNodes(Node node)
+    {
 		NodeList nodeList = node.getChildNodes();
-		for(int i=0; i < nodeList.getLength(); i++){
+		for(int i = 0; i < nodeList.getLength(); i++)
+		{
 			Node childNode = nodeList.item(i);
-			if(childNode.getTextContent().equals("")){
+			if(childNode.getTextContent().equals(""))
+			{
 				childNode.getParentNode().removeChild(childNode);
 				i--;
 			}
