@@ -18,10 +18,12 @@
 			<entry>Class5</entry>
 		</aggregations>
 		<instance>
+			<access>private</access>
 			<name>classInstance1</name>
 			<class>Class2</class>
 		</instance>
 		<instance>
+			<access>protected</access>
 			<name>classInstance2</name>
 			<class>Class2</class>
 		</instance>
@@ -31,6 +33,7 @@
 			<class>Class4</class>
 		</instance>
 		<instance>
+			<access>pprivate</access>
 			<name>iClass5</name>
 			<class>Class5</class>
 		</instance>
@@ -52,8 +55,24 @@
 		<var>
 			<type>byte</type>
 			<name>var4</name>
+			<access>pprivate</access>
 		</var>
 		<methoddefinition>
+			<access>public</access>
+			<name>Class1</name>
+			<parameters>
+				<entry>
+					<type>Class4</type>
+					<name>iClass4</name>
+				</entry>
+				<entry>
+					<type>Class5</type>
+					<name>iClass5</name>
+				</entry>
+			</parameters>
+		</methoddefinition>
+		<methoddefinition>
+			<access>private</access>
 			<name>method1</name>
 			<parameters>
 				<entry>
@@ -89,10 +108,10 @@
 				<method>method2</method>
 			</methodcall>
 		</methoddefinition>
-		<methodcall>
-			<method>method2</method>
-		</methodcall>
-		<frame>
+		<methoddefinition>
+			<access>protected</access>
+			<name>method2</name>
+			<result>void</result>
 			<alternative>
 				<case>
 					<condition>switch(i)/case 0</condition>
@@ -120,10 +139,12 @@
 					<condition>switch(i)/default</condition>
 					<frame>
 						<instance>
+							<access>pprivate</access>
 							<name>classInstance3</name>
 							<class>Class2</class>
 						</instance>
 						<instance>
+							<access>pprivate</access>
 							<name>classInstance1</name>
 							<class>Class3</class>
 						</instance>
@@ -151,8 +172,9 @@
 					</frame>
 				</case>
 			</alternative>
-		</frame>
+		</methoddefinition>
 		<methoddefinition>
+			<access>public</access>
 			<name>method3</name>
 			<result>void</result>
 			<alternative>
@@ -172,10 +194,10 @@
 				</case>
 			</alternative>
 		</methoddefinition>
-		<methodcall>
-			<method>method4</method>
-		</methodcall>
-		<frame>
+		<methoddefinition>
+			<access>pprivate</access>
+			<name>method4</name>
+			<result>void</result>
 			<alternative>
 				<case>
 					<condition>if(d!=e)</condition>
@@ -184,18 +206,22 @@
 					</methodcall>
 				</case>
 			</alternative>
-		</frame>
+		</methoddefinition>
 	</classdefinition>
 	<classdefinition>
 		<name>Class2</name>
 		<compositions />
 		<aggregations />
 		<methoddefinition>
+			<access>public</access>
 			<name>call1</name>
 			<result>void</result>
 		</methoddefinition>
 		<methoddefinition>
+			<access>public</access>
 			<name>call2</name>
+			<type>static</type>
+			<result>void</result>
 		</methoddefinition>
 	</classdefinition>
 	<classdefinition>
@@ -203,6 +229,7 @@
 		<compositions />
 		<aggregations />
 		<methoddefinition>
+			<access>public</access>
 			<name>call1</name>
 			<result>void</result>
 		</methoddefinition>
@@ -221,16 +248,30 @@
 		<name>If1</name>
 		<compositions />
 		<aggregations />
-		<methodcall>
-			<method>method1</method>
-		</methodcall>
+		<methoddefinition>
+			<access>public</access>
+			<name>method1</name>
+			<parameters>
+				<entry>
+					<type>int</type>
+					<name>param1</name>
+				</entry>
+				<entry>
+					<type>int</type>
+					<name>param2</name>
+				</entry>
+			</parameters>
+			<result>int</result>
+		</methoddefinition>
 	</interfacedefinition>
 	<interfacedefinition>
 		<name>If2</name>
 		<compositions />
 		<aggregations />
-		<methodcall>
-			<method>method2</method>
-		</methodcall>
+		<methoddefinition>
+			<access>public</access>
+			<name>method2</name>
+			<result>void</result>
+		</methoddefinition>
 	</interfacedefinition>
 </source>

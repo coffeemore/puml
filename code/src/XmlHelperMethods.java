@@ -67,6 +67,7 @@ public class XmlHelperMethods
      * @param Knoten eines Elements
      * @param        true = Unterknoten werden nicht gelöscht; false = Unterknoten
      *               werden mit gelöscht
+     * @author Leo Rauschke
      * @throws XPathExpressionException
      */
     public void delNode(Node nodeName, boolean keepChildNodes) throws XPathExpressionException
@@ -132,14 +133,14 @@ public class XmlHelperMethods
 	    return document;
 	} catch (SAXException | IOException | ParserConfigurationException e)
 	{
-	    PUMLgenerator.logger.getLog().warning("@XmlHelperMethods/getDocumentFrom: "+e.toString());
+	    PUMLgenerator.logger.getLog().warning("@XmlHelperMethods/getDocumentFrom: " + e.toString());
 	}
 	return null;
     }
 
     /**
      * Hilfsmethode zum Erstellen eines XML-Documents
-     * 
+     * @author ?
      * @return Document
      */
     public Document createDocument()
@@ -154,7 +155,7 @@ public class XmlHelperMethods
 	    return document;
 	} catch (ParserConfigurationException e)
 	{
-		PUMLgenerator.logger.getLog().warning("@XmlHelperMethods/createDocument"+e.toString());
+	    PUMLgenerator.logger.getLog().warning("@XmlHelperMethods/createDocument" + e.toString());
 	}
 	return null;
     }
@@ -185,7 +186,7 @@ public class XmlHelperMethods
 	    transformer.transform(domSource, console);
 	} catch (TransformerException e)
 	{
-	    PUMLgenerator.logger.getLog().warning("@XmlHelperMethods/writeDocumentToConsole: "+e.toString());
+	    PUMLgenerator.logger.getLog().warning("@XmlHelperMethods/writeDocumentToConsole: " + e.toString());
 	}
     }
 
@@ -193,6 +194,7 @@ public class XmlHelperMethods
      * Erstellt eine XML-Datei
      * 
      * @param doc - Dokument, das in eine XML-Datei geschrieben werden soll
+     * @author Elisabeth Schuster
      * @throws IOException
      * @throws TransformerException
      */
@@ -213,6 +215,7 @@ public class XmlHelperMethods
     /**
      * Gibt den Unterbaum des übergebenen Knotens auf der Konsole aus
      * 
+     * @author Elisabeth Schuster
      * @param root
      * @throws XPathExpressionException
      */
@@ -240,6 +243,7 @@ public class XmlHelperMethods
     /**
      * Entfernt Kommentare unterhalb eines angegebenen Knotens
      * 
+     * @author Elisabeth Schuster
      * @param root - Knoten, unter dem Kommentare entfernt werden sollen
      * @throws XPathExpressionException
      */
@@ -267,6 +271,7 @@ public class XmlHelperMethods
     /**
      * Entfernt unnötigen Whitespace in einem Dokument
      * 
+     * @author Elisabeth Schuster
      * @param seq - Dokument, in dem unnötiger Whitespace entfernt werden soll
      * @return - Dokument ohne unnötigen Whitespace
      * @throws TransformerException
@@ -294,7 +299,7 @@ public class XmlHelperMethods
     /**
      * Funktion zum Suchen aller Knoten mit einem bestimmten Pfad
      * 
-     * 
+     * @author ?
      * @param doc  - xml-Dokument, das durchsucht werden soll
      * @param name - Pfad, nach dem gesucht werden soll
      * @return - NodeList aller gefundenen Knoten
@@ -321,6 +326,7 @@ public class XmlHelperMethods
      * Funktion zur Suche eines Childnodes mit einem bestimmten Namen; gibt ersten
      * ChildNode mit diesem Namen zurück
      * 
+     * @author Leo Rauschke
      * @param parent übergebener Knoten
      * @param name   Name des gesuchten Unterknotens
      * @return
@@ -343,6 +349,7 @@ public class XmlHelperMethods
      * Funktion zum Abtesten, ob ein Knoten Childnodes mit einem bestimmten Namen
      * hat
      * 
+     * @author Leo Rauschke
      * @param parent - übergebener Node
      * @param name   - gesuchter ChildNode
      * @return - boolean; true, wenn ChildNode vorhanden, sonst false
@@ -364,6 +371,7 @@ public class XmlHelperMethods
     /**
      * Funktion zum Vergleichen von XML Dateien über XMLUnit
      * 
+     * @author Patrick Otte
      * @param doc1 - Source Doc
      * @param doc2 - Zu testendes Doc
      * @return - boolean; true, wenn XML gleich, sonst false

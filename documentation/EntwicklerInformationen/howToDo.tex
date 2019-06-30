@@ -187,10 +187,18 @@ PUMLgenerator.logger.getLog().[Level]("[Ausgabe]")\\
 
 Hierbei wird die in der Hauptklasse (PUMLgenerator) definierte Instanz "logger" in Verbindung mit dem Getter getLog() aufgerufen, danach der Level des Logs definiert und am Ende der Ausgabestring eingegeben.\\
 Beispiel:\\
-PUMLgenerator.logger.getLog().info("Dies ist eine Information")\\
+PUMLgenerator.logger.getLog().info("Dies ist eine Information");\\
 \\
-Zum Start des PUML Programmes wird eine Logdatei mit exakter Uhrzeit/Datum als Präfix erstellt.
-Jeder Logeintrag wird im Ordner puml/code/testfolder/tempData/PUMLlog gespeichert, da tempData über .gitignore ausgeschlossen wird. Zu jedem Logeintrag gibt es das genaue Datum inkl. Uhrzeit sowie die Informationen in welcher Klasse und in welcher Methode es geloggt wurde.
+Um die Logs nun auch auf die Konsole auszugeben oder in eine Datei zu schreiben müssen die jeweiligen Handler aktiviert werden. Mit den Funktionen \textit{startLoggingFile(String path)} und \textit{startLoggingConsole(Boolean console)} lassen sich die Handler aktivieren.\\
+Beispiel:\\
+PUMLgenerator.logger.startLoggingFile("testfolder/tempData/PUMLlog/");\\
+\textit{Aktiviert das Schreiben einer Logdatei}\\
+PUMLgenerator.logger.startLoggingFile(true);\\
+\textit{Aktiviert das Ausgeben auf die Konsole}\\\\
+
+
+Zum Start des FileHandlers wird eine Logdatei mit exakter Uhrzeit/Datum als Präfix erstellt.
+Jeder Logeintrag wird im jeweils angegebenen Ordner gespeichert. Zu jedem Logeintrag gibt es das genaue Datum inkl. Uhrzeit sowie die Informationen in welcher Klasse und in welcher Methode es geloggt wurde.
 Des Weiteren werden auch Logausgaben mit den gleichen Eigenschaften (Uhrzeit, Klassenname, ...) über die Console realisiert.\\\\
 \textbf{LogMX}\\
 Die Logdatei wird in einem XML-Format gespeichert. Um dieses komfortabel auslesen zu können, kann man sich mit Hilfe von

@@ -4,6 +4,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+
+/**
+ * 
+ * Klasse zum parsen von C++-Quellcode in XML
+ * 
+ * @author Johann Gerhardt, Jan Sollmann        
+ */
 public class ParserCPP implements ParserIf
 {
     private XmlHelperMethods xmlHelper = new XmlHelperMethods();
@@ -67,7 +74,8 @@ public class ParserCPP implements ParserIf
 		    sourceCodeHPP.indexOf("\n", index + keyword.length()));
 
 	    // Ausgabe des Folgewortes von "class"
-	    System.out.println(sourceCodeHPP.substring(index + keyword.length(), b));
+	    PUMLgenerator.logger.getLog().warning(sourceCodeHPP.substring(index + keyword.length(), b));
+	    //System.out.println(sourceCodeHPP.substring(index + keyword.length(), b));
 
 	    //Klassen-Namen herrausfinden
 	    String className = sourceCodeHPP.substring(index + keyword.length(), b);
@@ -141,6 +149,8 @@ public class ParserCPP implements ParserIf
 		    compositions.appendChild(entry);
 		    entry.appendChild(document.createTextNode(compList.get(i)));
 		}
+
+		// Methoden
 
 	    }
 	    else if (isAbstract(className, sourceCodeHPP))
@@ -254,7 +264,7 @@ public class ParserCPP implements ParserIf
 			Element entry = document.createElement("entry");
 			extend.appendChild(entry);
 			entry.appendChild(document.createTextNode(tmpArray[i]));
-		    }	    
+		    }
 		}
 
 		// instance
@@ -290,7 +300,8 @@ public class ParserCPP implements ParserIf
 	    index = sourceCodeHPP.indexOf(keyword, index + keyword.length());
 	}
 
-	System.out.println("\n #################### BEGINN JANS TEST ####################\n");
+	PUMLgenerator.logger.getLog().warning("\n #################### BEGINN JANS TEST ####################\n");
+	//System.out.println("\n #################### BEGINN JANS TEST ####################\n");
 
 	/*
 	 * //Interfaces und abstrakte Klassen System.out.println("CLASS1 >>" +
@@ -308,18 +319,15 @@ public class ParserCPP implements ParserIf
 	 * System.out.println("IF4/TEST >>" + isInterface("Test", sourceCodeHPP));
 	 */
 
-	System.out.println("\n #################### ENDE JANS TEST ####################\n");
-	
+	PUMLgenerator.logger.getLog().warning("\n #################### ENDE JANS TEST ####################\n");
+	//System.out.println("\n #################### ENDE JANS TEST ####################\n");
 	
 	document = (Document) xmlHelper.removeEmptyNodes(document);
-	
-	xmlHelper.writeDocumentToConsole(document);
+	//xmlHelper.writeDocumentToConsole(document);
 	
     }
     
-
-
-	private String createCurrentHPP(String sourceCodeHPP, int index)
+    private String createCurrentHPP(String sourceCodeHPP, int index)
     {
     	int j;
     	if(sourceCodeHPP.indexOf("class ", index + 1) > 0)
@@ -797,7 +805,8 @@ public class ParserCPP implements ParserIf
 	}
 	else 
 	{
-	    //Logger kein passender CPP Code gefunden
+		PUMLgenerator.logger.getLog().warning("kein CPP-Quellcode zu " +className+ " gefunden");
+	    //System.out.println("kein CPP-Quellcode zu " +className+ " gefunden");
 	    return "";
 	}
 	
@@ -984,7 +993,8 @@ public class ParserCPP implements ParserIf
 	}
 	else 
 	{
-	    //Logger kein pasender SourceCode gefunden
+		PUMLgenerator.logger.getLog().warning("kein HPP-Quellcode zu " +className+ " gefunden");
+	    //System.out.println("kein HPP-Quellcode zu " +className+ " gefunden");
 	    return "";
 	}
 	
@@ -1001,9 +1011,11 @@ public class ParserCPP implements ParserIf
 	sourceCode.set(1, deleteComStr(sourceCode.get(1)));
 
 	// Ausgabe eingelesener HPP-Dateien
-	System.out.println(sourceCode.get(0));
+	PUMLgenerator.logger.getLog().warning(sourceCode.get(0));
+	//System.out.println(sourceCode.get(0));
 	// Ausgabe eingelesener CPP-Dateien
-	System.out.println(sourceCode.get(1));
+	PUMLgenerator.logger.getLog().warning(sourceCode.get(1));
+	//System.out.println(sourceCode.get(1));
 
 	try
 	{

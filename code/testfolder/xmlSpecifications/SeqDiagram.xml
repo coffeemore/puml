@@ -90,7 +90,6 @@
 					</methodcall>
 					<methodcall>
 						<instance>classInstance4</instance>	<!-- Instanz existiert nicht -->
-						<class></class>
 						<method>callX</method>
 						<type>unknown</type>
 					</methodcall>

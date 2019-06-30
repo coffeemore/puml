@@ -74,6 +74,13 @@ public class ClassDiagramGenerator
 			Element aggregations = document.createElement("aggregations");
 			classrelations.appendChild(aggregations);
 			
+			//Knoten namens "abstractdefinition" auflisten 
+			NodeList abstractList = xmlHelper.getList(parsedData, "./source/abstractdefinition");
+			for(int j = 0; abstractList.getLength() > j; j++)
+			{
+			    classdiagramm.appendChild(document.importNode(abstractList.item(j), true));
+			}
+			
 			//Knoten namens "classdefinition" auflisten 
 			NodeList classList = parsedData.getElementsByTagName("classdefinition");
 			for (int i = 0; i < classList.getLength(); i++)
@@ -238,7 +245,7 @@ public class ClassDiagramGenerator
 			//Ausgabe Konsole
 			//document.normalize();
 			xmlHelper.removeComments(root);
-			xmlHelper.writeDocumentToConsole(document);
+			//xmlHelper.writeDocumentToConsole(document);
 	    	return document;
 		}
     	catch (XPathExpressionException e) {
