@@ -743,7 +743,6 @@ public class ParserCPP implements ParserIf
 	    // Herrausschneiden des Bezeichners zwischen new_ und (
 	    h = sourceCodeHPP.substring(fromIndex + "new ".length(),
 		    sourceCodeHPP.indexOf("(", fromIndex + "new ".length()));
-	    System.out.println(sourceCodeHPP);
 	    // Verhindern von Duplikaten
 	    if (!komposition.contains(h))
 	    {
@@ -754,14 +753,12 @@ public class ParserCPP implements ParserIf
 
 	// Klassen-QuellCode suchen
 	sourceCodeCPP = getFormatedSourceCodeCPP(className, sourceCodeCPP);
-	System.out.println("\n PP"+sourceCodeCPP);
 	if (!sourceCodeCPP.equals(""))
 	{
 	    h = "";
 	    fromIndex = 0;
 	    while (sourceCodeCPP.indexOf("new ", fromIndex + 1) >= 0)
 	    {
-		System.out.println("\n PP"+sourceCodeCPP);
 		fromIndex = sourceCodeCPP.indexOf("new ", fromIndex + 1);
 		// Herrausschneiden des Bezeichners zwischen new_ und )
 		h = sourceCodeCPP.substring(fromIndex + "new ".length(),
@@ -785,22 +782,17 @@ public class ParserCPP implements ParserIf
     public String getFormatedSourceCodeCPP(String className, String sourceCodeCPP)
     {
 	// Klassen-Code bis zum Ende oder ersten #include
-	System.out.println(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\""));
-	
 	if(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"") >= 0)
 	{
-	    System.out.println("\n T1,5"+sourceCodeCPP); 
-	    	if (sourceCodeCPP.indexOf("#include", sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"")) >= 0)
+	    	if (sourceCodeCPP.indexOf("#include", sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"")+1) >= 0)
 		{
 		    sourceCodeCPP = sourceCodeCPP.substring(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\""),
-			    sourceCodeCPP.indexOf("#include", sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"")));
-		    System.out.println("\n T1"+sourceCodeCPP);
+			    sourceCodeCPP.indexOf("#include", sourceCodeCPP.indexOf("#include \"" + className + ".hpp\"")+1));
 		}
 		else
 		{
 		    sourceCodeCPP = sourceCodeCPP.substring(sourceCodeCPP.indexOf("#include \"" + className + ".hpp\""),
 			    sourceCodeCPP.length());
-		    System.out.println("\n T2"+sourceCodeCPP);
 		}    
 	    	
 	    	
@@ -812,13 +804,12 @@ public class ParserCPP implements ParserIf
         	    sourceCodeCPP = sourceCodeCPP.replaceAll("  ", " ");
         	}
         	sourceCodeCPP = sourceCodeCPP.trim();
-        	System.out.println("\n T3"+sourceCodeCPP);
         	return sourceCodeCPP;
 	}
 	else 
 	{
 		PUMLgenerator.logger.getLog().warning("kein CPP-Quellcode zu " +className+ " gefunden");
-	    System.out.println("kein CPP-Quellcode zu " +className+ " gefunden");
+	   // System.out.println("kein CPP-Quellcode zu " +className+ " gefunden");
 	    return "";
 	}
 	
