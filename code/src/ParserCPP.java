@@ -105,7 +105,7 @@ public class ParserCPP implements ParserIf
 		interfacedefinition.appendChild(aggregation);
 
 		
-		//Methoden Interfaces ################################################
+		//Methoden Interfaces
 		createInterfacesMethods(createCurrentHPP(sourceCodeHPP, index), document, interfacedefinition);
 		
 		// Vererbung
