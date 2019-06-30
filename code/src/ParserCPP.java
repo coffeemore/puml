@@ -295,6 +295,20 @@ public class ParserCPP implements ParserIf
 		}
 
 		// Methoden
+		
+		//////////////////
+		String sc = getFormatedSourceCodeHPP(className, sourceCodeHPP);
+		sc = sc.replaceAll("public:", "");
+		sc = sc.replaceAll("private:", "");
+		sc = sc.replaceAll("protected:", "");
+		sc = sc.substring(sc.indexOf("{") + 1, sc.length());
+		sc = sc.trim();
+		// "leere" Klassen werden als normale Klassen interpretiert
+		if(!sc.equals("")) 
+		{
+		    createMethods(sourceCodeCPP, sourceCodeHPP, document, classdefinition);
+		}
+		////////////////
 		//createMethods(sourceCodeCPP, sourceCodeHPP, document, classdefinition);
 
 	    }
