@@ -86,7 +86,7 @@ public class SequenceDiagramGenerator
 	deleteUnusedClassesAndMethods(seqDiagram, epClass);
 
 	xmlHM.removeComments(root);
-	//seqDiagram = xmlHM.removeWhitespace(seqDiagram); fügt irgendwie mehr leerzeichen ein anstsatt sie zu löschen
+	//seqDiagram = xmlHM.removeWhitespace(seqDiagram); fügt irgendwie mehr leerzeichen ein anstatt sie zu löschen
 
 	return seqDiagram;
     }
