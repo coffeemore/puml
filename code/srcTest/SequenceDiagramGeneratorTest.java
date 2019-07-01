@@ -36,6 +36,7 @@ class SequenceDiagramGeneratorTest
 	assertAll(() ->
 	{
 	    Document test = classUnderTest.createDiagram(parsedData, "Class1", "method1");
+	    test = classUnderTest.createDiagram(parsedData, "Class1", "method1");
 	    Document seqDiagram = xmlHM.getDocumentFrom("..//code//testfolder//xmlSpecifications//SeqDiagram.xml");
 	    boolean s = false;
 	    s = xmlHM.compareXML(seqDiagram, test);
