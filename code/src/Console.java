@@ -364,7 +364,7 @@ public class Console extends PUMLgenerator
     {
     	try
 		{
-			//Code Erzeugen
+			//Code als txt Erzeugen
 			outputPUML.savePUMLtoFile(outputPUML.getPUML(
 					seqDiagramGenerator.createDiagram(parser.getParsingResult(), entryClass, entryMethode)), outPath + "outPUML_Code");
 		}
