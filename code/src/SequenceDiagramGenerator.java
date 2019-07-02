@@ -32,7 +32,7 @@ public class SequenceDiagramGenerator
      */
     public SequenceDiagramGenerator()
     {
-
+	
     }
 
     /**
@@ -52,7 +52,11 @@ public class SequenceDiagramGenerator
 	    throws ParserConfigurationException, SAXException, IOException, XPathExpressionException,
 	    TransformerException
     {
+	calledMethodsList = new ArrayList<ArrayList<String>>();
+	classesWithMethodsList = new ArrayList<ArrayList<String>>();
+	
 	// neues Dokument, das seqDiagramm Informationen enthalten wird
+	
 	Document seqDiagram = xmlHM.createDocument();
 
 	Element root = seqDiagram.createElement("parsed");

@@ -37,6 +37,7 @@ class SequenceDiagramGeneratorTest
 	{
 	    Document test = classUnderTest.createDiagram(parsedData, "Class1", "method1");
 	    test = classUnderTest.createDiagram(parsedData, "Class1", "method1");
+	    
 	    Document seqDiagram = xmlHM.getDocumentFrom("..//code//testfolder//xmlSpecifications//SeqDiagram.xml");
 	    boolean s = false;
 	    s = xmlHM.compareXML(seqDiagram, test);
@@ -63,6 +64,7 @@ class SequenceDiagramGeneratorTest
 	Document test = classUnderTest.createDiagram(source, "Class1", "method1");
 	Document seqDiagram = xmlHM.getDocumentFrom("..//code//testfolder//xmlSpecifications//SeqDiagram.xml");
 	boolean m = xmlHM.compareXML(seqDiagram, test);
+	xmlHM.writeDocumentToConsole(source);
 	assertTrue(m);
     }
 }
