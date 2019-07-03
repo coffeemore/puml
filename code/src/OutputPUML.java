@@ -48,6 +48,11 @@ public class OutputPUML
 		firstMethodCall = true;
 		list = helper.getList(diagramData, "/parsed/*");
 		String pumlCode = "@startuml\n";
+		if(getScaleHeight()!=-1 && getScaleWidth()!=-1)
+		{
+			pumlCode+="scale "+getScaleWidth()+" width \n";
+			pumlCode+="scale "+getScaleHeight()+" height \n";
+		}
 		if (list.item(0).getNodeName().equals("classdiagramm"))
 		{
 			boolean gotInstances = false;
@@ -641,4 +646,35 @@ public class OutputPUML
     	SourceStringReader reader = new SourceStringReader(pumlCode);
     	reader.outputImage(png).getDescription();
     }
+
+    /**
+	 * @return the scaleWidth
+	 */
+	public int getScaleWidth() {
+		return scaleWidth;
+	}
+
+	/**
+	 * @param scaleWidth the scaleWidth to set
+	 */
+	public void setScaleWidth(int scaleWidth) {
+		this.scaleWidth = scaleWidth;
+	}
+
+	/**
+	 * @return the scaleHeight
+	 */
+	public int getScaleHeight() {
+		return scaleHeight;
+	}
+
+	/**
+	 * @param scaleHeight the scaleHeight to set
+	 */
+	public void setScaleHeight(int scaleHeight) {
+		this.scaleHeight = scaleHeight;
+	}
+
+	private int scaleWidth=-1;
+	private int scaleHeight=-1;
 }
