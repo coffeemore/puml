@@ -50,8 +50,8 @@ public class OutputPUML
 		String pumlCode = "@startuml\n";
 		if(getScaleHeight()!=-1 && getScaleWidth()!=-1)
 		{
-			pumlCode+="scale "+getScaleWidth()+" width \n";
-			pumlCode+="scale "+getScaleHeight()+" height \n";
+			pumlCode+="scale "+getScaleWidth()+" width\n";
+			pumlCode+="scale "+getScaleHeight()+" height\n";
 		}
 		if (list.item(0).getNodeName().equals("classdiagramm"))
 		{
