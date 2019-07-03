@@ -1,0 +1,111 @@
+\nsecbegin{Ziel des Sprints}
+Ziel des Sprints ist es unter anderem alte Codefragmente zu entfernen, einige Klassen auszubessern und an neue Vorraussetzungen anzupassen und mit dem Erstellen des C++ Parsers zu beginnen. Vor allem sollte am Ende des Sprints das Programm lauffähig sein.
+\nsecend
+
+\nsecbegin{User-Stories des Sprint-Backlogs}
+\nsecbegin{Vorschau}
+Als Benutzer wünsche ich mir eine Vorschau der Diagramme, damit ich einschätzen kann ob ich
+damit zufrieden bin.
+\nsecend
+\nsecbegin{Klassendiagramme}
+Als Benutzer wünsche ich mir, Klassendiagramme aus meinem bestehenden Quellcode erstellen zu können, damit ich das nicht manuell tun muss.
+\nsecend
+\nsecbegin{Anzeigen und Speichern von PlantUML}
+Als Benutzer wünsche ich mir, Diagramme als PlantUML-Code anzeigen und speichern zu können, um den Aufbau nachvollziehen zu können.
+\nsecend
+\nsecend
+
+\nsecbegin{Zeitliche Planung}
+Der Sprint geht vom 24.05.19 bis zum 07.06.19.
+\nsecend
+
+\nsecbegin{Liste der durchgeführten Meetings}
+\begin{itemize}
+\item Planning-Meeting (24.05.2019)
+\end{itemize}
+\nsecend
+
+\nsecbegin{Ergebnisse des Planning-Meetings}
+\begin{itemize}
+\item Bugfixes und Feinschliff Sequenzdiagrammgenerator [PUML-92]
+\item XML Compare für UnitTests [PUML-93]
+\item GUI Auflistung Klassen/Methoden [PUML-94]
+\item C++ Parser schreiben [PUML-95]
+\item Sequenzdiagramm Output fertigstellen [PUML-96]
+\item Test openjdk oracle jdk [PUML-98]
+\item alte Codefragmente entfernen [PUML-84]
+\item Anpassung Konsole auf neue Methoden [PUML-85]
+\item Parser umbauen [PUML-89/90]
+\item alten Code entfernen
+\item PUML Logo bestimmt
+\end{itemize}
+\nsecend
+
+\nsecbegin{Aufgewendete Arbeitszeit pro Person$+$Arbeitspaket}
+\begin{longtable}{|p{4cm}|l|l|l|l|l|}
+        \hline
+        Parser umbauen & Michael Lux & 24.05.19 & 07.06.19 & 1w 4d 3h & ParserJava.java\\
+        \hline
+        Parser umbauen & Jona Meyer & 24.05.19 & 07.06.19 & 4d 6h & ParserJava.java\\
+        \hline
+        Bugfix und Feinschliff von Sequenzdiagrammen & Elisabeth Schuster & 24.05.19 & 07.06.19 & 1d 6h 15m & SequenzDiagramGenerator.java\\
+        \hline
+        SeqDiagram1 & Leonie Rauschke & 24.05.19 & 07.06.19 & 5h 50m & SequenzDiagramGenerator.java\\
+        \hline 
+        XML-Compare für Unit-Tests & Patrick Otte & 24.05.19 & 05.06.19 & 2d & \\
+        \hline
+        Logger Logdatei & Patrick Otte & 24.05.19 & 03.06.19 & 3h &\\
+        \hline
+        getList Methode & Patrick Otte & 26.05.19 & 27.05.19 & 6h & \\
+        \hline\\
+        Anpassung Console auf neue Methoden & Marian Geißler & 24.05.19 & 07.06.19 & 1d 6h 30m & \\
+        \hline
+        GUI auflistung der Klassen und Methoden & Julian Uebe & 24.05.19 & 07.06.19 & 1w 7h & \\
+        \hline
+        C++-Parser erstellen & Jan Sollmann & 24.05.19 & 07.06.19 & 1w 3d 1h 30m  & ParserCPP.java\\
+        \hline
+        C++-Parser erstellen & Johann Gerhardt & 24.05.19 & 07.06.19 & 4d 1h  & ParserCPP.java\\
+        \hline
+        Sequenzdiagramm-Output fertigstellen & Tore Arndt & 24.05.19 & 07.06.19 & 2d 4h & \\
+        \hline   
+        Test für Sequenzdiagramm Output schreiben & Patrick Otte & 24.05.19 & 27.05.19 & 4h & \\
+        \hline     
+\hline
+\end{longtable}     
+\nsecend
+
+\nsecbegin{Konkrete Code-Qualität im Sprint}
+Alte und unbenötigte Codefragmente wurden entfernt. In einigen Klassen wurden Bugs behoben. Die Code-Qualität hat sich daher wahrscheinlich verbessert.
+\nsecend%Konkrete Code-Qualität im Sprint
+
+\nsecbegin{Konkrete Test-Überdeckung im Sprint}
+Es wurde eine Methode für das Vergleichen von XML-Dokumenten geschrieben. Mit dieser lassen sich beispielsweise der ClassDiagramGenerator und der SequenzDiagramGenerator testen. Daher sind in diesem Sprint neue Tests hinzugekommen, wodurch die Testabdeckung hoch gehalten wird.
+\nsecend%Konkrete Test-Überdeckung im Sprint
+
+\nsecbegin{Ergebnisse des Reviews}
+\begin{table}[H]
+
+\begin{tabularx}{\textwidth}{ |l|l|X| }
+\hline
+\textbf{Klasse} & \textbf{Methode} & \textbf{Anmerkungen}\\
+\hline
+\end{tabularx}
+\end{table}
+
+\nsecend%Ergebnisse des Reviews
+
+\nsecbegin{Ergebnisse der Retrospektive}
+Der Sprint lief insgesamt betrachtet erfolgreich. Allerdings wird der CPP-Parser wohl nicht die gleiche Funktionalität wie der Java-Parser erreichen. Das Parsen von CPP-Quellcode funktioniert zwar in Ansätzen, ist allerdings weder vollständig noch für komplexeren Code ausgelegt.
+\nsecend%Ergebnisse der Retrospektive
+
+\nsecbegin{Abschließende Einschätzung des Product-Owners}
+XXX
+\nsecend%Abschließende Einschätzung des Product-Owners
+
+\nsecbegin{Abschließende Einschätzung des Software-Architekten}
+XXX
+\nsecend%Abschließende Einschätzung des Software-Architekten
+
+\nsecbegin{Abschließende Einschätzung des Team-Managers}
+XXX
+\nsecend%Abschließende Einschätzung des Team-Managers
