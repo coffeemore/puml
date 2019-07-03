@@ -93,11 +93,6 @@ public class Console extends PUMLgenerator
 			.longOpt("lf").argName("log-filepath").hasArg().desc("Angabe des Pfades fuer das Logfile").build();
 	options.addOption(logfile);
 	
-	/*//Erstelle SeqenceDiagramm
-	Option seqDiag = Option.builder()
-			.longOpt("cs").argName("Klasse, Methode").hasArgs().type(Integer.class).valueSeparator(',').numberOfArgs(2).desc("Erzeugt ein Sequenzdiagramm.").build();
-	options.addOption(seqDiag);*/
-	
 	// Erstelle SeqenceDiagramm
 	Option seqDiag = Option.builder() 
 		.longOpt("cs").argName("Klasse, Methode").hasArg().valueSeparator(',').numberOfArgs(2).desc("Erzeugt ein Sequenzdiagramm.")
@@ -109,8 +104,15 @@ public class Console extends PUMLgenerator
 		.longOpt("i").argName("filepath").hasArg().valueSeparator(';').numberOfArgs(Option.UNLIMITED_VALUES)
 		.desc("Angabe der zu verarbeitenden Pfade, durch ; getrennt").build();
 	options.addOption(input);
+	
+	//Skalierung
+	Option scale = Option.builder()
+			.longOpt("scale").argName("Breite, Hoehe").hasArgs().valueSeparator(',').numberOfArgs(2)
+			.type(Integer.class)
+			.desc("Skalierung b x h des Resultats").build();
+	options.addOption(scale);
 
-	// Parser
+	// Parsen
 	CommandLineParser commandParser = new DefaultParser();
 
 		try
@@ -170,7 +172,15 @@ public class Console extends PUMLgenerator
 				    if (cmd.hasOption("imeth")) //ignore methods in classdiagramm
 				    {
 				    	classDiagramGenerator.setShowMethods(false);
-				    } //Ende: Setter-Abfragen
+				    }
+				    if (cmd.hasOption("scale"))
+				    {
+				    	int width = Integer.parseInt(cmd.getOptionValues("scale")[0].replaceAll("\\s+", ""));
+				    	int height = Integer.parseInt(cmd.getOptionValues("scale")[1].replaceAll("\\s+", ""));
+				    	outputPUML.setScaleWidth(width);
+				    	outputPUML.setScaleHeight(height);
+				    }
+				    //Ende: Setter-Abfragen
 				    //Verarbeitung
 				    if (cmd.hasOption("i")) // Verarbeitung vieler zu verarbeitenden Pfade
 				    {
@@ -224,7 +234,7 @@ public class Console extends PUMLgenerator
 				    {
 				    	System.out.println("Es fehlt ein zu bearbeitender Pfad.");
 				    }
-				    }
+				}
 			    else
 			    {
 					myGUI_Swing = new GUI_Swing();

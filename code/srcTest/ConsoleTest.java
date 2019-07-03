@@ -1,3 +1,4 @@
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 import org.apache.commons.cli.ParseException;
 import org.junit.jupiter.api.Test;
@@ -49,5 +50,13 @@ class ConsoleTest
 		String [] options = {"-c","-ivar"};
 		PUMLgenerator.main(options);
 		assertFalse(PUMLgenerator.classDiagramGenerator.getShowVars());
+	}
+	@Test
+	void testSetWidthHeigth() throws ParseException
+	{
+		String [] options = {"-c", "-scale 1024,800"};
+		PUMLgenerator.main(options);
+		assertEquals(1024,PUMLgenerator.outputPUML.getScaleWidth());
+		assertEquals(800, PUMLgenerator.outputPUML.getScaleHeight());
 	}
 }
