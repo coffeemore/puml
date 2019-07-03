@@ -177,8 +177,15 @@ public class Console extends PUMLgenerator
 				    {
 				    	int width = Integer.parseInt(cmd.getOptionValues("scale")[0].replaceAll("\\s+", ""));
 				    	int height = Integer.parseInt(cmd.getOptionValues("scale")[1].replaceAll("\\s+", ""));
-				    	outputPUML.setScaleWidth(width);
-				    	outputPUML.setScaleHeight(height);
+				    	if (width > 4096 || height > 4096)
+				    	{
+				    		System.out.println("Skalierung zu hoch! (Max. 4096)\n...weiter mit Standard-Skalierung.");
+				    	}
+				    	else
+				    	{
+				    		outputPUML.setScaleWidth(width);
+					    	outputPUML.setScaleHeight(height);
+				    	}
 				    }
 				    //Ende: Setter-Abfragen
 				    //Verarbeitung
