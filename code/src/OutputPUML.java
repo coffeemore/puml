@@ -281,10 +281,11 @@ public class OutputPUML
 		    for (int a = 0; a < exlist.getLength(); a++)
 		    {
 		    	NodeList tempList;
+		    	pumlCode += "\"";
 		    	tempList = helper.getList(exlist.item(a), "to");
-		    	pumlCode += tempList.item(0).getTextContent() + " <|-- ";
+		    	pumlCode += tempList.item(0).getTextContent() + "\" <|-- \"";
 			    tempList = helper.getList(exlist.item(a), "from");
-		    	pumlCode += tempList.item(0).getTextContent() + "\n";
+		    	pumlCode += tempList.item(0).getTextContent() + "\"\n";
 		    }
 	
 		    // IMPLEMENTATIONS
@@ -292,10 +293,11 @@ public class OutputPUML
 		    for (int a = 0; a < implist.getLength(); a++)
 		    {
 		    	NodeList tempList;
+		    	pumlCode += "\"";
 		    	tempList = helper.getList(implist.item(a), "to");
-		    	pumlCode += tempList.item(0).getTextContent() + " <|-- ";
+		    	pumlCode += tempList.item(0).getTextContent() + "\" <|-- \"";
 			    tempList = helper.getList(implist.item(a), "from");
-		    	pumlCode += tempList.item(0).getTextContent() + "\n";
+		    	pumlCode += tempList.item(0).getTextContent() + "\"\n";
 		    }
 	
 		    // COMPOSITIONS
@@ -303,10 +305,11 @@ public class OutputPUML
 		    for (int a = 0; a < complist.getLength(); a++)
 		    {
 		    	NodeList tempList;
+		    	pumlCode += "\"";
 		    	tempList = helper.getList(complist.item(a), "to");
-		    	pumlCode += tempList.item(0).getTextContent() + " *-- ";
+		    	pumlCode += tempList.item(0).getTextContent() + "\" *-- \"";
 				tempList = helper.getList(complist.item(a), "from");
-			    pumlCode += tempList.item(0).getTextContent() + "\n";
+			    pumlCode += tempList.item(0).getTextContent() + "\"\n";
 		    }
 	
 		    // AGGREGATIONS
@@ -314,10 +317,11 @@ public class OutputPUML
 		    for (int a = 0; a < aglist.getLength(); a++)
 		    {
 		    	NodeList tempList;
+		    	pumlCode += "\"";
 		    	tempList = helper.getList(aglist.item(a), "to");
-				pumlCode += tempList.item(0).getTextContent() + " o-- ";
+				pumlCode += tempList.item(0).getTextContent() + "\" o-- \"";
 				tempList = helper.getList(aglist.item(a), "from");
-			    pumlCode += tempList.item(0).getTextContent() + "\n";
+			    pumlCode += tempList.item(0).getTextContent() + "\"\n";
 		    }
     	}
 	
