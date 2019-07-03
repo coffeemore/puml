@@ -64,7 +64,6 @@ class SequenceDiagramGeneratorTest
 	Document test = classUnderTest.createDiagram(source, "Class1", "method1");
 	Document seqDiagram = xmlHM.getDocumentFrom("..//code//testfolder//xmlSpecifications//SeqDiagram.xml");
 	boolean m = xmlHM.compareXML(seqDiagram, test);
-	xmlHM.writeDocumentToConsole(source);
 	assertTrue(m);
     }
 }

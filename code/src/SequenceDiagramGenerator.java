@@ -32,7 +32,7 @@ public class SequenceDiagramGenerator
      */
     public SequenceDiagramGenerator()
     {
-	
+
     }
 
     /**
@@ -54,9 +54,9 @@ public class SequenceDiagramGenerator
     {
 	calledMethodsList = new ArrayList<ArrayList<String>>();
 	classesWithMethodsList = new ArrayList<ArrayList<String>>();
-	
+
 	// neues Dokument, das seqDiagramm Informationen enthalten wird
-	
+
 	Document seqDiagram = xmlHM.createDocument();
 
 	Element root = seqDiagram.createElement("parsed");
@@ -90,7 +90,8 @@ public class SequenceDiagramGenerator
 	deleteUnusedClassesAndMethods(seqDiagram, epClass);
 
 	xmlHM.removeComments(root);
-	//seqDiagram = xmlHM.removeWhitespace(seqDiagram); fügt irgendwie mehr leerzeichen ein anstatt sie zu löschen
+	// seqDiagram = xmlHM.removeWhitespace(seqDiagram); fügt irgendwie mehr
+	// leerzeichen ein anstatt sie zu löschen
 
 	return seqDiagram;
     }
@@ -198,21 +199,73 @@ public class SequenceDiagramGenerator
 	    {
 		if (mchildnodes.item(j).getNodeName().equals("instance"))
 		{
-		    if (!xmlHM.hasChildwithName(xmlHM.getList(mchildnodes.item(j),"..").item(0), "class"))
+		    if (!xmlHM.hasChildwithName(xmlHM.getList(mchildnodes.item(j), "..").item(0), "class"))
 		    {
 			String iname = mchildnodes.item(j).getTextContent();
 			// wenn Instanz in InstanzenListe vorhanden
 			String cname = findClassofInstance(instanceList, iname);
-			if(!cname.isEmpty())
+			// leerer Klassenname -> unbekannte Instanz oder Aufruf statischer Methode
+			if (!cname.isEmpty())
 			{
 			    Node classTag = seqDiagram.createElement("class");
 			    classTag.setTextContent(cname);
 			    methodcalls.item(i).appendChild(classTag);
 			}
+			// unbekannte Instanz oder statischer Aufruf (Bsp: Class2.call2)
+			else
+			{
+			    if (isClass(instanceList, iname))
+			    {
+				cname = getClass(instanceList, iname);
+				 Node classTag = seqDiagram.createElement("class");
+				 classTag.setTextContent(cname);
+				 methodcalls.item(i).appendChild(classTag);
+				xmlHM.delNode(mchildnodes.item(j), false);
+			    }
+			}
 		    }
 		}
 	    }
 	}
+    }
+    /**
+     * Funktion gibt Klassennnamen zurück
+     * 
+     * @param instanceList	Instanzenliste, die durchsucht wird 
+     * @param iname		Name der "instanz"
+     * @return			KLassenname oder "", wenn Name nicht enthalten ist
+     */
+    private String getClass(ArrayList<ArrayList<String>> instanceList, String iname)
+    {
+	for (int i = 0; i < instanceList.size(); i++)
+	{
+	    // es werden nur die Klassennamen betrachtet
+	    if (instanceList.get(i).get(0).equals(iname))
+	    {
+		String cname = instanceList.get(i).get(0);
+		return cname;
+	    }
+	}
+	return "";
+    }
+    /**
+     * Funktion zum Testen, ob der übergebene String ein Klassenname ist
+     * 
+     * @param instanceList	Instanzenliste, die durchsucht wird 
+     * @param iname		Name der "instanz"
+     * @return			true, wenn iname enthalten ist
+     */
+    private boolean isClass(ArrayList<ArrayList<String>> instanceList, String iname)
+    {
+	for (int i = 0; i < instanceList.size(); i++)
+	{
+	    // es werden nur die Klassennamen betrachtet
+	    if (instanceList.get(i).get(0).equals(iname))
+	    {
+		return true;
+	    }
+	}
+	return false;
     }
 
     /**
@@ -300,7 +353,7 @@ public class SequenceDiagramGenerator
 	    // es werden nur die Klassen betrachtet, die auch mindestens eine Instanz haben
 	    if (!(instanceList.get(i).size() == 1))
 	    {
-		for (int j = 0; j < instanceList.get(i).size(); j++)
+		for (int j = 1; j < instanceList.get(i).size(); j++)
 		{
 		    if (instanceList.get(i).get(j).equals(iname))
 		    {
@@ -336,7 +389,8 @@ public class SequenceDiagramGenerator
 	    }
 	} catch (Exception e)
 	{
-		PUMLgenerator.logger.getLog().warning("@SequenceDiagramGenerator/deleteInstancesNotInMethodcalls: "+e.toString());
+	    PUMLgenerator.logger.getLog()
+		    .warning("@SequenceDiagramGenerator/deleteInstancesNotInMethodcalls: " + e.toString());
 	}
 	return doc;
     }
@@ -378,7 +432,7 @@ public class SequenceDiagramGenerator
      * @param currentNode   - aktuell betrachteter Knoten
      * @param instanceName  - Name der lokalen Instanz
      * @param instanceClass - Name der Klasse der lokalen Instanz
-     * @throws XPathExpressionException 
+     * @throws XPathExpressionException
      */
 
     private void recursiveHandlelocalInstances(Document doc, Node currentNode, String instanceName,
