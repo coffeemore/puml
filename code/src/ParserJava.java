@@ -290,6 +290,14 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		    continue;
 		}
 		;
+		///// Nur zum debuggen////////////
+		compString = "entry.appendChild(document.createTextNode(tmpArray[i]));";
+		if (sourcec.startsWith(compString))
+		{
+		    // System.out.println("Debugger hier platzieren");
+		    PUMLgenerator.logger.getLog().warning("Debugger hier platzieren");
+		}
+		/////////////////////
 		// Entfernen von Zeilen-Kommentaren
 		compString = "//";
 
@@ -306,15 +314,6 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		    continue;
 		}
 		;
-		///// Nur zum debuggen////////////
-		compString = "else if";
-		if (sourcec.startsWith(compString))
-		{
-		    // System.out.println("Debugger hier platzieren");
-		    PUMLgenerator.logger.getLog().warning("Debugger hier platzieren");
-		}
-
-		/////////////////////
 
 		// Entfernen von Block-Kommentaren
 		compString = "/*";
@@ -351,7 +350,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		if (sourcec.startsWith(compString))
 		{
 		    sourcec = sourcec.substring(compString.length());
-		    sourcec = sourcec.trim();
+		    sourcec = deleteComments(sourcec);
 		    String[] nameArray = new String[3];
 		    nameArray[0] = "{";
 		    nameArray[1] = "extends";
@@ -379,7 +378,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		    if (sourcec.startsWith(compString))
 		    {
 			sourcec = sourcec.substring(compString.length());
-			sourcec = sourcec.trim();
+			sourcec = deleteComments(sourcec);
 			nameArray = new String[2];
 			nameArray[0] = "{";
 			nameArray[1] = "implements";
@@ -414,7 +413,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			// Lösung 1 compString = "{";
 			do
 			{
-			    sourcec = sourcec.trim();
+			    sourcec = deleteComments(sourcec);
 			    nameArray = new String[2];
 			    nameArray[0] = "{";
 			    nameArray[1] = ",";
@@ -457,7 +456,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		if (sourcec.startsWith(compString))
 		{
 		    sourcec = sourcec.substring(compString.length());
-		    sourcec = sourcec.trim();
+		    sourcec = deleteComments(sourcec);
 		    String[] nameArray = new String[2];
 		    nameArray[0] = "{";
 		    nameArray[1] = "extends";
@@ -493,7 +492,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		    if (sourcec.startsWith(compString))
 		    {
 			sourcec = sourcec.substring(compString.length());
-			sourcec = sourcec.trim();
+			sourcec = deleteComments(sourcec);
 			nameArray = new String[1];
 			nameArray[0] = "{";
 			res = goToTokenWithName(sourcec, nameArray);
@@ -578,7 +577,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 				    sourcec = ifRes.getSourceCode();
 				    // sourcec = sourcec.substring(1);
-				    sourcec = sourcec.trim();
+				    sourcec = deleteComments(sourcec);
 				    // TODO: if ohne geschweifte Klammern
 				    if (sourcec.charAt(0) == '{')
 				    {
@@ -608,7 +607,6 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 				    sourcec = catchRes.getSourceCode();
 				    sourcec = sourcec.trim();
-				    // TODO: if ohne geschweifte Klammern
 
 				    done = true;
 				    continue;
@@ -629,7 +627,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 				    sourcec = forRes.getSourceCode();
 				    sourcec = sourcec.substring(1);
-				    sourcec = sourcec.trim();
+				    sourcec = deleteComments(sourcec);
 
 				    // TODO: for ohne geschweifte Klammern
 				    if (sourcec.charAt(0) == '{')
@@ -676,7 +674,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 					    curNode.appendChild(whileLoopNode);
 					    sourcec = whileRes.getSourceCode();
 					    sourcec = sourcec.substring(1);
-					    sourcec = sourcec.trim();
+					    sourcec = deleteComments(sourcec);
 					    if (sourcec.charAt(0) == '{')
 					    {
 						sourcec = sourcec.substring(1);
@@ -702,7 +700,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 					curNode.appendChild(whileLoopNode);
 					sourcec = whileRes.getSourceCode();
 					sourcec = sourcec.substring(1);
-					sourcec = sourcec.trim();
+					sourcec = deleteComments(sourcec);
 					if (sourcec.charAt(0) == '{')
 					{
 					    sourcec = sourcec.substring(1);
@@ -734,7 +732,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				    sourcec = switchRes.getSourceCode();
 
 				    sourcec = sourcec.substring(1);
-				    sourcec = sourcec.trim();
+				    sourcec = deleteComments(sourcec);
 				    if (sourcec.charAt(0) == '{')
 				    {
 					sourcec = sourcec.substring(1);
@@ -822,6 +820,42 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 					sourcec.substring(1);
 					PUMLgenerator.logger.getLog().warning("Fehler bei Funktionsaufruf mit .");
 					// System.out.println("Fehler bei Funktionsaufruf mit .");
+				    }
+
+				    while (!done)
+				    {
+					sourcec = deleteComments(sourcec);
+					if (sourcec.charAt(0) == '.')
+					{
+					    sourcec = sourcec.substring(1);
+
+					    String[] moreMethodsNameArray = new String[1];
+					    nameArray[0] = "(";
+
+					    TokenResult moreMethodsRes = goToTokenWithName(sourcec, nameArray);
+					    sourcec = moreMethodsRes.getSourceCode();
+
+					    Element methodNode = document.createElement("method");
+					    methodNode.appendChild(document.createTextNode(moreMethodsRes.getData()));
+					    curNode.getLastChild().appendChild(methodNode);
+
+					    if (sourcec.charAt(0) == '(')
+					    {
+						TokenResult moreMethods = rBraceContent(sourcec);
+						sourcec = moreMethods.getSourceCode();
+					    }
+					    else
+					    {
+						PUMLgenerator.logger.getLog()
+							.warning("Fehler bei Funktionsaufruf mit .");
+						// System.out.println("Fehler bei Funktionsaufruf mit .");
+					    }
+
+					}
+					else
+					{
+					    done = true;
+					}
 				    }
 
 				    continue;
@@ -955,7 +989,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 					methoddefinitionNode.appendChild(resultNode);
 
 				    }
-				    sourcec = sourcec.trim();
+				    sourcec = deleteComments(sourcec);
 				    if (sourcec.substring(0, 6).equals("throws"))
 				    {
 					while (!(sourcec.charAt(0) == '{'))
@@ -982,7 +1016,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				nameArrayFD[0] = "{";
 				TokenResult resFD = goToTokenWithName(sourcec, nameArrayFD);
 				String functionDataFD = resFD.getData().strip();
-
+				// finden des Bugs beim rausspringen hier
 				if ((prefixRBrace[0].equals("public") || prefixRBrace[0].equals("private")
 					|| prefixRBrace[0].equals("protected")) && !prefixRBrace[1].equals("class"))
 				// rausgenommen, weil manche Deklarationen keinen Koerper haben
@@ -1040,7 +1074,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				    resultNode.appendChild(document.createTextNode(prefixRBrace[1]));
 				    methoddefinitionNode.appendChild(resultNode);
 
-				    sourcec = sourcec.trim();
+				    sourcec = deleteComments(sourcec);
 
 				    if (sourcec.substring(0, 6).equals("throws"))
 				    {
@@ -1125,7 +1159,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				    resultNode.appendChild(document.createTextNode(prefixRBrace[2]));
 				    methoddefinitionNode1.appendChild(resultNode);
 
-				    sourcec = sourcec.trim();
+				    sourcec = deleteComments(sourcec);
 				    if (sourcec.charAt(0) == '{')
 				    {
 					sourcec = sourcec.substring(1);
@@ -1439,7 +1473,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			sourcec = ifRes.getSourceCode();
 
 			// sourcec = sourcec.substring(1);
-			sourcec = sourcec.trim();
+			sourcec = deleteComments(sourcec);
 			if (sourcec.charAt(0) == '{')
 			{
 			    sourcec = sourcec.substring(1);
@@ -1465,7 +1499,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			ifCaseNode.appendChild(ifConditionNode);
 
 			ifConditionNode.appendChild(document.createTextNode(compString));
-			sourcec = sourcec.trim();
+
+			sourcec = deleteComments(sourcec);
 
 			if (sourcec.charAt(0) == '{')
 			{
@@ -1508,7 +1543,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			doWhileConditionNode.appendChild(document.createTextNode("do"));
 			curNode.appendChild(doWhileLoopNode);
 
-			sourcec = sourcec.trim();
+			sourcec = deleteComments(sourcec);
 			if (sourcec.charAt(0) == '{')
 			{
 			    sourcec = sourcec.substring(1);
@@ -1702,6 +1737,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 			    instanceMainNode.appendChild(instanceNameNode);
 			    instanceMainNode.appendChild(instanceClassNode);
 			    curNode.appendChild(instanceMainNode);
+
 			}
 			sourcec = varRes.getSourceCode();
 			continue;
@@ -1892,6 +1928,48 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 	// System.out.println(curNode.getNodeName() + " " + curNode.getTextContent());
     }
 
+    private String deleteComments(String sourcec)
+    {
+	// TODO Auto-generated method stub
+
+	// Entfernen von Zeilen-Kommentaren
+	boolean foundComment = true;
+	while (foundComment)
+	{
+	    foundComment = false;
+	    sourcec = sourcec.trim();
+	    String compString = "//";
+	    if (sourcec.startsWith(compString))
+	    {
+		TokenResult res;
+		sourcec = sourcec.substring(compString.length());
+		String[] nameArray = new String[1];
+		nameArray[0] = "\n";
+		res = goToTokenWithName(sourcec, nameArray);
+		sourcec = res.getSourceCode();
+		foundComment = true;
+	    }
+	    ;
+
+	    // Entfernen von Block-Kommentaren
+	    compString = "/*";
+	    if (sourcec.startsWith(compString))
+	    {
+		TokenResult res;
+		sourcec = sourcec.substring(compString.length());
+		sourcec = sourcec.trim();
+		String[] nameArray = new String[1];
+		nameArray[0] = "*/";
+		res = goToTokenWithName(sourcec, nameArray);
+		sourcec = res.getSourceCode();
+		foundComment = true;
+	    }
+	    ;
+	}
+
+	return sourcec;
+    }
+
     /**
      * Liest den uebergebenen Quellcode ein und parsed die Informationen daraus
      *
@@ -1946,6 +2024,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 	try
 	{
 	    buildTree(sourceCode.get(0));
+	
 	}
 	catch (ParserConfigurationException e)
 	{
