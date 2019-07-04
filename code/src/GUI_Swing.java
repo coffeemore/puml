@@ -4,6 +4,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -50,8 +55,6 @@ import org.xml.sax.SAXException;
 
 import javax.swing.JFileChooser;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
 import java.awt.Color;
@@ -101,8 +104,17 @@ public class GUI_Swing
 	private JRadioButtonMenuItem rdbtnmntmCpp;
 	private JPanel pnlSeqPrevButton;
 	private FileNameExtensionFilter filter;
+	private JMenu mnOpenOptions;
+	private JMenu mnClassDiagramm;
+	private JCheckBoxMenuItem chckbxmntmShowMethods;
+	private JCheckBoxMenuItem chckbxmntmShowVars;
+	private JCheckBoxMenuItem chckbxmntmShowInstances;
+	private JMenuItem mntmNew;
 
 	private ArrayList<String> paths;
+	private ArrayList<File> classImages;
+	private ArrayList<File> seqImages;
+	private File tmpDir;
 	private int lastPathsLength;
 	private ArrayList<String> srcCode;
 	private String mode;
@@ -112,32 +124,21 @@ public class GUI_Swing
 	private String epMethod;
 	private boolean useJava;
 	private boolean useJar;
-	private File tmpClassImage;
-	private File tmpSeqImage;
+	private boolean showMethods;
+	private boolean showVars;
+	private boolean showInstances;
+	private boolean newClassDiagram;
+	private boolean newSeqDiagram;
 	private Document parsedDoc;
 	private ParserIf parser;
+	
 
 	/**
 	 * Launch the application.
 	 */
 	public static void showGUI()
 	{
-		EventQueue.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				try
-				{
-					GUI_Swing window = new GUI_Swing();
-					window.frame.setVisible(true);
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-					PUMLgenerator.logger.getLog().warning("@GUI_Swing/showGUI: " + e.toString());
-				}
-			}
-		});
+
 	}
 
 	/**
@@ -145,7 +146,24 @@ public class GUI_Swing
 	 */
 	public GUI_Swing()
 	{
-		initialize();
+		EventQueue.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				try
+				{
+					initialize();
+					frame.setVisible(true);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(frame, "Fehler!\n" + e.toString(), "Fehler",
+							JOptionPane.ERROR_MESSAGE);
+					PUMLgenerator.logger.getLog().warning("@GUI_Swing/GUI_Swing: " + e.toString());
+				}
+			}
+		});
 	}
 
 	/**
@@ -155,13 +173,33 @@ public class GUI_Swing
 	{
 		parser = new ParserJava();
 		PUMLgenerator.logger.startLoggingConsole(true);
-
-		paths = new ArrayList<String>();
+		paths = new ArrayList<>();
+		classImages = new ArrayList<>();
+		seqImages = new ArrayList<>();
+		tmpDir = new File(System.getProperty("user.dir"), "temp");
+		try
+		{
+			if (tmpDir.exists())
+			{
+				Path path = Paths.get(System.getProperty("user.dir"), "temp");
+				deleteDirectoryRecursion(path);
+			}
+		}
+		catch (IOException e2)
+		{
+			JOptionPane.showMessageDialog(frame, "Fehler!\n" + e2.toString(), "Fehler", JOptionPane.ERROR_MESSAGE);
+			e2.printStackTrace();
+		}
 		lastPathsLength = 0;
 		useJava = true;
 		useJar = false;
-		tmpClassImage = new File(System.getProperty("user.dir"), "tmpClass.png");
-		tmpSeqImage = new File(System.getProperty("user.dir"), "tmpSeq.png");
+		showMethods = false;
+		showVars = false;
+		showInstances = false;
+
+		newClassDiagram = true;
+		newSeqDiagram = true;
+
 		epClass = "nicht gesetzt";
 		epMethod = "nicht gesetzt";
 
@@ -171,22 +209,6 @@ public class GUI_Swing
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("PUML - no files selected");
 		frame.setMinimumSize(new Dimension(640, 480));
-		frame.addWindowListener(new WindowAdapter()
-		{
-			@Override
-			public void windowClosing(WindowEvent e)
-			{
-				// TODO Auto-generated method stub
-//				System.out.println("EXIT");
-				if(tmpClassImage.exists()) {
-					tmpClassImage.delete();
-				}
-				if(tmpSeqImage.exists()) {
-					tmpSeqImage.delete();
-				}
-				super.windowClosing(e);
-			}
-		});
 
 		fDialog = new JFileChooser(new File("."));
 		filter = new FileNameExtensionFilter("Java Code (.jar, .java)", "java", "jar");
@@ -206,6 +228,16 @@ public class GUI_Swing
 				openFile(true);
 			}
 		});
+
+		mntmNew = new JMenuItem("Neu / Reset");
+		mntmNew.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				resetElements();
+			}
+		});
+		mnDatei.add(mntmNew);
 		mnDatei.add(mntmAddFile);
 
 		mntmAddDir = new JMenuItem("Ordner hinzuf\u00FCgen");
@@ -244,7 +276,11 @@ public class GUI_Swing
 		mnOptions = new JMenu("Optionen");
 		menuBar.add(mnOptions);
 
+		mnOpenOptions = new JMenu("Öffnen");
+		mnOptions.add(mnOpenOptions);
+
 		chckbxmntmUseJava = new JCheckBoxMenuItem("Java-Dateien verwenden");
+		mnOpenOptions.add(chckbxmntmUseJava);
 		chckbxmntmUseJava.setSelected(useJava);
 		chckbxmntmUseJava.addActionListener(new ActionListener()
 		{
@@ -260,9 +296,9 @@ public class GUI_Swing
 				}
 			}
 		});
-		mnOptions.add(chckbxmntmUseJava);
 
 		chckbxmntmUseJar = new JCheckBoxMenuItem("Jar-Dateien verwenden");
+		mnOpenOptions.add(chckbxmntmUseJar);
 		chckbxmntmUseJar.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -278,7 +314,6 @@ public class GUI_Swing
 			}
 		});
 		chckbxmntmUseJar.setSelected(useJar);
-		mnOptions.add(chckbxmntmUseJar);
 
 		mnModus = new JMenu("Modus");
 		mnOptions.add(mnModus);
@@ -314,6 +349,66 @@ public class GUI_Swing
 		bgMode.add(rdbtnmntmJava);
 		bgMode.add(rdbtnmntmCpp);
 
+		mnClassDiagramm = new JMenu("Klassendiagramm");
+		mnOptions.add(mnClassDiagramm);
+
+		chckbxmntmShowMethods = new JCheckBoxMenuItem("Methoden anzeigen");
+		chckbxmntmShowMethods.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if (chckbxmntmShowMethods.isSelected())
+				{
+					showMethods = true;
+				}
+				else
+				{
+					showMethods = false;
+				}
+				newClassDiagram = true;
+			}
+		});
+		mnClassDiagramm.add(chckbxmntmShowMethods);
+		chckbxmntmShowMethods.setSelected(showMethods);
+
+		chckbxmntmShowVars = new JCheckBoxMenuItem("Variablen anzeigen");
+		chckbxmntmShowVars.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if (chckbxmntmShowVars.isSelected())
+				{
+					showVars = true;
+				}
+				else
+				{
+					showVars = false;
+				}
+				newClassDiagram = true;
+			}
+		});
+		mnClassDiagramm.add(chckbxmntmShowVars);
+		chckbxmntmShowVars.setSelected(showVars);
+
+		chckbxmntmShowInstances = new JCheckBoxMenuItem("Instanzen anzeigen");
+		chckbxmntmShowInstances.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if (chckbxmntmShowInstances.isSelected())
+				{
+					showInstances = true;
+				}
+				else
+				{
+					showInstances = false;
+				}
+				newClassDiagram = true;
+			}
+		});
+		mnClassDiagramm.add(chckbxmntmShowInstances);
+		chckbxmntmShowInstances.setSelected(showInstances);
+
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 
@@ -336,8 +431,16 @@ public class GUI_Swing
 				}
 				else
 				{
-
-					showPreview(tmpClassImage, "Klassendiagramm");
+//					System.out.println(newClassDiagram);
+					if (newClassDiagram)
+					{
+						createClassDiagramm(parsedDoc);
+						newClassDiagram = false;
+					}
+					if (!classImages.isEmpty())
+					{
+						showPreview(classImages.get(classImages.size() - 1), "Klassendiagramm");
+					}
 				}
 			}
 		});
@@ -397,9 +500,17 @@ public class GUI_Swing
 				}
 				else
 				{
-					createSequenceDiagramm(parsedDoc);
+//					System.out.println(newSeqDiagram);
+					if (newSeqDiagram)
+					{
+						createSequenceDiagramm(parsedDoc);
+						newSeqDiagram = false;
+					}
 //					System.out.println(epClass + " " + epMethod);
-					showPreview(tmpSeqImage, "Sequenzdiagramm");
+					if (!seqImages.isEmpty())
+					{
+						showPreview(seqImages.get(seqImages.size() - 1), "Sequenzdiagramm");
+					}
 				}
 
 			}
@@ -440,6 +551,7 @@ public class GUI_Swing
 					epMethod = node.toString();
 					lblClass.setText("Klasse: " + epClass);
 					lblMethod.setText("Methode: " + epMethod);
+					newSeqDiagram = true;
 				}
 			}
 		});
@@ -483,8 +595,9 @@ public class GUI_Swing
 				}
 				catch (Exception e1)
 				{
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
+					JOptionPane.showMessageDialog(frame, "Fehler!\n" + e1.toString(), "Fehler",
+							JOptionPane.ERROR_MESSAGE);
 					PUMLgenerator.logger.getLog().warning("@GUI_Swing/initialize/btnTest: " + e1.toString());
 				}
 			}
@@ -505,6 +618,10 @@ public class GUI_Swing
 		seqPumlCode = "";
 		epClass = "nicht gesetzt";
 		epMethod = "nicht gesetzt";
+		newClassDiagram = true;
+		newSeqDiagram = true;
+		classImages = new ArrayList<>();
+		seqImages = new ArrayList<>();
 
 		DefaultTreeModel model = (DefaultTreeModel) treeSequence.getModel();
 		model.reload();
@@ -611,6 +728,7 @@ public class GUI_Swing
 		{
 			root.removeAllChildren();
 			NodeList nodelist = PUMLgenerator.xmlHelper.getList(doc, "//classdefinition");
+//			NodeList nodelist = PUMLgenerator.xmlHelper.getList(doc, "/source/classdefinition");
 //			System.out.println(nodelist.getLength() + " Klassen gefunden");
 			// classdefinition loop
 			for (int c = 0; c < nodelist.getLength(); c++)
@@ -618,7 +736,8 @@ public class GUI_Swing
 //				String className = nodelist.item(c).getFirstChild().getNextd().getTextContent();
 				String className = PUMLgenerator.xmlHelper.getList(nodelist.item(c), "./name[1]").item(0)
 						.getTextContent();
-				NodeList tmpNodelist = PUMLgenerator.xmlHelper.getList(nodelist.item(c), ".//methoddefinition");
+//				NodeList tmpNodelist = PUMLgenerator.xmlHelper.getList(nodelist.item(c), ".//methoddefinition");
+				NodeList tmpNodelist = PUMLgenerator.xmlHelper.getList(doc, "/source/classdefinition[name=\""+className+"\"]/methoddefinition");
 //				System.out.println(className + " mit " + tmpNodelist.getLength() + " Methoden gefunden");
 				PumlTreeNode tmpClassNode = new PumlTreeNode(className, PumlTreeNode.Type.CLASS);
 				root.add(tmpClassNode);
@@ -633,8 +752,9 @@ public class GUI_Swing
 		}
 		catch (XPathExpressionException e)
 		{
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(frame, "Fehler!\n" + e.toString(), "Fehler", JOptionPane.ERROR_MESSAGE);
 			PUMLgenerator.logger.getLog().warning("@GUI_Swing/createTree: " + e.toString());
 		}
 
@@ -645,6 +765,8 @@ public class GUI_Swing
 
 		try
 		{
+			newClassDiagram = true;
+			newSeqDiagram = true;
 			if (paths.isEmpty())
 			{
 				resetElements();
@@ -676,25 +798,23 @@ public class GUI_Swing
 				{
 					treeSequence.expandRow(i);
 				}
-
-				createClassDiagramm(parsedDoc);
 				treeSequence.expandRow(0);
 
 				if (paths.size() == 1)
 				{
-					frame.setTitle("PUML - ready - " + paths.size() + " file selected");
+					frame.setTitle("PUML - bereit - " + paths.size() + " Datei ausgewählt");
 				}
 				else
 				{
-					frame.setTitle("PUML - ready - " + paths.size() + " files selected");
+					frame.setTitle("PUML - bereit - " + paths.size() + " Dateien ausgewählt");
 				}
 			}
 
 		}
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(frame, "Fehler!\n" + e.toString(), "Fehler", JOptionPane.ERROR_MESSAGE);
 			PUMLgenerator.logger.getLog().warning("@GUI_Swing/runPUML: " + e.toString());
 		}
 	}
@@ -704,16 +824,26 @@ public class GUI_Swing
 		// Klassendiagramm erstellen
 		try
 		{
-			Document classDoc = PUMLgenerator.classDiagramGenerator.createDiagram(parsedDoc);
+			PUMLgenerator.classDiagramGenerator.setShowMethods(showMethods);
+			PUMLgenerator.classDiagramGenerator.setShowVars(showVars);
+			PUMLgenerator.classDiagramGenerator.setShowInstances(showInstances);
+
+			Document clonedDoc = PUMLgenerator.xmlHelper.createDocument();
+			clonedDoc.appendChild(clonedDoc.importNode(parsedDoc.getDocumentElement(), true));
+			Document classDoc = PUMLgenerator.classDiagramGenerator.createDiagram(clonedDoc);
 //			saveDoc(classDoc, "testClass.xml");
 			classPumlCode = PUMLgenerator.outputPUML.getPUML(classDoc);
 			textClass.setText(classPumlCode);
-			PUMLgenerator.outputPUML.createPUMLfromString(tmpClassImage.getAbsolutePath(), classPumlCode);
+			tmpDir.mkdir();
+			Path classPath = Paths.get(System.getProperty("user.dir"), "temp", "class" + classImages.size() + ".png");
+			PUMLgenerator.outputPUML.createPUMLfromString(classPath.toString(), classPumlCode);
+			classImages.add(new File(classPath.toString()));
+			classImages.get(classImages.size() - 1).deleteOnExit();
 		}
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(frame, "Fehler!\n" + e.toString(), "Fehler", JOptionPane.ERROR_MESSAGE);
 			PUMLgenerator.logger.getLog().warning("@GUI_Swing/createClassDiagramm: " + e.toString());
 		}
 
@@ -724,16 +854,22 @@ public class GUI_Swing
 		// Sequenzdiagramm erstellen
 		try
 		{
-			Document seqDoc = PUMLgenerator.seqDiagramGenerator.createDiagram(parsedDoc, epClass, epMethod);
+			Document clonedDoc = PUMLgenerator.xmlHelper.createDocument();
+			clonedDoc.appendChild(clonedDoc.importNode(parsedDoc.getDocumentElement(), true));
+			Document seqDoc = PUMLgenerator.seqDiagramGenerator.createDiagram(clonedDoc, epClass, epMethod);
 //			saveDoc(seqDoc, "testSequence.xml");
 			seqPumlCode = PUMLgenerator.outputPUML.getPUML(seqDoc);
 			textSequence.setText(seqPumlCode);
-			PUMLgenerator.outputPUML.createPUMLfromString(tmpSeqImage.getAbsolutePath(), seqPumlCode);
+			tmpDir.mkdir();
+			Path seqPath = Paths.get(System.getProperty("user.dir"), "temp", "sequence" + seqImages.size() + ".png");
+			PUMLgenerator.outputPUML.createPUMLfromString(seqPath.toString(), seqPumlCode);
+			seqImages.add(new File(seqPath.toString()));
+			seqImages.get(seqImages.size() - 1).deleteOnExit();
 		}
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(frame, "Fehler!\n" + e.toString(), "Fehler", JOptionPane.ERROR_MESSAGE);
 			PUMLgenerator.logger.getLog().warning("@GUI_Swing/createSequenceDiagramm: " + e.toString());
 		}
 
@@ -748,7 +884,6 @@ public class GUI_Swing
 
 	private void saveOutput(File tmpImage)
 	{
-		// TODO an Unterteilung (Sequenz/Klassen) anpassen
 		File save;
 		fDialog.setFileFilter(new FileNameExtensionFilter("Image File (.png)", "png"));
 		if (fDialog.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION)
@@ -761,6 +896,7 @@ public class GUI_Swing
 			catch (IOException e)
 			{
 				e.printStackTrace();
+				JOptionPane.showMessageDialog(frame, "Fehler!\n" + e.toString(), "Fehler", JOptionPane.ERROR_MESSAGE);
 				JOptionPane.showMessageDialog(frame, "Ein-/Ausgabe-Fehler", "Fehler", JOptionPane.ERROR_MESSAGE);
 			}
 		}
@@ -776,8 +912,11 @@ public class GUI_Swing
 		inChannel = new FileInputStream(in).getChannel();
 		outChannel = new FileOutputStream(out).getChannel();
 		inChannel.transferTo(0, inChannel.size(), outChannel);
+		inChannel.close();
+		outChannel.close();
 	}
 
+	@SuppressWarnings("unused")
 	private void saveDoc(Document doc, String filePath) throws TransformerException
 	{
 		// XML output test
@@ -788,7 +927,7 @@ public class GUI_Swing
 		StreamResult streamResult = new StreamResult(new File(filePath));
 		transformer.transform(domSource, streamResult);
 	}
-
+	
 	private static class PumlTreeNode extends DefaultMutableTreeNode
 	{
 		private static final long serialVersionUID = 1L;
@@ -810,6 +949,21 @@ public class GUI_Swing
 		{
 			return type;
 		}
+	}
+
+	void deleteDirectoryRecursion(Path path) throws IOException
+	{
+		if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS))
+		{
+			try (DirectoryStream<Path> entries = Files.newDirectoryStream(path))
+			{
+				for (Path entry : entries)
+				{
+					deleteDirectoryRecursion(entry);
+				}
+			}
+		}
+		Files.delete(path);
 	}
 
 	private class PathEditorPanel extends JPanel
