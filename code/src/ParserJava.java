@@ -533,13 +533,13 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		    String functionData = res1.getData().strip();
 		    functionData = functionData.replaceAll("\n", " ");
 		    functionData = functionData.replaceAll(" +", " ");
-		    
-		    // testen ob leerer Methodcall bei cast verschwindet zB (Dokument) 
-		    if(functionData.isEmpty()) {
+
+		    // testen ob leerer Methodcall bei cast verschwindet zB (Dokument)
+		    if (functionData.isEmpty())
+		    {
 			TokenResult emptyWordRes = rBraceContent(sourcec);
 			sourcec = emptyWordRes.getSourceCode().substring(1);
 		    }
-		    
 
 		    if (!(functionData.contains("{") || functionData.contains(";") || functionData.contains("\"")
 			    || functionData.contains("}")
@@ -1968,7 +1968,8 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		String[] nameArray = new String[1];
 		nameArray[0] = "\n";
 		res = goToTokenWithName(sourcec, nameArray);
-		sourcec = res.getSourceCode().substring(2);
+		sourcec = res.getSourceCode();
+		// .substring(2);
 		foundComment = true;
 	    }
 	    ;
