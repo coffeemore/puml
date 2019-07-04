@@ -1,4 +1,3 @@
-
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.parsers.ParserConfigurationException;
@@ -54,6 +53,9 @@ public class SequenceDiagramGenerator
     {
 	calledMethodsList = new ArrayList<ArrayList<String>>();
 	classesWithMethodsList = new ArrayList<ArrayList<String>>();
+	calledMethodsList = new ArrayList<ArrayList<String>>();
+	classesWithMethodsList = new ArrayList<ArrayList<String>>();
+
 
 	// neues Dokument, das seqDiagramm Informationen enthalten wird
 
