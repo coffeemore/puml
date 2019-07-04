@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 
 class GesamtTest
 {
+    Boolean classDFlag = false;
+    Boolean seqDFlag = false;
     private PUMLgenerator testClass;
 /*
     @AfterEach
@@ -34,6 +36,7 @@ class GesamtTest
     @Test
     void testSQ() throws IOException, ParseException
     {
+	seqDFlag = true;
 	testClass = new PUMLgenerator();
 	//ARGS : -c -ijar -ct -cs Class1,method1  - -i testfolder/xmlSpecifications/sources/java/Class1.java -o testfolder/xmlSpecifications
 	String[] specification = {
@@ -73,6 +76,7 @@ class GesamtTest
     @Test
     void testCD() throws IOException, ParseException
     {
+	classDFlag = true;
 	testClass = new PUMLgenerator();
 	//ARGS : -c -ijar -ct -cs Class1,method1  - -i testfolder/xmlSpecifications/sources/java/Class1.java -o testfolder/xmlSpecifications
 	String[] specification = {
@@ -82,7 +86,7 @@ class GesamtTest
 		"-cc" ,
 		//"Class1,method1",
 		"--i",
-		"testfolder/xmlSpecifications/sources/java/Class1.java" ,
+		"testfolder/xmlSpecifications/sources/java/" ,
 		"-o", //erstellt Ordener, wenn nicht vorhanden??
 		"testfolder/tempData/CD"
 		
@@ -111,14 +115,16 @@ class GesamtTest
     @AfterEach
 	void compareTextFile () throws IOException
 	{
-	String expectedPath = "testfolder/xmlSpecifications/SeqDiagram.txt";
-	String actualPath = ""; //init
-	File actualFileCD = new File("testfolder/tempData/CDoutPUML_Code");
-	File actualFileSQ = new File("testfolder/tempData/SQoutPUML_Code");
-	if(actualFileCD.exists() && !actualFileCD.isDirectory()) { 
+	String expectedPath = "";
+	String actualPath = "";  //init
+	if(classDFlag) { 
 	    actualPath = "testfolder/tempData/CDoutPUML_Code";
-	} else if(actualFileSQ.exists() && !actualFileSQ.isDirectory()) {
+	    expectedPath = "testfolder/xmlSpecifications/ClassDiagram.txt";
+	    classDFlag = false;
+	} else if(seqDFlag) {
 	    actualPath = "testfolder/tempData/SQoutPUML_Code";
+	    expectedPath = "testfolder/xmlSpecifications/SeqDiagram.txt";
+	    seqDFlag = false;
 	} else {
 	    System.out.println("Output Files not found");
 	    assertTrue(false);
