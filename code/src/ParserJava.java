@@ -1583,7 +1583,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 //		    curNode = (Element) curNode.getParentNode();
 		    curNode = (Element) getList(curNode, "..").item(0);
 		    sourcec = sourcec.trim();
-		    if (curNode.getFirstChild().getTextContent().equals("else"))
+		    if (curNode.getLastChild().getFirstChild().getTextContent().equals("else"))
 		    {
 //			curNode = (Element) curNode.getParentNode();
 			curNode = (Element) getList(curNode, "..").item(0);
@@ -1959,7 +1959,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		String[] nameArray = new String[1];
 		nameArray[0] = "\n";
 		res = goToTokenWithName(sourcec, nameArray);
-		sourcec = res.getSourceCode();
+		sourcec = res.getSourceCode().substring(2);
 		foundComment = true;
 	    }
 	    ;
