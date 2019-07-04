@@ -1816,6 +1816,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 	    }
 	    catch (StringIndexOutOfBoundsException e)
 	    {
+		
 		PUMLgenerator.logger.getLog().warning("@ParserJava: " + e.toString());
 		// System.out.println(e.getCause());
 		boolean sourceEnd = true;
@@ -1843,9 +1844,11 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 	    }
 	    catch (java.lang.ClassCastException e)
-	    {
+	    {	
+		String pos="";
+		if(sourcec.length()>10) pos=sourcec.substring(0,10); else pos=sourcec;
 		PUMLgenerator.logger.getLog().warning("@ParserJava: Fehler in der While: " + e.toString()
-			+ " bei Position: " + sourcec.substring(0, 10));
+			+ " bei Position: " + pos);
 		// System.out.println("Fehler in der While: " + e.toString());
 		// System.out.println("Bei Position: " + sourcec.substring(0, 10));
 
@@ -1858,8 +1861,10 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 	    }
 	    catch (Exception e)
 	    {
+		String pos="";
+		if(sourcec.length()>10) pos=sourcec.substring(0,10); else pos=sourcec;
 		PUMLgenerator.logger.getLog().warning("@ParserJava: Fehler in der While: " + e.toString()
-			+ " bei Position: " + sourcec.substring(0, 10));
+			+ " bei Position: " + pos);
 		// System.out.println("Fehler in der While: " + e.toString());
 		// System.out.println("Bei Position: " + sourcec.substring(0, 10));
 
