@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<parsed>
+	<sequencediagram>
+		<classes>
+			<entry>Class5</entry>
+			<entry>Class3</entry>
+			<entry>Class2</entry>
+			<entry>Class4</entry>
+			<entry>Class1</entry>
+		</classes>
+
+		<entrypoint>
+			<class>Class1</class>
+			<method>method1</method>
+		</entrypoint>
+	</sequencediagram>
+</parsed>

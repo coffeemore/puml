@@ -56,7 +56,6 @@ public class SequenceDiagramGenerator
 	calledMethodsList = new ArrayList<ArrayList<String>>();
 	classesWithMethodsList = new ArrayList<ArrayList<String>>();
 
-
 	// neues Dokument, das seqDiagramm Informationen enthalten wird
 
 	Document seqDiagram = xmlHM.createDocument();
@@ -68,6 +67,7 @@ public class SequenceDiagramGenerator
 
 	createList(parsedData, classesWithMethodsList);
 	listClasses(parsedData, seqDiagram, seq);
+	seqDiagram = sortClasses(seqDiagram, epClass);
 
 	Element entrypoint = seqDiagram.createElement("entrypoint");
 	seq.appendChild(entrypoint);
@@ -96,6 +96,34 @@ public class SequenceDiagramGenerator
 	// leerzeichen ein anstatt sie zu löschen
 
 	return seqDiagram;
+    }
+
+    Document sortClasses(Document seqDiagram, String epClass) throws XPathExpressionException
+    {
+	// TODO Auto-generated method stub
+	Node eclass = getEPClassNode(seqDiagram, epClass);
+	Node parent = xmlHM.getList(seqDiagram, "/parsed/sequencediagram/classes").item(0);
+	NodeList childs = xmlHM.getList(parent, "child::*");
+	System.out.println(childs.item(0).getTextContent());
+	System.out.println(parent.getNodeName());
+	if (!childs.item(0).equals(eclass)) {
+	   parent.insertBefore(eclass, childs.item(0));
+	}
+	
+	return seqDiagram;
+    }
+
+    private Node getEPClassNode(Document seqDiagram, String epClass) throws XPathExpressionException
+    {
+	// TODO Auto-generated method stub
+	NodeList listed = xmlHM.getList(seqDiagram, "/parsed/sequencediagram/classes/entry");
+	for (int i = 0; i < listed.getLength(); i++)
+	{
+	   if (listed.item(i).getTextContent().equals(epClass)) {
+	       return listed.item(i);
+	   }
+	}
+	return null;
     }
 
     /**
@@ -219,9 +247,9 @@ public class SequenceDiagramGenerator
 			    if (isClass(instanceList, iname))
 			    {
 				cname = getClass(instanceList, iname);
-				 Node classTag = seqDiagram.createElement("class");
-				 classTag.setTextContent(cname);
-				 methodcalls.item(i).appendChild(classTag);
+				Node classTag = seqDiagram.createElement("class");
+				classTag.setTextContent(cname);
+				methodcalls.item(i).appendChild(classTag);
 				xmlHM.delNode(mchildnodes.item(j), false);
 			    }
 			}
@@ -230,12 +258,13 @@ public class SequenceDiagramGenerator
 	    }
 	}
     }
+
     /**
      * Funktion gibt Klassennnamen zurück
      * 
-     * @param instanceList	Instanzenliste, die durchsucht wird 
-     * @param iname		Name der "instanz"
-     * @return			KLassenname oder "", wenn Name nicht enthalten ist
+     * @param instanceList Instanzenliste, die durchsucht wird
+     * @param iname        Name der "instanz"
+     * @return KLassenname oder "", wenn Name nicht enthalten ist
      */
     private String getClass(ArrayList<ArrayList<String>> instanceList, String iname)
     {
@@ -250,12 +279,13 @@ public class SequenceDiagramGenerator
 	}
 	return "";
     }
+
     /**
      * Funktion zum Testen, ob der übergebene String ein Klassenname ist
      * 
-     * @param instanceList	Instanzenliste, die durchsucht wird 
-     * @param iname		Name der "instanz"
-     * @return			true, wenn iname enthalten ist
+     * @param instanceList Instanzenliste, die durchsucht wird
+     * @param iname        Name der "instanz"
+     * @return true, wenn iname enthalten ist
      */
     private boolean isClass(ArrayList<ArrayList<String>> instanceList, String iname)
     {
