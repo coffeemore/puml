@@ -9,7 +9,6 @@
 			<entry>Class4</entry>
 			<entry>Class1</entry>
 		</classes>
-
 		<entrypoint>
 			<class>Class1</class>
 			<method>method1</method>

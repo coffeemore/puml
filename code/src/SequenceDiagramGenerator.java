@@ -1,5 +1,7 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
@@ -98,18 +100,24 @@ public class SequenceDiagramGenerator
 	return seqDiagram;
     }
 
+    /**
+     *  Funktion sortiert die Klassen-Knoten im SeqDia-xml: zuerst entrypoint, dann der Rest 
+     * @param seqDiagram
+     * @param epClass
+     * @return
+     * @throws XPathExpressionException
+     */
     Document sortClasses(Document seqDiagram, String epClass) throws XPathExpressionException
     {
-	// TODO Auto-generated method stub
+	
 	Node eclass = getEPClassNode(seqDiagram, epClass);
 	Node parent = xmlHM.getList(seqDiagram, "/parsed/sequencediagram/classes").item(0);
 	NodeList childs = xmlHM.getList(parent, "child::*");
-	System.out.println(childs.item(0).getTextContent());
-	System.out.println(parent.getNodeName());
-	if (!childs.item(0).equals(eclass)) {
-	   parent.insertBefore(eclass, childs.item(0));
+	if (!childs.item(0).equals(eclass))
+	{
+	    parent.insertBefore(eclass, childs.item(0));
 	}
-	
+	seqDiagram = sortNodes(seqDiagram, parent);
 	return seqDiagram;
     }
 
@@ -119,11 +127,49 @@ public class SequenceDiagramGenerator
 	NodeList listed = xmlHM.getList(seqDiagram, "/parsed/sequencediagram/classes/entry");
 	for (int i = 0; i < listed.getLength(); i++)
 	{
-	   if (listed.item(i).getTextContent().equals(epClass)) {
-	       return listed.item(i);
-	   }
+	    if (listed.item(i).getTextContent().equals(epClass))
+	    {
+		return listed.item(i);
+	    }
 	}
 	return null;
+    }
+/**
+ *  Die Kindknoten unter parent werden sortiert, dabei wird der erste Knoten außer Acht gelasse 
+ * @param doc		das Document, in dem sortiert wird
+ * @param parent	Elternknoten
+ * @return		Document 
+ * @throws XPathExpressionException
+ */
+    public Document sortNodes(Document doc, Node parent) throws XPathExpressionException
+    {
+
+	NodeList nodes = xmlHM.getList(parent, "child::*");
+
+	boolean sorted = false;
+	while (!sorted)
+	{
+	    sorted = true;
+	    for (int i = 1; i < nodes.getLength() - 1; i++)
+	    {
+		nodes = xmlHM.getList(parent, "child::*");
+
+		if (compare(nodes.item(i), nodes.item(i + 1)) > 0)
+		{
+		    parent.insertBefore(nodes.item(i + 1), nodes.item(i));
+		    sorted = false;
+		    nodes = xmlHM.getList(parent, "child::*");
+		}
+	    }
+	}
+
+	return doc;
+    }
+
+    public int compare(Node pl1, Node pl2)
+    {
+	return pl1.getTextContent().compareTo(pl2.getTextContent());
+
     }
 
     /**
