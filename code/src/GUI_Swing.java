@@ -643,6 +643,10 @@ public class GUI_Swing
 			chckbxmntmUseJava.setEnabled(true);
 			chckbxmntmUseJar.setEnabled(true);
 			parser = new ParserJava();
+			PUMLgenerator.codeCollector.setUseCppAndHppFilesFiles(false);
+			PUMLgenerator.codeCollector.setUseJarFiles(useJar);
+			PUMLgenerator.codeCollector.setUseJavaFiles(useJava);
+			
 			resetElements();
 			break;
 		}
@@ -653,6 +657,9 @@ public class GUI_Swing
 //			System.out.println("mode = c++");
 			chckbxmntmUseJava.setEnabled(false);
 			chckbxmntmUseJar.setEnabled(false);
+			PUMLgenerator.codeCollector.setUseCppAndHppFilesFiles(true);
+			PUMLgenerator.codeCollector.setUseJarFiles(false);
+			PUMLgenerator.codeCollector.setUseJavaFiles(false);
 			parser = new ParserCPP();
 			resetElements();
 			break;
