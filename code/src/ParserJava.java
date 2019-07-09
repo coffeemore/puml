@@ -208,18 +208,17 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 
 	}
 	source = source.trim();
-	return new TokenResult(foundNameIndex, part, source); // R�ckgabe welcher Token gefunden wurde und den Inhalt
+	return new TokenResult(foundNameIndex, part, source); // Rueckgabe welcher Token gefunden wurde und den Inhalt
 	// zwischen
 	// den Tokens (zB einen Klassennamen)
 
     }
 
     /**
-     * Entfernt Kommentare aus uebergebenem String
+     * Baut die XML-Struktur auf durch auslesen des Strings
      * 
-     * @param sourcece uebergebener String aus dem Kommentare entfernt werden
-     * @return XMl-Dokument
-     * @throws ParserConfigurationException
+     * @param sourcec uebergebener String 
+     * 
      */
     public void buildTree(String sourcec) throws ParserConfigurationException
     {
@@ -291,12 +290,12 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 		}
 		;
 		///// Nur zum debuggen////////////
-		compString = "while (!(sourceCode.charAt(i) == '*' && sourceCode.charAt(i + 1) == '/') && i < n)";
-		if (sourcec.startsWith(compString))
-		{
-		    // System.out.println("Debugger hier platzieren");
-		    PUMLgenerator.logger.getLog().warning("Debugger hier platzieren");
-		}
+//		compString = "while (!(sourceCode.charAt(i) == '*' && sourceCode.charAt(i + 1) == '/') && i < n)";
+//		if (sourcec.startsWith(compString))
+//		{
+//		    // System.out.println("Debugger hier platzieren");
+//		    PUMLgenerator.logger.getLog().warning("Debugger hier platzieren");
+//		}
 		/////////////////////
 		// Entfernen von Zeilen-Kommentaren
 		compString = "//";
@@ -868,7 +867,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 				    continue;
 				}
 			    case 2:
-				if (!prefixRBrace[0].contains(".") && !prefixRBrace[1].contains("."))
+				if (isWord(prefixRBrace[0]) && isWord(prefixRBrace[1]))
 				{
 				    Element methoddefinitionNode = document.createElement("methoddefinition");
 
@@ -1949,7 +1948,36 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
 	// System.out.println(document.getTextContent());
 	// System.out.println(curNode.getNodeName() + " " + curNode.getTextContent());
     }
-
+    /**
+     * Gibt zurueck, ob String ein gueltiges Wort ist
+     * 
+     * @param sourcec uebergebener String 
+     * @return boolean Antwort, ob gueltiges Wort
+     * 
+     */
+    private boolean isWord(String word)
+    {
+	boolean isClean = true;
+	//TODO: erweitern fuer mehrere unerlaubte Zeichen
+	String[] unallowedSyntax = {":",".","@","$","\\\\","'","\""};
+	String[] unallowedWords = {"if","else","do","while","for","case","return",};
+	for (String s : unallowedSyntax)
+	{
+	    if (word.contains(s)) isClean = false;
+	}
+	for (String s : unallowedWords)
+	{
+	    if (word.equals(s)) isClean = false;
+	}
+	return isClean;
+    }
+    /**
+     * Entfernt Kommentare aus uebergebenem String
+     * 
+     * @param sourcec uebergebener String aus dem Kommentare entfernt werden
+     * @return String ohne Kommentare
+     * 
+     */
     private String deleteComments(String sourcec)
     {
 	// TODO Auto-generated method stub
@@ -1997,6 +2025,7 @@ public class ParserJava extends XmlHelperMethods implements ParserIf
      * Liest den uebergebenen Quellcode ein und parsed die Informationen daraus
      *
      * @param sourceCode Vollstaendiger Java-Quellcode
+     * @throws ParserConfigurationException
      */
     public void parse(ArrayList<String> sourceCode)
     {
