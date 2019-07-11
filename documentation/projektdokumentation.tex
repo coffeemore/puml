@@ -469,13 +469,13 @@ Sonstige Konventionen:
 
 
 \nsecbegin{Dokumentation}
-
-\nsecbegin{Handbuch}
 \end{shownto} %{-, developer, manualDE}
 \begin{shownto}{-, developer}
+
+\nsecbegin{Handbuch}
 \nsecbegin{Kommandozeilenaufruf}
 Aufruf:\\
-PUMLgenerator [-c -i inputPathes -o outputPathes (-cc | -s | -int | -cs entryClass entryMethod) [-ijar, -ijava]]
+java -jar puml.jar [-c -i inputPathes -o outputPathes (-cc | -s | -int | -cs entryClass entryMethod) [-ijar, -ijava]]
 
 \begin{itemize}
 \item Wird das Programm ohne Parameter aufgerufen öffnet sich die grafische Oberfläche
@@ -489,7 +489,7 @@ PUMLgenerator [-c -i inputPathes -o outputPathes (-cc | -s | -int | -cs entryCla
 \end{itemize}
 \end{itemize}
 
-\begin{tabular}{|c|c|c|c|}
+\begin{tabular}{|c|c|c|p{5cm}|}
 \hline 
 Parameter & Übergabewerte & Info & Beschreibung \\ 
 \hline 
@@ -510,18 +510,44 @@ Parameter & Übergabewerte & Info & Beschreibung \\
 -int & & interactive & interaktiver Modus \\
 \hline 
 \end{tabular} 
-
-
-\nsecend
-\end{shownto} %{-, developer}
-\begin{shownto}{-, developer, manualDE}
-\nsecend
+\nsecend %{Kommandozeilenaufruf}
 
 \nsecbegin{Installationsanleitung}
-XXX
+\nsecbegin{Allgemein}
+Folgende Schritte müssen durchgeführt werden:
+\begin{itemize}
+\item Java oder OpenJDK in Version 11 installieren
+\item Graphviz installieren
+\item jar-Datei entpacken
+\end{itemize}
 \nsecend
 
+\nsecbegin{Linux (Ubuntu)}
+In Kommandozeile ausführen:
+\begin{itemize}
+\item sudo apt-get install openjdk-11-jre graphviz unzip
+\item unzip puml\_install.zip -d \textasciitilde{}/myInstallPath
+\end{itemize}
+\nsecend
+
+\nsecbegin{Windows}
+Es wird die Verwendung von OpenJDK-11 empfohlen.
+\begin{itemize}
+\item puml\_install.zip entpacken
+\item OpenJDK-11 befindet sich in der zip-Datei. Installationsanleitung unter \url{https://stackoverflow.com/questions/52511778/how-to-install-openjdk-11-on-windows}
+\item Graphviz-installation durch doppelklick auf "'graphviz-2.38.msi"' starten und durchführen 
+\end{itemize}
+\nsecend
+
+\nsecend %{Installationsanleitung}
+\nsecend %{Handbuch}
+
+\end{shownto} %{-, developer}
+\begin{shownto}{-, developer, manualDE}
+
+
 \nsecbegin{Software-Lizenz}
+\nsecbegin{Begründung der Entscheidung}
 %Autor: Patrick Otte
 Da die gesammte Ausgabe der Diagramme aus PUML auf der PlantUML Bibliothek basiert, welche selbst unter der GNU Public License (GPL) veröffentlicht wurde, kann PUML auch nur durch GPL lizensiert werden.
 \\\\
@@ -532,6 +558,34 @@ Die Grundregel ergibt sich aus Ziffer 2b) GPLv2:
 Somit fiel die Wahl der Lizenz für das PUML-Programm auf die GNU Public License.
 \nsecend
 
+\nsecbegin{Lizenztext}
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+\\
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+\\
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+\\
+Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
+der GNU General Public License, wie von der Free Software Foundation,
+Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
+veröffentlichten Version, weiter verteilen und/oder modifizieren.
+\\
+Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch
+OHNE JEDE GEWÄHR,; sogar ohne die implizite
+Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+Siehe die GNU General Public License für weitere Einzelheiten.
+
+Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
+Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
+\nsecend
+\nsecend %{Software-Lizenz}
 \nsecend %Dokumentation
 
 
