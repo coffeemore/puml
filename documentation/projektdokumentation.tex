@@ -300,7 +300,7 @@ XXX
 \nsecbegin{Risikoanalyse}
 
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabular}{|l|l|l|l|p{8cm}|}
 \toprule\addlinespace[2.5cm]
@@ -343,21 +343,33 @@ XXX
 \nsecend
 
 \nsecbegin{Entscheidungen des Technologieworkshops}
-XXX
+\begin{itemize}
+\item Als GUI-Framework wird SWT verwendet
+\item JUnit-Tests werden in Eclipse ausgeführt
+\item Es soll XML als Datenformat verwendet werden
+\end{itemize}
 \nsecend
 
 \nsecbegin{Überblick über Architektur}
-XXX
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{Bilder/classDiagrammFinal.png}
+\caption{Klassendiagramm des Projekts}
+\end{figure}
 \nsecend
 
 \nsecbegin{Definierte Schnittstellen}
-XXX
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{Bilder/Schnittstellen.png}
+\caption{Schnittstellen des Projekts}
+\end{figure}
 \nsecend
 
 \nsecbegin{Liste der Architekturentscheidungen}
 %XXX (bewusste und unbewusste Entscheidungen mit zeitlicher Einordnung)
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabular}{|l|l|}
 \toprule
@@ -371,9 +383,28 @@ Bei Projektvergabe & Als Programmiersprache wird Java verwendet.\\
 &      \tabitem Weiterentwicklung zu Eclipse-Plugin möglich\\
 &      \tabitem Ausgereifte GUI-Frameworks verfügbar\\
 \midrule
-Technologieworkshop & Für das GUI wird JavaFX verwendet\\
+Technologieworkshop & Für die GUI wird SWT verwendet\\
 & Begründung der Entscheidung:\\
-&      \tabitem ...\\
+&      \tabitem Einfach zu verwenden\\
+&	   \tabitem Ausgereift\\
+&	   \tabitem Umfangreich\\
+&	   \tabitem Editor als Eclispse-Plugin\\
+\midrule
+Beginn Sprint 3 & Umbau von ParsingResult zu XML\\
+& Begründung der Entscheidung:\\
+&	   \tabitem Schon länger geplant aber bisher zu komplex\\
+&	   \tabitem Da die Grundfunktionalität besteht, Umbau jetzt möglich\\
+&	   \tabitem Klarer modularer Aufbau möglich\\
+&	   \tabitem Bessere Verteilung der Aufgaben durch Modularität\\
+&	   \tabitem Zwischenschritte können gegen Spezifikation getestet werden\\
+\midrule
+Beginn Sprint 3 & Wechsel von SWT zu AWT/SWING\\
+& Begründung der Entscheidung:\\
+&	   \tabitem Trotz vieler versuche läuft SWT-Tool nicht sauber unter Linux\\
+&	   \tabitem Das Einbinden der SWT-Bibliotheken verursacht Probleme beim \\ &  wechsel zwischen Windows und Linux\\
+&	   \tabitem AWT/SWING ist sehr ausgereift\\
+&	   \tabitem Es müssen keine zusätzlichen Bibliotheken eingebunden werden\\
+&	   \tabitem Tool für die Entwicklung läuft unter Windows und Linux \\ & zuverlässig als Eclipse-Plugin\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -458,12 +489,20 @@ Sonstige Konventionen:
 \input{sprints/sprint4}
 \nsecend
 
+\nsecbegin{Sprint 5}
+\input{sprints/sprint5}
+\nsecend
+
 \nsecbegin{Sprint 6}
 \input{sprints/sprint6}
 \nsecend
 
 \nsecbegin{Sprint 7}
 \input{sprints/sprint7}
+\nsecend
+
+\nsecbegin{Sprint 8}
+\input{sprints/sprint8}
 \nsecend
 %%%%%% weitere Sprints analog
 
