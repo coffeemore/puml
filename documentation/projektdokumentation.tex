@@ -419,7 +419,16 @@ Beginn Sprint 3 & Wechsel von SWT zu AWT/SWING\\
 \nsecbegin{Prozess- und Implementationsvorgaben}
 
 \nsecbegin{Definition of Done}
-XXX
+\begin{itemize}
+\item{Es können mindestens für Java-Quellcode Klassen- und Sequenzdiagramme erzeugt werden}
+\item{Sämtliche Codefragmente sind versioniert}
+\item{Der Code ist (soweit möglich) modular aufgebaut und damit gut wartbar}
+\item{Der Code ist gut strukturiert und ausreichend kommentiert, Coding Guidelines und Standards wurden eingehalten}
+\item{Die Testabdeckung beträgt mindestens 50 Prozent}
+\item{Es sind keine kritischen Bugs offen}
+\item{Die Entwicklerdokumentation enthält alle notwendigen Informationen, die ein potentielles späteres Team zum Weiterentwickeln des Codes benötigen würde}
+\item{Das Benutzerhandbuch enthält alle notwendigen Informationen, die ein Anwender braucht, um das Produkt bedienen zu können}
+\end{itemize}
 \nsecend
 
 \nsecbegin{Coding Style}
@@ -444,7 +453,6 @@ Sonstige Konventionen:
 \item{Lange Kommentare immer vor den Codeabschnitt}
 \item{Alle Methoden im Javadoc-Stiel dokumentieren}
 \end{itemize}
-
 \nsecend
 
 \nsecbegin{Zu nutzende Werkzeuge}
@@ -643,7 +651,15 @@ Poster, Bericht
 \nsecend
 
 \nsecbegin{Abschließende Einschätzung durch Product-Owner}
-XXX
+\nsecbegin{Funktionalität}
+Von den definierten Vorgaben des Kunden aus gesehen, wurde der Großteil der Anforderungen an das Programm erfüllt. Dazu zählen die Generierung von Klassen- und Sequenzdiagrammen aus Java-Quellcode und eingeschränkt auch C++-Code. Das Programm lässt sich sowohl über die Kommandozeile als auch über die GUI bedienen, wobei die Bedienung über die Kommandozeile etwas ausgereifter ist als die Bedienung der grafischen Nutzeroberfläche. 
+\nsecend
+\nsecbegin{Team}
+Allgemein war über die Laufzeit des Projekts ein deutlicher Anstieg der Eigeninitiative im Team zu beobachten, womit sich auch die Kommunikation verbesserte. Die Teammitglieder wurden sicherer und übernahmen weniger zögerlich als zu Beginn die Verantwortung für ihre Aufgaben. Die Weiterentwicklung der einzelnen Features erfolgte in enger Absprache mit sowohl Product Owner als auch Software-Architekt. Positiv anzumerken ist zudem, dass auch während der Implementierung von Funktionalitäten, die sich über mehrere Sprints zog, nicht das Endprodukt aus dem Blick geriet und die Fertigstellung der Features konsequent verfolgt wurde. Auch der komplette Umbau des Parsers wurde mit weit weniger Missgunst aufgenommen als erwartet, vielmehr wurde darin eine Möglichkeit gesehen, das Produkt weiter zu optimieren.
+\nsecend
+\nsecbegin{Fähigkeiten der Teammitglieder}
+Neben den bereits ausgeführten Soft Skills verbesserte sich auch der Umgang des Teams mit den im Projekt eingesetzten Werkzeugen und Technologien (Git, LaTeX, Programmierung mit Java, Debugging und Testkonzeption mit Eclipse), sodass nur noch bei einzelnen Modulen und in bestimmten Situationen eine engmaschige Betreuung durch den Software-Architekten erforderlich war. 
+\nsecend
 \nsecend
 
 \nsecbegin{Abschließende Einschätzung durch Software-Architekt}
@@ -661,13 +677,13 @@ Die Kommandozeilen-Schnittestelle ist recht umfangreich.\\
 Die Testüberdeckung liegt bei ca. 62\%. Wobei einige der Tests noch fehlschlagen. Größtenteils aber auch unwichtigen Gründen. Z.B. Vergleich von Bildern welche nicht Byte für Byte identisch sind.
 \nsecend
 \nsecbegin{Architektur}
-Beim entwerfen der Architektur wurde darauf Wert gelegt, dass das Projekt modular aufgebaut ist. Dies vereinfachte zum einen die Verteilung der Aufgaben und ermöglicht zum anderen das einfache hinzufügen oder austauschen einzelner Module.
+Beim entwerfen der Architektur wurde darauf Wert gelegt, dass das Projekt modular aufgebaut ist. Dies vereinfachte zum einen die Verteilung der Aufgaben und ermöglicht zum anderen das einfache Hinzufügen oder Austauschen einzelner Module.
 \nsecend
 \nsecbegin{Team}
-Das Team besteht wie bei Projektbeginn immer noch aus 10 Bachelor- und 2 Master-Studenten. Aufgrund der Größe des Teams fiel es uns als Projektleitung nicht immer leicht alle Teammitglieder mit Sinnvollen Aufgaben zu betrauen. Daher wurde auch viel im Pair-Programming gearbeitet. Dies funktionierte für die meisten Zweiergruppen sehr gut. Die Zusammenarbeit des Teams war von Anfang an gut, verbesserte sich aber im Laufe des Projektes noch deutlich. Insbesondere wurden immer mehr für die Entwicklung relevante Informationen direkt unter den Teammitgliedern propagiert und nur noch für die Projektleitung wichtige Informationen an diese herangetragen. Das Team-Umfeld habe ich als professionell und angenehm empfunden. Zumal auch meist die Stimmung sehr gut war. 
+Das Team besteht wie bei Projektbeginn immer noch aus 10 Bachelor- und 2 Master-Studenten. Aufgrund der Größe des Teams fiel es uns als Projektleitung nicht immer leicht, alle Teammitglieder mit sinnvollen Aufgaben zu betrauen. Daher wurde auch viel im Pair-Programming gearbeitet. Dies funktionierte für die meisten Zweiergruppen sehr gut. Die Zusammenarbeit des Teams war von Anfang an gut, verbesserte sich aber im Laufe des Projektes noch deutlich. Insbesondere wurden immer mehr für die Entwicklung relevante Informationen direkt unter den Teammitgliedern propagiert und nur noch für die Projektleitung wichtige Informationen an diese herangetragen. Das Team-Umfeld habe ich als professionell und angenehm empfunden. Zumal auch meist die Stimmung sehr gut war. 
 \nsecend
 \nsecbegin{Fähigkeiten der Teammitglieder}
-Während zu Beginn noch viele Teammitglieder mit den für sie neuen Technologien (Git, LaTeX, Linux als Betriebssystem, Eclipse als IDE, JUnit, ... später auch XML und XPath) zu kämpfen hatten, bereiteten diese gegen Ende des Projektes kaum mehr Probleme und es wurde sich stark auf die Weiterentwicklung des Quellcode konzentriert. Auch die Qualität des Quellcodes nahm beständig zu. Wobei hier aber noch durchaus Optimierungspotential besteht. Da man Programmieren aber meiner Ansicht nach größtenteils durch Praktische Erfahrung lernt und es Jahre braucht um es wirklich zu beherrschen, wäre alles andere Verwunderlich.
+Während zu Beginn noch viele Teammitglieder mit den für sie neuen Technologien (Git, LaTeX, Linux als Betriebssystem, Eclipse als IDE, JUnit, später auch XML und XPath) zu kämpfen hatten, bereiteten diese gegen Ende des Projektes kaum mehr Probleme und es wurde sich stark auf die Weiterentwicklung des Quellcodes konzentriert. Auch die Qualität des Quellcodes nahm beständig zu. Wobei hier aber noch durchaus Optimierungspotential besteht. Da man Programmieren aber meiner Ansicht nach größtenteils durch praktische Erfahrung lernt und es Jahre braucht um es wirklich zu beherrschen, wäre alles andere verwunderlich.
 \nsecend
 \nsecend %{Abschließende Einschätzung durch Software-Architekt}
 
