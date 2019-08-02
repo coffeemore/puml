@@ -1,4 +1,4 @@
-
+%Author: Tore Arndt, Patrick Otte
 \nsecbegin{Ziel des Sprints}
 Es soll eine funktionsfähige Basisversion, welche für das einfache erstellen von Klassendiagrammen aus Java-Code verwendet werden soll entstehen. Das Programm soll sowohl über die Kommandozeile, als auch über eine grafische Oberfläche bedient werden können. Die erzeugten Klassendiagramme sollen in der grafischen Oberfläche angezeigt werden können.
 
@@ -62,7 +62,7 @@ Als Project Owner wünsche ich mir, dass das Programm plattformunabhängig ist, 
 \nsecend
 
 \nsecbegin{Ergebnisse des Planning-Meetings}
-Dem gesammten Team ist die geplante Grundstruktur des Programms bekannt. Jeder weis welchen Teil des Programms er implementieren soll.
+Dem gesammten Team ist die geplante Grundstruktur des Programms bekannt. Jeder weiß welchen Teil des Programms er implementieren soll.
 \nsecend
 
 \nsecbegin{Aufgewendete Arbeitszeit pro Person$+$Arbeitspaket}
@@ -70,13 +70,21 @@ Dem gesammten Team ist die geplante Grundstruktur des Programms bekannt. Jeder w
         \hline
         Arbeitspaket & Person & Start & Ende & h & Artefakt\\
         \hline
-        Dummyklassen & Musterstudi & 3.5.09 & 12.5.09 & 14 & Klasse.java\\ \hline
-        AP XYZ &  &  &  & & \\ \hline
+        PUML-26/36 & Patrick Otte & 26.11.18 & 21.12.18 & 14 & OutputPUML.java\\ \hline
+        PUML-26/37 & Tore Arndt & 26.11.18 & 21.12.18 & 14 & OutputPUML.java\\ \hline
+        PUML-24/29 & Leo Rauschke & 26.11.18 & 21.12.18 & 11,5 & CodeCollector.java\\ \hline  
+        PUML-24/30 & Elisabeth Schuster & 26.11.18 & 21.12.18 & 11 & CodeCollector.java\\ \hline  
+        PUML-25/31 & Jona Meyer & 26.11.18 & 21.12.18 & 30 & Parser.java\\ \hline  
+        PUML-24/32 & Michael Lux & 26.11.18 & 21.12.18 & 17 & Parser.java\\ \hline  
+        PUML-27/34 & Johann Gerhardt & 26.11.18 & 21.12.18 & 10 & Console.java\\ \hline
+        PUML-27/35 & Marian Geißler & 26.11.18 & 21.12.18 & 11 & Console.java\\ \hline
+        PUML-28/33 & Jan Sollmann & 26.11.18 & 21.12.18 & 12 & GUI.java\\ \hline
+        PUML-28/38 & Julian Uebe & 26.11.18 & 21.12.18 & 14 & GUI.java\\ \hline
 \end{longtable}     
 \nsecend
 
 \nsecbegin{Konkrete Code-Qualität im Sprint}
-Es gibt an vielen Stellen noch erheblichen Optimierungsbedarf. Teils Code doppelt anstatt in Methoden oder durch bessere Struktur nur einmal vorhanden.
+Es gibt an vielen Stellen noch erheblichen Optimierungsbedarf. Teils Code doppelt anstatt in Methoden oder durch bessere Struktur nur einmal vorhanden. Des Weiteren fehlen an vielen Stellen Kommentare und Dokumentationen zu den jeweiligen Methoden. Die vorher vom Softwarearchitekten vorgegebenen Coding Conventions und Styles müssen umgesetzt und beachtet werden, sodass, bei einem später geplanten eigenen Merge, Konflikte vermieden werden können.
 \nsecend
 
 \nsecbegin{Konkrete Test-Überdeckung im Sprint}
