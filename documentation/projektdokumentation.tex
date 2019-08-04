@@ -522,13 +522,17 @@ Sonstige Konventionen:
 \nsecbegin{Handbuch}
 \nsecbegin{Kommandozeilenaufruf}
 Aufruf:\\
-java -jar puml.jar [-c -i inputPathes -o outputPathes (-cc | -s | -int | -cs entryClass entryMethod) [-ijar, -ijava]]
+java -jar puml.jar [-c -i inputPathes -o outputPathes (-cc | -ct | -s | -int | -cs entryClass entryMethod) [-iinst,-ijar, -ijava, -imeth, -ivar] [-l, -lf (filepath)] [-ucpp] [-h ]]
 
 \begin{itemize}
 \item Wird das Programm ohne Parameter aufgerufen öffnet sich die grafische Oberfläche
+\item mit -h werden lediglich die Kommando-Beschreibungen als Hilfe ausgegeben
 \item -c wird verwendet um einen Konsolen-Aufruf zu initiieren
-\item  Nach -c müssen mit -i die Eingabepfade, mit -o der Ausgabepfad und je nach gewünschter Aktion -cc, s, -int oder -cs stehen
+\item  Nach -c müssen mit -i die Eingabepfade, mit -o der Ausgabepfad und je nach gewünschter Aktion ct ,cc, s, -int oder -cs stehen
 \item mit -ijar und -ijava können bestimmte Dateitypen ignoriert werden
+\item -iinst, -imeth und -ivar können Instanzen, Methoden und/oder Variablen aus der Ausgabe entfernt werden
+\item -ucpp nutzt den C++ Parser, anstelle des Standard-Java-Parser 
+\item -l startet den Debug-Modus und zeigt alle Ausgaben des Loggers in der Konsole an, durch -lf und einen Dateipfad kann das vollständige File geschrieben werden
 \item interaktiver Modus
 \begin{itemize}
 \item Fragt ab welcher Typ von Diagramm erzeugt werden soll
@@ -542,20 +546,42 @@ Parameter & Übergabewerte & Info & Beschreibung \\
 \hline 
 -c & & Konsolenaufruf & keine grafische Oberfläche \\ 
 \hline 
--i & inputPathes & Input & durch Strichpunkt getrennte Liste der Pfade zu den einzulesenden Dateien und Ordnern \\ 
-\hline 
--o & outputPath & Output & muss ein Pfad zu einem Ordner sein. Hier soll der plantUML-Code und das Diagramm erzeugt werden \\ 
-\hline 
--ijar & & Ignore Jar & .jar-Dateien werden ignoriert \\ 
-\hline 
--ijava & & Ignore Java & .java-Dateien werden ignoriert \\ 
-\hline 
 -cc & & create Classdiagram & erzeugt ein Klassendiagramm \\ 
 \hline
--cs & entryClass, entryMethod & create Sequencediagram & erzeugt ein Sequenzdiagramm \\
--s & & show & listet alle Klassen und Methoden auf \\
+-- cs & Klasse, Methode & create Sequence Diagram & Erzeugt ein Sequenzdiagramm\\
+\hline
+-ct &  & create Text & Erzeugt ein Textfile, aus dem der PlantUML-Code erzeugt werden kann \\ 
+\hline
+-h & & help & Gibt Hilfe aus, Cmd. Beschreibung\\
+\hline 
+-i & inputPathes & Input & durch Strichpunkt getrennte Liste der Pfade zu den einzulesenden Dateien und Ordnern \\ 
+\hline
+-iinst & & ignore Instances & Instanzen werden bei Erzeugung des Klassendiagramms nicht berücksichtigt\\
+\hline 
+-ijar & & ignore Jar & .jar-Dateien werden ignoriert \\ 
+\hline 
+-ijava & & ignore Java & .java-Dateien werden ignoriert \\ 
+\hline 
+-imeth & & ignore Methods &Methoden werden bei Erzeugung des Klassendiagramms nicht berücksichtigt \\
+\hline
 -int & & interactive & interaktiver Modus \\
 \hline 
+-ivar & & ignore Variables & Variablen werden bei Erzeugung des Klassendiagramms nicht berücksichtigt\\
+\hline
+-l & & logging & Ausgaben des Loggers in der Konsole ausgeben.\\
+\hline
+-lf & log-filepath & logfile  & Angabe des Pfades fuer das Logfile \\
+\hline
+--o & outputPath & Output & muss ein Pfad zu einem Ordner sein. Hier soll der plantUML-Code und das Diagramm erzeugt werden \\ 
+\hline 
+%-cs & entryClass, entryMethod & create Sequencediagram & erzeugt ein Sequenzdiagramm \\
+%\hline 
+-s & & show & listet alle Klassen und Methoden auf \\
+\hline
+-ucpp &  & use cpp& Verarbeite Dateien mit der Endung '.cpp' \\
+\hline 
+
+
 \end{tabular} 
 \nsecend %{Kommandozeilenaufruf}
 
