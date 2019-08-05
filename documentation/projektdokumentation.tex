@@ -194,8 +194,9 @@
 
 \maketitle
 \thispagestyle{fancy}
-
+\setcounter{tocdepth}{3}
 \tableofcontents
+\newpage
 
 %%%%
 %%%% Die Struktur des Dokuments bitte nicht aendern!!!
@@ -230,16 +231,7 @@ Für den Einsatz in der Lehre ist die Generierung von Klassendiagrammen und Sequ
 % Hier eure Recherchen für den Produktvisions-Workshop ergänzen! Kopiert den Inhalt eures Dokuments einfach in die bereits dafür angelegte Datei. Ihr könnt auch gern selbst eine erstellen, denkt nur daran, die Aufgabenstellung aus Jira zu kopieren, damit am Ende alles schön einheitlich ist.
 
 \nsecbegin{Produktvision}
-\input{ProduktvisionRecherche/Kernfunktionalitaet}%Autor: Patrick Otte
-\input{ProduktvisionRecherche/Anwenderprofil}%Autor: Jan Sollmann
-\input{ProduktvisionRecherche/PlantUML-Vorstellung}%Autor: Marian Geißler
-\input{ProduktvisionRecherche/Konkurrenzprodukte}%Autor: Julian Uebe
-\input{ProduktvisionRecherche/MoeglicheWeiterentwicklung}%Autor: Arndt Tore
-\input{ProduktvisionRecherche/GUI-Anforderungen}%Autor: Michael Lux
-\input{ProduktvisionRecherche/Datenmodell}%Autor: Elisabeth Schuster
-\input{ProduktvisionRecherche/ErsteUser-Story}%Autor: Jona Meyer
-\input{ProduktvisionRecherche/Workshop-Bedarfsermittlung}%Autor: Johann Gerhardt
-\input{ProduktvisionRecherche/Workshop-Recherche}%Autor: Leo Rauschke
+Es ist ein Entwicklungswerkzeug gewünscht, welches es ermöglicht, für den Quellcode eines bestehenden Softwareprojekts beliebig viele Klassen- und Sequenzdiagramme mittels PlantUML zu erstellen und zu verwalten. Das Werkzeug soll plattformunabhängig und nach Möglichkeit als Plugin in Eclipse integrierbar sein. Das Programm soll sowohl über eine grafische Oberfläche als auch über die Konsole bedienbar sein. Angestrebt ist außerdem die Unterstützung von mehreren Programmiersprachen, wobei das Hinzufügen von neuen Programmiersprachen möglichst einfach ausfallen soll.
 \nsecend
 
 % Das hier ist ein Absatz, der die Grafik in Abbildung~\ref{fig:bild1} detailliert erläutert, erklärt und interpretiert.
@@ -285,17 +277,19 @@ Als Benutzer wünsche ich mir, dass die Installation unkompliziert ist, damit ic
 \nsecend %{Userstories}
 \nsecend %{Liste der nicht-funktionalen Anforderungen}
 
-\nsecbegin{Weitere Zuarbeiten zum Produktvisions-Workshop}
-XXX
+\nsecbegin{Produktvision-Recherche - Zuarbeiten der Teammitglieder}
+\input{ProduktvisionRecherche/Kernfunktionalitaet}%Autor: Patrick Otte
+\input{ProduktvisionRecherche/Anwenderprofil}%Autor: Jan Sollmann
+\input{ProduktvisionRecherche/PlantUML-Vorstellung}%Autor: Marian Geißler
+\input{ProduktvisionRecherche/Konkurrenzprodukte}%Autor: Julian Uebe
+\input{ProduktvisionRecherche/MoeglicheWeiterentwicklung}%Autor: Arndt Tore
+\input{ProduktvisionRecherche/GUI-Anforderungen}%Autor: Michael Lux
+\input{ProduktvisionRecherche/Datenmodell}%Autor: Elisabeth Schuster
+\input{ProduktvisionRecherche/ErsteUser-Story}%Autor: Jona Meyer
+\input{ProduktvisionRecherche/Workshop-Bedarfsermittlung}%Autor: Johann Gerhardt
+\input{ProduktvisionRecherche/Workshop-Recherche}%Autor: Leo Rauschke
 \nsecend
 
-\nsecbegin{Zuarbeit von Autor X}
-XXX
-\nsecend
-
-\nsecbegin{Zuarbeit von Autor Y}
-XXX
-\nsecend
 
 \nsecbegin{Risikoanalyse}
 
@@ -331,7 +325,7 @@ XXX
 
 \nsecbegin{Architektur und Entwurf}
 
-\nsecbegin{Zuarbeiten der Teammitglieder}
+\nsecbegin{Technolgie-Recherche - Zuarbeiten der Teammitglieder}
 \input{TechRecherche/Kommandozeile}%Autor: Marian Geißler
 \input{TechRecherche/GUI}%Autor: Patrick Otte
 \input{TechRecherche/GUI-Tools}%Autor: Julian Uebe
