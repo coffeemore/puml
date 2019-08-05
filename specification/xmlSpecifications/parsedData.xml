@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<source>
+
+	<classdefinition>
+		<name>Class1</name>
+		<implements>	<!-- Interfaces -->
+			<entry>If1</entry>
+			<entry>If2</entry>
+		</implements>
+		<extends><!-- Vererbungen -->
+			<entry>Class3</entry>
+		</extends>
+		<instance> <!-- Klassen-Instanzen -->
+			<access>private</access> <!-- Mögliche werte: private, protected, public und pprivate (Paketsichtbar 
+				wenn keine explizite Angabe) -->
+			<name>classInstance1</name>
+			<class>Class2</class>
+		</instance>
+		<instance>
+			<access>protected</access>
+			<name>classInstance2</name>
+			<class>Class2</class>
+		</instance>
+		<instance>
+			<access>public</access>
+			<name>iClass4</name>
+			<class>Class4</class>
+		</instance>
+		<instance>
+			<access>pprivate</access>
+			<name>iClass5</name>
+			<class>Class5</class>
+		</instance>
+		<!-- Klassen-Variablen (Variablen sind immer von den Basisdatentypen: boolean, 
+			char, byte, short, int, long, float oder double, alles andere sind Instanzen) -->
+		<var>
+			<access>private</access>
+			<type>int</type>
+			<name>var1</name>
+		</var>
+		<var>
+			<access>protected</access>
+			<type>double</type>
+			<name>var2</name>
+		</var>
+		<var>
+			<access>public</access>
+			<type>short</type>
+			<name>var3</name>
+		</var>
+		<var>
+			<access>pprivate</access>
+			<type>byte</type>
+			<name>var4</name>
+		</var>
+		<compositions>	<!-- Kompositionsbeziehungen -->
+			<entry>Class2</entry>
+			<entry>Class3</entry>
+		</compositions>
+		<aggregations>	<!-- Aggregationsbeziehungen -->
+			<entry>Class4</entry>
+			<entry>Class5</entry>
+		</aggregations>
+		<methoddefinition>
+			<access>public</access>
+			<name>Class1</name>
+			<parameters> <!-- Parameterliste der Methode -->
+				<entry>
+					<type>Class4</type>
+					<name>iClass4</name>
+				</entry>
+				<entry>
+					<type>Class5</type>
+					<name>iClass5</name>
+				</entry>
+			</parameters>
+		</methoddefinition>
+		<methoddefinition>
+			<access>private</access>
+			<name>method1</name>
+			<parameters> <!-- Parameterliste der Methode -->
+				<entry>
+					<type>int</type>
+					<name>param1</name>
+				</entry>
+				<entry>
+					<type>int</type>
+					<name>param2</name>
+				</entry>
+			</parameters>
+			<result>int</result> <!-- Rückgabewert der Methode -->
+			<alternative>	<!-- if-Entscheidung (beliebig verschachtelbar, abhängig vom Quellocode) -->
+				<case>
+					<condition>if(a!=b)</condition>
+					<methodcall>
+						<instance>classInstance1</instance>	<!-- Beim Aufruf von Methoden einer Instanz -->
+						<method>call1</method>
+					</methodcall>
+				</case>
+				<case>
+					<condition>else</condition>
+					<loop>	<!-- Kopfgesteuerte Schleife (beliebig verschachtelbar, abhängig vom Quellocode) -->
+						<condition>for(int i=0; i!=100; i++)</condition>
+						<methodcall>
+							<class>Class2</class>	<!-- Aufruf bei statischen Methoden -->
+							<method>call2</method>
+						</methodcall>
+					</loop>
+				</case>
+			</alternative>
+			<methodcall>
+				<method>method2</method> <!-- Aufruf bei methoden innerhalb der Klasse -->
+			</methodcall>
+		</methoddefinition>
+
+		<methoddefinition>
+			<access>protected</access>
+			<name>method2</name>
+			<result>void</result>
+			<alternative>
+				<case>
+					<condition>switch(i)/case 0</condition>
+					<frame>
+						<loop>		<!-- Kopfgesteuerte Schleife (beliebig verschachtelbar, abhängig vom Quellocode) -->
+							<condition>while(j!=0)</condition>
+							<methodcall>
+								<method>method3</method>
+							</methodcall>
+						</loop>
+					</frame>
+				</case>
+				<case>
+					<condition>switch(i)/case 1</condition>
+					<frame>
+						<loop>		<!-- Fußesteuerte Schleife (beliebig verschachtelbar, abhängig vom Quellocode) -->
+							<condition>do/while(j!=0)</condition>
+							<methodcall>
+								<method>method3</method>
+							</methodcall>
+						</loop>
+					</frame>
+				</case>
+				<case>
+					<condition>switch(i)/default</condition>
+					<frame>
+						<instance> <!-- Lokale Instanzen -->
+							<name>classInstance3</name>
+							<class>Class2</class>
+						</instance>
+						<instance>  <!-- Gleicher Name wie globale Instanz (beim aufruf soll die lokale verwendet 
+								werden) -->
+							<name>classInstance1</name>
+							<class>Class3</class>
+						</instance>
+						<methodcall>
+							<instance>classInstance1</instance>	<!-- Aufruf sollte auf instanz von class3 ausgeführt werden -->
+							<method>call1</method>
+						</methodcall>
+						<methodcall>
+							<instance>classInstance1</instance>	<!-- Klasseninstanz -->
+							<method>call1</method>
+							<validity>class</validity>	<!-- Wird am this-Zeiger festgememacht -->
+						</methodcall>
+						<methodcall>
+							<instance>classInstance2</instance>	<!-- Klasseninstanz -->
+							<method>call1</method>
+						</methodcall>
+						<methodcall>
+							<instance>classInstance3</instance>	<!-- Lokale Instanz -->
+							<method>call1</method>
+						</methodcall>
+						<methodcall>
+							<instance>classInstance4</instance>	<!-- Instanz existiert nicht -->
+							<method>callX</method>
+						</methodcall>
+					</frame>
+				</case>
+			</alternative>
+		</methoddefinition>
+
+		<methoddefinition>
+			<access>public</access>
+			<name>method3</name>
+			<result>void</result>
+			<alternative>
+				<case>
+					<condition>if(a!=b)</condition>
+					<methodcall>
+						<method>method3</method> <!-- Rekursiver selbstaufruf -->
+					</methodcall>
+				</case>
+			</alternative>
+			<alternative>
+				<case>
+					<condition>if(b!=c)</condition>
+					<methodcall>
+						<method>method4</method> <!-- Rekursiver wechselaufruf (Teil1) -->
+					</methodcall>
+				</case>
+			</alternative>
+		</methoddefinition>
+		<methoddefinition>
+			<access>pprivate</access>
+			<name>method4</name>
+			<result>void</result>
+			<alternative>
+				<case>
+					<condition>if(d!=e)</condition>
+					<methodcall>
+						<method>method3</method> <!-- Rekursiver wechselaufruf (Teil2) -->
+					</methodcall>
+				</case>
+			</alternative>
+		</methoddefinition>
+	</classdefinition>
+
+	<classdefinition>
+		<name>Class2</name>
+		<methoddefinition>
+			<access>public</access>
+			<name>call1</name>
+			<result>void</result>
+		</methoddefinition>
+		<methoddefinition>
+			<access>public</access>
+			<name>call2</name>
+			<type>static</type>
+			<result>void</result>
+		</methoddefinition>
+	</classdefinition>
+
+	<classdefinition>
+		<name>Class3</name>
+		<methoddefinition>
+			<access>public</access>
+			<name>call1</name>
+			<result>void</result>
+		</methoddefinition>
+	</classdefinition>
+
+	<classdefinition>
+		<name>Class4</name>
+	</classdefinition>
+
+	<classdefinition>
+		<name>Class5</name>
+	</classdefinition>
+
+	<interfacedefinition>
+		<name>If1</name>
+		<methoddefinition>
+			<access>public</access>
+			<name>method1</name>
+			<parameters>
+				<entry>
+					<type>int</type>
+					<name>param1</name>
+				</entry>
+				<entry>
+					<type>int</type>
+					<name>param2</name>
+				</entry>
+			</parameters>
+			<result>int</result>
+		</methoddefinition>
+	</interfacedefinition>
+
+	<interfacedefinition>
+		<name>If2</name>
+		<methoddefinition>
+			<access>public</access>
+			<name>method2</name>
+			<result>void</result>
+		</methoddefinition>
+	</interfacedefinition>
+
+</source>

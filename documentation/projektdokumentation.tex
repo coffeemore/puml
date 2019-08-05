@@ -231,15 +231,15 @@ Für den Einsatz in der Lehre ist die Generierung von Klassendiagrammen und Sequ
 
 \nsecbegin{Produktvision}
 \input{ProduktvisionRecherche/Kernfunktionalitaet}%Autor: Patrick Otte
-\input{ProduktvisionRecherche/Anwenderprofil}
-\input{ProduktvisionRecherche/PlantUML-Vorstellung}
-\input{ProduktvisionRecherche/Konkurrenzprodukte}
-\input{ProduktvisionRecherche/MoeglicheWeiterentwicklung}
-\input{ProduktvisionRecherche/GUI-Anforderungen}
-\input{ProduktvisionRecherche/Datenmodell}
-\input{ProduktvisionRecherche/ErsteUser-Story}
-\input{ProduktvisionRecherche/Workshop-Bedarfsermittlung}
-\input{ProduktvisionRecherche/Workshop-Recherche}
+\input{ProduktvisionRecherche/Anwenderprofil}%Autor: Jan Sollmann
+\input{ProduktvisionRecherche/PlantUML-Vorstellung}%Autor: Marian Geißler
+\input{ProduktvisionRecherche/Konkurrenzprodukte}%Autor: Julian Uebe
+\input{ProduktvisionRecherche/MoeglicheWeiterentwicklung}%Autor: Arndt Tore
+\input{ProduktvisionRecherche/GUI-Anforderungen}%Autor: Michael Lux
+\input{ProduktvisionRecherche/Datenmodell}%Autor: Elisabeth Schuster
+\input{ProduktvisionRecherche/ErsteUser-Story}%Autor: Jona Meyer
+\input{ProduktvisionRecherche/Workshop-Bedarfsermittlung}%Autor: Johann Gerhardt
+\input{ProduktvisionRecherche/Workshop-Recherche}%Autor: Leo
 \nsecend
 
 % Das hier ist ein Absatz, der die Grafik in Abbildung~\ref{fig:bild1} detailliert erläutert, erklärt und interpretiert.
@@ -300,7 +300,7 @@ XXX
 \nsecbegin{Risikoanalyse}
 
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabular}{|l|l|l|l|p{8cm}|}
 \toprule\addlinespace[2.5cm]
@@ -332,33 +332,45 @@ XXX
 \nsecbegin{Architektur und Entwurf}
 
 \nsecbegin{Zuarbeiten der Teammitglieder}
-\input{TechRecherche/Kommandozeile}
+\input{TechRecherche/Kommandozeile}%Autor: Marian Geißler
 \input{TechRecherche/GUI}%Autor: Patrick Otte
-\input{TechRecherche/JUnit}
-\input{TechRecherche/RegEx}
-\input{TechRecherche/XML}
-\input{TechRecherche/Xpath}
-\input{TechRecherche/Softwareverbreitung_Windows}
-\input{TechRecherche/Softwareverbreitung_Linux}
-\input{TechRecherche/Exceptions}
+\input{TechRecherche/JUnit}%Autor: Leo
+\input{TechRecherche/RegEx}%Autor: Elisabeth Schuster
+\input{TechRecherche/XML}%Autor: Jona Meyer
+\input{TechRecherche/Xpath}%Autor: Michael Lux
+\input{TechRecherche/Softwareverbreitung_Windows}%Autor: Jan Sollmann
+\input{TechRecherche/Softwareverbreitung_Linux}%Autor: Tore Arndt
+\input{TechRecherche/Exceptions}%Autor: Johann Gerhardt
 \nsecend
 
 \nsecbegin{Entscheidungen des Technologieworkshops}
-XXX
+\begin{itemize}
+\item Als GUI-Framework wird SWT verwendet
+\item JUnit-Tests werden in Eclipse ausgeführt
+\item Es soll XML als Datenformat verwendet werden
+\end{itemize}
 \nsecend
 
 \nsecbegin{Überblick über Architektur}
-XXX
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{Bilder/classDiagrammFinal.png}
+\caption{Klassendiagramm des Projekts}
+\end{figure}
 \nsecend
 
 \nsecbegin{Definierte Schnittstellen}
-XXX
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{Bilder/Schnittstellen.png}
+\caption{Schnittstellen des Projekts}
+\end{figure}
 \nsecend
 
 \nsecbegin{Liste der Architekturentscheidungen}
 %XXX (bewusste und unbewusste Entscheidungen mit zeitlicher Einordnung)
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabular}{|l|l|}
 \toprule
@@ -372,9 +384,28 @@ Bei Projektvergabe & Als Programmiersprache wird Java verwendet.\\
 &      \tabitem Weiterentwicklung zu Eclipse-Plugin möglich\\
 &      \tabitem Ausgereifte GUI-Frameworks verfügbar\\
 \midrule
-Technologieworkshop & Für das GUI wird JavaFX verwendet\\
+Technologieworkshop & Für die GUI wird SWT verwendet\\
 & Begründung der Entscheidung:\\
-&      \tabitem ...\\
+&      \tabitem Einfach zu verwenden\\
+&	   \tabitem Ausgereift\\
+&	   \tabitem Umfangreich\\
+&	   \tabitem Editor als Eclispse-Plugin\\
+\midrule
+Beginn Sprint 3 & Umbau von ParsingResult zu XML\\
+& Begründung der Entscheidung:\\
+&	   \tabitem Schon länger geplant aber bisher zu komplex\\
+&	   \tabitem Da die Grundfunktionalität besteht, Umbau jetzt möglich\\
+&	   \tabitem Klarer modularer Aufbau möglich\\
+&	   \tabitem Bessere Verteilung der Aufgaben durch Modularität\\
+&	   \tabitem Zwischenschritte können gegen Spezifikation getestet werden\\
+\midrule
+Beginn Sprint 3 & Wechsel von SWT zu AWT/SWING\\
+& Begründung der Entscheidung:\\
+&	   \tabitem Trotz vieler versuche läuft SWT-Tool nicht sauber unter Linux\\
+&	   \tabitem Das Einbinden der SWT-Bibliotheken verursacht Probleme beim \\ &  wechsel zwischen Windows und Linux\\
+&	   \tabitem AWT/SWING ist sehr ausgereift\\
+&	   \tabitem Es müssen keine zusätzlichen Bibliotheken eingebunden werden\\
+&	   \tabitem Tool für die Entwicklung läuft unter Windows und Linux \\ & zuverlässig als Eclipse-Plugin\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -389,7 +420,16 @@ Technologieworkshop & Für das GUI wird JavaFX verwendet\\
 \nsecbegin{Prozess- und Implementationsvorgaben}
 
 \nsecbegin{Definition of Done}
-XXX
+\begin{itemize}
+\item{Es können mindestens für Java-Quellcode Klassen- und Sequenzdiagramme erzeugt werden}
+\item{Sämtliche Codefragmente sind versioniert}
+\item{Der Code ist (soweit möglich) modular aufgebaut und damit gut wartbar}
+\item{Der Code ist gut strukturiert und ausreichend kommentiert, Coding Guidelines und Standards wurden eingehalten}
+\item{Die Testabdeckung beträgt mindestens 50 Prozent}
+\item{Es sind keine kritischen Bugs offen}
+\item{Die Entwicklerdokumentation enthält alle notwendigen Informationen, die ein potentielles späteres Team zum Weiterentwickeln des Codes benötigen würde}
+\item{Das Benutzerhandbuch enthält alle notwendigen Informationen, die ein Anwender braucht, um das Produkt bedienen zu können}
+\end{itemize}
 \nsecend
 
 \nsecbegin{Coding Style}
@@ -414,7 +454,6 @@ Sonstige Konventionen:
 \item{Lange Kommentare immer vor den Codeabschnitt}
 \item{Alle Methoden im Javadoc-Stiel dokumentieren}
 \end{itemize}
-
 \nsecend
 
 \nsecbegin{Zu nutzende Werkzeuge}
@@ -459,12 +498,20 @@ Sonstige Konventionen:
 \input{sprints/sprint4}
 \nsecend
 
+\nsecbegin{Sprint 5}
+\input{sprints/sprint5}
+\nsecend
+
 \nsecbegin{Sprint 6}
 \input{sprints/sprint6}
 \nsecend
 
 \nsecbegin{Sprint 7}
 \input{sprints/sprint7}
+\nsecend
+
+\nsecbegin{Sprint 8}
+\input{sprints/sprint8}
 \nsecend
 %%%%%% weitere Sprints analog
 
@@ -476,13 +523,17 @@ Sonstige Konventionen:
 \nsecbegin{Handbuch}
 \nsecbegin{Kommandozeilenaufruf}
 Aufruf:\\
-java -jar puml.jar [-c -i inputPathes -o outputPathes (-cc | -s | -int | -cs entryClass entryMethod) [-ijar, -ijava]]
+java -jar puml.jar [-c -i inputPathes -o outputPathes (-cc | -ct | -s | -int | -cs entryClass entryMethod) [-iinst,-ijar, -ijava, -imeth, -ivar] [-l, -lf (filepath)] [-ucpp] [-h ]]
 
 \begin{itemize}
 \item Wird das Programm ohne Parameter aufgerufen öffnet sich die grafische Oberfläche
+\item mit -h werden lediglich die Kommando-Beschreibungen als Hilfe ausgegeben
 \item -c wird verwendet um einen Konsolen-Aufruf zu initiieren
-\item  Nach -c müssen mit -i die Eingabepfade, mit -o der Ausgabepfad und je nach gewünschter Aktion -cc, s, -int oder -cs stehen
+\item  Nach -c müssen mit -i die Eingabepfade, mit -o der Ausgabepfad und je nach gewünschter Aktion ct ,cc, s, -int oder -cs stehen
 \item mit -ijar und -ijava können bestimmte Dateitypen ignoriert werden
+\item -iinst, -imeth und -ivar können Instanzen, Methoden und/oder Variablen aus der Ausgabe entfernt werden
+\item -ucpp nutzt den C++ Parser, anstelle des Standard-Java-Parser 
+\item -l startet den Debug-Modus und zeigt alle Ausgaben des Loggers in der Konsole an, durch -lf und einen Dateipfad kann das vollständige File geschrieben werden
 \item interaktiver Modus
 \begin{itemize}
 \item Fragt ab welcher Typ von Diagramm erzeugt werden soll
@@ -496,20 +547,42 @@ Parameter & Übergabewerte & Info & Beschreibung \\
 \hline 
 -c & & Konsolenaufruf & keine grafische Oberfläche \\ 
 \hline 
--i & inputPathes & Input & durch Strichpunkt getrennte Liste der Pfade zu den einzulesenden Dateien und Ordnern \\ 
-\hline 
--o & outputPath & Output & muss ein Pfad zu einem Ordner sein. Hier soll der plantUML-Code und das Diagramm erzeugt werden \\ 
-\hline 
--ijar & & Ignore Jar & .jar-Dateien werden ignoriert \\ 
-\hline 
--ijava & & Ignore Java & .java-Dateien werden ignoriert \\ 
-\hline 
 -cc & & create Classdiagram & erzeugt ein Klassendiagramm \\ 
 \hline
--cs & entryClass, entryMethod & create Sequencediagram & erzeugt ein Sequenzdiagramm \\
--s & & show & listet alle Klassen und Methoden auf \\
+-- cs & Klasse, Methode & create Sequence Diagram & Erzeugt ein Sequenzdiagramm\\
+\hline
+-ct &  & create Text & Erzeugt ein Textfile, aus dem der PlantUML-Code erzeugt werden kann \\ 
+\hline
+-h & & help & Gibt Hilfe aus, Cmd. Beschreibung\\
+\hline 
+-i & inputPathes & Input & durch Strichpunkt getrennte Liste der Pfade zu den einzulesenden Dateien und Ordnern \\ 
+\hline
+-iinst & & ignore Instances & Instanzen werden bei Erzeugung des Klassendiagramms nicht berücksichtigt\\
+\hline 
+-ijar & & ignore Jar & .jar-Dateien werden ignoriert \\ 
+\hline 
+-ijava & & ignore Java & .java-Dateien werden ignoriert \\ 
+\hline 
+-imeth & & ignore Methods &Methoden werden bei Erzeugung des Klassendiagramms nicht berücksichtigt \\
+\hline
 -int & & interactive & interaktiver Modus \\
 \hline 
+-ivar & & ignore Variables & Variablen werden bei Erzeugung des Klassendiagramms nicht berücksichtigt\\
+\hline
+-l & & logging & Ausgaben des Loggers in der Konsole ausgeben.\\
+\hline
+-lf & log-filepath & logfile  & Angabe des Pfades fuer das Logfile \\
+\hline
+--o & outputPath & Output & muss ein Pfad zu einem Ordner sein. Hier soll der plantUML-Code und das Diagramm erzeugt werden \\ 
+\hline 
+%-cs & entryClass, entryMethod & create Sequencediagram & erzeugt ein Sequenzdiagramm \\
+%\hline 
+-s & & show & listet alle Klassen und Methoden auf \\
+\hline
+-ucpp &  & use cpp& Verarbeite Dateien mit der Endung '.cpp' \\
+\hline 
+
+
 \end{tabular} 
 \nsecend %{Kommandozeilenaufruf}
 
@@ -601,19 +674,56 @@ Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
 \nsecend
 
 \nsecbegin{Präsentation auf der Messe}
-Poster, Bericht
+\begin{figure}[H]
+	\centering
+	\includegraphics{Bilder/Puml_Plakat.png}
+	\caption{Poster PUML}
+	\label{img:Poster}
+\end{figure}
+
+Die Präsentation beinhaltete das geforderte Poster und eine eigens erstellte Animation die per Beamer an die Wand projeziert wurde. Auf dem Poster konnte der Besucher einen ersten Einblick von den Funktionen der Software bekommen. Die Animation zeigte, ähnlich dem Plakat, die Funktionen der Software und bot einen Einblick in die Funktionsweise.
+Des Weiteren wurden Süßigkeiten für die Besucher des Messestandes bereit gestellt.
 \nsecend
 
 \nsecbegin{Abschließende Einschätzung durch Product-Owner}
-XXX
+\nsecbegin{Funktionalität}
+Von den definierten Vorgaben des Kunden aus gesehen, wurde der Großteil der Anforderungen an das Programm erfüllt. Dazu zählen die Generierung von Klassen- und Sequenzdiagrammen aus Java-Quellcode und eingeschränkt auch C++-Code. Das Programm lässt sich sowohl über die Kommandozeile als auch über die GUI bedienen, wobei die Bedienung über die Kommandozeile etwas ausgereifter ist als die Bedienung der grafischen Nutzeroberfläche. 
+\nsecend
+\nsecbegin{Team}
+Allgemein war über die Laufzeit des Projekts ein deutlicher Anstieg der Eigeninitiative im Team zu beobachten, womit sich auch die Kommunikation verbesserte. Die Teammitglieder wurden sicherer und übernahmen weniger zögerlich als zu Beginn die Verantwortung für ihre Aufgaben. Die Weiterentwicklung der einzelnen Features erfolgte in enger Absprache mit sowohl Product Owner als auch Software-Architekt. Positiv anzumerken ist zudem, dass auch während der Implementierung von Funktionalitäten, die sich über mehrere Sprints zog, nicht das Endprodukt aus dem Blick geriet und die Fertigstellung der Features konsequent verfolgt wurde. Auch der komplette Umbau des Parsers wurde mit weit weniger Missgunst aufgenommen als erwartet, vielmehr wurde darin eine Möglichkeit gesehen, das Produkt weiter zu optimieren.
+\nsecend
+\nsecbegin{Fähigkeiten der Teammitglieder}
+Neben den bereits ausgeführten Soft Skills verbesserte sich auch der Umgang des Teams mit den im Projekt eingesetzten Werkzeugen und Technologien (Git, LaTeX, Programmierung mit Java, Debugging und Testkonzeption mit Eclipse), sodass nur noch bei einzelnen Modulen und in bestimmten Situationen eine engmaschige Betreuung durch den Software-Architekten erforderlich war. 
+\nsecend
 \nsecend
 
 \nsecbegin{Abschließende Einschätzung durch Software-Architekt}
-XXX
+\nsecbegin{Funktionalität}
+Die Kernfunktionalität wurde implementiert und funktioniert. Das Erzeugen der Klassendiagramme sollte für beliebigen Java-Code funktionieren. Das Erzeugen der Sequendiagramme funktioniert für die Java-Spezifikation. Hier fehlen noch folgende Sonderfälle:
+\begin{itemize}
+\item instanz.function(instanz.function)
+\item instanz.functionMitInstAlsReturn.function()
+\end{itemize}
+Das Erzeugen der Klassendiagremme für C++-Code funktioniert ebenfalls für die Spezifikation. Allerdings fehlen auch hier diverse Sonderfälle.\\
+Die GUI ist soweit vollständig implementiert, hat aber noch einige kleine Bugs. \\
+Die Kommandozeilen-Schnittestelle ist recht umfangreich.\\
 \nsecend
+\nsecbegin{Tests}
+Die Testüberdeckung liegt bei ca. 62\%. Wobei einige der Tests noch fehlschlagen. Größtenteils aber auch unwichtigen Gründen. Z.B. Vergleich von Bildern welche nicht Byte für Byte identisch sind.
+\nsecend
+\nsecbegin{Architektur}
+Beim entwerfen der Architektur wurde darauf Wert gelegt, dass das Projekt modular aufgebaut ist. Dies vereinfachte zum einen die Verteilung der Aufgaben und ermöglicht zum anderen das einfache Hinzufügen oder Austauschen einzelner Module.
+\nsecend
+\nsecbegin{Team}
+Das Team besteht wie bei Projektbeginn immer noch aus 10 Bachelor- und 2 Master-Studenten. Aufgrund der Größe des Teams fiel es uns als Projektleitung nicht immer leicht, alle Teammitglieder mit sinnvollen Aufgaben zu betrauen. Daher wurde auch viel im Pair-Programming gearbeitet. Dies funktionierte für die meisten Zweiergruppen sehr gut. Die Zusammenarbeit des Teams war von Anfang an gut, verbesserte sich aber im Laufe des Projektes noch deutlich. Insbesondere wurden immer mehr für die Entwicklung relevante Informationen direkt unter den Teammitgliedern propagiert und nur noch für die Projektleitung wichtige Informationen an diese herangetragen. Das Team-Umfeld habe ich als professionell und angenehm empfunden. Zumal auch meist die Stimmung sehr gut war. 
+\nsecend
+\nsecbegin{Fähigkeiten der Teammitglieder}
+Während zu Beginn noch viele Teammitglieder mit den für sie neuen Technologien (Git, LaTeX, Linux als Betriebssystem, Eclipse als IDE, JUnit, später auch XML und XPath) zu kämpfen hatten, bereiteten diese gegen Ende des Projektes kaum mehr Probleme und es wurde sich stark auf die Weiterentwicklung des Quellcodes konzentriert. Auch die Qualität des Quellcodes nahm beständig zu. Wobei hier aber noch durchaus Optimierungspotential besteht. Da man Programmieren aber meiner Ansicht nach größtenteils durch praktische Erfahrung lernt und es Jahre braucht um es wirklich zu beherrschen, wäre alles andere verwunderlich.
+\nsecend
+\nsecend %{Abschließende Einschätzung durch Software-Architekt}
 
 \nsecbegin{Abschließende Einschätzung durch Team-Manager}
-XXX
+Gibt es nicht.
 \nsecend
 
 

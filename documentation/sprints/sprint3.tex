@@ -1,5 +1,5 @@
 \nsecbegin{Ziel des Sprints}
-Die bestehenden Funktionen des Programms sollen um die Möglichkeit ergänzt werden, neben Klassendiagrammen auch Sequenzdiagramme erstellen zu können. Dafür muss die Struktur der verarbeiteten Daten, also auch der Code zum Parsen, angepasst werden. Geplant ist eine Repräsentation des eingelesenen Codes als zentrale XML-Datei, die je nach Anwendungszweck wiederum die Basis für zwei unterschiedliche XML-Dateien ist.
+Die bestehenden Funktionen des Programms sollen um die Möglichkeit ergänzt werden, neben Klassendiagrammen auch Sequenzdiagramme erstellen zu können. Dafür muss die Struktur der verarbeiteten Daten, also auch der Code zum Parsen, angepasst werden. Geplant ist eine Repräsentation des eingelesenen Codes als zentrale XML-Datei, die je nach Anwendungszweck wiederum die Basis für zwei unterschiedliche XML-Dateien ist. Des weiteren wurde beschlossen die GUI von SWT zu AWT/SWING umzubauen, weil das Tool für die Entwicklung der GUI trotz vieler Versuche nicht ordentlich auf Linux lauffähig ist.
 
 
 % HIER NEUES KLASSENDIAGRAMM HINZUFUEGEN
@@ -93,7 +93,7 @@ Die Code-Qualität ist bisher gleichmäßig. Da die Umstrukturierung des Parsers
 \nsecend%Konkrete Code-Qualität im Sprint
 
 \nsecbegin{Konkrete Test-Überdeckung im Sprint}
-Die Test-Überdeckung in diesem Sprint fiel eher niedrig aus, da für die neuen Funktionen erst passende Testdateien erstellt bzw. bestehende Testdateien angepasst werden müssen.
+Die Testüberdeckung ist auf 40,4\% weiter gesunken, hier muss gegengesteuert werden.
 \nsecend%Konkrete Test-Überdeckung im Sprint
 
 \nsecbegin{Ergebnisse des Reviews}
@@ -123,7 +123,7 @@ Insgesamt ist ein beachtlicher Teil der definierten Sprintziele noch in Bearbeit
 \nsecend%Abschließende Einschätzung des Product-Owners
 
 \nsecbegin{Abschließende Einschätzung des Software-Architekten}
-XXX
+Da offenbar keine Erfahrungen im Team mit XML und XPath bestehen, tun sich die meisten Team-Mitglieder noch schwer mit dieser Technologie. Dadurch das der Parser umstrukturiert wird, ist das Projekt auch am ende dieses Sprints nicht lauffähig. Durch die entworfenen Spezifikations-Dateien ist es aber möglich die einzelnen Module auch ohne lauffähigen Parser gegen diese zu implementieren und mit JUnit-Tests zu überprüfen. Hierdurch sollte sich auch die Testabdeckung steigern lassen.
 \nsecend%Abschließende Einschätzung des Software-Architekten
 
 \nsecbegin{Abschließende Einschätzung des Team-Managers}

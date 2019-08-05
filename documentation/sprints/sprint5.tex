@@ -1,0 +1,107 @@
+\nsecbegin{Ziel des Sprints}
+Ziel des Sprints ist es, die Erzeugung von Klassendiagrammen und Sequenzdiagrammen zu verbessern. Dies soll erreicht werden durch eine Verfeinerung der XML-Strukturspezifizierung der Klassen- und Sequenzdiagramm-Generatoren und durch Erstellung einheitlicher Funktionen zur Traversierung selbiger Struktur, sowie durch Änderungen am Parser selbst. Die Funktionalität des Programms soll durch erweiterte Konsolenbefehle verbessert werden.
+\nsecend
+
+\nsecbegin{User-Stories des Sprint-Backlogs}
+\nsecbegin{Vorschau der Diagramme}
+Als Benutzer wünsche ich mir eine Vorschau der Diagramme, damit ich einschätzen kann ob ich
+damit zufrieden bin.
+\nsecend
+\nsecbegin{Anzeigen und Speichern von PlantUML}
+Als Benutzer wünsche ich mir, Diagramme als PlantUML-Code anzeigen und speichern zu können, um den Aufbau nachvollziehen zu können.
+\nsecend
+\nsecbegin{Erstellung von Klassendiagrammen}
+Als Benutzer wünsche ich mir, Klassendiagramme aus meinem bestehenden Quellcode erstellen zu können, damit ich einen Überblick über die Klassen meines Programms und deren Beziehungen bekomme.
+\nsecend
+\nsecbegin{Generierung von Sequenzdiagrammen}
+Als Benutzer wünsche ich mir, Sequenzdiagramme erstellen zu können, um einen Überblick über die Abläufe meines Programms zu erhalten.
+\nsecend
+\nsecend % {User-Stories des Sprint-Backlogs}
+
+\nsecbegin{Zeitliche Planung}
+Der Sprint geht vom 13.05.19 bis zum 24.05.19.
+\nsecend%Zeitliche Planung
+
+\nsecbegin{Liste der durchgeführten Meetings}
+\begin{itemize}
+\item Planning-Meeting (13.05.2019)
+\item Zwischen-Meeting (17.05.2019)
+\item Review-Meeting (24.05.2019)
+\end{itemize}{}
+\nsecend%Liste der durchgeführten Meetings
+
+\nsecbegin{Ergebnisse des Planning-Meetings}
+Die Zuweisung der Aufgabengebiete fiel auf die Teams zurück, die diese bereits zuvor angegangen sind, da diese mit ihnen vertraut sind und sonst zusätzliche Zeit für die Einarbeitung notwendig wäre.
+Es wurde beschlossen, dass die Klassen für die Generierung von Klassen- und Sequenzdiagrammen sowie die Hilfsfunktionen zur Traversierung der XML-Struktur vollständig auf die Verwendung von XPath-Ausdrücken umgestellt werden sollen. 
+\nsecend
+
+\nsecbegin{Aufgewendete Arbeitszeit pro Person$+$Arbeitspaket}
+\begin{longtable}{|p{4cm}|l|l|l|l|l|}
+        \hline
+        Arbeitspaket & Person & Start & Ende & h & Artefakt\\
+        \hline
+        GUI in develop-Branch integrieren & Julian U. & 13.05.2019 & 24.05.2019 & 2 & GUISwing.java \\ \hline
+        Generator für Sequenzdiagramme & Leo R. & 13.05.2019 & 24.05.2019 & 19 & SequenceDiagramGenerator.java\\ \hline
+        Generator für Sequenzdiagramme & Elisabeth S. & 13.05.2019 & 24.05.2019  & 21 & SequenceDiagramGenerator.java \\ \hline
+        Ausgabe für Sequenz-und Klassendiagramme & Tore A.  & 13.05.2019 & 24.05.2019  & 8  & SequenceDiagramGenerator.java \\ \hline
+        Ausgabe für Sequenz-und Klassendiagramme & Patrick O.  & 13.05.2019 & 24.05.2019  & 8  & SequenceDiagramGenerator.java \\ \hline
+        Generator für Klassendiagramme & Johann G.  & 13.05.2019 & 24.05.2019  & 2 & ClassDiagrammGenerator.java \\ \hline
+        Sequenz-Diagramm-Tree und Umbau & Jan S. & 13.05.2019 & 24.05.2019 & 3 & SequenceDiagramGenerator.java \\ \hline
+        Alte Codefragmente entfernen  & Marian G. & 13.05.2019 & 24.05.2019 & 2.5 & OutputPUML.java ParserJava.java\\ \hline
+        Anpassung Console auf neue Methoden & Marian G. & 13.05.2019 & 24.05.2019  & 6  & Console.java \\ \hline
+        Java Parser umbauen & Jona M. & 13.05.2019 & 24.05.2019 & 12 & ParserJava.java \\ \hline
+        Java Parser umbauen & Michael L. & 13.05.2019 & 24.05.2019 & 8 & ParserJava.java \\ \hline
+
+\end{longtable}     
+\nsecend
+
+\nsecbegin{Konkrete Code-Qualität im Sprint}
+Lesbarkeit ist annehmbar aber durchaus noch optimierbar. Immer wieder werden Bugs gefunden und behoben.
+\nsecend%Konkrete Code-Qualität im Sprint
+
+\nsecbegin{Konkrete Test-Überdeckung im Sprint}
+Die Testüberdeckung ist mit 60,2\% deutlich gestiegen.
+\nsecend%Konkrete Test-Überdeckung im Sprint
+
+\nsecbegin{Ergebnisse des Reviews}
+
+\begin{table}[H]
+
+\begin{tabularx}{\textwidth}{ |l|l|X| }
+\hline
+\textbf{Klasse} & \textbf{Methode} & \textbf{Anmerkungen}\\
+ \hline
+ClassGeneratorTest.java & allgemein & Testklasse fur Classdiagrammgenerator erstellt, die erzeugtes Diagramm mit Vorlage ClassDiagram.xml vergleicht\\ \hline
+SequenzDiagramGenerator.java & allgemein & Funktionen kommentiert, Abfangen von Exceptions  (u.a. XPathExpressionException), alten Code durch XMLHelperMethods wie getChildwithName ersetzt\\ \hline
+SequenzDiagramGenerator.java & handleLocalInstances & Funktion eingefügt, die die Klassen-Tags von lokalen Instanzen in das Dokument einfügt\\ \hline
+SequenzDiagramGenerator.java & addClassesToInstances & Hinzufügen der Klassen-Tags in methodcalls funktioniert grundlegend (mit kleinen Bugs)\\ \hline
+ClassDiagramGenerator.java & createDiagram & Verbesserte Suche nach Vererbungen, Kompositionen, Aggregationen und Implementierungen (funktioniert), alten Code entfernt\\ \hline
+GUI\_Swing.java & initialize & GUI auf XML umgestellt und entsprechende Klassen eingebunden, Baumstruktur (JTree) zur Auswahl des Einstiegspunktes überarbeitet\\ \hline
+GUI\_Swing.java & initialize & Tree für Sequenzdiagramm erstellt, GUI-Tabulatoren umgestellt\\ \hline
+XmlHelperMethods.java & removeComments & Funktion eingefuegt, die Kommentare aus XML-Baum entfernt\\ \hline
+XmlHelperMethods.java & removeWhitespace & Funktion eingefügt, die Document als String ohne Leerzeichen zurück gibt\\ \hline
+OutputPUML.java & allgemein & Neuimplementation der Erstellung von PUML aus Klassendiagramm mit Verwendung von getList mit Referenzknoten, Umbau der Iteration durch XML Diagramm für Methoddefinitionen\\ \hline
+ParserJava.java & buildTree & Grundlegende Struktur für Erkennung von Funktionen angelegt\\ \hline
+ 
+  
+ 
+
+\hline
+\end{tabularx}
+\end{table}
+
+Die Ausgabe von Klassendiagrammen funktioniert, es gibt an mehreren Stellen noch Codefehler. Die Grundstruktur wurde ausgearbeitet, es fehlen jedoch noch u.a. die umfangreiche Erkennung von Funktionen.
+Beim Review wurden die Änderungen an der XML-Struktur der Klassen- und Sequenzdiagrammen, an den Hilfsfunktionen zur Auswertung selbiger und die neuen Konsolenbefehle vorgestellt, damit alle Teammitglieder mit diesen vertraut sind und mit ihnen arbeiten können.
+Für die Änderungen am Parser und an den Klassen- u. Sequenzdiagrammen wurden die Tests erweitert, bzw. neu erstellt. (z.B. ClassDiagram2.xml)
+
+In den Klassen OutputPUML, ParserIF, ParserJava wurde zahlreich nicht mehr benötigter Code entfernt.
+
+\nsecend%Ergebnisse des Reviews
+
+\nsecbegin{Abschließende Einschätzung des Product-Owners}
+Mit dem weiter voranschreitenden Umbau werden bald neue Funktionalitäten integriert sowie die bestehenden Funktionalitäten verbessert werden.
+\nsecend%Abschließende Einschätzung des Product-Owners
+
+\nsecbegin{Abschließende Einschätzung des Software-Architekten}
+Der Umbau ist weitestgehend abgeschlossen. Die neue GUI wurde in den Hauptzweig integriert. Es können wieder Klassendiagramme erzeugt werden, auch wenn diese noch fehlerbehaftet sind.
+\nsecend%Abschließende Einschätzung des Software-Architekten
